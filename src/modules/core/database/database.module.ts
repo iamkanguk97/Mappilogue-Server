@@ -1,6 +1,6 @@
 import { CustomConfigModule } from './../custom-config/custom-config.module';
 import { Module } from '@nestjs/common';
-import { DatabaseService } from './services/database.service';
+import { DatabaseService } from './services';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CustomConfigService } from '../custom-config/services';
 
