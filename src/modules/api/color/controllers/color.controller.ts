@@ -1,6 +1,6 @@
 import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
 import { ColorService } from '../services/color.service';
-import { ResponseEntity } from 'src/common/response/response-entity';
+import { ResponseEntity } from 'src/common/response-entity';
 import { ColorDto } from '../dtos/color.dto';
 
 @Controller('colors')

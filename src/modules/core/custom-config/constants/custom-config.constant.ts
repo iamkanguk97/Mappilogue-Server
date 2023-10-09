@@ -14,6 +14,7 @@ export const REDIS_KEY = {
 
 export const ENVIRONMENT_KEY = {
   NODE_ENV: 'NODE_ENV',
+  PORT: 'PORT',
   ...DATABASE_KEY,
   ...REDIS_KEY,
 } as const;
