@@ -1,3 +1,4 @@
+import { LoginOrSignUpEnum } from './../constants/user.enum';
 import {
   Body,
   Controller,
@@ -12,6 +13,7 @@ import { ResponseEntity } from 'src/common/response-entity';
 import { UserService } from '../services/user.service';
 import { TERMS_OF_SERVICE_URL } from 'src/constants';
 import { TokenRefreshRequestDto } from '../dtos/token-refresh-request.dto';
+import * as _ from 'lodash';
 
 @Controller('users')
 export class UserController {
@@ -31,19 +33,29 @@ export class UserController {
     );
 
     const user = await this.userService.findOneBySnsId(socialId);
-    if (user == null) {
+    if (_.isNil(user)) {
       // 회원가입 진행
-      const result = await this.userService.signUp();
-      return;
+      const signUpResult = await this.userService.signUp();
+      return ResponseEntity.OK_WITH(HttpStatus.CREATED, {
+        loginUserId: 1,
+        type: LoginOrSignUpEnum.SIGNUP,
+        accessToken: 'asdf',
+        refreshToken: 'asdf',
+      });
     }
-    await this.userService.login();
-    return;
+    const loginResult = await this.userService.login(user);
+    return ResponseEntity.OK_WITH(HttpStatus.CREATED, {
+      loginUserId: user.id,
+      type: LoginOrSignUpEnum.LOGIN,
+      accessToken: 'asdf',
+      refreshToken: 'asdf',
+    });
   }
 
   @Post('token-refresh')
   @HttpCode(HttpStatus.CREATED)
   async tokenRefresh(@Body() body: TokenRefreshRequestDto) {
-    return;
+    return await this.authService.tokenRefresh(body.refreshToken);
   }
 
   @Get('terms-of-service')

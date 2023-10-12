@@ -27,3 +27,8 @@ export enum UserSnsTypeEnum {
   KAKAO = 'KAKAO',
   APPLE = 'APPLE',
 }
+
+export enum LoginOrSignUpEnum {
+  LOGIN = 'LOGIN',
+  SIGNUP = 'SIGNUP',
+}

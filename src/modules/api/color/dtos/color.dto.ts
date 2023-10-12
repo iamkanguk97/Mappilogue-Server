@@ -11,7 +11,9 @@ export class ColorDto {
     this.code = code;
   }
 
-  static fromEntity(color: ColorEntity): ColorDto {
-    return new ColorDto(color.id, color.name, color.code);
+  static fromEntityWithArray(colors: ColorEntity[]): ColorDto[] {
+    return colors.map(
+      (color) => new ColorDto(color.id, color.name, color.code),
+    );
   }
 }

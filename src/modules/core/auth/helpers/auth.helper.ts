@@ -18,12 +18,14 @@ import { KakaoErrorCodeType } from '../types';
 import * as jwt from 'jsonwebtoken';
 import { AxiosRequestConfig } from 'axios';
 import JwksRsa, { SigningKey } from 'jwks-rsa';
+import { CustomConfigService } from '../../custom-config/services';
 
 @Injectable()
 export class AuthHelper {
   constructor(
     // @Inject(JWKS_CLIENT_TOKEN) private readonly jwksClient: JwksRsa.JwksClient,
     private readonly httpService: HttpService,
+    private readonly customConfigService: CustomConfigService,
   ) {}
 
   async validateKakaoAccessToken(kakaoAccessToken: string): Promise<string> {
@@ -65,15 +67,7 @@ export class AuthHelper {
   //   return '';
   // }
 
-  async temp(fcmToken: string) {
-    const headers: AxiosRequestConfig = {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `key=${fcmToken}`,
-      },
-    };
-  }
-
+  // TODO: Unauthorized + InternalServerException filter 적용 필요
   checkKakaoErrorCode(kakaoErrorCode: KakaoErrorCodeType): Promise<void> {
     switch (kakaoErrorCode) {
       case KakaoErrorCode.Unauthorized:

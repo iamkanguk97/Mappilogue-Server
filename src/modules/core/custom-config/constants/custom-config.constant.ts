@@ -12,9 +12,15 @@ export const REDIS_KEY = {
   REDIS_PASSWORD: 'REDIS_PASSWORD',
 } as const;
 
+export const JWT_KEY = {
+  ACCESS_SECRET_KEY: 'ACCESS_SECRET_KEY',
+  REFRESH_SECRET_KEY: 'REFRESH_SECRET_KEY',
+} as const;
+
 export const ENVIRONMENT_KEY = {
   NODE_ENV: 'NODE_ENV',
   PORT: 'PORT',
   ...DATABASE_KEY,
   ...REDIS_KEY,
+  ...JWT_KEY,
 } as const;
