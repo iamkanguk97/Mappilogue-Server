@@ -1,17 +1,21 @@
 import { DefaultColumnType } from 'src/types/default-column.type';
 import { Column, Entity } from 'typeorm';
 import {
-  UserEmailLength,
-  UserNickNameLength,
-  UserProfileImageKeyLength,
-} from '../constants/user.constant';
+  UserEmailLengthEnum,
+  UserGenderEnum,
+  UserNickNameLengthEnum,
+  UserProfileImageKeyLengthEnum,
+  UserSnsIdLengthEnum,
+  UserSnsTypeEnum,
+  UserSnsTypeLengthEnum,
+} from '../constants/user.enum';
 
 @Entity('User')
 export class UserEntity extends DefaultColumnType {
-  @Column('varchar', { length: UserNickNameLength.MAX })
+  @Column('varchar', { length: UserNickNameLengthEnum.MAX })
   nickname: string;
 
-  @Column('varchar', { length: UserEmailLength.MAX, unique: true })
+  @Column('varchar', { length: UserEmailLengthEnum.MAX, unique: true })
   email: string;
 
   @Column('text', { nullable: true })
@@ -19,12 +23,12 @@ export class UserEntity extends DefaultColumnType {
 
   @Column('varchar', {
     nullable: true,
-    length: UserProfileImageKeyLength.MAX,
+    length: UserProfileImageKeyLengthEnum.MAX,
   })
   profileImageKey?: string | null;
 
   @Column('varchar', { length: 10, nullable: true })
-  gender?: string | null;
+  gender?: UserGenderEnum | null;
 
   @Column('varchar', { nullable: true })
   age?: string | null;
@@ -36,12 +40,15 @@ export class UserEntity extends DefaultColumnType {
 
   @Column('varchar', {
     nullable: true,
-    length: 255,
+    length: UserSnsIdLengthEnum.MAX,
+    unique: true,
   })
   snsId?: string | null;
 
-  // @Column('varchar', { length: 10, comment: 'Social login type' })
-  // snsType!: SnsLoginType;
+  @Column('varchar', {
+    length: UserSnsTypeLengthEnum.MAX,
+  })
+  snsType!: UserSnsTypeEnum;
 
   @Column('text', { nullable: true })
   fcmToken?: string | null;

@@ -1,13 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { ColorRepository } from '../repositories/color.repository';
 import { ColorDto } from '../dtos/color.dto';
+import { ColorEntity } from '../entities/color.entity';
 
 @Injectable()
 export class ColorService {
-  constructor(private readonly colorRepository: ColorRepository) {}
-
   async findColorList(): Promise<ColorDto[]> {
-    const colors = await this.colorRepository.find();
+    const colors = await ColorEntity.findColorList();
     return colors.map(ColorDto.fromEntity);
   }
 }

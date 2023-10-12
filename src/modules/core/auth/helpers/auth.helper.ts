@@ -16,13 +16,13 @@ import { catchError, lastValueFrom, map } from 'rxjs';
 import { generateBearerHeader } from 'src/common/common';
 import { KakaoErrorCodeType } from '../types';
 import * as jwt from 'jsonwebtoken';
-import JwksRsa, { SigningKey } from 'jwks-rsa';
 import { AxiosRequestConfig } from 'axios';
+import JwksRsa, { SigningKey } from 'jwks-rsa';
 
 @Injectable()
 export class AuthHelper {
   constructor(
-    @Inject(JWKS_CLIENT_TOKEN) private readonly jwksClient: JwksRsa.JwksClient,
+    // @Inject(JWKS_CLIENT_TOKEN) private readonly jwksClient: JwksRsa.JwksClient,
     private readonly httpService: HttpService,
   ) {}
 
@@ -35,34 +35,35 @@ export class AuthHelper {
         catchError((err) => {
           const kakaoErrorCode: KakaoErrorCodeType = err.response.data.code;
           Logger.error(`[ValidateKakaoAccessToken] ${err} (${kakaoErrorCode})`);
-          throw new InternalServerErrorException();
+          this.checkKakaoErrorCode(kakaoErrorCode);
+          throw err;
         }),
       ),
     );
   }
 
-  async validateAppleAccessToken(appleAccessToken: string) {
-    const decodedAppleToken = jwt.decode(appleAccessToken, { complete: true });
-    console.log(decodedAppleToken);
+  // async validateAppleAccessToken(appleAccessToken: string) {
+  //   const decodedAppleToken = jwt.decode(appleAccessToken, { complete: true });
+  //   console.log(decodedAppleToken);
 
-    if (!decodedAppleToken?.header?.kid) {
-      throw new UnauthorizedException('유효하지 않은 토큰입니다!');
-    }
+  //   if (!decodedAppleToken?.header?.kid) {
+  //     throw new UnauthorizedException('유효하지 않은 토큰입니다!');
+  //   }
 
-    const applePublicKey: SigningKey = await this.jwksClient.getSigningKey(
-      decodedAppleToken.header.kid,
-    );
+  //   const applePublicKey: SigningKey = await this.jwksClient.getSigningKey(
+  //     decodedAppleToken.header.kid,
+  //   );
 
-    const appleSignKey = applePublicKey.getPublicKey();
+  //   const appleSignKey = applePublicKey.getPublicKey();
 
-    const verifiedAppleDecodedToken = jwt.verify(
-      appleAccessToken,
-      appleSignKey,
-      { complete: true },
-    );
+  //   const verifiedAppleDecodedToken = jwt.verify(
+  //     appleAccessToken,
+  //     appleSignKey,
+  //     { complete: true },
+  //   );
 
-    return '';
-  }
+  //   return '';
+  // }
 
   async temp(fcmToken: string) {
     const headers: AxiosRequestConfig = {

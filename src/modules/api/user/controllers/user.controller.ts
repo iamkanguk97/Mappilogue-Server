@@ -25,19 +25,18 @@ export class UserController {
   async loginOrSignUp(
     @Body() body: LoginOrSignUpRequestDto,
   ): Promise<ResponseEntity<any>> {
-    // fcm token 확인
-    // social token 확인
     const socialId = await this.authService.validateSocialAccessToken(
       body.socialAccessToken,
       body.socialVendor,
     );
 
     const user = await this.userService.findOneBySnsId(socialId);
-
     if (user == null) {
+      // 회원가입 진행
+      const result = await this.userService.signUp();
       return;
     }
-
+    await this.userService.login();
     return;
   }
 

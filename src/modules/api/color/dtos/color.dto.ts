@@ -1,4 +1,4 @@
-import { ColorEntity } from 'src/modules/api/color/entities';
+import { ColorEntity } from 'src/modules/api/color/entities/color.entity';
 
 export class ColorDto {
   private readonly id: number;
@@ -11,7 +11,7 @@ export class ColorDto {
     this.code = code;
   }
 
-  static fromEntity(color: ColorEntity) {
+  static fromEntity(color: ColorEntity): ColorDto {
     return new ColorDto(color.id, color.name, color.code);
   }
 }

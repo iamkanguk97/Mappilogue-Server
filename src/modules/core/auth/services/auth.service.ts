@@ -9,18 +9,13 @@ export class AuthService {
     socialAccessToken: string,
     snsType: string,
   ): Promise<string> {
-    if (snsType === 'KAKAO') {
-      return this.authHelper.validateKakaoAccessToken(socialAccessToken);
+    switch (snsType) {
+      case 'KAKAO':
+        return this.authHelper.validateKakaoAccessToken(socialAccessToken);
+      // case 'APPLE':
+      //   return this.authHelper.validateAppleAccessToken(socialAccessToken);
+      default:
+        throw new InternalServerErrorException('유효하지 않은 로그인 타입');
     }
-
-    if (snsType === 'APPLE') {
-      return this.authHelper.validateAppleAccessToken(socialAccessToken);
-    }
-
-    throw new InternalServerErrorException('유효하지 않은 로그인 타입');
-  }
-
-  async validateFcmToken(fcmToken: string) {
-    return;
   }
 }

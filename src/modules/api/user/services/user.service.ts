@@ -5,11 +5,16 @@ import { UserRepository } from '../repositories/user.repository';
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
 
+  async signUp() {
+    return;
+  }
+
+  async login() {
+    return;
+  }
+
   async findOneBySnsId(socialId: string) {
-    return await this.userRepository.findOne({
-      where: {
-        snsId: socialId,
-      },
-    });
+    const result = await this.userRepository.selectUserBySnsId(socialId);
+    console.log(result);
   }
 }

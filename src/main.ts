@@ -1,10 +1,19 @@
+import { HttpInternalServerErrorExceptionFilter } from './filters/http-internal-server-error-exception.filter';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
+import {
+  BadRequestException,
+  Logger,
+  ValidationPipe,
+  VersioningType,
+} from '@nestjs/common';
 import { CustomConfigService } from './modules/core/custom-config/services';
 import helmet from 'helmet';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ENVIRONMENT_KEY } from './modules/core/custom-config/constants/custom-config.constant';
+import { HttpBadRequestExceptionFilter } from './filters/http-bad-request-exception.filter';
+import { HttpNotFoundExceptionFilter } from './filters/http-not-found-exception.filter';
+import { ValidationError } from 'class-validator';
 
 declare const module: any;
 
@@ -25,7 +34,16 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
       transform: true,
       stopAtFirstError: true,
+      exceptionFactory: (validationErrors: ValidationError[]) => {
+        return new BadRequestException(validationErrors[0]);
+      },
     }),
+  );
+
+  app.useGlobalFilters(
+    new HttpNotFoundExceptionFilter(),
+    new HttpBadRequestExceptionFilter(),
+    new HttpInternalServerErrorExceptionFilter(),
   );
 
   app.use(helmet());

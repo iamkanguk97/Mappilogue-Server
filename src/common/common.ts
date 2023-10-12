@@ -9,3 +9,11 @@ export const generateBearerHeader = (
     },
   };
 };
+
+export function setValidatorContext(errorMessage) {
+  return {
+    context: {
+      ...errorMessage,
+    },
+  };
+}

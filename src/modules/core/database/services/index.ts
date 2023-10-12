@@ -19,6 +19,7 @@ export class DatabaseService implements TypeOrmOptionsFactory {
       entities: DATABASE_MODELS,
       logging: true,
       charset: 'utf8mb4',
+      timezone: 'Asia/Seoul',
       migrationsTableName: 'migrations',
     };
   }
