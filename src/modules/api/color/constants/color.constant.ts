@@ -1,0 +1,1 @@
+export const COLOR_LIST_CACHE_KEY = 'COLOR_LIST';

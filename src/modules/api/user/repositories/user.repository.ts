@@ -11,7 +11,7 @@ export class UserRepository extends Repository<UserEntity> {
       .getOne();
   }
 
-  async selectUserById(id: string): Promise<UserEntity> {
+  async selectUserById(id: number): Promise<UserEntity> {
     return await this.createQueryBuilder('user')
       .where('user.id = :id', { id })
       .andWhere('user.status = :status', { status: 'ACTIVE' })

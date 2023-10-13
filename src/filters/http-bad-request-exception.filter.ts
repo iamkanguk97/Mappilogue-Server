@@ -17,28 +17,31 @@ export class HttpBadRequestExceptionFilter
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
-    console.log(exception);
-    console.log(exception.getResponse());
+    const exceptionResponse = exception.getResponse();
+    const statusCode = exception.getStatus();
+    console.log(exceptionResponse);
 
-    if (exception instanceof BadRequestException) {
-      const exceptionResponse = exception.getResponse();
-      const statusCode = exception.getStatus();
-
-      if (exceptionResponse instanceof ValidationError) {
-        const result = this.getExceptionObj(exceptionResponse);
-
-        response.status(statusCode).json({
-          isSuccess: false,
-          errorCode: result.code,
-          statusCode,
-          target: result.target,
-          message: result.message,
-          timestamp: getKoreaTime(),
-          path: request.url,
-        });
-      } else {
-        response.status(statusCode).json('asdf');
-      }
+    if (exceptionResponse instanceof ValidationError) {
+      const result = this.getExceptionObj(exceptionResponse);
+      response.status(statusCode).json({
+        isSuccess: false,
+        errorCode: result.code,
+        statusCode,
+        target: result.target,
+        message: result.message,
+        timestamp: getKoreaTime(),
+        path: request.url,
+      });
+    } else {
+      response.status(statusCode).json({
+        isSuccess: false,
+        errorCode: exceptionResponse['code'],
+        statusCode,
+        target: '',
+        message: exceptionResponse['message'],
+        timestamp: getKoreaTime(),
+        path: request.url,
+      });
     }
   }
 

@@ -3,6 +3,8 @@ import { CustomConfigService } from '../../custom-config/services';
 import { JwtService } from '@nestjs/jwt';
 import { ENVIRONMENT_KEY } from '../../custom-config/constants/custom-config.constant';
 import { TokenTypeEnum } from '../constants/auth.enum';
+import { JwtRefreshPayload } from '../types';
+import * as _ from 'lodash';
 
 @Injectable()
 export class JwtHelper {
@@ -49,6 +51,16 @@ export class JwtHelper {
       'development'
       ? '90d'
       : '14d';
+  }
+
+  isRefreshTokenValidInRefresh(
+    refreshTokenPayload?: JwtRefreshPayload | null,
+  ): boolean {
+    return (
+      !_.isNil(refreshTokenPayload) &&
+      !_.isNil(refreshTokenPayload.userId) &&
+      refreshTokenPayload.sub === TokenTypeEnum.REFRESH
+    );
   }
 
   // verifyAccessToken(accessToken: string) {

@@ -22,6 +22,10 @@ export const UserException = {
     code: '0003',
     message: '잘못된 소셜 타입입니다.',
   },
+  RefreshTokenEmpty: {
+    code: '0008',
+    message: 'Refresh-Token을 입력해주세요.',
+  },
 };
 
 export const ApiNotFoundException = {

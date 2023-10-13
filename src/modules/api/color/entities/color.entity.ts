@@ -1,5 +1,6 @@
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { ColorCodeLength, ColorNameLength } from '../constants/color.enum';
+import { ColorDto } from '../dtos/color.dto';
 
 @Entity('Color')
 export class ColorEntity extends BaseEntity {
@@ -11,6 +12,12 @@ export class ColorEntity extends BaseEntity {
 
   @Column('varchar', { length: ColorCodeLength.MAX })
   code: string;
+
+  static toResponseDto(colors: ColorEntity[]): ColorDto[] {
+    return colors.map(
+      (color) => new ColorDto(color.id, color.name, color.code),
+    );
+  }
 
   static async findColorList(): Promise<ColorEntity[]> {
     return await this.createQueryBuilder('color').getMany();

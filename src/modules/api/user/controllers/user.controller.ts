@@ -14,6 +14,7 @@ import { UserService } from '../services/user.service';
 import { TERMS_OF_SERVICE_URL } from 'src/constants';
 import { TokenRefreshRequestDto } from '../dtos/token-refresh-request.dto';
 import * as _ from 'lodash';
+import { TokenDto } from '../dtos/token.dto';
 
 @Controller('users')
 export class UserController {
@@ -54,8 +55,11 @@ export class UserController {
 
   @Post('token-refresh')
   @HttpCode(HttpStatus.CREATED)
-  async tokenRefresh(@Body() body: TokenRefreshRequestDto) {
-    return await this.authService.tokenRefresh(body.refreshToken);
+  async tokenRefresh(
+    @Body() body: TokenRefreshRequestDto,
+  ): Promise<ResponseEntity<TokenDto>> {
+    const result = await this.userService.tokenRefresh(body.refreshToken);
+    return ResponseEntity.OK_WITH(HttpStatus.CREATED, result);
   }
 
   @Get('terms-of-service')

@@ -4,14 +4,14 @@ import { UserSnsTypeEnum } from 'src/modules/api/user/constants/user.enum';
 import { JwtHelper } from '../helpers/jwt.helper';
 import { JwtService } from '@nestjs/jwt';
 import { CustomCacheService } from '../../custom-cache/services/custom-cache.service';
+import { UserService } from 'src/modules/api/user/services/user.service';
+import { TokenDto } from 'src/modules/api/user/dtos/token.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly authHelper: AuthHelper,
     private readonly jwtHelper: JwtHelper,
-    private readonly jwtService: JwtService,
-    private readonly customCacheService: CustomCacheService,
   ) {}
 
   async validateSocialAccessToken(
@@ -28,20 +28,9 @@ export class AuthService {
     }
   }
 
-  async setUserToken(userId: number) {
+  async setUserToken(userId: number): Promise<TokenDto> {
     const accessToken = this.jwtHelper.generateAccessToken(userId);
     const refreshToken = this.jwtHelper.generateRefreshToken(userId);
-    return;
-  }
-
-  async tokenRefresh(refreshToken: string) {
-    const refreshPayload = this.jwtService.decode(refreshToken);
-
-    const userId = refreshPayload['userId'];
-    const checkUserStatus = 1;
-    const refreshTokenInRedis = await this.customCacheService.getValue(
-      'COLORS_KEY',
-    );
-    await this.setUserToken(userId);
+    return TokenDto.from(userId, accessToken, refreshToken);
   }
 }
