@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UserRepository } from '../repositories/user.repository';
 import { UserEntity } from '../entities/user.entity';
 import { AuthService } from 'src/modules/core/auth/services/auth.service';
@@ -8,6 +12,8 @@ import { JwtHelper } from 'src/modules/core/auth/helpers/jwt.helper';
 import * as _ from 'lodash';
 import { UserHelper } from '../helpers/user.helper';
 import { CustomCacheService } from 'src/modules/core/custom-cache/services/custom-cache.service';
+import { AuthExceptionCode } from 'src/common/exception-code/auth.exception-code';
+import { TokenRefreshResponseDto } from '../dtos/token-refresh-response.dto';
 
 @Injectable()
 export class UserService {
@@ -29,38 +35,33 @@ export class UserService {
     console.log(result);
   }
 
-  async tokenRefresh(refreshToken: string) {
+  async tokenRefresh(refreshToken: string): Promise<TokenRefreshResponseDto> {
     const refreshPayload = this.jwtService.decode(
       refreshToken,
     ) as JwtRefreshPayload;
+    const checkUserStatus = await this.findOneById(refreshPayload.userId);
 
-    if (!this.jwtHelper.isRefreshTokenValidInRefresh(refreshPayload)) {
-      throw new BadRequestException('잘못된 토큰을 입력하셨습니다.');
+    const isUserRefreshTokenValidResult =
+      await this.userHelper.isUserRefreshTokenValid(
+        checkUserStatus,
+        refreshPayload,
+        refreshToken,
+      );
+
+    if (!isUserRefreshTokenValidResult) {
+      throw new UnauthorizedException(AuthExceptionCode.InvalidRefreshToken);
     }
 
     const userId = refreshPayload.userId;
-    const checkUserStatus = await this.findOneById(userId);
-
-    if (!this.userHelper.isUserValidWithModel(checkUserStatus)) {
-      throw new BadRequestException('탈퇴한 사용자의 토큰입니다.');
-    }
-
-    const refreshTokenInRedis = await this.customCacheService.getValue(
-      `refresh_userId_${userId}`,
-    );
-
-    if (refreshTokenInRedis !== refreshToken) {
-      throw new BadRequestException('유효하지 않는 토큰입니다.');
-    }
-
-    return await this.authService.setUserToken(userId);
+    const result = await this.authService.setUserToken(userId);
+    return TokenRefreshResponseDto.from(userId, result);
   }
 
-  async findOneById(userId: number): Promise<UserEntity> {
+  async findOneById(userId: number): Promise<UserEntity | undefined> {
     return await this.userRepository.selectUserById(userId);
   }
 
-  async findOneBySnsId(socialId: string): Promise<UserEntity> {
+  async findOneBySnsId(socialId: string): Promise<UserEntity | undefined> {
     return await this.userRepository.selectUserBySnsId(socialId);
   }
 }

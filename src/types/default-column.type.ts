@@ -5,7 +5,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { StatusColumnType } from './type';
+import { StatusColumnEnum } from 'src/constants/enum';
 
 export class DefaultColumnType {
   @PrimaryGeneratedColumn('increment', { type: 'bigint' })
@@ -27,5 +27,5 @@ export class DefaultColumnType {
   deletedAt?: Date | null;
 
   @Column('varchar', { default: 'ACTIVE', length: 10 })
-  status: StatusColumnType;
+  status: StatusColumnEnum;
 }

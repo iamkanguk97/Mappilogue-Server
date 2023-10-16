@@ -10,22 +10,20 @@ import {
 import {
   JWKS_CLIENT_TOKEN,
   KAKAO_ACCESS_TOKEN_VERIFY_URL,
-  KakaoErrorCode,
 } from '../constants/auth.constant';
 import { catchError, lastValueFrom, map } from 'rxjs';
 import { generateBearerHeader } from 'src/common/common';
-import { KakaoErrorCodeType } from '../types';
 import * as jwt from 'jsonwebtoken';
 import { AxiosRequestConfig } from 'axios';
 import JwksRsa, { SigningKey } from 'jwks-rsa';
 import { CustomConfigService } from '../../custom-config/services';
+import { KakaoErrorCodeEnum } from '../constants/auth.enum';
 
 @Injectable()
 export class AuthHelper {
   constructor(
     // @Inject(JWKS_CLIENT_TOKEN) private readonly jwksClient: JwksRsa.JwksClient,
     private readonly httpService: HttpService,
-    private readonly customConfigService: CustomConfigService,
   ) {}
 
   async validateKakaoAccessToken(kakaoAccessToken: string): Promise<string> {
@@ -35,7 +33,7 @@ export class AuthHelper {
       this.httpService.get(KAKAO_ACCESS_TOKEN_VERIFY_URL, requestHeader).pipe(
         map((res) => String(res.data.id)),
         catchError((err) => {
-          const kakaoErrorCode: KakaoErrorCodeType = err.response.data.code;
+          const kakaoErrorCode: KakaoErrorCodeEnum = err.response.data.code;
           Logger.error(`[ValidateKakaoAccessToken] ${err} (${kakaoErrorCode})`);
           this.checkKakaoErrorCode(kakaoErrorCode);
           throw err;
@@ -68,13 +66,13 @@ export class AuthHelper {
   // }
 
   // TODO: Unauthorized + InternalServerException filter 적용 필요
-  checkKakaoErrorCode(kakaoErrorCode: KakaoErrorCodeType): Promise<void> {
+  checkKakaoErrorCode(kakaoErrorCode: KakaoErrorCodeEnum): Promise<void> {
     switch (kakaoErrorCode) {
-      case KakaoErrorCode.Unauthorized:
+      case KakaoErrorCodeEnum.Unauthorized:
         throw new UnauthorizedException();
-      case KakaoErrorCode.KakaoInternalServerError:
+      case KakaoErrorCodeEnum.KakaoInternalServerError:
         throw new InternalServerErrorException();
-      case KakaoErrorCode.InvalidRequestForm:
+      case KakaoErrorCodeEnum.InvalidRequestForm:
         throw new BadRequestException();
       default:
         throw new InternalServerErrorException();

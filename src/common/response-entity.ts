@@ -9,10 +9,6 @@ export class ResponseEntity<T> {
     this.result = result;
   }
 
-  static OK() {
-    return;
-  }
-
   static OK_WITH<T>(statusCode: number, result: T): ResponseEntity<T> {
     return new ResponseEntity<T>(true, statusCode, result);
   }

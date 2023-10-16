@@ -9,4 +9,16 @@ export class CustomCacheService {
   async getValue<T>(key: string): Promise<T> {
     return await this.cacheManager.get<T>(key);
   }
+
+  async setValue(key: string, value: string): Promise<void> {
+    await this.cacheManager.set(key, value);
+  }
+
+  async setValueWithTTL(
+    key: string,
+    value: string,
+    ttl: number,
+  ): Promise<void> {
+    await this.cacheManager.set(key, value, { ttl });
+  }
 }

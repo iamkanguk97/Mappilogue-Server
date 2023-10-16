@@ -13,5 +13,7 @@ export const CUSTOM_CONFIG_VALIDATOR: ConfigModuleOptions = {
     REDIS_HOST: Joi.string().required(),
     REDIS_PORT: Joi.number().required(),
     REDIS_PASSWORD: Joi.string().required(),
+    ACCESS_SECRET_KEY: Joi.string().required(),
+    REFRESH_SECRET_KEY: Joi.string().required(),
   }),
 };

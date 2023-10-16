@@ -2,7 +2,6 @@ import { CustomConfigModule } from './../custom-config/custom-config.module';
 import { Module } from '@nestjs/common';
 import { DatabaseService } from './services';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CustomConfigService } from '../custom-config/services';
 
 @Module({
   imports: [
@@ -10,8 +9,9 @@ import { CustomConfigService } from '../custom-config/services';
       imports: [CustomConfigModule],
       useClass: DatabaseService,
     }),
+    CustomConfigModule,
   ],
-  providers: [CustomConfigService, DatabaseService],
+  providers: [DatabaseService],
   exports: [],
 })
 export class DatabaseModule {}

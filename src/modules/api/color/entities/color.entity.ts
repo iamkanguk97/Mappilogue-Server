@@ -13,13 +13,13 @@ export class ColorEntity extends BaseEntity {
   @Column('varchar', { length: ColorCodeLength.MAX })
   code: string;
 
-  static toResponseDto(colors: ColorEntity[]): ColorDto[] {
+  static toDto(colors: ColorEntity[]): ColorDto[] {
     return colors.map(
       (color) => new ColorDto(color.id, color.name, color.code),
     );
   }
 
-  static async findColorList(): Promise<ColorEntity[]> {
+  static async selectColorList(): Promise<ColorEntity[]> {
     return await this.createQueryBuilder('color').getMany();
   }
 }

@@ -11,10 +11,10 @@ import { LoginOrSignUpRequestDto } from '../dtos/login-or-sign-up-request.dto';
 import { AuthService } from 'src/modules/core/auth/services/auth.service';
 import { ResponseEntity } from 'src/common/response-entity';
 import { UserService } from '../services/user.service';
-import { TERMS_OF_SERVICE_URL } from 'src/constants';
+import { TERMS_OF_SERVICE_URL } from 'src/constants/constant';
 import { TokenRefreshRequestDto } from '../dtos/token-refresh-request.dto';
 import * as _ from 'lodash';
-import { TokenDto } from '../dtos/token.dto';
+import { TokenRefreshResponseDto } from '../dtos/token-refresh-response.dto';
 
 @Controller('users')
 export class UserController {
@@ -33,7 +33,9 @@ export class UserController {
       body.socialVendor,
     );
 
+    console.log(socialId);
     const user = await this.userService.findOneBySnsId(socialId);
+    console.log(user);
     if (_.isNil(user)) {
       // 회원가입 진행
       const signUpResult = await this.userService.signUp();
@@ -57,7 +59,7 @@ export class UserController {
   @HttpCode(HttpStatus.CREATED)
   async tokenRefresh(
     @Body() body: TokenRefreshRequestDto,
-  ): Promise<ResponseEntity<TokenDto>> {
+  ): Promise<ResponseEntity<TokenRefreshResponseDto>> {
     const result = await this.userService.tokenRefresh(body.refreshToken);
     return ResponseEntity.OK_WITH(HttpStatus.CREATED, result);
   }
@@ -69,4 +71,12 @@ export class UserController {
       link: TERMS_OF_SERVICE_URL,
     });
   }
+
+  // 로그아웃 API
+  // 회원탈퇴 API
+  // 알림설정 조회 API
+  // 알림설정 수정 API
+  // 프로필 조회 API
+  // 닉네임 수정 API
+  // 프로필 사진 수정 API
 }

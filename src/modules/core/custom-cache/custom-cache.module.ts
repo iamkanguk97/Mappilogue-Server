@@ -5,6 +5,7 @@ import { CustomConfigModule } from '../custom-config/custom-config.module';
 import { CustomConfigService } from '../custom-config/services';
 import * as redisStore from 'cache-manager-redis-store';
 import { ENVIRONMENT_KEY } from '../custom-config/constants/custom-config.constant';
+import { CustomCacheHelper } from './helpers';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { ENVIRONMENT_KEY } from '../custom-config/constants/custom-config.consta
       isGlobal: true,
     }),
   ],
-  providers: [CustomConfigService, CustomCacheService],
-  exports: [CustomCacheService],
+  providers: [CustomCacheService, CustomCacheHelper],
+  exports: [CustomCacheService, CustomCacheHelper],
 })
 export class CustomCacheModule {}

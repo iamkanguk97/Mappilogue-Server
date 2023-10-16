@@ -5,12 +5,16 @@ import { ENVIRONMENT_KEY } from '../../custom-config/constants/custom-config.con
 import { TokenTypeEnum } from '../constants/auth.enum';
 import { JwtRefreshPayload } from '../types';
 import * as _ from 'lodash';
+import { CustomCacheService } from '../../custom-cache/services/custom-cache.service';
+import { CustomCacheHelper } from '../../custom-cache/helpers';
 
 @Injectable()
 export class JwtHelper {
   constructor(
     private readonly customConfigService: CustomConfigService,
+    private readonly customCacheService: CustomCacheService,
     private readonly jwtService: JwtService,
+    private readonly customCacheHelper: CustomCacheHelper,
   ) {}
 
   generateAccessToken(userId: number): string {
@@ -53,7 +57,7 @@ export class JwtHelper {
       : '14d';
   }
 
-  isRefreshTokenValidInRefresh(
+  isRefreshTokenPayloadValid(
     refreshTokenPayload?: JwtRefreshPayload | null,
   ): boolean {
     return (
@@ -63,11 +67,18 @@ export class JwtHelper {
     );
   }
 
-  // verifyAccessToken(accessToken: string) {
-  //   return this.jwtService.verify(accessToken, {
-  //     secret: this.customConfigService.get<string>(
-  //       ENVIRONMENT_KEY.ACCESS_SECRET_KEY,
-  //     ),
-  //   });
-  // }
+  getRefreshTokenRedisKey(userId: number): string {
+    return `refresh_userId_${userId}`;
+  }
+
+  async setRefreshTokenInRedis(
+    userId: number,
+    refreshToken: string,
+  ): Promise<void> {
+    await this.customCacheService.setValueWithTTL(
+      this.getRefreshTokenRedisKey(userId),
+      refreshToken,
+      this.customCacheHelper.convertDayToMs(this.getRefreshTokenExpireTime()),
+    );
+  }
 }

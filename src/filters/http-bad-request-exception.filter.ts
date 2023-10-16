@@ -19,7 +19,6 @@ export class HttpBadRequestExceptionFilter
     const request = ctx.getRequest<Request>();
     const exceptionResponse = exception.getResponse();
     const statusCode = exception.getStatus();
-    console.log(exceptionResponse);
 
     if (exceptionResponse instanceof ValidationError) {
       const result = this.getExceptionObj(exceptionResponse);
