@@ -26,22 +26,6 @@ export class AuthHelper {
     private readonly httpService: HttpService,
   ) {}
 
-  async validateKakaoAccessToken(kakaoAccessToken: string): Promise<string> {
-    const requestHeader = generateBearerHeader(kakaoAccessToken);
-
-    return lastValueFrom<string>(
-      this.httpService.get(KAKAO_ACCESS_TOKEN_VERIFY_URL, requestHeader).pipe(
-        map((res) => String(res.data.id)),
-        catchError((err) => {
-          const kakaoErrorCode: KakaoErrorCodeEnum = err.response.data.code;
-          Logger.error(`[ValidateKakaoAccessToken] ${err} (${kakaoErrorCode})`);
-          this.checkKakaoErrorCode(kakaoErrorCode);
-          throw err;
-        }),
-      ),
-    );
-  }
-
   // async validateAppleAccessToken(appleAccessToken: string) {
   //   const decodedAppleToken = jwt.decode(appleAccessToken, { complete: true });
   //   console.log(decodedAppleToken);
@@ -64,18 +48,4 @@ export class AuthHelper {
 
   //   return '';
   // }
-
-  // TODO: Unauthorized + InternalServerException filter 적용 필요
-  checkKakaoErrorCode(kakaoErrorCode: KakaoErrorCodeEnum): Promise<void> {
-    switch (kakaoErrorCode) {
-      case KakaoErrorCodeEnum.Unauthorized:
-        throw new UnauthorizedException();
-      case KakaoErrorCodeEnum.KakaoInternalServerError:
-        throw new InternalServerErrorException();
-      case KakaoErrorCodeEnum.InvalidRequestForm:
-        throw new BadRequestException();
-      default:
-        throw new InternalServerErrorException();
-    }
-  }
 }

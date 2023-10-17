@@ -20,7 +20,7 @@ export class ColorController {
   @UseInterceptors(CacheInterceptor)
   @CacheKey(COLOR_LIST_CACHE_KEY)
   @CacheTTL(0)
-  async colorList(): Promise<ResponseEntity<ColorDto[]>> {
+  async getColorList(): Promise<ResponseEntity<ColorDto[]>> {
     const colorListResult = await this.colorService.findColorList();
     return ResponseEntity.OK_WITH(HttpStatus.OK, colorListResult);
   }

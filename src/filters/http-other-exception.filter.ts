@@ -22,7 +22,6 @@ export class HttpOtherExceptionFilter
       isSuccess: false,
       errorCode: exceptionResponse['code'],
       statusCode,
-      target: '',
       message: exceptionResponse['message'],
       timestamp: getKoreaTime(),
       path: request.url,

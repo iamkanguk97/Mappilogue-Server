@@ -1,27 +1,29 @@
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { setValidatorContext } from 'src/common/common';
-import { CommonException, UserException } from 'src/common/error-code';
 import { UserSnsTypeEnum } from '../constants/user.enum';
 import { CheckColumnEnum } from 'src/constants/enum';
+import { CommonExceptionCode } from 'src/common/exception-code/common.exception-code';
+import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 
 export class LoginOrSignUpRequestDto {
-  @IsString(setValidatorContext(CommonException.MustStringType))
-  @IsNotEmpty(setValidatorContext(UserException.SocialAccessTokenEmpty))
+  @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
+  @IsNotEmpty(setValidatorContext(UserExceptionCode.SocialAccessTokenEmpty))
   socialAccessToken: string;
 
   @IsEnum(
     UserSnsTypeEnum,
-    setValidatorContext(UserException.SocialVendorErrorType),
+    setValidatorContext(UserExceptionCode.SocialVendorErrorType),
   )
-  @IsNotEmpty(setValidatorContext(UserException.SocialVendorEmpty))
+  @IsNotEmpty(setValidatorContext(UserExceptionCode.SocialVendorEmpty))
   socialVendor: UserSnsTypeEnum;
 
-  @IsString(setValidatorContext(CommonException.MustStringType))
+  @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
+  @IsOptional()
   fcmToken?: string | undefined;
 
   @IsEnum(
     CheckColumnEnum,
-    setValidatorContext(CommonException.MustCheckColumnType),
+    setValidatorContext(CommonExceptionCode.MustCheckColumnType),
   )
   @IsOptional()
   isAlarmAccept?: CheckColumnEnum | undefined;

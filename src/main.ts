@@ -15,6 +15,7 @@ import { HttpBadRequestExceptionFilter } from './filters/http-bad-request-except
 import { HttpNotFoundExceptionFilter } from './filters/http-not-found-exception.filter';
 import { ValidationError } from 'class-validator';
 import { HttpOtherExceptionFilter } from './filters/http-other-exception.filter';
+import { HttpInternalServerErrorExceptionFilter } from './filters/http-internal-server-error-exception.filter';
 
 declare const module: any;
 
@@ -44,8 +45,8 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   app.useGlobalFilters(
-    // new HttpInternalServerErrorExceptionFilter(),
     new HttpOtherExceptionFilter(),
+    // new HttpInternalServerErrorExceptionFilter(),
     new HttpNotFoundExceptionFilter(),
     new HttpBadRequestExceptionFilter(),
   );

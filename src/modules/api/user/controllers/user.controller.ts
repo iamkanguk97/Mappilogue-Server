@@ -1,4 +1,3 @@
-import { LoginOrSignUpEnum } from './../constants/user.enum';
 import {
   Body,
   Controller,
@@ -8,53 +7,45 @@ import {
   Post,
 } from '@nestjs/common';
 import { LoginOrSignUpRequestDto } from '../dtos/login-or-sign-up-request.dto';
-import { AuthService } from 'src/modules/core/auth/services/auth.service';
 import { ResponseEntity } from 'src/common/response-entity';
 import { UserService } from '../services/user.service';
 import { TERMS_OF_SERVICE_URL } from 'src/constants/constant';
 import { TokenRefreshRequestDto } from '../dtos/token-refresh-request.dto';
 import * as _ from 'lodash';
 import { TokenRefreshResponseDto } from '../dtos/token-refresh-response.dto';
+import { LoginOrSignUpResponseDto } from '../dtos/login-or-sign-up-response.dto';
+import { UserSocialFactory } from '../factories/user-social.factory';
+import { Public } from 'src/modules/core/auth/decorators/auth.decorator';
 
 @Controller('users')
 export class UserController {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly userService: UserService,
-  ) {}
+  constructor(private readonly userService: UserService) {}
 
+  @Public()
   @Post('social-login')
   @HttpCode(HttpStatus.CREATED)
   async loginOrSignUp(
     @Body() body: LoginOrSignUpRequestDto,
-  ): Promise<ResponseEntity<any>> {
-    const socialId = await this.authService.validateSocialAccessToken(
-      body.socialAccessToken,
+  ): Promise<ResponseEntity<LoginOrSignUpResponseDto>> {
+    const userSocialFactory = new UserSocialFactory(
       body.socialVendor,
-    );
+      body.socialAccessToken,
+    ).setSocialFactory();
 
-    console.log(socialId);
+    const socialId = await userSocialFactory.validateSocialAccessToken();
     const user = await this.userService.findOneBySnsId(socialId);
-    console.log(user);
     if (_.isNil(user)) {
-      // 회원가입 진행
-      const signUpResult = await this.userService.signUp();
-      return ResponseEntity.OK_WITH(HttpStatus.CREATED, {
-        loginUserId: 1,
-        type: LoginOrSignUpEnum.SIGNUP,
-        accessToken: 'asdf',
-        refreshToken: 'asdf',
-      });
+      const signUpResult = await this.userService.signUp(
+        userSocialFactory,
+        body.fcmToken,
+      );
+      return ResponseEntity.OK_WITH(HttpStatus.CREATED, signUpResult);
     }
-    const loginResult = await this.userService.login(user);
-    return ResponseEntity.OK_WITH(HttpStatus.CREATED, {
-      loginUserId: user.id,
-      type: LoginOrSignUpEnum.LOGIN,
-      accessToken: 'asdf',
-      refreshToken: 'asdf',
-    });
+    const loginResult = await this.userService.login(user, body.fcmToken);
+    return ResponseEntity.OK_WITH(HttpStatus.CREATED, loginResult);
   }
 
+  @Public()
   @Post('token-refresh')
   @HttpCode(HttpStatus.CREATED)
   async tokenRefresh(
@@ -64,6 +55,7 @@ export class UserController {
     return ResponseEntity.OK_WITH(HttpStatus.CREATED, result);
   }
 
+  @Public()
   @Get('terms-of-service')
   @HttpCode(HttpStatus.OK)
   termsOfServiceUrl(): ResponseEntity<{ link: string }> {
@@ -72,11 +64,11 @@ export class UserController {
     });
   }
 
-  // 로그아웃 API
-  // 회원탈퇴 API
-  // 알림설정 조회 API
-  // 알림설정 수정 API
-  // 프로필 조회 API
-  // 닉네임 수정 API
-  // 프로필 사진 수정 API
+  async logout() {
+    return;
+  }
+
+  async withdraw() {
+    return;
+  }
 }

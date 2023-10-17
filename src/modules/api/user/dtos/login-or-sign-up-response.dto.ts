@@ -1,22 +1,28 @@
 import { LoginOrSignUpEnum } from '../constants/user.enum';
+import { TokenDto } from './token.dto';
 
 export class LoginOrSignUpResponseDto {
-  private readonly loginUserId: number;
   private readonly type: LoginOrSignUpEnum;
-  private readonly tokens: any;
+  private readonly loginUserId: number;
+  private readonly accessToken: string;
+  private readonly refreshToken: string;
 
-  constructor(loginUserId: number, type: LoginOrSignUpEnum, tokens: any) {
+  private constructor(
+    type: LoginOrSignUpEnum,
+    loginUserId: number,
+    tokenDto: TokenDto,
+  ) {
     this.loginUserId = loginUserId;
     this.type = type;
-    this.tokens = tokens;
+    this.accessToken = tokenDto.getAccessToken;
+    this.refreshToken = tokenDto.getRefreshToken;
   }
 
-  // static of() {
-  //   return {
-  //     loginUserId: this.loginUserId,
-  //     type: this.type,
-  //     accessToken: this.tokens.accessToken,
-  //     refreshToken: this.tokens.refreshToken,
-  //   };
-  // }
+  static from(
+    type: LoginOrSignUpEnum,
+    loginUserId: number,
+    tokenDto: TokenDto,
+  ): LoginOrSignUpResponseDto {
+    return new LoginOrSignUpResponseDto(type, loginUserId, tokenDto);
+  }
 }
