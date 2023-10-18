@@ -10,11 +10,13 @@ import { ResponseEntity } from 'src/common/response-entity';
 import { ColorDto } from '../dtos/color.dto';
 import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
 import { COLOR_LIST_CACHE_KEY } from '../constants/color.constant';
+import { Public } from 'src/modules/core/auth/decorators/auth.decorator';
 
 @Controller('colors')
 export class ColorController {
   constructor(private readonly colorService: ColorService) {}
 
+  @Public()
   @Get()
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(CacheInterceptor)

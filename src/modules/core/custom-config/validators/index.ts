@@ -15,5 +15,7 @@ export const CUSTOM_CONFIG_VALIDATOR: ConfigModuleOptions = {
     REDIS_PASSWORD: Joi.string().required(),
     ACCESS_SECRET_KEY: Joi.string().required(),
     REFRESH_SECRET_KEY: Joi.string().required(),
+    EMAIL_CRYPT_SECRET_KEY: Joi.string().required(),
+    EMAIL_CRYPT_ALGORITHM: Joi.string().required(),
   }),
 };

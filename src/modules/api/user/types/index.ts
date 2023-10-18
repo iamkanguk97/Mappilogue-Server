@@ -11,3 +11,13 @@ export type ProcessedSocialKakaoInfo = Pick<
   | 'gender'
   | 'birthday'
 >;
+
+export type DecodedUserToken = Pick<
+  UserEntity,
+  | 'id'
+  | 'email'
+  | 'nickname'
+  | 'profileImageUrl'
+  | 'profileImageKey'
+  | 'snsType'
+>;

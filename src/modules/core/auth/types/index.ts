@@ -9,7 +9,7 @@ export interface SocialFactoryInterface {
   processingSocialInfo(socialInfo: any): any;
 }
 
-export interface JwtRefreshPayload {
+export interface CustomJwtPayload {
   userId: number;
   iat: bigint;
   exp: bigint;

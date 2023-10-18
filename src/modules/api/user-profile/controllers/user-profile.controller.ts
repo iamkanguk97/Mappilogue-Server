@@ -1,11 +1,18 @@
 import { Controller, Get, HttpCode, HttpStatus, Patch } from '@nestjs/common';
+import { User } from '../../user/decorators/user.decorator';
+import { DecodedUserToken } from '../../user/types';
+import { ResponseEntity } from 'src/common/response-entity';
+import { decryptEmail } from 'src/helpers/crypt.helper';
 
 @Controller('users/profiles')
 export class UserProfileController {
   @Get()
   @HttpCode(HttpStatus.OK)
-  getUserProfile() {
-    return;
+  getUserProfile(
+    @User() user: DecodedUserToken,
+  ): ResponseEntity<DecodedUserToken> {
+    user.email = decryptEmail(user.email);
+    return ResponseEntity.OK_WITH(HttpStatus.OK, user);
   }
 
   @Patch('nicknames')

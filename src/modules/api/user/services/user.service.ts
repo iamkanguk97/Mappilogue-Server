@@ -4,7 +4,7 @@ import { UserEntity } from '../entities/user.entity';
 import { AuthService } from 'src/modules/core/auth/services/auth.service';
 import { JwtService } from '@nestjs/jwt';
 import {
-  JwtRefreshPayload,
+  CustomJwtPayload,
   SocialFactoryType,
 } from 'src/modules/core/auth/types';
 import { JwtHelper } from 'src/modules/core/auth/helpers/jwt.helper';
@@ -60,7 +60,7 @@ export class UserService {
   async tokenRefresh(refreshToken: string): Promise<TokenRefreshResponseDto> {
     const refreshPayload = this.jwtService.decode(
       refreshToken,
-    ) as JwtRefreshPayload;
+    ) as CustomJwtPayload;
     const checkUserStatus = await this.findOneById(refreshPayload.userId);
 
     const isUserRefreshTokenValidResult =

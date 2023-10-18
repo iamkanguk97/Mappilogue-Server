@@ -3,10 +3,10 @@ import { CustomConfigService } from '../../custom-config/services';
 import { JwtService } from '@nestjs/jwt';
 import { ENVIRONMENT_KEY } from '../../custom-config/constants/custom-config.constant';
 import { TokenTypeEnum } from '../constants/auth.enum';
-import { JwtRefreshPayload } from '../types';
 import * as _ from 'lodash';
 import { CustomCacheService } from '../../custom-cache/services/custom-cache.service';
 import { CustomCacheHelper } from '../../custom-cache/helpers';
+import { CustomJwtPayload } from '../types';
 
 @Injectable()
 export class JwtHelper {
@@ -58,7 +58,7 @@ export class JwtHelper {
   }
 
   isRefreshTokenPayloadValid(
-    refreshTokenPayload?: JwtRefreshPayload | null,
+    refreshTokenPayload?: CustomJwtPayload | undefined,
   ): boolean {
     return (
       !_.isNil(refreshTokenPayload) &&

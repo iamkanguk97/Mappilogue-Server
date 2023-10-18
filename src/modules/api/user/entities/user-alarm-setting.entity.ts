@@ -1,26 +1,28 @@
-import { CHECK_COLUMN_LENGTH } from 'src/constants/constant';
-import { CheckColumnEnum } from 'src/constants/enum';
+import {
+  CheckColumnEnum,
+  StatusOrCheckColumnLengthEnum,
+} from 'src/constants/enum';
 import { DefaultColumnType } from 'src/types/default-column.type';
 import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import { UserEntity } from './user.entity';
 
 @Entity('UserAlarmSetting')
 export class UserAlarmSettingEntity extends DefaultColumnType {
-  @Column('varchar', { length: CHECK_COLUMN_LENGTH })
+  @Column('varchar', { length: StatusOrCheckColumnLengthEnum.CHECK })
   isTotalAlarm!: CheckColumnEnum;
 
   @Column('varchar', {
-    length: CHECK_COLUMN_LENGTH,
+    length: StatusOrCheckColumnLengthEnum.CHECK,
   })
   isNoticeAlarm!: CheckColumnEnum;
 
   @Column('varchar', {
-    length: CHECK_COLUMN_LENGTH,
+    length: StatusOrCheckColumnLengthEnum.CHECK,
   })
   isMarketingAlarm!: CheckColumnEnum;
 
   @Column('varchar', {
-    length: CHECK_COLUMN_LENGTH,
+    length: StatusOrCheckColumnLengthEnum.CHECK,
   })
   isScheduleReminderAlarm!: CheckColumnEnum;
 

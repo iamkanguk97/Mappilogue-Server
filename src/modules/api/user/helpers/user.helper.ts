@@ -3,8 +3,8 @@ import { UserEntity } from '../entities/user.entity';
 import * as _ from 'lodash';
 import { StatusColumnEnum } from 'src/constants/enum';
 import { JwtHelper } from 'src/modules/core/auth/helpers/jwt.helper';
-import { JwtRefreshPayload } from 'src/modules/core/auth/types';
 import { CustomCacheService } from 'src/modules/core/custom-cache/services/custom-cache.service';
+import { CustomJwtPayload } from 'src/modules/core/auth/types';
 
 @Injectable()
 export class UserHelper {
@@ -30,7 +30,7 @@ export class UserHelper {
 
   async isUserRefreshTokenValid(
     user: UserEntity,
-    refreshPayload: JwtRefreshPayload,
+    refreshPayload: CustomJwtPayload,
     refreshToken: string,
   ): Promise<boolean> {
     console.log(user);

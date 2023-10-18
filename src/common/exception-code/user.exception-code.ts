@@ -26,4 +26,9 @@ export const UserExceptionCode = {
     '1007',
     '카카오 요청시 Request-Form이 잘못되었습니다.',
   ),
+  AccessTokenEmpty: setExceptionCode('1008', 'Access-Token을 입력해주세요.'),
+  InvalidAccessToken: setExceptionCode(
+    '1009',
+    '유효하지 않은 Access-Token을 입력하셨습니다.',
+  ),
 };

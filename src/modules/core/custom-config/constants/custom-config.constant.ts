@@ -17,10 +17,16 @@ export const JWT_KEY = {
   REFRESH_SECRET_KEY: 'REFRESH_SECRET_KEY',
 } as const;
 
+export const EMAIL_CRYPT_KEY = {
+  EMAIL_CRYPT_SECRET_KEY: 'EMAIL_CRYPT_SECRET_KEY',
+  EMAIL_CRYPT_ALGORITHM: 'EMAIL_CRYPT_ALGORITHM',
+} as const;
+
 export const ENVIRONMENT_KEY = {
   NODE_ENV: 'NODE_ENV',
   PORT: 'PORT',
   ...DATABASE_KEY,
   ...REDIS_KEY,
   ...JWT_KEY,
+  ...EMAIL_CRYPT_KEY,
 } as const;

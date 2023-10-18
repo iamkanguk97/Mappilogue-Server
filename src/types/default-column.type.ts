@@ -5,7 +5,10 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { StatusColumnEnum } from 'src/constants/enum';
+import {
+  StatusColumnEnum,
+  StatusOrCheckColumnLengthEnum,
+} from 'src/constants/enum';
 
 export class DefaultColumnType {
   @PrimaryGeneratedColumn('increment', { type: 'bigint' })
@@ -24,8 +27,11 @@ export class DefaultColumnType {
   @DeleteDateColumn({
     type: 'timestamp',
   })
-  deletedAt?: Date | null;
+  deletedAt?: Date | undefined;
 
-  @Column('varchar', { default: 'ACTIVE', length: 10 })
+  @Column('varchar', {
+    default: StatusColumnEnum.ACTIVE,
+    length: StatusOrCheckColumnLengthEnum.STATUS,
+  })
   status: StatusColumnEnum;
 }
