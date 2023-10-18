@@ -96,4 +96,11 @@ export class UserService {
       fcmToken,
     });
   }
+
+  async modifyById(
+    userId: number,
+    properties: Partial<UserEntity>,
+  ): Promise<void> {
+    return await this.userRepository.updateById(userId, properties);
+  }
 }

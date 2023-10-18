@@ -31,4 +31,9 @@ export const UserExceptionCode = {
     '1009',
     '유효하지 않은 Access-Token을 입력하셨습니다.',
   ),
+  NicknameEmpty: setExceptionCode('1010', '닉네임을 입력해주세요.'),
+  NicknameFormatError: setExceptionCode(
+    '1011',
+    '닉네임 형식이 올바르지 않습니다.',
+  ),
 };
