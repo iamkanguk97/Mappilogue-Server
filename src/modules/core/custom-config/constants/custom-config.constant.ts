@@ -22,6 +22,13 @@ export const EMAIL_CRYPT_KEY = {
   EMAIL_CRYPT_ALGORITHM: 'EMAIL_CRYPT_ALGORITHM',
 } as const;
 
+export const AWS_KEY = {
+  AWS_S3_ACCESS_KEY: 'AWS_S3_ACCESS_KEY',
+  AWS_S3_SECRET_KEY: 'AWS_S3_SECRET_KEY',
+  AWS_S3_BUCKET_REGION: 'AWS_S3_BUCKET_REGION',
+  AWS_S3_BUCKET_NAME: 'AWS_S3_BUCKET_NAME',
+} as const;
+
 export const ENVIRONMENT_KEY = {
   NODE_ENV: 'NODE_ENV',
   PORT: 'PORT',
@@ -29,4 +36,5 @@ export const ENVIRONMENT_KEY = {
   ...REDIS_KEY,
   ...JWT_KEY,
   ...EMAIL_CRYPT_KEY,
+  ...AWS_KEY,
 } as const;
