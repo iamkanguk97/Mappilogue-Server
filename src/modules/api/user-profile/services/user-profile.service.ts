@@ -1,4 +1,5 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { DataSource } from 'typeorm';
+import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { UserService } from '../../user/services/user.service';
 import { PatchUserNicknameRequestDto } from '../dtos/patch-user-nickname-request.dto';
 import { DecodedUserToken } from '../../user/types';
@@ -12,7 +13,10 @@ import { USER_DEFAULT_PROFILE_IMAGE } from '../../user/constants/user.constant';
 
 @Injectable()
 export class UserProfileService {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly dataSource: DataSource,
+    private readonly userService: UserService,
+  ) {}
 
   async updateUserNickname(
     userId: number,
@@ -25,7 +29,6 @@ export class UserProfileService {
     user: DecodedUserToken,
     imageFiles: Express.MulterS3.File[],
   ): Promise<PatchUserProfileImageResponseDto> {
-    console.log(imageFiles);
     const [profileImageFile] = imageFiles || [];
 
     const updateProfileImageParam = {
@@ -33,22 +36,25 @@ export class UserProfileService {
       profileImageKey: profileImageFile?.key || null,
     } as Partial<UserEntity>;
 
-    console.log(updateProfileImageParam);
-
     const imageDeleteBuilder = new MulterBuilder(
       ImageBuilderTypeEnum.DELETE,
       user.id,
     );
 
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
     try {
-      await Promise.all([
-        this.userService.modifyById(user.id, updateProfileImageParam),
-        imageDeleteBuilder.delete(user.profileImageKey),
-      ]);
+      await imageDeleteBuilder.delete(user.profileImageKey);
+      await this.userService.modifyById(user.id, updateProfileImageParam);
+      await queryRunner.commitTransaction();
     } catch (err) {
-      console.log(err);
+      await queryRunner.rollbackTransaction();
       Logger.error(`[modifyUserProfileImage] ${err}`);
       throw err;
+    } finally {
+      await queryRunner.release();
     }
 
     return PatchUserProfileImageResponseDto.from(

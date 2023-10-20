@@ -114,7 +114,7 @@ export class MulterBuilder {
         const extension = splitedFileNames.at(splitedFileNames.length - 1);
         const filename = !_.isNil(this.path)
           ? `${this.path}/user${userId}:${new Date().getTime()}.${extension}`
-          : `user${userId}:${new Date().getTime()}.${extension}`;
+          : `user${this._userId}:${new Date().getTime()}.${extension}`;
 
         return callback(null, encodeURI(`${this.resource}/${filename}`));
       },
@@ -123,21 +123,15 @@ export class MulterBuilder {
 
   async delete(imageKey?: string | undefined): Promise<void> {
     if (!_.isNil(imageKey)) {
-      try {
-        const awsS3 = this.s3 as AWS.S3;
-        await awsS3
-          .deleteObject({
-            // Bucket: customConfigService.get<string>(
-            //   ENVIRONMENT_KEY.AWS_S3_BUCKET_NAME,
-            // ),
-            Bucket: '',
-            Key: imageKey,
-          })
-          .promise();
-      } catch (err) {
-        console.log(err);
-        throw new InternalServerErrorException('이미지 서버 에러');
-      }
+      const awsS3 = this.s3 as AWS.S3;
+      await awsS3
+        .deleteObject({
+          Bucket: customConfigService.get<string>(
+            ENVIRONMENT_KEY.AWS_S3_BUCKET_NAME,
+          ),
+          Key: imageKey,
+        })
+        .promise();
     }
   }
 }
