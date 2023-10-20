@@ -18,6 +18,7 @@ import { UserProfileService } from '../services/user-profile.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { CreateProfileImageMulterOption } from 'src/common/multer/multer.option';
 import { PatchUserProfileImageResponseDto } from '../dtos/patch-user-profile-image-response.dto';
+import { UserAlarmSettingDto } from '../../user/dtos/user-alarm-setting.dto';
 
 @Controller('users/profiles')
 export class UserProfileController {
@@ -57,9 +58,14 @@ export class UserProfileController {
     return ResponseEntity.OK_WITH(HttpStatus.OK, result);
   }
 
-  @Get()
+  @Get('alarm-settings')
   @HttpCode(HttpStatus.OK)
-  async getUserAlarmSetting(userId: number) {
-    return;
+  async getUserAlarmSetting(
+    @UserId() userId: number,
+  ): Promise<ResponseEntity<UserAlarmSettingDto>> {
+    const result = await this.userProfileService.findUserAlarmSettingById(
+      userId,
+    );
+    return ResponseEntity.OK_WITH(HttpStatus.OK, result);
   }
 }

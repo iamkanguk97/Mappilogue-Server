@@ -5,6 +5,7 @@ import {
 import { DefaultColumnType } from 'src/types/default-column.type';
 import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import { UserEntity } from './user.entity';
+import { UserAlarmSettingDto } from '../dtos/user-alarm-setting.dto';
 
 @Entity('UserAlarmSetting')
 export class UserAlarmSettingEntity extends DefaultColumnType {
@@ -30,6 +31,19 @@ export class UserAlarmSettingEntity extends DefaultColumnType {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
-  @JoinColumn({ name: 'userId' })
+  @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
   user: UserEntity;
+
+  static toDto(
+    userId: number,
+    userAlarmSettingEntity: UserAlarmSettingEntity,
+  ): UserAlarmSettingDto {
+    return new UserAlarmSettingDto(
+      userId,
+      userAlarmSettingEntity.isTotalAlarm,
+      userAlarmSettingEntity.isNoticeAlarm,
+      userAlarmSettingEntity.isMarketingAlarm,
+      userAlarmSettingEntity.isScheduleReminderAlarm,
+    );
+  }
 }

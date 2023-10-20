@@ -1,5 +1,5 @@
 import { DataSource } from 'typeorm';
-import { HttpException, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { UserService } from '../../user/services/user.service';
 import { PatchUserNicknameRequestDto } from '../dtos/patch-user-nickname-request.dto';
 import { DecodedUserToken } from '../../user/types';
@@ -10,12 +10,16 @@ import {
 import { UserEntity } from '../../user/entities/user.entity';
 import { PatchUserProfileImageResponseDto } from '../dtos/patch-user-profile-image-response.dto';
 import { USER_DEFAULT_PROFILE_IMAGE } from '../../user/constants/user.constant';
+import { UserAlarmSettingRepository } from '../../user/repositories/user-alarm-setting.repository';
+import { UserAlarmSettingEntity } from '../../user/entities/user-alarm-setting.entity';
+import { UserAlarmSettingDto } from '../../user/dtos/user-alarm-setting.dto';
 
 @Injectable()
 export class UserProfileService {
   constructor(
     private readonly dataSource: DataSource,
     private readonly userService: UserService,
+    private readonly userAlarmSettingRepository: UserAlarmSettingRepository,
   ) {}
 
   async modifyUserNickname(
@@ -61,5 +65,11 @@ export class UserProfileService {
       user.id,
       updateProfileImageParam.profileImageUrl,
     );
+  }
+
+  async findUserAlarmSettingById(userId: number): Promise<UserAlarmSettingDto> {
+    const result =
+      await this.userAlarmSettingRepository.selectUserAlarmSettingById(userId);
+    return UserAlarmSettingEntity.toDto(userId, result);
   }
 }
