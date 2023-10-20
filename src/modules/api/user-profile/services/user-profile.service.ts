@@ -6,7 +6,7 @@ import { PatchUserNicknameRequestDto } from '../dtos/patch-user-nickname-request
 export class UserProfileService {
   constructor(private readonly userService: UserService) {}
 
-  async updateUserNickname(
+  async modifyUserNickname(
     userId: number,
     body: PatchUserNicknameRequestDto,
   ): Promise<void> {

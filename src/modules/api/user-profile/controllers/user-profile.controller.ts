@@ -33,7 +33,7 @@ export class UserProfileController {
     @UserId() userId: number,
     @Body() body: PatchUserNicknameRequestDto,
   ): Promise<void> {
-    await this.userProfileService.updateUserNickname(userId, body);
+    await this.userProfileService.modifyUserNickname(userId, body);
   }
 
   @Patch('images')
