@@ -36,4 +36,8 @@ export const UserExceptionCode = {
     '1011',
     '닉네임 형식이 올바르지 않습니다.',
   ),
+  ProfileImageFileFormatError: setExceptionCode(
+    '1012',
+    '변경하실 프로필 이미지 파일 형식이 올바르지 않습니다.',
+  ),
 };

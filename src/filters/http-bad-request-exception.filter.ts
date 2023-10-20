@@ -3,9 +3,11 @@ import {
   BadRequestException,
   Catch,
   ExceptionFilter,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { ValidationError } from 'class-validator';
 import { Request, Response } from 'express';
+import { InternalServerExceptionCode } from 'src/common/exception-code/internal-server.exception-code';
 import { isEmptyArray } from 'src/helpers/common.helper';
 import { getKoreaTime } from 'src/helpers/date.helper';
 
@@ -14,6 +16,7 @@ export class HttpBadRequestExceptionFilter
   implements ExceptionFilter<BadRequestException>
 {
   catch(exception: BadRequestException, host: ArgumentsHost) {
+    console.log(exception);
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
@@ -34,7 +37,9 @@ export class HttpBadRequestExceptionFilter
     } else {
       response.status(statusCode).json({
         isSuccess: false,
-        errorCode: exceptionResponse['code'],
+        errorCode:
+          exceptionResponse['code'] ??
+          InternalServerExceptionCode.UnExpectedError['code'],
         statusCode,
         target: '',
         message: exceptionResponse['message'],
