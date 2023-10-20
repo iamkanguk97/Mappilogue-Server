@@ -40,4 +40,17 @@ export const UserExceptionCode = {
     '1012',
     '변경하실 프로필 이미지 파일 형식이 올바르지 않습니다.',
   ),
+  IsTotalAlarmEmpty: setExceptionCode('1013', '전체 알림 여부를 입력해주세요.'),
+  IsNoticeAlarmEmpty: setExceptionCode(
+    '1014',
+    '공지사항 알림 여부를 입력해주세요.',
+  ),
+  IsMarketingAlarmEmpty: setExceptionCode(
+    '1015',
+    '마케팅 알림 여부를 입력해주세요.',
+  ),
+  IsScheduleReminderAlarmEmpty: setExceptionCode(
+    '1016',
+    '일정 알림 여부를 입력해주세요.',
+  ),
 };

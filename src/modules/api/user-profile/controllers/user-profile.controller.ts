@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Patch,
+  Put,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
@@ -19,6 +20,7 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { CreateProfileImageMulterOption } from 'src/common/multer/multer.option';
 import { PatchUserProfileImageResponseDto } from '../dtos/patch-user-profile-image-response.dto';
 import { UserAlarmSettingDto } from '../../user/dtos/user-alarm-setting.dto';
+import { PutUserAlarmSettingRequestDto } from '../dtos/put-user-alarm-setting-request.dto';
 
 @Controller('users/profiles')
 export class UserProfileController {
@@ -67,5 +69,14 @@ export class UserProfileController {
       userId,
     );
     return ResponseEntity.OK_WITH(HttpStatus.OK, result);
+  }
+
+  @Put('alarm-settings')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async putUserAlarmSetting(
+    @UserId() userId: number,
+    @Body() body: PutUserAlarmSettingRequestDto,
+  ): Promise<void> {
+    await this.userProfileService.modifyUserAlarmSetting(userId, body);
   }
 }
