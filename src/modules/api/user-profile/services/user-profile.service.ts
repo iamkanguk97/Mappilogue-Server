@@ -13,6 +13,7 @@ import { USER_DEFAULT_PROFILE_IMAGE } from '../../user/constants/user.constant';
 import { UserAlarmSettingRepository } from '../../user/repositories/user-alarm-setting.repository';
 import { UserAlarmSettingEntity } from '../../user/entities/user-alarm-setting.entity';
 import { UserAlarmSettingDto } from '../../user/dtos/user-alarm-setting.dto';
+import { PutUserAlarmSettingRequestDto } from '../dtos/put-user-alarm-setting-request.dto';
 
 @Injectable()
 export class UserProfileService {
@@ -71,5 +72,15 @@ export class UserProfileService {
     const result =
       await this.userAlarmSettingRepository.selectUserAlarmSettingById(userId);
     return UserAlarmSettingEntity.toDto(userId, result);
+  }
+
+  async modifyUserAlarmSetting(
+    userId: number,
+    body: PutUserAlarmSettingRequestDto,
+  ): Promise<void> {
+    await this.userAlarmSettingRepository.updateUserAlarmSettingById(
+      userId,
+      PutUserAlarmSettingRequestDto.toEntity(body),
+    );
   }
 }
