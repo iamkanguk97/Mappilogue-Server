@@ -12,7 +12,7 @@ import {
   USER_SNS_ID_LENGTH,
   USER_SNS_TYPE_LENGTH,
 } from '../constants/user.constant';
-import { ScheduleEntity } from '../../schedule/schedule.entity';
+import { ScheduleEntity } from '../../schedule/entities/schedule.entity';
 
 @Entity('User')
 export class UserEntity extends DefaultColumnType {

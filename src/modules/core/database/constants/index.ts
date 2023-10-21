@@ -1,5 +1,5 @@
 import { ColorEntity } from 'src/modules/api/color/entities/color.entity';
-import { ScheduleEntity } from 'src/modules/api/schedule/schedule.entity';
+import { ScheduleEntity } from 'src/modules/api/schedule/entities/schedule.entity';
 import { UserAlarmSettingEntity } from 'src/modules/api/user/entities/user-alarm-setting.entity';
 import { UserEntity } from 'src/modules/api/user/entities/user.entity';
 

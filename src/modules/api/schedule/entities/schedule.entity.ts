@@ -4,12 +4,12 @@ import {
 } from 'src/constants/enum';
 import { DefaultColumnType } from 'src/types/default-column.type';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { UserEntity } from '../user/entities/user.entity';
+import { UserEntity } from '../../user/entities/user.entity';
 import {
   SCHEDULE_DEFAULT_TITLE,
   SCHEDULE_TITLE_LENGTH,
-} from './constants/schedule.constant';
-import { ColorEntity } from '../color/entities/color.entity';
+} from '../constants/schedule.constant';
+import { ColorEntity } from '../../color/entities/color.entity';
 
 @Entity('Schedule')
 export class ScheduleEntity extends DefaultColumnType {
