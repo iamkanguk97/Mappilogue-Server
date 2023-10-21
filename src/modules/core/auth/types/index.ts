@@ -11,8 +11,8 @@ export interface SocialFactoryInterface {
 
 export interface CustomJwtPayload {
   userId: number;
-  iat: bigint;
-  exp: bigint;
+  iat: number;
+  exp: number;
   sub: TokenTypeEnum;
 }
 
