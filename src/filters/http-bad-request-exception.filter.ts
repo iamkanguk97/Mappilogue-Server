@@ -3,7 +3,7 @@ import {
   BadRequestException,
   Catch,
   ExceptionFilter,
-  InternalServerErrorException,
+  HttpStatus,
 } from '@nestjs/common';
 import { ValidationError } from 'class-validator';
 import { Request, Response } from 'express';
@@ -16,12 +16,11 @@ export class HttpBadRequestExceptionFilter
   implements ExceptionFilter<BadRequestException>
 {
   catch(exception: BadRequestException, host: ArgumentsHost) {
-    console.log(exception);
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
     const exceptionResponse = exception.getResponse();
-    const statusCode = exception.getStatus();
+    const statusCode = HttpStatus.BAD_REQUEST;
 
     if (exceptionResponse instanceof ValidationError) {
       const result = this.getExceptionObj(exceptionResponse);
