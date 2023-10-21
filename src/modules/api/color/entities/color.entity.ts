@@ -11,7 +11,7 @@ import { ScheduleEntity } from '../../schedule/schedule.entity';
 
 @Entity('Color')
 export class ColorEntity extends BaseEntity {
-  @PrimaryGeneratedColumn('increment', { type: 'bigint' })
+  @PrimaryGeneratedColumn('increment', { type: 'int' })
   id: number;
 
   @Column('varchar', { length: ColorNameLength.MAX })

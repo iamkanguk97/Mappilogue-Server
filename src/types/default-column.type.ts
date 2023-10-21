@@ -11,7 +11,7 @@ import {
 } from 'src/constants/enum';
 
 export class DefaultColumnType {
-  @PrimaryGeneratedColumn('increment', { type: 'bigint' })
+  @PrimaryGeneratedColumn('increment', { type: 'int' })
   id: number;
 
   @CreateDateColumn({
