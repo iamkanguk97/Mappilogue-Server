@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Request, Response } from 'express';
-import { getKoreaTime } from 'src/helpers/date.helper';
+import { ExceptionResponseHelper } from 'src/helpers/exception-response.helper';
 import { CustomConfigService } from 'src/modules/core/custom-config/services';
 
 /**
@@ -14,6 +14,7 @@ import { CustomConfigService } from 'src/modules/core/custom-config/services';
  */
 @Catch()
 export class HttpNodeInternalServerErrorExceptionFilter
+  extends ExceptionResponseHelper
   implements ExceptionFilter
 {
   catch(exception: any, host: ArgumentsHost) {
@@ -23,16 +24,15 @@ export class HttpNodeInternalServerErrorExceptionFilter
     const statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
 
     const customConfigService = new CustomConfigService(new ConfigService());
-
-    response.status(statusCode).json({
-      isSuccess: false,
-      errorCode: '9999',
+    const exceptionJson = this.generateBasicExceptionResponse(
       statusCode,
-      message: '서버 내부 에러',
-      timestamp: getKoreaTime(),
-      path: request.url,
-      errorStack:
-        customConfigService.isProduction() === true ? '' : exception.stack,
-    });
+      request.url,
+    );
+    this.setNodeInternalServerException(
+      exceptionJson,
+      customConfigService.isProduction() === true ? '' : exception.stack,
+    );
+
+    response.status(statusCode).json(exceptionJson);
   }
 }

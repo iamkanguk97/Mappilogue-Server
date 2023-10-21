@@ -7,12 +7,12 @@ import {
 } from '@nestjs/common';
 import { ValidationError } from 'class-validator';
 import { Request, Response } from 'express';
-import { InternalServerExceptionCode } from 'src/common/exception-code/internal-server.exception-code';
 import { isEmptyArray } from 'src/helpers/common.helper';
-import { getKoreaTime } from 'src/helpers/date.helper';
+import { ExceptionResponseHelper } from 'src/helpers/exception-response.helper';
 
 @Catch(BadRequestException)
 export class HttpBadRequestExceptionFilter
+  extends ExceptionResponseHelper
   implements ExceptionFilter<BadRequestException>
 {
   catch(exception: BadRequestException, host: ArgumentsHost) {
@@ -22,30 +22,28 @@ export class HttpBadRequestExceptionFilter
     const exceptionResponse = exception.getResponse();
     const statusCode = HttpStatus.BAD_REQUEST;
 
+    const exceptionJson = this.generateBasicExceptionResponse(
+      statusCode,
+      request.url,
+    );
+
     if (exceptionResponse instanceof ValidationError) {
-      const result = this.getExceptionObj(exceptionResponse);
-      response.status(statusCode).json({
-        isSuccess: false,
-        errorCode: result.code,
-        statusCode,
-        target: result.target,
-        message: result.message,
-        timestamp: getKoreaTime(),
-        path: request.url,
-      });
+      const validationResult = this.getExceptionObj(exceptionResponse);
+      this.setBadRequestException(
+        exceptionJson,
+        validationResult.code,
+        validationResult.message,
+        validationResult.target,
+      );
     } else {
-      response.status(statusCode).json({
-        isSuccess: false,
-        errorCode:
-          exceptionResponse['code'] ??
-          InternalServerExceptionCode.UnExpectedError['code'],
-        statusCode,
-        target: '',
-        message: exceptionResponse['message'],
-        timestamp: getKoreaTime(),
-        path: request.url,
-      });
+      this.setBadRequestException(
+        exceptionJson,
+        exceptionResponse['code'],
+        exceptionResponse['message'],
+      );
     }
+
+    response.status(statusCode).json(exceptionJson);
   }
 
   getExceptionObj(validationError: ValidationError) {
