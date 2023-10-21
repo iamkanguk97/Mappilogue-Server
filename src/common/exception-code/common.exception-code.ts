@@ -15,4 +15,5 @@ export const CommonExceptionCode = {
     '8008',
     '중복되는 배열 원소가 있으면 안됩니다.',
   ),
+  MustNumberType: setExceptionCode('8009', '숫자 타입으로 입력해주세요.'),
 };
