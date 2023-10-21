@@ -41,9 +41,9 @@ export class ExceptionResponseHelper {
     errorStack?: string | undefined,
   ): void {
     exceptionResponse.errorCode =
-      InternalServerExceptionCode.UnCatchedError.code;
+      InternalServerExceptionCode.InternalServerError.code;
     exceptionResponse.message =
-      InternalServerExceptionCode.UnCatchedError.message;
+      InternalServerExceptionCode.InternalServerError.message;
     exceptionResponse.errorStack = errorStack ?? '';
   }
 
