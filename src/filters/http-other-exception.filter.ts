@@ -5,10 +5,11 @@ import {
   HttpException,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { getKoreaTime } from 'src/helpers/date.helper';
+import { ExceptionResponseHelper } from 'src/helpers/exception-response.helper';
 
 @Catch(HttpException)
 export class HttpOtherExceptionFilter
+  extends ExceptionResponseHelper
   implements ExceptionFilter<HttpException>
 {
   catch(exception: HttpException, host: ArgumentsHost) {
@@ -18,13 +19,16 @@ export class HttpOtherExceptionFilter
     const exceptionResponse = exception.getResponse();
     const statusCode = exception.getStatus();
 
-    response.status(statusCode).json({
-      isSuccess: false,
-      errorCode: exceptionResponse['code'],
+    const exceptionJson = this.generateBasicExceptionResponse(
       statusCode,
-      message: exceptionResponse['message'],
-      timestamp: getKoreaTime(),
-      path: request.url,
-    });
+      request.url,
+    );
+    this.setBasicException(
+      exceptionJson,
+      exceptionResponse['code'],
+      exceptionResponse['message'],
+    );
+
+    response.status(statusCode).json(exceptionJson);
   }
 }
