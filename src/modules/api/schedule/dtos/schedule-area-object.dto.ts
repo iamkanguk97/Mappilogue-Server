@@ -27,7 +27,6 @@ export class ScheduleAreaObjectDto {
   @ArrayUnique(setValidatorContext(CommonExceptionCode.ArrayUnique))
   @ArrayNotEmpty(setValidatorContext(CommonExceptionCode.ArrayNotEmpty))
   @IsArray(setValidatorContext(CommonExceptionCode.MustArrayType))
-  // @IsNotEmpty(setValidatorContext(ScheduleExceptionCode.ScheduleAreaValueEmpty))
-  @IsNotEmpty()
+  @IsNotEmpty(setValidatorContext(ScheduleExceptionCode.ScheduleAreaValueEmpty))
   value: ScheduleAreaDto[];
 }

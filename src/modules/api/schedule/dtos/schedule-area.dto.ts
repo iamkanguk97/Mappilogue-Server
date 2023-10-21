@@ -1,43 +1,59 @@
-// @Length(
-//     1,
-//     30,
-//     getValidatorOption(
-//       ScheduleAreaExceptionCodeNumber.ScheduleAreaNameLengthError,
-//     ),
-//   )
-//   @IsString(getValidatorOption(CommonExceptionCodeNumber.MustStringType))
-//   @IsNotEmpty(
-//     getValidatorOption(ScheduleAreaExceptionCodeNumber.ScheduleAreaNameEmpty),
-//   )
-//   readonly name!: string;
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Length,
+  Matches,
+} from 'class-validator';
+import { setValidatorContext } from 'src/common/common';
+import { CommonExceptionCode } from 'src/common/exception-code/common.exception-code';
+import { ScheduleExceptionCode } from 'src/common/exception-code/schedule.exception-code';
+import { REGEX_SCHEDULE_AREA_TIME } from 'src/common/regex';
+import {
+  ScheduleAreaNameLengthEnum,
+  ScheduleAreaStreetAddressLengthEnum,
+} from '../constants/schedule.enum';
 
-//   @Length(
-//     1,
-//     100,
-//     getValidatorOption(
-//       ScheduleAreaExceptionCodeNumber.StreetAddressLengthError,
-//     ),
-//   )
-//   @IsString(getValidatorOption(CommonExceptionCodeNumber.MustStringType))
-//   @IsNotEmpty(
-//     getValidatorOption(ScheduleAreaExceptionCodeNumber.StreetAddressEmpty),
-//   )
-//   readonly streetAddress!: string;
+export class ScheduleAreaDto {
+  @Length(
+    ScheduleAreaNameLengthEnum.MIN,
+    ScheduleAreaNameLengthEnum.MAX,
+    setValidatorContext(ScheduleExceptionCode.ScheduleAreaNameLengthError),
+  )
+  @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
+  @IsNotEmpty(setValidatorContext(ScheduleExceptionCode.ScheduleAreaNameEmpty))
+  name: string;
 
-//   @IsString(getValidatorOption(CommonExceptionCodeNumber.MustStringType))
-//   @IsNotEmpty(getValidatorOption(ScheduleAreaExceptionCodeNumber.LatitudeEmpty))
-//   readonly latitude!: string;
+  @Length(
+    ScheduleAreaStreetAddressLengthEnum.MIN,
+    ScheduleAreaStreetAddressLengthEnum.MAX,
+    setValidatorContext(
+      ScheduleExceptionCode.ScheduleAreaStreetAddressLengthError,
+    ),
+  )
+  @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
+  @IsNotEmpty(
+    setValidatorContext(ScheduleExceptionCode.ScheduleAreaStreetAddressEmpty),
+  )
+  streetAddress: string;
 
-//   @IsString(getValidatorOption(CommonExceptionCodeNumber.MustStringType))
-//   @IsNotEmpty(getValidatorOption(ScheduleAreaExceptionCodeNumber.LatitudeEmpty))
-//   readonly longitude!: string;
+  @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
+  @IsNotEmpty(
+    setValidatorContext(ScheduleExceptionCode.ScheduleAreaLatitudeEmpty),
+  )
+  latitude: string;
 
-//   @Matches(
-//     REGEX_AREA_TIME,
-//     getValidatorOption(ScheduleAreaExceptionCodeNumber.AreaTimeFormatError),
-//   )
-//   @IsString(getValidatorOption(CommonExceptionCodeNumber.MustStringType))
-//   @IsOptional()
-//   readonly time?: string;
+  @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
+  @IsNotEmpty(
+    setValidatorContext(ScheduleExceptionCode.ScheduleAreaLongitudeEmpty),
+  )
+  longitude: string;
 
-export class ScheduleAreaDto {}
+  @Matches(
+    REGEX_SCHEDULE_AREA_TIME,
+    setValidatorContext(ScheduleExceptionCode.ScheduleAreaTimeErrorFormat),
+  )
+  @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
+  @IsOptional()
+  time?: string | undefined;
+}

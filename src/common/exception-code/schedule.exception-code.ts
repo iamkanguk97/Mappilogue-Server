@@ -45,4 +45,32 @@ export const ScheduleExceptionCode = {
     '2011',
     '일정에 해당하는 장소의 정보가 누락되었습니다.',
   ),
+  ScheduleAreaLatitudeEmpty: setExceptionCode(
+    '2012',
+    '일정 장소의 위도를 입력해주세요.',
+  ),
+  ScheduleAreaLongitudeEmpty: setExceptionCode(
+    '2013',
+    '일정 장소의 경도를 입력해주세요.',
+  ),
+  ScheduleAreaTimeErrorFormat: setExceptionCode(
+    '2014',
+    '일정 장소의 시간의 형식이 잘못되었습니다. h:mm AM/PM 형태로 입력해주세요.',
+  ),
+  ScheduleAreaStreetAddressEmpty: setExceptionCode(
+    '2015',
+    '일정 장소의 도로명 주소가 누락되었습니다.',
+  ),
+  ScheduleAreaStreetAddressLengthError: setExceptionCode(
+    '2016',
+    '일정 장소의 도로명 주소는 최대 100자까지 입력 가능합니다.',
+  ),
+  ScheduleAreaNameEmpty: setExceptionCode(
+    '2017',
+    '일정 장소의 이름이 누락되었습니다.',
+  ),
+  ScheduleAreaNameLengthError: setExceptionCode(
+    '2018',
+    '일정 장소의 이름은 최대 30자까지 입력 가능합니다.',
+  ),
 };
