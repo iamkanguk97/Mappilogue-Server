@@ -1,6 +1,13 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { ColorCodeLength, ColorNameLength } from '../constants/color.enum';
 import { ColorDto } from '../dtos/color.dto';
+import { ScheduleEntity } from '../../schedule/schedule.entity';
 
 @Entity('Color')
 export class ColorEntity extends BaseEntity {
@@ -12,6 +19,9 @@ export class ColorEntity extends BaseEntity {
 
   @Column('varchar', { length: ColorCodeLength.MAX })
   code: string;
+
+  @OneToMany(() => ScheduleEntity, (schedule) => schedule.color)
+  schedules: ScheduleEntity[];
 
   static toDto(colors: ColorEntity[]): ColorDto[] {
     return colors.map(

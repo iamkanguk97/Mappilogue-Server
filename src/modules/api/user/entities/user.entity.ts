@@ -1,5 +1,5 @@
 import { DefaultColumnType } from 'src/types/default-column.type';
-import { Column, Entity, OneToOne } from 'typeorm';
+import { Column, Entity, OneToMany, OneToOne } from 'typeorm';
 import { UserGenderEnum, UserSnsTypeEnum } from '../constants/user.enum';
 import { UserAlarmSettingEntity } from './user-alarm-setting.entity';
 import {
@@ -12,6 +12,7 @@ import {
   USER_SNS_ID_LENGTH,
   USER_SNS_TYPE_LENGTH,
 } from '../constants/user.constant';
+import { ScheduleEntity } from '../../schedule/schedule.entity';
 
 @Entity('User')
 export class UserEntity extends DefaultColumnType {
@@ -63,4 +64,9 @@ export class UserEntity extends DefaultColumnType {
     { cascade: true },
   )
   userAlarmSetting: UserAlarmSettingEntity;
+
+  @OneToMany(() => ScheduleEntity, (schedule) => schedule.user, {
+    cascade: true,
+  })
+  schedules: ScheduleEntity[];
 }
