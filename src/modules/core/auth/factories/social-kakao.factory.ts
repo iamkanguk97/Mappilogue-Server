@@ -76,7 +76,7 @@ export class SocialKakaoFactory implements SocialFactoryInterface {
         );
       default:
         throw new InternalServerErrorException(
-          InternalServerExceptionCode.UnCatchedError,
+          InternalServerExceptionCode.InternalServerError,
         );
     }
   }
