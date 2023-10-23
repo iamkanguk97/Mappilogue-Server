@@ -10,11 +10,16 @@ import {
   SCHEDULE_TITLE_LENGTH,
 } from '../constants/schedule.constant';
 import { ColorEntity } from '../../color/entities/color.entity';
-import { PostScheduleRequestDto } from '../dtos/post-schedule-request.dto';
-import { plainToClass } from 'class-transformer';
+import { setCheckColumnByValue } from 'src/helpers/common.helper';
 
 @Entity('Schedule')
 export class ScheduleEntity extends DefaultColumnType {
+  @Column('int')
+  userId: number;
+
+  @Column('int')
+  colorId: number;
+
   @Column('varchar', {
     nullable: true,
     length: SCHEDULE_TITLE_LENGTH,
@@ -50,22 +55,21 @@ export class ScheduleEntity extends DefaultColumnType {
 
   static from(
     userId: number,
-    createScheduleDto: PostScheduleRequestDto,
+    colorId: number,
+    startDate: string,
+    endDate: string,
+    alarmOptions?: string[] | undefined,
+    title?: string | undefined,
   ): ScheduleEntity {
-    // const schedule = new ScheduleEntity();
+    const schedule = new ScheduleEntity();
 
-    // schedule.title = createScheduleDto.title;
-    // schedule.startDate = createScheduleDto.startDate;
-    // schedule.endDate = createScheduleDto.endDate;
-    // schedule.isAlarm = setCheckColumnByValue(createScheduleDto.alarmOptions);
-    // schedule.user = userId;
+    schedule.userId = userId;
+    schedule.colorId = colorId;
+    schedule.startDate = startDate;
+    schedule.endDate = endDate;
+    schedule.title = title;
+    schedule.isAlarm = setCheckColumnByValue(alarmOptions);
 
-    // return schedule;
-    const schedule = plainToClass(ScheduleEntity, {
-      userId,
-      ...createScheduleDto,
-    });
-    console.log(schedule);
     return schedule;
   }
 }

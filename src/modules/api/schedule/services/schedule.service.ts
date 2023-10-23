@@ -1,9 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { PostScheduleRequestDto } from '../dtos/post-schedule-request.dto';
-import { setCheckColumnByValue } from 'src/helpers/common.helper';
 import { DataSource } from 'typeorm';
 import { ScheduleRepository } from '../repositories/schedule.repository';
-import { ScheduleEntity } from '../entities/schedule.entity';
+import { checkBetweenDatesWithNoMoment } from 'src/helpers/date.helper';
+import { ScheduleExceptionCode } from 'src/common/exception-code/schedule.exception-code';
 
 @Injectable()
 export class ScheduleService {
@@ -18,12 +18,25 @@ export class ScheduleService {
     await queryRunner.startTransaction();
 
     try {
-      // const hello = PostScheduleRequestDto.toEntity(userId, body);
-      // console.log(hello);
-      const newScheduleId = await this.scheduleRepository.insertSchedule(
-        ScheduleEntity.from(userId, body),
+      const { id: newScheduleId } = await this.scheduleRepository.save(
+        body.toEntity(userId),
       );
-      console.log(newScheduleId);
+
+      const createScheduleArea = body.area ?? [];
+      const { startDate, endDate } = body;
+      try {
+        await Promise.all(
+          createScheduleArea.map(async (area) => {
+            if (!checkBetweenDatesWithNoMoment(startDate, endDate, area.date)) {
+              throw new BadRequestException(
+                ScheduleExceptionCode.ScheduleAreaDateNotBetweenStartAndEndDate,
+              );
+            }
+          }),
+        );
+      } catch (err) {
+        throw err;
+      }
     } catch (err) {
       await queryRunner.rollbackTransaction();
       Logger.error(`[create - Schedule Domain] ${err}`);

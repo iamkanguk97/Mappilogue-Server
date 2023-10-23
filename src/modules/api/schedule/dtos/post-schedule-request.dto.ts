@@ -21,12 +21,9 @@ import { ColorIdRangeEnum } from '../../color/constants/color.enum';
 import { ColorExceptionCode } from 'src/common/exception-code/color.exception-code';
 import { IsValidDateWithHyphen } from 'src/decorators/valid-date-with-hyphen.decorator';
 import { REGEX_ALARM_OPTION } from 'src/common/regex';
-import { Type, plainToClass, plainToInstance } from 'class-transformer';
+import { Type } from 'class-transformer';
 import { ScheduleAreaObjectDto } from './schedule-area-object.dto';
 import { ScheduleEntity } from '../entities/schedule.entity';
-import { setCheckColumnByValue } from 'src/helpers/common.helper';
-import { UserEntity } from '../../user/entities/user.entity';
-import { ColorEntity } from '../../color/entities/color.entity';
 
 export class PostScheduleRequestDto {
   @Length(
@@ -85,22 +82,14 @@ export class PostScheduleRequestDto {
   @IsOptional()
   area?: ScheduleAreaObjectDto[] | undefined;
 
-  static toEntity(
-    userId: number,
-    body: PostScheduleRequestDto,
-  ): ScheduleEntity {
-    const scheduleEntity = new ScheduleEntity();
-
-    scheduleEntity.user = plainToClass(UserEntity, userId);
-    // scheduleEntity.color.id = body.colorId;
-    scheduleEntity.color = plainToInstance(ColorEntity, body.colorId);
-    scheduleEntity.title = body.title;
-    scheduleEntity.startDate = body.startDate;
-    scheduleEntity.endDate = body.endDate;
-    scheduleEntity.isAlarm = setCheckColumnByValue(body.alarmOptions);
-
-    console.log(scheduleEntity);
-
-    return scheduleEntity;
+  toEntity(userId: number): ScheduleEntity {
+    return ScheduleEntity.from(
+      userId,
+      this.colorId,
+      this.startDate,
+      this.endDate,
+      this.alarmOptions,
+      this.title,
+    );
   }
 }

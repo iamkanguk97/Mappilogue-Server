@@ -73,4 +73,8 @@ export const ScheduleExceptionCode = {
     '2018',
     '일정 장소의 이름은 최대 30자까지 입력 가능합니다.',
   ),
+  ScheduleAreaDateNotBetweenStartAndEndDate: setExceptionCode(
+    '2019',
+    '일정 장소의 날짜는 일정의 시작날짜와 종료날짜 사이의 날짜여야 합니다.',
+  ),
 };
