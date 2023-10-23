@@ -10,6 +10,9 @@ import {
   SCHEDULE_TITLE_LENGTH,
 } from '../constants/schedule.constant';
 import { ColorEntity } from '../../color/entities/color.entity';
+import { PostScheduleRequestDto } from '../dtos/post-schedule-request.dto';
+import { setCheckColumnByValue } from 'src/helpers/common.helper';
+import { plainToClass } from 'class-transformer';
 
 @Entity('Schedule')
 export class ScheduleEntity extends DefaultColumnType {
@@ -45,4 +48,25 @@ export class ScheduleEntity extends DefaultColumnType {
   })
   @JoinColumn({ name: 'colorId', referencedColumnName: 'id' })
   color: ColorEntity;
+
+  static from(
+    userId: number,
+    createScheduleDto: PostScheduleRequestDto,
+  ): ScheduleEntity {
+    // const schedule = new ScheduleEntity();
+
+    // schedule.title = createScheduleDto.title;
+    // schedule.startDate = createScheduleDto.startDate;
+    // schedule.endDate = createScheduleDto.endDate;
+    // schedule.isAlarm = setCheckColumnByValue(createScheduleDto.alarmOptions);
+    // schedule.user = userId;
+
+    // return schedule;
+    const schedule = plainToClass(ScheduleEntity, {
+      userId,
+      ...createScheduleDto,
+    });
+    console.log(schedule);
+    return schedule;
+  }
 }
