@@ -24,6 +24,7 @@ import { REGEX_ALARM_OPTION } from 'src/common/regex';
 import { Type } from 'class-transformer';
 import { ScheduleAreaObjectDto } from './schedule-area-object.dto';
 import { ScheduleEntity } from '../entities/schedule.entity';
+import { UserAlarmHistoryEntity } from '../../user/entities/user-alarm-history.entity';
 
 export class PostScheduleRequestDto {
   @Length(
@@ -82,7 +83,7 @@ export class PostScheduleRequestDto {
   @IsOptional()
   area?: ScheduleAreaObjectDto[] | undefined;
 
-  toEntity(userId: number): ScheduleEntity {
+  toScheduleEntity(userId: number): ScheduleEntity {
     return ScheduleEntity.from(
       userId,
       this.colorId,

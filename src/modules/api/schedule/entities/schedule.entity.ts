@@ -3,7 +3,7 @@ import {
   StatusOrCheckColumnLengthEnum,
 } from 'src/constants/enum';
 import { DefaultColumnType } from 'src/types/default-column.type';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { UserEntity } from '../../user/entities/user.entity';
 import {
   SCHEDULE_DEFAULT_TITLE,
@@ -11,6 +11,7 @@ import {
 } from '../constants/schedule.constant';
 import { ColorEntity } from '../../color/entities/color.entity';
 import { setCheckColumnByValue } from 'src/helpers/common.helper';
+import { ScheduleAreaEntity } from './schedule-area.entity';
 
 @Entity('Schedule')
 export class ScheduleEntity extends DefaultColumnType {
@@ -52,6 +53,15 @@ export class ScheduleEntity extends DefaultColumnType {
   })
   @JoinColumn({ name: 'colorId', referencedColumnName: 'id' })
   color: ColorEntity;
+
+  @OneToMany(
+    () => ScheduleAreaEntity,
+    (scheduleArea) => scheduleArea.scheduleId,
+    {
+      cascade: true,
+    },
+  )
+  scheduleArea: ScheduleAreaEntity[];
 
   static from(
     userId: number,

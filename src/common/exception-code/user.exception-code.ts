@@ -53,4 +53,13 @@ export const UserExceptionCode = {
     '1016',
     '일정 알림 여부를 입력해주세요.',
   ),
+  RequireAlarmAcceptInSchedule: setExceptionCode(
+    '1017',
+    '일정 알림 서비스를 이용하시려면 알림 설정을 해주세요.',
+  ),
+  RequireFcmTokenRegister: setExceptionCode(
+    '1018',
+    'FCM Token을 등록해주세요.',
+  ),
+  InvalidFcmToken: setExceptionCode('1019', '유효하지 않은 FCM Token입니다.'),
 };

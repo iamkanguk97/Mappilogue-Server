@@ -8,17 +8,19 @@ import { UserRepository } from './repositories/user.repository';
 import { JwtService } from '@nestjs/jwt';
 import { JwtHelper } from 'src/modules/core/auth/helpers/jwt.helper';
 import { UserAlarmSettingRepository } from './repositories/user-alarm-setting.repository';
+import { UserAlarmHistoryRepository } from './repositories/user-alarm-history.repository';
 
 @Module({
   imports: [
     CustomRepositoryModule.forCustomRepository([
       UserRepository,
       UserAlarmSettingRepository,
+      UserAlarmHistoryRepository,
     ]),
     AuthModule,
   ],
   controllers: [UserController],
   providers: [UserService, UserHelper, JwtService, JwtHelper],
-  exports: [UserService],
+  exports: [UserService, UserHelper],
 })
 export class UserModule {}

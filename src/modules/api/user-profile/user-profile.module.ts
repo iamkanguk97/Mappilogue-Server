@@ -5,6 +5,7 @@ import { CustomRepositoryModule } from 'src/modules/core/custom-repository/custo
 import { UserModule } from '../user/user.module';
 import { UserRepository } from '../user/repositories/user.repository';
 import { UserAlarmSettingRepository } from '../user/repositories/user-alarm-setting.repository';
+import { UserProfileHelper } from './helpers/user-profile.helper';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { UserAlarmSettingRepository } from '../user/repositories/user-alarm-sett
     UserModule,
   ],
   controllers: [UserProfileController],
-  providers: [UserProfileService],
+  providers: [UserProfileService, UserProfileHelper],
+  exports: [UserProfileService, UserProfileHelper],
 })
 export class UserProfileModule {}
