@@ -11,7 +11,6 @@ import {
 } from '../constants/schedule.constant';
 import { ColorEntity } from '../../color/entities/color.entity';
 import { PostScheduleRequestDto } from '../dtos/post-schedule-request.dto';
-import { setCheckColumnByValue } from 'src/helpers/common.helper';
 import { plainToClass } from 'class-transformer';
 
 @Entity('Schedule')
