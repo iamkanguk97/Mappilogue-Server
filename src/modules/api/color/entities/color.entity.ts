@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { ColorCodeLength, ColorNameLength } from '../constants/color.enum';
 import { ColorDto } from '../dtos/color.dto';
-import { ScheduleEntity } from '../../schedule/schedule.entity';
+import { ScheduleEntity } from '../../schedule/entities/schedule.entity';
 
 @Entity('Color')
 export class ColorEntity extends BaseEntity {

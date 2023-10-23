@@ -1,3 +1,4 @@
+import { InternalServerExceptionCode } from 'src/common/exception-code/internal-server.exception-code';
 import {
   ArgumentsHost,
   BadRequestException,
@@ -59,12 +60,17 @@ export class HttpBadRequestExceptionFilter
 
   getExceptionInChildren(errorChildren: ValidationError[]) {
     const firstChildren = errorChildren[0];
+    const target = firstChildren.property;
 
     if (firstChildren.contexts) {
       const firstContexts = firstChildren.contexts;
-      const fKey = Object.keys(firstContexts)[0];
-      const fValue = firstContexts[fKey];
-      return fValue;
+      const key = Object.keys(firstContexts)[0];
+      const errorValue = firstContexts[key];
+      return { ...errorValue, target };
+    } else {
+      return !firstChildren.children.length
+        ? { ...InternalServerExceptionCode.ContextNotSetting, target }
+        : this.getExceptionInChildren(firstChildren.children);
     }
   }
 }

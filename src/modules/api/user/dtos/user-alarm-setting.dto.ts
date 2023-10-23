@@ -20,4 +20,12 @@ export class UserAlarmSettingDto {
     this.isMarketingAlarm = isMarketingAlarm;
     this.isScheduleReminderAlarm = isScheduleReminderAlarm;
   }
+
+  get getIsTotalAlarm(): CheckColumnEnum {
+    return this.isTotalAlarm;
+  }
+
+  get getIsScheduleReminderAlarm(): CheckColumnEnum {
+    return this.isScheduleReminderAlarm;
+  }
 }

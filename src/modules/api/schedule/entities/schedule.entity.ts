@@ -4,16 +4,23 @@ import {
 } from 'src/constants/enum';
 import { DefaultColumnType } from 'src/types/default-column.type';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
-import { UserEntity } from '../user/entities/user.entity';
+import { UserEntity } from '../../user/entities/user.entity';
 import {
   SCHEDULE_DEFAULT_TITLE,
   SCHEDULE_TITLE_LENGTH,
-} from './constants/schedule.constant';
-import { ColorEntity } from '../color/entities/color.entity';
+} from '../constants/schedule.constant';
+import { ColorEntity } from '../../color/entities/color.entity';
+import { setCheckColumnByValue } from 'src/helpers/common.helper';
 import { ScheduleAreaEntity } from './schedule-area.entity';
 
 @Entity('Schedule')
 export class ScheduleEntity extends DefaultColumnType {
+  @Column('int')
+  userId: number;
+
+  @Column('int')
+  colorId: number;
+
   @Column('varchar', {
     nullable: true,
     length: SCHEDULE_TITLE_LENGTH,
@@ -49,8 +56,30 @@ export class ScheduleEntity extends DefaultColumnType {
 
   @OneToMany(
     () => ScheduleAreaEntity,
-    (scheduleArea) => scheduleArea.schedule,
-    { cascade: true },
+    (scheduleArea) => scheduleArea.scheduleId,
+    {
+      cascade: true,
+    },
   )
   scheduleArea: ScheduleAreaEntity[];
+
+  static from(
+    userId: number,
+    colorId: number,
+    startDate: string,
+    endDate: string,
+    alarmOptions?: string[] | undefined,
+    title?: string | undefined,
+  ): ScheduleEntity {
+    const schedule = new ScheduleEntity();
+
+    schedule.userId = userId;
+    schedule.colorId = colorId;
+    schedule.startDate = startDate;
+    schedule.endDate = endDate;
+    schedule.title = title;
+    schedule.isAlarm = setCheckColumnByValue(alarmOptions);
+
+    return schedule;
+  }
 }

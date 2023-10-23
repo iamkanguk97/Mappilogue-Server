@@ -7,3 +7,8 @@ export enum ColorCodeLength {
   MIN = 7,
   MAX = 15,
 }
+
+export enum ColorIdRangeEnum {
+  MIN = 1,
+  MAX = 15,
+}
