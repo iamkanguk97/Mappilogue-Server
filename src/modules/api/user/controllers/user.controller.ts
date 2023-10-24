@@ -17,6 +17,9 @@ import { LoginOrSignUpResponseDto } from '../dtos/login-or-sign-up-response.dto'
 import { UserSocialFactory } from '../factories/user-social.factory';
 import { Public } from 'src/modules/core/auth/decorators/auth.decorator';
 import { UserId } from '../decorators/user-id.decorator';
+import { User } from '../decorators/user.decorator';
+import { DecodedUserToken } from '../types';
+import { PostUserWithdrawRequestDto } from '../dtos/post-user-withdraw-request.dto';
 
 @Controller('users')
 export class UserController {
@@ -72,7 +75,13 @@ export class UserController {
     return ResponseEntity.OK(HttpStatus.OK);
   }
 
-  async withdraw() {
-    return;
+  @Post('withdrawal')
+  @HttpCode(HttpStatus.OK)
+  async withdraw(
+    @User() user: DecodedUserToken,
+    @Body() body: PostUserWithdrawRequestDto,
+  ): Promise<ResponseEntity<undefined>> {
+    await this.userService.createWithdraw(user, body);
+    return ResponseEntity.OK(HttpStatus.OK);
   }
 }

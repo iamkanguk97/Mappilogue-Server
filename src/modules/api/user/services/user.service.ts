@@ -14,7 +14,8 @@ import { TokenRefreshResponseDto } from '../dtos/token-refresh-response.dto';
 import { LoginOrSignUpResponseDto } from '../dtos/login-or-sign-up-response.dto';
 import { LoginOrSignUpEnum } from '../constants/user.enum';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
-import { ProcessedSocialKakaoInfo } from '../types';
+import { DecodedUserToken, ProcessedSocialKakaoInfo } from '../types';
+import { PostUserWithdrawRequestDto } from '../dtos/post-user-withdraw-request.dto';
 
 @Injectable()
 export class UserService {
@@ -110,5 +111,12 @@ export class UserService {
       this.customCacheService.delValue(refreshTokenRedisKey),
       this.modifyById(userId, { fcmToken: null }),
     ]);
+  }
+
+  async createWithdraw(
+    user: DecodedUserToken,
+    body: PostUserWithdrawRequestDto,
+  ) {
+    return;
   }
 }

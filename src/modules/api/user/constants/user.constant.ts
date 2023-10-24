@@ -9,3 +9,4 @@ export const USER_NICKNAME_LENGTH = 20;
 export const USER_EMAIL_LENGTH = 50;
 export const USER_PROFILE_IMAGE_KEY_LENGTH = 100;
 export const USER_SNS_ID_LENGTH = 200;
+export const USER_WITHDRAW_REASON_LENGTH = 200;

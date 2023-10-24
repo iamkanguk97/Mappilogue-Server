@@ -62,4 +62,8 @@ export const UserExceptionCode = {
     'FCM Token을 등록해주세요.',
   ),
   InvalidFcmToken: setExceptionCode('1019', '유효하지 않은 FCM Token입니다.'),
+  WithdrawReasonLengthError: setExceptionCode(
+    '1020',
+    '회원탈퇴 사유는 최대 200자까지 입력 가능합니다.',
+  ),
 };
