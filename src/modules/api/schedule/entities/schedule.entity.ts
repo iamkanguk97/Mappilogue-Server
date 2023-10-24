@@ -12,6 +12,7 @@ import {
 import { ColorEntity } from '../../color/entities/color.entity';
 import { setCheckColumnByValue } from 'src/helpers/common.helper';
 import { ScheduleAreaEntity } from './schedule-area.entity';
+import { ScheduleDto } from '../dtos/schedule.dto';
 
 @Entity('Schedule')
 export class ScheduleEntity extends DefaultColumnType {

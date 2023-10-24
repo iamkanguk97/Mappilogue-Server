@@ -77,4 +77,7 @@ export const ScheduleExceptionCode = {
     '2019',
     '일정 장소의 날짜는 일정의 시작날짜와 종료날짜 사이의 날짜여야 합니다.',
   ),
+  ScheduleIdEmpty: setExceptionCode('2020', '일정 아이디를 입력해주세요.'),
+  ScheduleNotExist: setExceptionCode('2021', '존재하지 않는 일정입니다.'),
+  ScheduleNotMine: setExceptionCode('2022', '본인의 스케줄이 아닙니다.'),
 };

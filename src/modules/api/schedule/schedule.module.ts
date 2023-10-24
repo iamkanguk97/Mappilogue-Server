@@ -7,6 +7,7 @@ import { ScheduleAreaRepotory } from './repositories/schedule-area.repository';
 import { NotificationModule } from 'src/modules/core/notification/notification.module';
 import { UserModule } from '../user/user.module';
 import { UserAlarmHistoryRepository } from '../user/repositories/user-alarm-history.repository';
+import { ScheduleHelper } from './helpers/schedule.helper';
 
 @Module({
   imports: [
@@ -19,6 +20,6 @@ import { UserAlarmHistoryRepository } from '../user/repositories/user-alarm-hist
     ]),
   ],
   controllers: [ScheduleController],
-  providers: [ScheduleService],
+  providers: [ScheduleService, ScheduleHelper],
 })
 export class ScheduleModule {}
