@@ -23,7 +23,7 @@ export class DefaultColumnType {
   @UpdateDateColumn({
     type: 'timestamp',
   })
-  updatedAt: Date;
+  updatedAt?: Date | undefined;
 
   @DeleteDateColumn({
     type: 'timestamp',
