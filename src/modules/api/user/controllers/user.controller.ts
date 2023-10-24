@@ -16,6 +16,7 @@ import { TokenRefreshResponseDto } from '../dtos/token-refresh-response.dto';
 import { LoginOrSignUpResponseDto } from '../dtos/login-or-sign-up-response.dto';
 import { UserSocialFactory } from '../factories/user-social.factory';
 import { Public } from 'src/modules/core/auth/decorators/auth.decorator';
+import { UserId } from '../decorators/user-id.decorator';
 
 @Controller('users')
 export class UserController {
@@ -64,8 +65,11 @@ export class UserController {
     });
   }
 
-  async logout() {
-    return;
+  @Post('logout')
+  @HttpCode(HttpStatus.OK)
+  async logout(@UserId() userId: number): Promise<ResponseEntity<undefined>> {
+    await this.userService.logout(userId);
+    return ResponseEntity.OK(HttpStatus.OK);
   }
 
   async withdraw() {
