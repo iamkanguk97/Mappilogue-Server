@@ -21,11 +21,13 @@ export class DefaultColumnType {
   createdAt: Date;
 
   @UpdateDateColumn({
+    nullable: true,
     type: 'timestamp',
   })
   updatedAt?: Date | undefined;
 
   @DeleteDateColumn({
+    nullable: true,
     type: 'timestamp',
   })
   deletedAt?: Date | undefined;
