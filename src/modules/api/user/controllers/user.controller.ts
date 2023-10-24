@@ -52,10 +52,10 @@ export class UserController {
   @Public()
   @Post('token-refresh')
   @HttpCode(HttpStatus.CREATED)
-  async tokenRefresh(
+  async postTokenRefresh(
     @Body() body: TokenRefreshRequestDto,
   ): Promise<ResponseEntity<TokenRefreshResponseDto>> {
-    const result = await this.userService.tokenRefresh(body.refreshToken);
+    const result = await this.userService.createTokenRefresh(body.refreshToken);
     return ResponseEntity.OK_WITH(HttpStatus.CREATED, result);
   }
 

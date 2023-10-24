@@ -61,8 +61,7 @@ export class JwtHelper {
     refreshTokenPayload?: CustomJwtPayload | undefined,
   ): boolean {
     return (
-      !_.isNil(refreshTokenPayload) &&
-      !_.isNil(refreshTokenPayload.userId) &&
+      !_.isNil(refreshTokenPayload?.userId) &&
       refreshTokenPayload.sub === TokenTypeEnum.REFRESH
     );
   }
