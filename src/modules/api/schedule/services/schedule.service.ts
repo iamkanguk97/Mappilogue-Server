@@ -6,7 +6,7 @@ import { ScheduleRepository } from '../repositories/schedule.repository';
 import { checkBetweenDatesWithNoMoment } from 'src/helpers/date.helper';
 import { ScheduleExceptionCode } from 'src/common/exception-code/schedule.exception-code';
 import { ScheduleAreaRepotory } from '../repositories/schedule-area.repository';
-import { CheckColumnEnum } from 'src/constants/enum';
+import { CheckColumnEnum, StatusColumnEnum } from 'src/constants/enum';
 import { UserProfileService } from '../../user-profile/services/user-profile.service';
 import { UserService } from '../../user/services/user.service';
 import { UserProfileHelper } from '../../user-profile/helpers/user-profile.helper';
@@ -14,6 +14,7 @@ import { UserExceptionCode } from 'src/common/exception-code/user.exception-code
 import { NotificationService } from 'src/modules/core/notification/services/notification.service';
 import { UserHelper } from '../../user/helpers/user.helper';
 import { UserAlarmHistoryRepository } from '../../user/repositories/user-alarm-history.repository';
+import { ScheduleEntity } from '../entities/schedule.entity';
 
 @Injectable()
 export class ScheduleService {
@@ -55,6 +56,10 @@ export class ScheduleService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async removeSchedule(userId: number, scheduleId: number): Promise<void> {
+    await this.scheduleRepository.delete({ userId, id: scheduleId });
   }
 
   async createScheduleArea(
@@ -134,5 +139,14 @@ export class ScheduleService {
         console.log(err);
       }
     }
+  }
+
+  async findScheduleById(scheduleId: number): Promise<ScheduleEntity> {
+    return this.scheduleRepository.findOne({
+      where: {
+        id: scheduleId,
+        status: StatusColumnEnum.ACTIVE,
+      },
+    });
   }
 }

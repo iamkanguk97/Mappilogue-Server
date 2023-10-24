@@ -1,8 +1,18 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+} from '@nestjs/common';
 import { UserId } from '../../user/decorators/user-id.decorator';
 import { PostScheduleRequestDto } from '../dtos/post-schedule-request.dto';
 import { ScheduleService } from '../services/schedule.service';
 import { ResponseEntity } from 'src/common/response-entity';
+import { ScheduleValidationPipe } from '../pipes/schedule-validation.pipe';
+import { ScheduleDto } from '../dtos/schedule.dto';
 
 @Controller('schedules')
 export class ScheduleController {
@@ -16,5 +26,14 @@ export class ScheduleController {
   ): Promise<ResponseEntity<any>> {
     const result = await this.scheduleService.createSchedule(userId, body);
     return ResponseEntity.OK_WITH(HttpStatus.CREATED, result);
+  }
+
+  @Delete('/:scheduleId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteSchedule(
+    @UserId() userId: number,
+    @Param(ScheduleValidationPipe) schedule: ScheduleDto,
+  ): Promise<void> {
+    await this.scheduleService.removeSchedule(userId, schedule._id);
   }
 }
