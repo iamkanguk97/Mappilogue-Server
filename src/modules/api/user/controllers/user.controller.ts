@@ -77,7 +77,7 @@ export class UserController {
 
   @Post('withdrawal')
   @HttpCode(HttpStatus.OK)
-  async withdraw(
+  async postWithdraw(
     @User() user: DecodedUserToken,
     @Body() body: PostUserWithdrawRequestDto,
   ): Promise<ResponseEntity<undefined>> {

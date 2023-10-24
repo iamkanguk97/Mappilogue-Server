@@ -16,11 +16,19 @@ import { LoginOrSignUpEnum } from '../constants/user.enum';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 import { DecodedUserToken, ProcessedSocialKakaoInfo } from '../types';
 import { PostUserWithdrawRequestDto } from '../dtos/post-user-withdraw-request.dto';
+import { UserWithdrawReasonRepository } from '../repositories/user-withdraw-reason.repository';
+import { decryptEmail } from 'src/helpers/crypt.helper';
+import * as _ from 'lodash';
+import {
+  ImageBuilderTypeEnum,
+  MulterBuilder,
+} from 'src/common/multer/multer.builder';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly userRepository: UserRepository,
+    private readonly userWithdrawReasonRepository: UserWithdrawReasonRepository,
     private readonly userHelper: UserHelper,
     private readonly authService: AuthService,
     private readonly jwtService: JwtService,
@@ -116,7 +124,24 @@ export class UserService {
   async createWithdraw(
     user: DecodedUserToken,
     body: PostUserWithdrawRequestDto,
-  ) {
-    return;
+  ): Promise<void> {
+    const refreshTokenRedisKey = this.jwtHelper.getRefreshTokenRedisKey(
+      user.id,
+    );
+    user.email = decryptEmail(user.email);
+
+    await Promise.all([
+      this.userRepository.delete({ id: user.id }),
+      this.customCacheService.delValue(refreshTokenRedisKey),
+      this.userWithdrawReasonRepository.save(body.toEntity(user)),
+    ]);
+
+    if (!_.isNil(user.profileImageKey)) {
+      const imageDeleteBuilder = new MulterBuilder(
+        ImageBuilderTypeEnum.DELETE,
+        user.id,
+      );
+      await imageDeleteBuilder.delete(user.profileImageKey);
+    }
   }
 }
