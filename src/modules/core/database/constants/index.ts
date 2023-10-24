@@ -3,6 +3,7 @@ import { ScheduleAreaEntity } from 'src/modules/api/schedule/entities/schedule-a
 import { ScheduleEntity } from 'src/modules/api/schedule/entities/schedule.entity';
 import { UserAlarmHistoryEntity } from 'src/modules/api/user/entities/user-alarm-history.entity';
 import { UserAlarmSettingEntity } from 'src/modules/api/user/entities/user-alarm-setting.entity';
+import { UserWithdrawReasonEntity } from 'src/modules/api/user/entities/user-withdraw-reason.entity';
 import { UserEntity } from 'src/modules/api/user/entities/user.entity';
 
 export const DATABASE_MODELS = [
@@ -10,6 +11,7 @@ export const DATABASE_MODELS = [
   UserEntity,
   UserAlarmSettingEntity,
   UserAlarmHistoryEntity,
+  UserWithdrawReasonEntity,
   ScheduleEntity,
   ScheduleAreaEntity,
 ];

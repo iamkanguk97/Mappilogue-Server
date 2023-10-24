@@ -9,6 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { JwtHelper } from 'src/modules/core/auth/helpers/jwt.helper';
 import { UserAlarmSettingRepository } from './repositories/user-alarm-setting.repository';
 import { UserAlarmHistoryRepository } from './repositories/user-alarm-history.repository';
+import { UserWithdrawReasonRepository } from './repositories/user-withdraw-reason.repository';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { UserAlarmHistoryRepository } from './repositories/user-alarm-history.re
       UserRepository,
       UserAlarmSettingRepository,
       UserAlarmHistoryRepository,
+      UserWithdrawReasonRepository,
     ]),
     AuthModule,
   ],
