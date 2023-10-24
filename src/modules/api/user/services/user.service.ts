@@ -103,4 +103,12 @@ export class UserService {
   ): Promise<void> {
     return await this.userRepository.updateById(userId, properties);
   }
+
+  async logout(userId: number): Promise<void> {
+    const refreshTokenRedisKey = this.jwtHelper.getRefreshTokenRedisKey(userId);
+    await Promise.all([
+      this.customCacheService.delValue(refreshTokenRedisKey),
+      this.modifyById(userId, { fcmToken: null }),
+    ]);
+  }
 }
