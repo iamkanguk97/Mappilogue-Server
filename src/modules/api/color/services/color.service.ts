@@ -6,6 +6,6 @@ import { ColorEntity } from '../entities/color.entity';
 export class ColorService {
   async findColorList(): Promise<ColorDto[]> {
     const colors = await ColorEntity.selectColorList();
-    return ColorEntity.toDto(colors);
+    return ColorDto.of(colors);
   }
 }
