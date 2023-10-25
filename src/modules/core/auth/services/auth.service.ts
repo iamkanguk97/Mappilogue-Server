@@ -1,14 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { AuthHelper } from '../helpers/auth.helper';
 import { JwtHelper } from '../helpers/jwt.helper';
 import { TokenDto } from 'src/modules/api/user/dtos/token.dto';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private readonly authHelper: AuthHelper,
-    private readonly jwtHelper: JwtHelper,
-  ) {}
+  constructor(private readonly jwtHelper: JwtHelper) {}
 
   async setUserToken(userId: number): Promise<TokenDto> {
     const accessToken = this.jwtHelper.generateAccessToken(userId);

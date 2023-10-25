@@ -28,7 +28,7 @@ export class UserController {
   @Public()
   @Post('social-login')
   @HttpCode(HttpStatus.CREATED)
-  async loginOrSignUp(
+  async postLoginOrSignUp(
     @Body() body: LoginOrSignUpRequestDto,
   ): Promise<ResponseEntity<LoginOrSignUpResponseDto>> {
     const userSocialFactory = new UserSocialFactory(
@@ -38,10 +38,11 @@ export class UserController {
 
     const socialId = await userSocialFactory.validateSocialAccessToken();
     const user = await this.userService.findOneBySnsId(socialId);
+
     if (_.isNil(user)) {
-      const signUpResult = await this.userService.signUp(
+      const signUpResult = await this.userService.createSignUp(
         userSocialFactory,
-        body.fcmToken,
+        body,
       );
       return ResponseEntity.OK_WITH(HttpStatus.CREATED, signUpResult);
     }

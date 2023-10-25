@@ -15,9 +15,13 @@ import {
 import { InternalServerExceptionCode } from 'src/common/exception-code/internal-server.exception-code';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 import { SocialFactoryInterface, SocialKakaoDataInfo } from '../types';
-import { USER_DEFAULT_PROFILE_IMAGE } from 'src/modules/api/user/constants/user.constant';
+import {
+  USER_DEFAULT_NICKNAME_PREFIX,
+  USER_DEFAULT_PROFILE_IMAGE,
+} from 'src/modules/api/user/constants/user.constant';
 import { UserSnsTypeEnum } from 'src/modules/api/user/constants/user.enum';
 import { ProcessedSocialKakaoInfo } from 'src/modules/api/user/types';
+import { v4 as uuidv4 } from 'uuid';
 
 export class SocialKakaoFactory implements SocialFactoryInterface {
   private readonly httpService = new HttpService();
@@ -46,6 +50,7 @@ export class SocialKakaoFactory implements SocialFactoryInterface {
 
   async getUserSocialInfo(): Promise<ProcessedSocialKakaoInfo> {
     const requestHeader = generateBearerHeader(this.socialAccessToken);
+
     const result = await lastValueFrom<SocialKakaoDataInfo>(
       this.httpService.get(KAKAO_GET_USER_INFO_URL, requestHeader).pipe(
         map((res) => res.data),
@@ -90,14 +95,16 @@ export class SocialKakaoFactory implements SocialFactoryInterface {
     return {
       snsId: kakaoInfo.id.toString(),
       snsType: this.snsType,
-      nickname: kakaoProfile.nickname,
+      nickname:
+        kakaoProfile.nickname ??
+        `${USER_DEFAULT_NICKNAME_PREFIX}-${uuidv4.substr(0, 10)}`,
       email: kakaoAccount.email,
       profileImageUrl: kakaoProfile.is_default_image
         ? USER_DEFAULT_PROFILE_IMAGE
         : kakaoProfile.profile_image_url,
-      age: kakaoAccount.age_range ?? null,
-      gender: kakaoAccount.gender ?? null,
-      birthday: kakaoAccount.birthday ?? null,
+      age: kakaoAccount?.age_range,
+      gender: kakaoAccount?.gender,
+      birthday: kakaoAccount?.birthday,
     };
   }
 }

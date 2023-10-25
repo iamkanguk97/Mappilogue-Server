@@ -7,15 +7,15 @@ export class TokenDto {
     this.refreshToken = refreshToken;
   }
 
-  get getAccessToken() {
+  get getAccessToken(): string {
     return this.accessToken;
   }
 
-  get getRefreshToken() {
+  get getRefreshToken(): string {
     return this.refreshToken;
   }
 
-  static from(accessToken: string, refreshToken: string) {
+  static from(accessToken: string, refreshToken: string): TokenDto {
     return new TokenDto(accessToken, refreshToken);
   }
 }

@@ -23,12 +23,16 @@ import {
   ImageBuilderTypeEnum,
   MulterBuilder,
 } from 'src/common/multer/multer.builder';
+import { LoginOrSignUpRequestDto } from '../dtos/login-or-sign-up-request.dto';
+import { UserAlarmSettingRepository } from '../repositories/user-alarm-setting.repository';
+import { UserAlarmSettingEntity } from '../entities/user-alarm-setting.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly userWithdrawReasonRepository: UserWithdrawReasonRepository,
+    private readonly userAlarmSettingRepository: UserAlarmSettingRepository,
     private readonly userHelper: UserHelper,
     private readonly authService: AuthService,
     private readonly jwtService: JwtService,
@@ -36,18 +40,22 @@ export class UserService {
     private readonly customCacheService: CustomCacheService,
   ) {}
 
-  async signUp(
+  async createSignUp(
     userSocialFactory: SocialFactoryType,
-    fcmToken?: string | undefined,
+    body: LoginOrSignUpRequestDto,
   ): Promise<LoginOrSignUpResponseDto> {
+    // TODO: type을 ProcessedSocialAppleInfo도 추가해야함.
     const socialUserInfo = (await userSocialFactory.getUserSocialInfo()) as
       | ProcessedSocialKakaoInfo
       | any;
 
-    const newUserId = await this.create(socialUserInfo, fcmToken);
-    console.log(newUserId);
+    // TODO: Apple Login 구현 시 repository로 전달하는 parameter entity-from 구현
+    const newUserId = await this.createUser(socialUserInfo, body.fcmToken);
     const newTokens = await this.authService.setUserToken(newUserId);
-    console.log(newTokens);
+    await this.userAlarmSettingRepository.save(
+      UserAlarmSettingEntity.from(body.isAlarmAccept),
+    );
+
     return LoginOrSignUpResponseDto.from(
       LoginOrSignUpEnum.SIGNUP,
       newUserId,
@@ -59,6 +67,12 @@ export class UserService {
     user: UserEntity,
     fcmToken?: string | undefined,
   ): Promise<LoginOrSignUpResponseDto> {
+    /**
+     * @comment 로그인에서는 isAlarmAccept property를 무시한다 (알림 업데이트 X)
+     */
+
+    await this.modifyById(user.id, { fcmToken });
+
     return LoginOrSignUpResponseDto.from(
       LoginOrSignUpEnum.LOGIN,
       user.id,
@@ -96,7 +110,7 @@ export class UserService {
     return await this.userRepository.selectUserBySnsId(socialId);
   }
 
-  async create(
+  async createUser(
     socialUserInfo: ProcessedSocialKakaoInfo,
     fcmToken?: string | undefined,
   ): Promise<number> {
