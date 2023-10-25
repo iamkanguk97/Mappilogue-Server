@@ -1,3 +1,4 @@
+import { UserHelper } from './../../../api/user/helpers/user.helper';
 import { encryptEmail } from 'src/helpers/crypt.helper';
 import {
   BadRequestException,
@@ -25,6 +26,7 @@ export class AuthGuard implements CanActivate {
     private readonly jwtService: JwtService,
     private readonly customConfigService: CustomConfigService,
     private readonly userService: UserService,
+    private readonly userHelper: UserHelper,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -52,9 +54,8 @@ export class AuthGuard implements CanActivate {
       })) as CustomJwtPayload;
 
       const findUser = await this.userService.findOneById(payload.userId);
-      if (!findUser || findUser.status !== 'ACTIVE') {
-        throw new ForbiddenException('탈퇴한 유저입니다.');
-        // throw new BadRequestException('탈퇴한 유저입니다.');
+      if (!this.userHelper.isUserValidWithModel(findUser)) {
+        throw new ForbiddenException(UserExceptionCode.NotExistUser);
       }
 
       request.user = {
@@ -62,7 +63,7 @@ export class AuthGuard implements CanActivate {
         nickname: findUser.nickname,
         email: encryptEmail(findUser.email),
         profileImageUrl: findUser.profileImageUrl,
-        profileImageKey: findUser.profileImageKey,
+        profileImageKey: findUser.profileImageKey ?? '',
         snsType: findUser.snsType,
       };
 
