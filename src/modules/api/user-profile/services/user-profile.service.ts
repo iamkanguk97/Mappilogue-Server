@@ -27,7 +27,7 @@ export class UserProfileService {
     userId: number,
     body: PatchUserNicknameRequestDto,
   ): Promise<void> {
-    await this.userService.modifyById(userId, body.toPartialUserEntity());
+    await this.userService.modifyById(userId, { nickname: body.nickname });
   }
 
   async modifyUserProfileImage(
