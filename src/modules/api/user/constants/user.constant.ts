@@ -1,6 +1,8 @@
 export const USER_DEFAULT_PROFILE_IMAGE =
   'https://mappilogue-bucket.s3.ap-northeast-2.amazonaws.com/image/default-image/mappilogue-default-image.jpg';
 
+export const USER_DEFAULT_NICKNAME_PREFIX = '사용자';
+
 export const USER_SNS_TYPE_LENGTH = 10;
 export const USER_GENDER_LENGTH = 10;
 export const USER_AGE_LENGTH = 10;

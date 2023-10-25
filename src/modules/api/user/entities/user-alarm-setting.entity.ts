@@ -34,6 +34,17 @@ export class UserAlarmSettingEntity extends DefaultColumnType {
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
   user: UserEntity;
 
+  static from(isAlarmAccept: CheckColumnEnum): UserAlarmSettingEntity {
+    const userAlarmSetting = new UserAlarmSettingEntity();
+
+    userAlarmSetting.isTotalAlarm = isAlarmAccept;
+    userAlarmSetting.isNoticeAlarm = isAlarmAccept;
+    userAlarmSetting.isMarketingAlarm = isAlarmAccept;
+    userAlarmSetting.isScheduleReminderAlarm = isAlarmAccept;
+
+    return userAlarmSetting;
+  }
+
   static toDto(
     userId: number,
     userAlarmSettingEntity: UserAlarmSettingEntity,

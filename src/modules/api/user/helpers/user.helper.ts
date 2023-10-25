@@ -6,14 +6,12 @@ import { JwtHelper } from 'src/modules/core/auth/helpers/jwt.helper';
 import { CustomCacheService } from 'src/modules/core/custom-cache/services/custom-cache.service';
 import { CustomJwtPayload } from 'src/modules/core/auth/types';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
-import { NotificationService } from 'src/modules/core/notification/services/notification.service';
 
 @Injectable()
 export class UserHelper {
   constructor(
     private readonly jwtHelper: JwtHelper,
     private readonly customCacheService: CustomCacheService,
-    private readonly notificationService: NotificationService,
   ) {}
 
   isUserValidWithModel(user: UserEntity): boolean {
