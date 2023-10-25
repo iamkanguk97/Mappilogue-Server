@@ -22,8 +22,8 @@ export class UserEntity extends DefaultColumnType {
   @Column('varchar', { length: USER_EMAIL_LENGTH, unique: true })
   email: string;
 
-  @Column('text', { nullable: true })
-  profileImageUrl?: string | undefined;
+  @Column('text')
+  profileImageUrl: string;
 
   @Column('varchar', {
     nullable: true,
