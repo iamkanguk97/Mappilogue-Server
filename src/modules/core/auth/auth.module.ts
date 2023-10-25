@@ -2,7 +2,6 @@ import { CustomCacheModule } from './../custom-cache/custom-cache.module';
 import { Module } from '@nestjs/common';
 import { AuthService } from './services/auth.service';
 import { CustomHttpModule } from '../http/custom-http.module';
-import { AuthHelper } from './helpers/auth.helper';
 import {
   APPLE_PUBLIC_KEY_URL,
   JWKS_CLIENT_TOKEN,
@@ -19,7 +18,6 @@ import { JwtModule } from '@nestjs/jwt';
   ],
   providers: [
     AuthService,
-    AuthHelper,
     JwtHelper,
     {
       provide: JWKS_CLIENT_TOKEN,
