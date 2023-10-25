@@ -34,8 +34,6 @@ export class UserHelper {
     refreshPayload: CustomJwtPayload,
     refreshToken: string,
   ): Promise<boolean> {
-    console.log(user);
-    console.log(refreshPayload);
     return (
       this.jwtHelper.isRefreshTokenPayloadValid(refreshPayload) &&
       this.isUserValidWithModel(user) &&

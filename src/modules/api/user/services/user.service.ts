@@ -80,11 +80,13 @@ export class UserService {
     );
   }
 
-  async tokenRefresh(refreshToken: string): Promise<TokenRefreshResponseDto> {
+  async createTokenRefresh(
+    refreshToken: string,
+  ): Promise<TokenRefreshResponseDto> {
     const refreshPayload = this.jwtService.decode(
       refreshToken,
     ) as CustomJwtPayload;
-    const checkUserStatus = await this.findOneById(refreshPayload.userId);
+    const checkUserStatus = await this.findOneById(refreshPayload?.userId);
 
     const isUserRefreshTokenValidResult =
       await this.userHelper.isUserRefreshTokenValid(
@@ -102,7 +104,9 @@ export class UserService {
     return TokenRefreshResponseDto.from(userId, result);
   }
 
-  async findOneById(userId: number): Promise<UserEntity | undefined> {
+  async findOneById(
+    userId?: number | undefined,
+  ): Promise<UserEntity | undefined> {
     return await this.userRepository.selectUserById(userId);
   }
 
