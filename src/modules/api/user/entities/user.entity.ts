@@ -13,6 +13,7 @@ import {
   USER_SNS_TYPE_LENGTH,
 } from '../constants/user.constant';
 import { ScheduleEntity } from '../../schedule/entities/schedule.entity';
+import { MarkCategoryEntity } from '../../mark/entities/mark-category.entity';
 
 @Entity('User')
 export class UserEntity extends DefaultColumnType {
@@ -69,4 +70,9 @@ export class UserEntity extends DefaultColumnType {
     cascade: true,
   })
   schedules: ScheduleEntity[];
+
+  @OneToMany(() => MarkCategoryEntity, (markCategory) => markCategory.user, {
+    cascade: true,
+  })
+  markCategories: MarkCategoryEntity[];
 }
