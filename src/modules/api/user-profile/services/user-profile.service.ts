@@ -11,7 +11,6 @@ import { UserEntity } from '../../user/entities/user.entity';
 import { PatchUserProfileImageResponseDto } from '../dtos/patch-user-profile-image-response.dto';
 import { USER_DEFAULT_PROFILE_IMAGE } from '../../user/constants/user.constant';
 import { UserAlarmSettingRepository } from '../../user/repositories/user-alarm-setting.repository';
-import { UserAlarmSettingEntity } from '../../user/entities/user-alarm-setting.entity';
 import { UserAlarmSettingDto } from '../../user/dtos/user-alarm-setting.dto';
 import { PutUserAlarmSettingRequestDto } from '../dtos/put-user-alarm-setting-request.dto';
 

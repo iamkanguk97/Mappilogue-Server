@@ -53,7 +53,7 @@ export class UserService {
     const newUserId = await this.createUser(socialUserInfo, body.fcmToken);
     const newTokens = await this.authService.setUserToken(newUserId);
     await this.userAlarmSettingRepository.save(
-      UserAlarmSettingEntity.from(body.isAlarmAccept),
+      UserAlarmSettingEntity.from(newUserId, body.isAlarmAccept),
     );
 
     return LoginOrSignUpResponseDto.from(
