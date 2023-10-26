@@ -1,0 +1,1 @@
+export const MARK_CATEGORY_TITLE_LENGTH = 50;
