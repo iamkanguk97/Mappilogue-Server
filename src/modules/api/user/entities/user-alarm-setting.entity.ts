@@ -44,17 +44,4 @@ export class UserAlarmSettingEntity extends DefaultColumnType {
 
     return userAlarmSetting;
   }
-
-  static toDto(
-    userId: number,
-    userAlarmSettingEntity: UserAlarmSettingEntity,
-  ): UserAlarmSettingDto {
-    return new UserAlarmSettingDto(
-      userId,
-      userAlarmSettingEntity.isTotalAlarm,
-      userAlarmSettingEntity.isNoticeAlarm,
-      userAlarmSettingEntity.isMarketingAlarm,
-      userAlarmSettingEntity.isScheduleReminderAlarm,
-    );
-  }
 }

@@ -1,4 +1,5 @@
 import { CheckColumnEnum } from 'src/constants/enum';
+import { UserAlarmSettingEntity } from '../entities/user-alarm-setting.entity';
 
 export class UserAlarmSettingDto {
   private readonly userId: number;
@@ -7,7 +8,7 @@ export class UserAlarmSettingDto {
   private readonly isMarketingAlarm: CheckColumnEnum;
   private readonly isScheduleReminderAlarm: CheckColumnEnum;
 
-  constructor(
+  private constructor(
     userId: number,
     isTotalAlarm: CheckColumnEnum,
     isNoticeAlarm: CheckColumnEnum,
@@ -19,6 +20,19 @@ export class UserAlarmSettingDto {
     this.isNoticeAlarm = isNoticeAlarm;
     this.isMarketingAlarm = isMarketingAlarm;
     this.isScheduleReminderAlarm = isScheduleReminderAlarm;
+  }
+
+  static from(
+    userId: number,
+    userAlarmSettingEntity: UserAlarmSettingEntity,
+  ): UserAlarmSettingDto {
+    return new UserAlarmSettingDto(
+      userId,
+      userAlarmSettingEntity.isTotalAlarm,
+      userAlarmSettingEntity.isNoticeAlarm,
+      userAlarmSettingEntity.isMarketingAlarm,
+      userAlarmSettingEntity.isScheduleReminderAlarm,
+    );
   }
 
   get getIsTotalAlarm(): CheckColumnEnum {
