@@ -79,7 +79,7 @@ export class UserProfileService {
   ): Promise<void> {
     await this.userAlarmSettingRepository.updateUserAlarmSettingById(
       userId,
-      PutUserAlarmSettingRequestDto.toEntity(body),
+      body.toEntity(),
     );
   }
 }

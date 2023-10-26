@@ -25,6 +25,7 @@ import {
 } from 'src/common/multer/multer.builder';
 import { LoginOrSignUpRequestDto } from '../dtos/login-or-sign-up-request.dto';
 import { UserAlarmSettingRepository } from '../repositories/user-alarm-setting.repository';
+import { UserProfileHelper } from '../../user-profile/helpers/user-profile.helper';
 import { UserAlarmSettingEntity } from '../entities/user-alarm-setting.entity';
 
 @Injectable()
@@ -34,6 +35,7 @@ export class UserService {
     private readonly userWithdrawReasonRepository: UserWithdrawReasonRepository,
     private readonly userAlarmSettingRepository: UserAlarmSettingRepository,
     private readonly userHelper: UserHelper,
+    private readonly userProfileHelper: UserProfileHelper,
     private readonly authService: AuthService,
     private readonly jwtService: JwtService,
     private readonly jwtHelper: JwtHelper,
@@ -53,7 +55,7 @@ export class UserService {
     const newUserId = await this.createUser(socialUserInfo, body.fcmToken);
     const newTokens = await this.authService.setUserToken(newUserId);
     await this.userAlarmSettingRepository.save(
-      UserAlarmSettingEntity.from(newUserId, body.isAlarmAccept),
+      UserAlarmSettingEntity.fromValue(newUserId, body.isAlarmAccept),
     );
 
     return LoginOrSignUpResponseDto.from(

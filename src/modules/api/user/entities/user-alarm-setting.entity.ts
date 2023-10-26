@@ -5,7 +5,6 @@ import {
 import { DefaultColumnType } from 'src/types/default-column.type';
 import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import { UserEntity } from './user.entity';
-import { UserAlarmSettingDto } from '../dtos/user-alarm-setting.dto';
 
 @Entity('UserAlarmSetting')
 export class UserAlarmSettingEntity extends DefaultColumnType {
@@ -38,9 +37,22 @@ export class UserAlarmSettingEntity extends DefaultColumnType {
   user: UserEntity;
 
   static from(
-    userId: number,
-    isAlarmAccept: CheckColumnEnum,
+    isTotalAlarm: CheckColumnEnum,
+    isNoticeAlarm: CheckColumnEnum,
+    isMarketingAlarm: CheckColumnEnum,
+    isScheduleReminderAlarm: CheckColumnEnum,
   ): UserAlarmSettingEntity {
+    const userAlarmSetting = new UserAlarmSettingEntity();
+
+    userAlarmSetting.isTotalAlarm = isTotalAlarm;
+    userAlarmSetting.isNoticeAlarm = isNoticeAlarm;
+    userAlarmSetting.isMarketingAlarm = isMarketingAlarm;
+    userAlarmSetting.isScheduleReminderAlarm = isScheduleReminderAlarm;
+
+    return userAlarmSetting;
+  }
+
+  static fromValue(userId: number, isAlarmAccept: CheckColumnEnum) {
     const userAlarmSetting = new UserAlarmSettingEntity();
 
     userAlarmSetting.userId = userId;

@@ -36,15 +36,12 @@ export class PutUserAlarmSettingRequestDto {
   )
   isScheduleReminderAlarm: CheckColumnEnum;
 
-  static toEntity(body: PutUserAlarmSettingRequestDto): UserAlarmSettingEntity {
-    const userAlarmSettingEntity = new UserAlarmSettingEntity();
-
-    userAlarmSettingEntity.isTotalAlarm = body.isTotalAlarm;
-    userAlarmSettingEntity.isNoticeAlarm = body.isNoticeAlarm;
-    userAlarmSettingEntity.isMarketingAlarm = body.isMarketingAlarm;
-    userAlarmSettingEntity.isScheduleReminderAlarm =
-      body.isScheduleReminderAlarm;
-
-    return userAlarmSettingEntity;
+  toEntity(): UserAlarmSettingEntity {
+    return UserAlarmSettingEntity.from(
+      this.isTotalAlarm,
+      this.isNoticeAlarm,
+      this.isMarketingAlarm,
+      this.isScheduleReminderAlarm,
+    );
   }
 }
