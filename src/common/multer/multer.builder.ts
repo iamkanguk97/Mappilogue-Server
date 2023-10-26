@@ -120,8 +120,8 @@ export class MulterBuilder {
     });
   }
 
-  async delete(imageKey?: string | undefined): Promise<void> {
-    if (!_.isNil(imageKey)) {
+  async delete(imageKey: string): Promise<void> {
+    if (imageKey !== '') {
       const awsS3 = this.s3 as AWS.S3;
       await awsS3
         .deleteObject({

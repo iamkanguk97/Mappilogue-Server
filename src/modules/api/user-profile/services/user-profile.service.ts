@@ -32,12 +32,12 @@ export class UserProfileService {
   async modifyUserProfileImage(
     user: DecodedUserToken,
     imageFiles: Express.MulterS3.File[],
-  ): Promise<PatchUserProfileImageResponseDto> {
+  ): Promise<PatchUserProfileImageResponseDto | void> {
     const [profileImageFile] = imageFiles || [];
 
     const updateProfileImageParam = {
-      profileImageUrl: profileImageFile?.location || USER_DEFAULT_PROFILE_IMAGE,
-      profileImageKey: profileImageFile?.key || null,
+      profileImageUrl: profileImageFile?.location ?? USER_DEFAULT_PROFILE_IMAGE,
+      profileImageKey: profileImageFile?.key ?? null,
     } as Partial<UserEntity>;
 
     const imageDeleteBuilder = new MulterBuilder(
@@ -50,8 +50,9 @@ export class UserProfileService {
     await queryRunner.startTransaction();
 
     try {
-      await imageDeleteBuilder.delete(user.profileImageKey);
       await this.userService.modifyById(user.id, updateProfileImageParam);
+      await imageDeleteBuilder.delete(user.profileImageKey);
+
       await queryRunner.commitTransaction();
     } catch (err) {
       await queryRunner.rollbackTransaction();

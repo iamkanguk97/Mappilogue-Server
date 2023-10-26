@@ -54,7 +54,7 @@ export class UserProfileController {
   async patchUserProfileImage(
     @User() user: DecodedUserToken,
     @UploadedFiles() imageFiles?: Express.MulterS3.File[] | undefined,
-  ): Promise<ResponseEntity<PatchUserProfileImageResponseDto>> {
+  ): Promise<ResponseEntity<PatchUserProfileImageResponseDto | void>> {
     const result = await this.userProfileService.modifyUserProfileImage(
       user,
       imageFiles,
