@@ -1,1 +1,3 @@
+export const MARK_CATEGORY_EMPTY_SEQUENCE = 0;
+
 export const MARK_CATEGORY_TITLE_LENGTH = 50;
