@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
@@ -9,6 +10,10 @@ import {
   Put,
 } from '@nestjs/common';
 import { MarkCategoryService } from '../services/mark-category.service';
+import { UserId } from '../../user/decorators/user-id.decorator';
+import { PostMarkCategoryRequestDto } from '../dtos/post-mark-category-request.dto';
+import { ResponseEntity } from 'src/common/response-entity';
+import { PostMarkCategoryResponseDto } from '../dtos/post-mark-category-response.dto';
 
 @Controller('marks/categories')
 export class MarkCategoryController {
@@ -22,8 +27,15 @@ export class MarkCategoryController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async postMarkCategory() {
-    return;
+  async postMarkCategory(
+    @UserId() userId: number,
+    @Body() body: PostMarkCategoryRequestDto,
+  ): Promise<ResponseEntity<PostMarkCategoryResponseDto>> {
+    const result = await this.markCategoryService.createMarkCategory(
+      userId,
+      body.title,
+    );
+    return ResponseEntity.OK_WITH(HttpStatus.CREATED, result);
   }
 
   @Patch()
