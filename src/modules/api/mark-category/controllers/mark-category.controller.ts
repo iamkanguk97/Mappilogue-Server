@@ -9,6 +9,8 @@ import {
   Put,
 } from '@nestjs/common';
 import { MarkCategoryService } from '../services/mark-category.service';
+import { UserId } from '../../user/decorators/user-id.decorator';
+import { ResponseEntity } from 'src/common/response-entity';
 
 @Controller('marks/categories')
 export class MarkCategoryController {
@@ -16,8 +18,9 @@ export class MarkCategoryController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  async getMarkCategory() {
-    return;
+  async getMarkCategories(@UserId() userId: number) {
+    const result = await this.markCategoryService.findMarkCategories(userId);
+    return ResponseEntity.OK_WITH(HttpStatus.OK, result);
   }
 
   @Post()

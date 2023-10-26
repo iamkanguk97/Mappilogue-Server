@@ -6,6 +6,7 @@ import {
   CheckColumnEnum,
   StatusOrCheckColumnLengthEnum,
 } from 'src/constants/enum';
+import { MarkCategoryDto } from '../../mark-category/dtos/mark-category.dto';
 
 @Entity('MarkCategory')
 export class MarkCategoryEntity extends DefaultColumnType {
@@ -30,4 +31,16 @@ export class MarkCategoryEntity extends DefaultColumnType {
   })
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
   user: UserEntity;
+
+  static toDto(markCategories: MarkCategoryEntity[]): MarkCategoryDto[] {
+    return markCategories.map(
+      (markCategory) =>
+        new MarkCategoryDto(
+          markCategory.id,
+          markCategory.title,
+          markCategory.sequence,
+          markCategory.isMarkedInMap,
+        ),
+    );
+  }
 }
