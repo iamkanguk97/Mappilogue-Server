@@ -53,10 +53,9 @@ export class UserController {
   }
 
   @Post('logout')
-  @HttpCode(HttpStatus.OK)
-  async logout(@UserId() userId: number): Promise<ResponseEntity<undefined>> {
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async logout(@UserId() userId: number): Promise<void> {
     await this.userService.logout(userId);
-    return ResponseEntity.OK(HttpStatus.OK);
   }
 
   @Post('withdrawal')

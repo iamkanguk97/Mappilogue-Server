@@ -133,11 +133,25 @@ export class UserService {
   }
 
   async logout(userId: number): Promise<void> {
-    const refreshTokenRedisKey = this.jwtHelper.getRefreshTokenRedisKey(userId);
-    await Promise.all([
-      this.customCacheService.delValue(refreshTokenRedisKey),
-      this.modifyById(userId, { fcmToken: null }),
-    ]);
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const refreshTokenRedisKey =
+        this.jwtHelper.getRefreshTokenRedisKey(userId);
+
+      await this.customCacheService.delValue(refreshTokenRedisKey);
+      await this.modifyById(userId, { fcmToken: null });
+
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      Logger.error(`[logout] ${err}`);
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async createWithdraw(
@@ -165,6 +179,8 @@ export class UserService {
         );
         await imageDeleteBuilder.delete(user.profileImageKey);
       }
+
+      await queryRunner.commitTransaction();
     } catch (err) {
       Logger.error(`[createWithdraw] ${err}`);
       await queryRunner.rollbackTransaction();
