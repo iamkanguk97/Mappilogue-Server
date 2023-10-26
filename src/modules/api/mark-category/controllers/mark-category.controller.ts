@@ -11,8 +11,8 @@ import {
 } from '@nestjs/common';
 import { MarkCategoryService } from '../services/mark-category.service';
 import { UserId } from '../../user/decorators/user-id.decorator';
-import { PostMarkCategoryRequestDto } from '../dtos/post-mark-category-request.dto';
 import { ResponseEntity } from 'src/common/response-entity';
+import { PostMarkCategoryRequestDto } from '../dtos/post-mark-category-request.dto';
 import { PostMarkCategoryResponseDto } from '../dtos/post-mark-category-response.dto';
 import { PatchMarkCategoryTitleRequestDto } from '../dtos/patch-mark-category-title-request.dto';
 import { MarkCategoryValidationPipe } from '../pipes/mark-category-validation.pipe';
@@ -23,8 +23,9 @@ export class MarkCategoryController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  async getMarkCategory() {
-    return;
+  async getMarkCategories(@UserId() userId: number) {
+    const result = await this.markCategoryService.findMarkCategories(userId);
+    return ResponseEntity.OK_WITH(HttpStatus.OK, result);
   }
 
   @Post()
