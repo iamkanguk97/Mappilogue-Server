@@ -43,4 +43,18 @@ export class MarkCategoryEntity extends DefaultColumnType {
         ),
     );
   }
+
+  static from(
+    userId: number,
+    title: string,
+    sequence: number,
+  ): MarkCategoryEntity {
+    const markCategory = new MarkCategoryEntity();
+
+    markCategory.userId = userId;
+    markCategory.title = title;
+    markCategory.sequence = sequence;
+
+    return markCategory;
+  }
 }

@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
@@ -11,6 +12,10 @@ import {
 import { MarkCategoryService } from '../services/mark-category.service';
 import { UserId } from '../../user/decorators/user-id.decorator';
 import { ResponseEntity } from 'src/common/response-entity';
+import { PostMarkCategoryRequestDto } from '../dtos/post-mark-category-request.dto';
+import { PostMarkCategoryResponseDto } from '../dtos/post-mark-category-response.dto';
+import { PatchMarkCategoryTitleRequestDto } from '../dtos/patch-mark-category-title-request.dto';
+import { MarkCategoryValidationPipe } from '../pipes/mark-category-validation.pipe';
 
 @Controller('marks/categories')
 export class MarkCategoryController {
@@ -25,14 +30,24 @@ export class MarkCategoryController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async postMarkCategory() {
-    return;
+  async postMarkCategory(
+    @UserId() userId: number,
+    @Body() body: PostMarkCategoryRequestDto,
+  ): Promise<ResponseEntity<PostMarkCategoryResponseDto>> {
+    const result = await this.markCategoryService.createMarkCategory(
+      userId,
+      body.title,
+    );
+    return ResponseEntity.OK_WITH(HttpStatus.CREATED, result);
   }
 
-  @Patch()
+  @Patch('titles')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async patchMarkCategoryTitle() {
-    return;
+  async patchMarkCategoryTitle(
+    @UserId() userId: number,
+    @Body(MarkCategoryValidationPipe) body: PatchMarkCategoryTitleRequestDto,
+  ): Promise<void> {
+    await this.markCategoryService.modifyMarkCategoryTitle(userId, body);
   }
 
   @Delete()
