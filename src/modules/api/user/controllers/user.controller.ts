@@ -60,12 +60,11 @@ export class UserController {
   }
 
   @Post('withdrawal')
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async postWithdraw(
     @User() user: DecodedUserToken,
     @Body() body: PostUserWithdrawRequestDto,
-  ): Promise<ResponseEntity<undefined>> {
+  ): Promise<void> {
     await this.userService.createWithdraw(user, body);
-    return ResponseEntity.OK(HttpStatus.OK);
   }
 }

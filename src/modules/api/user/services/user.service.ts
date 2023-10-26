@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { UserRepository } from '../repositories/user.repository';
 import { UserEntity } from '../entities/user.entity';
 import { AuthService } from 'src/modules/core/auth/services/auth.service';
@@ -18,15 +18,14 @@ import { DecodedUserToken, ProcessedSocialKakaoInfo } from '../types';
 import { PostUserWithdrawRequestDto } from '../dtos/post-user-withdraw-request.dto';
 import { UserWithdrawReasonRepository } from '../repositories/user-withdraw-reason.repository';
 import { decryptEmail } from 'src/helpers/crypt.helper';
-import * as _ from 'lodash';
 import {
   ImageBuilderTypeEnum,
   MulterBuilder,
 } from 'src/common/multer/multer.builder';
 import { LoginOrSignUpRequestDto } from '../dtos/login-or-sign-up-request.dto';
 import { UserAlarmSettingRepository } from '../repositories/user-alarm-setting.repository';
-import { UserProfileHelper } from '../../user-profile/helpers/user-profile.helper';
 import { UserAlarmSettingEntity } from '../entities/user-alarm-setting.entity';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class UserService {
@@ -35,11 +34,11 @@ export class UserService {
     private readonly userWithdrawReasonRepository: UserWithdrawReasonRepository,
     private readonly userAlarmSettingRepository: UserAlarmSettingRepository,
     private readonly userHelper: UserHelper,
-    private readonly userProfileHelper: UserProfileHelper,
     private readonly authService: AuthService,
     private readonly jwtService: JwtService,
     private readonly jwtHelper: JwtHelper,
     private readonly customCacheService: CustomCacheService,
+    private readonly dataSource: DataSource,
   ) {}
 
   async createSignUp(
@@ -145,23 +144,33 @@ export class UserService {
     user: DecodedUserToken,
     body: PostUserWithdrawRequestDto,
   ): Promise<void> {
-    const refreshTokenRedisKey = this.jwtHelper.getRefreshTokenRedisKey(
-      user.id,
-    );
-    user.email = decryptEmail(user.email);
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    await Promise.all([
-      this.userRepository.delete({ id: user.id }),
-      this.customCacheService.delValue(refreshTokenRedisKey),
-      this.userWithdrawReasonRepository.save(body.toEntity(user)),
-    ]);
-
-    if (!_.isNil(user.profileImageKey)) {
-      const imageDeleteBuilder = new MulterBuilder(
-        ImageBuilderTypeEnum.DELETE,
+    try {
+      const refreshTokenRedisKey = this.jwtHelper.getRefreshTokenRedisKey(
         user.id,
       );
-      await imageDeleteBuilder.delete(user.profileImageKey);
+      user.email = decryptEmail(user.email);
+
+      await this.customCacheService.delValue(refreshTokenRedisKey);
+      await this.userRepository.delete({ id: user.id });
+      await this.userWithdrawReasonRepository.save(body.toEntity(user));
+
+      if (user.profileImageKey !== '') {
+        const imageDeleteBuilder = new MulterBuilder(
+          ImageBuilderTypeEnum.DELETE,
+          user.id,
+        );
+        await imageDeleteBuilder.delete(user.profileImageKey);
+      }
+    } catch (err) {
+      Logger.error(`[createWithdraw] ${err}`);
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
     }
   }
 }
