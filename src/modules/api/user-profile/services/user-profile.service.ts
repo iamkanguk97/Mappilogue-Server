@@ -32,7 +32,7 @@ export class UserProfileService {
   async modifyUserProfileImage(
     user: DecodedUserToken,
     imageFiles: Express.MulterS3.File[],
-  ): Promise<PatchUserProfileImageResponseDto | void> {
+  ): Promise<PatchUserProfileImageResponseDto> {
     const [profileImageFile] = imageFiles || [];
 
     const updateProfileImageParam = {
