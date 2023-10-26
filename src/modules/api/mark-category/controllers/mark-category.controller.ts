@@ -14,6 +14,8 @@ import { UserId } from '../../user/decorators/user-id.decorator';
 import { PostMarkCategoryRequestDto } from '../dtos/post-mark-category-request.dto';
 import { ResponseEntity } from 'src/common/response-entity';
 import { PostMarkCategoryResponseDto } from '../dtos/post-mark-category-response.dto';
+import { PatchMarkCategoryTitleRequestDto } from '../dtos/patch-mark-category-title-request.dto';
+import { MarkCategoryValidationPipe } from '../pipes/mark-category-validation.pipe';
 
 @Controller('marks/categories')
 export class MarkCategoryController {
@@ -38,10 +40,13 @@ export class MarkCategoryController {
     return ResponseEntity.OK_WITH(HttpStatus.CREATED, result);
   }
 
-  @Patch()
+  @Patch('titles')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async patchMarkCategoryTitle() {
-    return;
+  async patchMarkCategoryTitle(
+    @UserId() userId: number,
+    @Body(MarkCategoryValidationPipe) body: PatchMarkCategoryTitleRequestDto,
+  ): Promise<void> {
+    await this.markCategoryService.modifyMarkCategoryTitle(userId, body);
   }
 
   @Delete()

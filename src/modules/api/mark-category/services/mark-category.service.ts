@@ -3,6 +3,8 @@ import { MarkCategoryRepository } from '../../mark/repositories/mark-category.re
 import { DataSource } from 'typeorm';
 import { MarkCategoryEntity } from '../../mark/entities/mark-category.entity';
 import { PostMarkCategoryResponseDto } from '../dtos/post-mark-category-response.dto';
+import { PatchMarkCategoryTitleRequestDto } from '../dtos/patch-mark-category-title-request.dto';
+import { StatusColumnEnum } from 'src/constants/enum';
 
 @Injectable()
 export class MarkCategoryService {
@@ -48,5 +50,27 @@ export class MarkCategoryService {
       title,
       newMarkCategorySequenceNo,
     );
+  }
+
+  async modifyMarkCategoryTitle(
+    userId: number,
+    body: PatchMarkCategoryTitleRequestDto,
+  ): Promise<void> {
+    await this.markCategoryRepository.update(
+      {
+        id: body.markCategoryId,
+        userId,
+      },
+      { title: body.title },
+    );
+  }
+
+  async findOneById(markCategoryId: number): Promise<MarkCategoryEntity> {
+    return await this.markCategoryRepository.findOne({
+      where: {
+        id: markCategoryId,
+        status: StatusColumnEnum.ACTIVE,
+      },
+    });
   }
 }

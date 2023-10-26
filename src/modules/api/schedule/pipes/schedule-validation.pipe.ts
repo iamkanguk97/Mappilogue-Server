@@ -8,7 +8,6 @@ import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import * as _ from 'lodash';
 import { ScheduleService } from '../services/schedule.service';
-import { StatusColumnEnum } from 'src/constants/enum';
 import { ScheduleDto } from '../dtos/schedule.dto';
 import { ScheduleExceptionCode } from 'src/common/exception-code/schedule.exception-code';
 import { ScheduleHelper } from '../helpers/schedule.helper';
