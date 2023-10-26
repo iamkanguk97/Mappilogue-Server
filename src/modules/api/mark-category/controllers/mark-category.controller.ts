@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   Patch,
   Post,
   Put,
@@ -16,6 +17,7 @@ import { ResponseEntity } from 'src/common/response-entity';
 import { PostMarkCategoryResponseDto } from '../dtos/post-mark-category-response.dto';
 import { PatchMarkCategoryTitleRequestDto } from '../dtos/patch-mark-category-title-request.dto';
 import { MarkCategoryValidationPipe } from '../pipes/mark-category-validation.pipe';
+import { DeleteMarkCategoryRequestDto } from '../dtos/delete-mark-category-request.dto';
 
 @Controller('marks/categories')
 export class MarkCategoryController {
@@ -49,10 +51,16 @@ export class MarkCategoryController {
     await this.markCategoryService.modifyMarkCategoryTitle(userId, body);
   }
 
-  @Delete()
+  @Delete('/:markCategoryId')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteMarkCategory() {
-    return;
+  async deleteMarkCategory(
+    @UserId() userId: number,
+    @Param(MarkCategoryValidationPipe) param: DeleteMarkCategoryRequestDto,
+  ): Promise<void> {
+    await this.markCategoryService.removeMarkCategory(
+      userId,
+      param.markCategoryId,
+    );
   }
 
   @Put()

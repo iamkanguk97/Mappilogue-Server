@@ -52,6 +52,13 @@ export class MarkCategoryService {
     );
   }
 
+  async removeMarkCategory(
+    userId: number,
+    markCategoryId: number,
+  ): Promise<void> {
+    await this.markCategoryRepository.delete({ userId, id: markCategoryId });
+  }
+
   async modifyMarkCategoryTitle(
     userId: number,
     body: PatchMarkCategoryTitleRequestDto,
