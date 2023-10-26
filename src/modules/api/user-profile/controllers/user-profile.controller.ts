@@ -21,6 +21,8 @@ import { CreateProfileImageMulterOption } from 'src/common/multer/multer.option'
 import { PatchUserProfileImageResponseDto } from '../dtos/patch-user-profile-image-response.dto';
 import { UserAlarmSettingDto } from '../../user/dtos/user-alarm-setting.dto';
 import { PutUserAlarmSettingRequestDto } from '../dtos/put-user-alarm-setting-request.dto';
+import { Public } from 'src/modules/core/auth/decorators/auth.decorator';
+import { TERMS_OF_SERVICE_URL } from 'src/constants/constant';
 
 @Controller('users/profiles')
 export class UserProfileController {
@@ -78,5 +80,14 @@ export class UserProfileController {
     @Body() body: PutUserAlarmSettingRequestDto,
   ): Promise<void> {
     await this.userProfileService.modifyUserAlarmSetting(userId, body);
+  }
+
+  @Public()
+  @Get('terms-of-services')
+  @HttpCode(HttpStatus.OK)
+  termsOfServiceUrl(): ResponseEntity<{ link: string }> {
+    return ResponseEntity.OK_WITH(HttpStatus.OK, {
+      link: TERMS_OF_SERVICE_URL,
+    });
   }
 }
