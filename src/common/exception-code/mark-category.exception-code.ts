@@ -21,4 +21,16 @@ export const MarkCategoryExceptionCode = {
     '4005',
     '기록 카테고리 아이디를 입력해주세요.',
   ),
+  PutMarkCategoriesEmpty: setExceptionCode(
+    '4006',
+    '기록 카테고리를 수정하려면 categories property를 입력해주세요.',
+  ),
+  IsMarkedInMapEmpty: setExceptionCode(
+    '4007',
+    '지도에 표시할 기록 카테고리에 대한 값을 입력해주세요.',
+  ),
+  MarkCategoryNotEqualWithModel: setExceptionCode(
+    '4008',
+    '기록 카테고리 수정시에는 화면에 출력되는 데이터를 모두 입력해주셔야 합니다.',
+  ),
 };
