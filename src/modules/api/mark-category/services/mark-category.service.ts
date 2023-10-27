@@ -1,16 +1,20 @@
 import { GetMarkCategoriesResponseDto } from '../dtos/get-mark-categories-response.dto';
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { MarkCategoryRepository } from '../../mark/repositories/mark-category.repository';
 import { DataSource } from 'typeorm';
 import { MarkCategoryEntity } from '../../mark/entities/mark-category.entity';
 import { PostMarkCategoryResponseDto } from '../dtos/post-mark-category-response.dto';
 import { PatchMarkCategoryTitleRequestDto } from '../dtos/patch-mark-category-title-request.dto';
 import { StatusColumnEnum } from 'src/constants/enum';
+import { MarkCategoryDto } from '../dtos/mark-category.dto';
+import { MarkCategoryHelper } from '../helpers/mark-category.helper';
+import { MarkCategoryExceptionCode } from 'src/common/exception-code/mark-category.exception-code';
 
 @Injectable()
 export class MarkCategoryService {
   constructor(
     private readonly markCategoryRepository: MarkCategoryRepository,
+    private readonly markCategoryHelper: MarkCategoryHelper,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -87,6 +91,53 @@ export class MarkCategoryService {
       },
       { title: body.title },
     );
+  }
+
+  async modifyMarkCategory(
+    userId: number,
+    categories: MarkCategoryDto[],
+  ): Promise<void> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const markCategoriesBeforeUpdate =
+        await this.markCategoryRepository.selectMarkCategoriesByUserId(userId);
+
+      const isEqualWithRequestData =
+        this.markCategoryHelper.isMarkCategoryEqualWithRequestById(
+          MarkCategoryEntity.toDto(markCategoriesBeforeUpdate),
+          categories,
+        );
+
+      if (!isEqualWithRequestData) {
+        throw new BadRequestException(
+          MarkCategoryExceptionCode.MarkCategoryNotEqualWithModel,
+        );
+      }
+
+      await Promise.all(
+        categories.map(
+          async (category, idx) =>
+            await this.markCategoryRepository.update(
+              { id: category.id, userId },
+              {
+                sequence: idx + 1,
+                isMarkedInMap: category.isMarkedInMap,
+              },
+            ),
+        ),
+      );
+
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      Logger.error(`[modifyMarkCategory] ${err}`);
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async findOneById(markCategoryId: number): Promise<MarkCategoryEntity> {
