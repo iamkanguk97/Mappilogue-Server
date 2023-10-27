@@ -18,6 +18,7 @@ import { PostMarkCategoryResponseDto } from '../dtos/post-mark-category-response
 import { PatchMarkCategoryTitleRequestDto } from '../dtos/patch-mark-category-title-request.dto';
 import { MarkCategoryValidationPipe } from '../pipes/mark-category-validation.pipe';
 import { DeleteMarkCategoryRequestDto } from '../dtos/delete-mark-category-request.dto';
+import { PutMarkCategoryRequestDto } from '../dtos/put-mark-category-request.dto';
 
 @Controller('marks/categories')
 export class MarkCategoryController {
@@ -66,7 +67,10 @@ export class MarkCategoryController {
 
   @Put()
   @HttpCode(HttpStatus.NO_CONTENT)
-  async putMarkCategory() {
-    return;
+  async putMarkCategory(
+    @UserId() userId: number,
+    @Body() body: PutMarkCategoryRequestDto,
+  ): Promise<void> {
+    await this.markCategoryService.modifyMarkCategory(userId, body.categories);
   }
 }
