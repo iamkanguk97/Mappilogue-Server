@@ -14,6 +14,7 @@ import {
 } from '../constants/user.constant';
 import { ScheduleEntity } from '../../schedule/entities/schedule.entity';
 import { MarkCategoryEntity } from '../../mark/entities/mark-category.entity';
+import { MarkEntity } from '../../mark/entities/mark.entity';
 
 @Entity('User')
 export class UserEntity extends DefaultColumnType {
@@ -75,4 +76,7 @@ export class UserEntity extends DefaultColumnType {
     cascade: true,
   })
   markCategories: MarkCategoryEntity[];
+
+  @OneToMany(() => MarkEntity, (marks) => marks.userId, { cascade: true })
+  marks: MarkEntity[];
 }
