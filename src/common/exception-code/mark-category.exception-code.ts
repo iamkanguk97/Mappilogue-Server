@@ -39,6 +39,6 @@ export const MarkCategoryExceptionCode = {
   ),
   DeleteMarkCategoryOptionErrorType: setExceptionCode(
     '4010',
-    '기록 카테고리 삭제 옵션은 ALL 또는 ONLY로 입력 가능합니다.',
+    '기록 카테고리 삭제 옵션은 all 또는 only로 입력 가능합니다.',
   ),
 };
