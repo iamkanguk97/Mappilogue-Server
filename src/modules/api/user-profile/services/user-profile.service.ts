@@ -69,10 +69,8 @@ export class UserProfileService {
   }
 
   async findUserAlarmSettingById(userId: number): Promise<UserAlarmSettingDto> {
-    console.log(userId);
     const result =
       await this.userAlarmSettingRepository.selectUserAlarmSettingById(userId);
-    console.log(result);
     return UserAlarmSettingDto.from(userId, result);
   }
 

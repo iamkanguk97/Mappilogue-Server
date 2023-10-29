@@ -19,9 +19,12 @@ import { ScheduleAreaEntity } from '../entities/schedule-area.entity';
 import { PostScheduleResponseDto } from '../dtos/post-schedule-response.dto';
 import { NotificationTypeEnum } from 'src/modules/core/notification/constants/notification.enum';
 import { UserAlarmHistoryEntity } from '../../user/entities/user-alarm-history.entity';
+import { ScheduleHelper } from '../helpers/schedule.helper';
 
 @Injectable()
 export class ScheduleService {
+  private readonly logger = new Logger(ScheduleService.name);
+
   constructor(
     private readonly dataSource: DataSource,
     private readonly userProfileService: UserProfileService,
@@ -29,6 +32,7 @@ export class ScheduleService {
     private readonly notificationService: NotificationService,
     private readonly userProfileHelper: UserProfileHelper,
     private readonly userHelper: UserHelper,
+    private readonly scheduleHelper: ScheduleHelper,
     private readonly scheduleRepository: ScheduleRepository,
     private readonly scheduleAreaRepository: ScheduleAreaRepotory,
     private readonly userAlarmHistoryRepository: UserAlarmHistoryRepository,
@@ -48,7 +52,7 @@ export class ScheduleService {
       );
 
       await this.createScheduleArea(newScheduleId, body);
-      await this.createScheduleAlarms(userId, newScheduleId, body.alarmOptions); // (3) ALARM 정보들 INSERT + 알람 예약
+      await this.createScheduleAlarms(userId, newScheduleId, body);
 
       await queryRunner.commitTransaction();
       return PostScheduleResponseDto.of(newScheduleId);
@@ -104,6 +108,7 @@ export class ScheduleService {
         }),
       );
     } catch (err) {
+      this.logger.error(`[createScheduleArea] ${err}`);
       throw err;
     }
   }
@@ -111,45 +116,73 @@ export class ScheduleService {
   async createScheduleAlarms(
     userId: number,
     newScheduleId: number,
-    alarmOptions: string[],
+    body: PostScheduleRequestDto,
   ): Promise<void> {
-    if (setCheckColumnByValue(alarmOptions) === CheckColumnEnum.ACTIVE) {
-      const userAlarmSettings =
-        await this.userProfileService.findUserAlarmSettingById(userId);
+    if (setCheckColumnByValue(body.alarmOptions) === CheckColumnEnum.ACTIVE) {
+      const queryRunner = this.dataSource.createQueryRunner();
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
 
-      if (
-        !this.userProfileHelper.checkCanSendScheduleAlarm(userAlarmSettings)
-      ) {
-        throw new BadRequestException(
-          UserExceptionCode.RequireAlarmAcceptInSchedule,
-        );
-      }
+      try {
+        const userAlarmSettings =
+          await this.userProfileService.findUserAlarmSettingById(userId);
 
-      const userStatus = await this.userService.findOneById(userId);
-      const fcmToken = userStatus.fcmToken;
-      const isFcmTokenActive = await this.userHelper.isUserFcmTokenValid(
-        fcmToken,
-      );
-
-      if (isFcmTokenActive) {
-        try {
-          await Promise.all(
-            alarmOptions.map(async (alarmOption) => {
-              const { id } = await this.userAlarmHistoryRepository.save(
-                UserAlarmHistoryEntity.from(
-                  userId,
-                  newScheduleId,
-                  this.notificationService.pushTitleBySchedule,
-                  this.notificationService.pushBodyBySchedule,
-                  alarmOption,
-                  NotificationTypeEnum.SCHEDULE_REMINDER,
-                ),
-              );
-            }),
+        if (
+          !this.userProfileHelper.checkCanSendScheduleAlarm(userAlarmSettings)
+        ) {
+          throw new BadRequestException(
+            UserExceptionCode.RequireAlarmAcceptInSchedule,
           );
-        } catch (err) {
-          console.log(err);
         }
+
+        const userStatus = await this.userService.findOneById(userId);
+        const fcmToken = userStatus.fcmToken;
+        const isFcmTokenActive = await this.userHelper.isUserFcmTokenValid(
+          fcmToken,
+        );
+
+        if (isFcmTokenActive) {
+          const notificationMessage =
+            this.scheduleHelper.generateScheduleNotificationMessage(
+              body.startDate,
+              body.title,
+            );
+
+          try {
+            await Promise.all(
+              body.alarmOptions.map(async (alarmOption) => {
+                const { id } = await this.userAlarmHistoryRepository.save(
+                  UserAlarmHistoryEntity.from(
+                    userId,
+                    newScheduleId,
+                    notificationMessage.title,
+                    notificationMessage.body,
+                    alarmOption,
+                    NotificationTypeEnum.SCHEDULE_REMINDER,
+                  ),
+                );
+
+                await this.notificationService.sendPushForScheduleCreate(
+                  id,
+                  notificationMessage.title,
+                  notificationMessage.body,
+                  fcmToken,
+                  alarmOption,
+                );
+              }),
+            );
+          } catch (err) {
+            this.logger.error(`[createScheduleAlarms] ${err}`);
+          }
+        }
+
+        await queryRunner.commitTransaction();
+      } catch (err) {
+        this.logger.error(`[createScheduleAlarms - transaction error] ${err}`);
+        await queryRunner.rollbackTransaction();
+        throw err;
+      } finally {
+        await queryRunner.release();
       }
     }
   }

@@ -1,5 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { UserAlarmHistoryRepository } from './../../../api/user/repositories/user-alarm-history.repository';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
+import { CronJob } from 'cron';
 import * as firebase from 'firebase-admin';
+import { InternalServerExceptionCode } from 'src/common/exception-code/internal-server.exception-code';
+import { CheckColumnEnum } from 'src/constants/enum';
 
 firebase.initializeApp({
   credential: firebase.credential.cert('src/config/firebase-admin.json'),
@@ -7,8 +15,11 @@ firebase.initializeApp({
 
 @Injectable()
 export class NotificationService {
-  private readonly PUSH_TITLE_BY_SCHEDULE = '아직 타이틀 못정했어요..!';
-  private readonly PUSH_BODY_BY_SCHEDULE = '아직 바디를 못정했어요..!';
+  private readonly logger = new Logger(NotificationService.name);
+
+  constructor(
+    private readonly userAlarmHistoryRepository: UserAlarmHistoryRepository,
+  ) {}
 
   async isFcmTokenValid(fcmToken: string) {
     try {
@@ -21,15 +32,56 @@ export class NotificationService {
     }
   }
 
-  async sendPushForScheduleCreate(fcmToken: string, alarmTime: string) {
-    return;
+  async sendPushMessage(
+    title: string,
+    body: string,
+    fcmToken: string,
+  ): Promise<void> {
+    await firebase.messaging().send({
+      notification: { title, body },
+      token: fcmToken,
+      android: { priority: 'high' },
+    });
   }
 
-  get pushTitleBySchedule() {
-    return this.PUSH_TITLE_BY_SCHEDULE;
-  }
-
-  get pushBodyBySchedule() {
-    return this.PUSH_BODY_BY_SCHEDULE;
+  async sendPushForScheduleCreate(
+    userAlarmHistoryId: number,
+    title: string,
+    body: string,
+    fcmToken: string,
+    alarmTime: string,
+  ): Promise<void> {
+    try {
+      const messageSendTime = new Date(alarmTime);
+      const sendMessageJob = new CronJob(
+        messageSendTime,
+        async () => {
+          try {
+            await Promise.all([
+              this.sendPushMessage(title, body, fcmToken),
+              this.userAlarmHistoryRepository.update(
+                { id: userAlarmHistoryId },
+                {
+                  isSent: CheckColumnEnum.ACTIVE,
+                  alarmAt: () => 'CURRENT_TIMESTAMP',
+                },
+              ),
+            ]);
+          } catch (err) {
+            this.logger.error(
+              `[sendPushForScheduleCreate - sendMessageJob] ${err}`,
+            );
+          }
+        },
+        null,
+        true,
+      );
+      sendMessageJob.start();
+    } catch (err) {
+      this.logger.error(`[sendPushForScheduleCreate] ${err}`);
+      throw new InternalServerErrorException(
+        InternalServerExceptionCode.NotificationSchedulerError,
+      );
+    }
   }
 }
