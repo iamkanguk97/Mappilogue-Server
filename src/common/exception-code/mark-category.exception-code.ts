@@ -33,4 +33,12 @@ export const MarkCategoryExceptionCode = {
     '4008',
     '기록 카테고리 수정시에는 화면에 출력되는 데이터를 모두 입력해주셔야 합니다.',
   ),
+  DeleteMarkCategoryOptionEmpty: setExceptionCode(
+    '4009',
+    '기록 카테고리 삭제 옵션을 입력해주세요.',
+  ),
+  DeleteMarkCategoryOptionErrorType: setExceptionCode(
+    '4010',
+    '기록 카테고리 삭제 옵션은 ALL 또는 ONLY로 입력 가능합니다.',
+  ),
 };
