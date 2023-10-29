@@ -54,6 +54,11 @@ export class UserHelper {
     );
   }
 
+  /**
+   * @title FCM Token이 유효한지 확인하는 함수
+   * @param fcmToken
+   * @returns
+   */
   async isUserFcmTokenValid(fcmToken?: string | undefined): Promise<boolean> {
     if (_.isNil(fcmToken)) {
       throw new BadRequestException(UserExceptionCode.RequireFcmTokenRegister);
