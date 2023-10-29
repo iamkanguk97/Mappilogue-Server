@@ -9,6 +9,6 @@ import { MarkHelper } from './helpers/mark.helper';
   imports: [CustomRepositoryModule.forCustomRepository([MarkRepository])],
   controllers: [MarkController],
   providers: [MarkService, MarkHelper],
-  exports: [MarkHelper],
+  exports: [MarkService, MarkHelper],
 })
 export class MarkModule {}

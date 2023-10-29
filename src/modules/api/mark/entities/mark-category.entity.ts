@@ -1,5 +1,5 @@
 import { DefaultColumnType } from 'src/types/default-column.type';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { UserEntity } from '../../user/entities/user.entity';
 import { MARK_CATEGORY_TITLE_LENGTH } from '../../mark-category/constants/mark-category.constant';
 import {
@@ -7,6 +7,7 @@ import {
   StatusOrCheckColumnLengthEnum,
 } from 'src/constants/enum';
 import { MarkCategoryDto } from '../../mark-category/dtos/mark-category.dto';
+import { MarkEntity } from './mark.entity';
 
 @Entity('MarkCategory')
 export class MarkCategoryEntity extends DefaultColumnType {
@@ -31,6 +32,11 @@ export class MarkCategoryEntity extends DefaultColumnType {
   })
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
   user: UserEntity;
+
+  @OneToMany(() => MarkEntity, (marks) => marks.markCategory, {
+    cascade: false,
+  })
+  marks: MarkEntity[];
 
   static toDto(markCategories: MarkCategoryEntity[]): MarkCategoryDto[] {
     return markCategories.map(

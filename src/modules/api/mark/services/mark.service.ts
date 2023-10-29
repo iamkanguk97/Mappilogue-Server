@@ -11,6 +11,19 @@ export class MarkService {
     await this.markRepository.delete({ userId, id: markId });
   }
 
+  async removeMarkByCategoryId(markCategoryId: number): Promise<void> {
+    await this.markRepository.delete({ markCategoryId });
+  }
+
+  async modifyMarkCategoryIdToNullInMark(
+    markCategoryId: number,
+  ): Promise<void> {
+    await this.markRepository.update(
+      { markCategoryId },
+      { markCategoryId: () => 'NULL' },
+    );
+  }
+
   async findOneById(markId: number): Promise<MarkEntity> {
     return await this.markRepository.findOne({
       where: {

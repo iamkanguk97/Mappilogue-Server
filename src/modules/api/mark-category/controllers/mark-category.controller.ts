@@ -9,6 +9,7 @@ import {
   Patch,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { MarkCategoryService } from '../services/mark-category.service';
 import { UserId } from '../../user/decorators/user-id.decorator';
@@ -19,6 +20,7 @@ import { PatchMarkCategoryTitleRequestDto } from '../dtos/patch-mark-category-ti
 import { MarkCategoryValidationPipe } from '../pipes/mark-category-validation.pipe';
 import { DeleteMarkCategoryRequestDto } from '../dtos/delete-mark-category-request.dto';
 import { PutMarkCategoryRequestDto } from '../dtos/put-mark-category-request.dto';
+import { DeleteMarkCategoryOptionRequestDto } from '../dtos/delete-mark-category-option-request.dto';
 
 @Controller('marks/categories')
 export class MarkCategoryController {
@@ -58,10 +60,12 @@ export class MarkCategoryController {
   async deleteMarkCategory(
     @UserId() userId: number,
     @Param(MarkCategoryValidationPipe) param: DeleteMarkCategoryRequestDto,
+    @Query() query: DeleteMarkCategoryOptionRequestDto,
   ): Promise<void> {
     await this.markCategoryService.removeMarkCategory(
       userId,
       param.markCategoryId,
+      query.option,
     );
   }
 
