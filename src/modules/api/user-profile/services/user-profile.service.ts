@@ -11,7 +11,6 @@ import { UserEntity } from '../../user/entities/user.entity';
 import { PatchUserProfileImageResponseDto } from '../dtos/patch-user-profile-image-response.dto';
 import { USER_DEFAULT_PROFILE_IMAGE } from '../../user/constants/user.constant';
 import { UserAlarmSettingRepository } from '../../user/repositories/user-alarm-setting.repository';
-import { UserAlarmSettingEntity } from '../../user/entities/user-alarm-setting.entity';
 import { UserAlarmSettingDto } from '../../user/dtos/user-alarm-setting.dto';
 import { PutUserAlarmSettingRequestDto } from '../dtos/put-user-alarm-setting-request.dto';
 
@@ -27,7 +26,7 @@ export class UserProfileService {
     userId: number,
     body: PatchUserNicknameRequestDto,
   ): Promise<void> {
-    await this.userService.modifyById(userId, body.toPartialUserEntity());
+    await this.userService.modifyById(userId, { nickname: body.nickname });
   }
 
   async modifyUserProfileImage(
@@ -37,8 +36,8 @@ export class UserProfileService {
     const [profileImageFile] = imageFiles || [];
 
     const updateProfileImageParam = {
-      profileImageUrl: profileImageFile?.location || USER_DEFAULT_PROFILE_IMAGE,
-      profileImageKey: profileImageFile?.key || null,
+      profileImageUrl: profileImageFile?.location ?? USER_DEFAULT_PROFILE_IMAGE,
+      profileImageKey: profileImageFile?.key ?? null,
     } as Partial<UserEntity>;
 
     const imageDeleteBuilder = new MulterBuilder(
@@ -51,8 +50,9 @@ export class UserProfileService {
     await queryRunner.startTransaction();
 
     try {
-      await imageDeleteBuilder.delete(user.profileImageKey);
       await this.userService.modifyById(user.id, updateProfileImageParam);
+      await imageDeleteBuilder.delete(user.profileImageKey);
+
       await queryRunner.commitTransaction();
     } catch (err) {
       await queryRunner.rollbackTransaction();
@@ -69,9 +69,11 @@ export class UserProfileService {
   }
 
   async findUserAlarmSettingById(userId: number): Promise<UserAlarmSettingDto> {
+    console.log(userId);
     const result =
       await this.userAlarmSettingRepository.selectUserAlarmSettingById(userId);
-    return UserAlarmSettingEntity.toDto(userId, result);
+    console.log(result);
+    return UserAlarmSettingDto.from(userId, result);
   }
 
   async modifyUserAlarmSetting(
@@ -80,7 +82,7 @@ export class UserProfileService {
   ): Promise<void> {
     await this.userAlarmSettingRepository.updateUserAlarmSettingById(
       userId,
-      PutUserAlarmSettingRequestDto.toEntity(body),
+      body.toEntity(),
     );
   }
 }

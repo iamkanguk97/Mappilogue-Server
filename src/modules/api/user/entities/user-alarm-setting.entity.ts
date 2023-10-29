@@ -5,10 +5,12 @@ import {
 import { DefaultColumnType } from 'src/types/default-column.type';
 import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import { UserEntity } from './user.entity';
-import { UserAlarmSettingDto } from '../dtos/user-alarm-setting.dto';
 
 @Entity('UserAlarmSetting')
 export class UserAlarmSettingEntity extends DefaultColumnType {
+  @Column('int')
+  userId: number;
+
   @Column('varchar', { length: StatusOrCheckColumnLengthEnum.CHECK })
   isTotalAlarm!: CheckColumnEnum;
 
@@ -34,27 +36,31 @@ export class UserAlarmSettingEntity extends DefaultColumnType {
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
   user: UserEntity;
 
-  static from(isAlarmAccept: CheckColumnEnum): UserAlarmSettingEntity {
+  static from(
+    isTotalAlarm: CheckColumnEnum,
+    isNoticeAlarm: CheckColumnEnum,
+    isMarketingAlarm: CheckColumnEnum,
+    isScheduleReminderAlarm: CheckColumnEnum,
+  ): UserAlarmSettingEntity {
     const userAlarmSetting = new UserAlarmSettingEntity();
 
+    userAlarmSetting.isTotalAlarm = isTotalAlarm;
+    userAlarmSetting.isNoticeAlarm = isNoticeAlarm;
+    userAlarmSetting.isMarketingAlarm = isMarketingAlarm;
+    userAlarmSetting.isScheduleReminderAlarm = isScheduleReminderAlarm;
+
+    return userAlarmSetting;
+  }
+
+  static fromValue(userId: number, isAlarmAccept: CheckColumnEnum) {
+    const userAlarmSetting = new UserAlarmSettingEntity();
+
+    userAlarmSetting.userId = userId;
     userAlarmSetting.isTotalAlarm = isAlarmAccept;
     userAlarmSetting.isNoticeAlarm = isAlarmAccept;
     userAlarmSetting.isMarketingAlarm = isAlarmAccept;
     userAlarmSetting.isScheduleReminderAlarm = isAlarmAccept;
 
     return userAlarmSetting;
-  }
-
-  static toDto(
-    userId: number,
-    userAlarmSettingEntity: UserAlarmSettingEntity,
-  ): UserAlarmSettingDto {
-    return new UserAlarmSettingDto(
-      userId,
-      userAlarmSettingEntity.isTotalAlarm,
-      userAlarmSettingEntity.isNoticeAlarm,
-      userAlarmSettingEntity.isMarketingAlarm,
-      userAlarmSettingEntity.isScheduleReminderAlarm,
-    );
   }
 }

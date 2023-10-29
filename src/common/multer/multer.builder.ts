@@ -7,7 +7,6 @@ import multer from 'multer';
 import { IMAGE_MIME_TYPES, MEDIA_MIME_TYPES } from 'src/constants/constant';
 import { ENVIRONMENT_KEY } from 'src/modules/core/custom-config/constants/custom-config.constant';
 import { Request } from 'express';
-import { InternalServerErrorException } from '@nestjs/common';
 import { CustomConfigService } from 'src/modules/core/custom-config/services';
 import { config } from 'dotenv';
 
@@ -121,8 +120,8 @@ export class MulterBuilder {
     });
   }
 
-  async delete(imageKey?: string | undefined): Promise<void> {
-    if (!_.isNil(imageKey)) {
+  async delete(imageKey: string): Promise<void> {
+    if (imageKey !== '') {
       const awsS3 = this.s3 as AWS.S3;
       await awsS3
         .deleteObject({

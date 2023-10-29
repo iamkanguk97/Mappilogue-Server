@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
@@ -13,6 +14,7 @@ import { ScheduleService } from '../services/schedule.service';
 import { ResponseEntity } from 'src/common/response-entity';
 import { ScheduleValidationPipe } from '../pipes/schedule-validation.pipe';
 import { ScheduleDto } from '../dtos/schedule.dto';
+import { PostScheduleResponseDto } from '../dtos/post-schedule-response.dto';
 
 @Controller('schedules')
 export class ScheduleController {
@@ -23,7 +25,7 @@ export class ScheduleController {
   async postSchedule(
     @UserId() userId: number,
     @Body() body: PostScheduleRequestDto,
-  ): Promise<ResponseEntity<any>> {
+  ): Promise<ResponseEntity<PostScheduleResponseDto>> {
     const result = await this.scheduleService.createSchedule(userId, body);
     return ResponseEntity.OK_WITH(HttpStatus.CREATED, result);
   }
@@ -35,5 +37,11 @@ export class ScheduleController {
     @Param(ScheduleValidationPipe) schedule: ScheduleDto,
   ): Promise<void> {
     await this.scheduleService.removeSchedule(userId, schedule._id);
+  }
+
+  @Get('detail-by-date')
+  @HttpCode(HttpStatus.OK)
+  async getScheduleDetailByDate() {
+    return;
   }
 }

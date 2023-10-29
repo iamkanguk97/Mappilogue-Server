@@ -70,6 +70,11 @@ export class JwtHelper {
     return `refresh_userId_${userId}`;
   }
 
+  /**
+   * @title Redis에 Refresh-Token 저장하는 함수
+   * @param userId
+   * @param refreshToken
+   */
   async setRefreshTokenInRedis(
     userId: number,
     refreshToken: string,

@@ -1,15 +1,7 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { LoginOrSignUpRequestDto } from '../dtos/login-or-sign-up-request.dto';
 import { ResponseEntity } from 'src/common/response-entity';
 import { UserService } from '../services/user.service';
-import { TERMS_OF_SERVICE_URL } from 'src/constants/constant';
 import { TokenRefreshRequestDto } from '../dtos/token-refresh-request.dto';
 import * as _ from 'lodash';
 import { TokenRefreshResponseDto } from '../dtos/token-refresh-response.dto';
@@ -46,7 +38,7 @@ export class UserController {
       );
       return ResponseEntity.OK_WITH(HttpStatus.CREATED, signUpResult);
     }
-    const loginResult = await this.userService.login(user, body.fcmToken);
+    const loginResult = await this.userService.createLogin(user, body.fcmToken);
     return ResponseEntity.OK_WITH(HttpStatus.CREATED, loginResult);
   }
 
@@ -60,29 +52,18 @@ export class UserController {
     return ResponseEntity.OK_WITH(HttpStatus.CREATED, result);
   }
 
-  @Public()
-  @Get('terms-of-service')
-  @HttpCode(HttpStatus.OK)
-  termsOfServiceUrl(): ResponseEntity<{ link: string }> {
-    return ResponseEntity.OK_WITH(HttpStatus.OK, {
-      link: TERMS_OF_SERVICE_URL,
-    });
-  }
-
   @Post('logout')
-  @HttpCode(HttpStatus.OK)
-  async logout(@UserId() userId: number): Promise<ResponseEntity<undefined>> {
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async logout(@UserId() userId: number): Promise<void> {
     await this.userService.logout(userId);
-    return ResponseEntity.OK(HttpStatus.OK);
   }
 
   @Post('withdrawal')
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async postWithdraw(
     @User() user: DecodedUserToken,
     @Body() body: PostUserWithdrawRequestDto,
-  ): Promise<ResponseEntity<undefined>> {
+  ): Promise<void> {
     await this.userService.createWithdraw(user, body);
-    return ResponseEntity.OK(HttpStatus.OK);
   }
 }

@@ -14,10 +14,16 @@ export class UserHelper {
     private readonly customCacheService: CustomCacheService,
   ) {}
 
-  isUserValidWithModel(user: UserEntity): boolean {
+  isUserValidWithModel(user?: UserEntity | undefined): boolean {
     return !_.isNil(user) && user.status !== StatusColumnEnum.DELETED;
   }
 
+  /**
+   * @title refresh-token이 redis에 저장되어있는 refresh-token과  동일한지 확인
+   * @param userId
+   * @param refreshToken
+   * @returns
+   */
   async isRefreshTokenIsEqualWithRedis(
     userId: number,
     refreshToken: string,
@@ -29,10 +35,17 @@ export class UserHelper {
     );
   }
 
+  /**
+   * @title 전달받은 refresh-token이 유효한지 확인
+   * @param user
+   * @param refreshPayload
+   * @param refreshToken
+   * @returns
+   */
   async isUserRefreshTokenValid(
-    user: UserEntity,
     refreshPayload: CustomJwtPayload,
     refreshToken: string,
+    user?: UserEntity | undefined,
   ): Promise<boolean> {
     return (
       this.jwtHelper.isRefreshTokenPayloadValid(refreshPayload) &&
@@ -45,10 +58,6 @@ export class UserHelper {
     if (_.isNil(fcmToken)) {
       throw new BadRequestException(UserExceptionCode.RequireFcmTokenRegister);
     }
-    // TODO: (1024) FCM Token 실제로 받아서 테스트 해본 후 주석 해제
-    // if (!(await this.notificationService.isFcmTokenValid(fcmToken))) {
-    //   throw new BadRequestException(UserExceptionCode.InvalidFcmToken);
-    // }
 
     return true;
   }

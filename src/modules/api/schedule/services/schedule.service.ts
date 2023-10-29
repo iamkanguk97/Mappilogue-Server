@@ -15,6 +15,10 @@ import { NotificationService } from 'src/modules/core/notification/services/noti
 import { UserHelper } from '../../user/helpers/user.helper';
 import { UserAlarmHistoryRepository } from '../../user/repositories/user-alarm-history.repository';
 import { ScheduleEntity } from '../entities/schedule.entity';
+import { ScheduleAreaEntity } from '../entities/schedule-area.entity';
+import { PostScheduleResponseDto } from '../dtos/post-schedule-response.dto';
+import { NotificationTypeEnum } from 'src/modules/core/notification/constants/notification.enum';
+import { UserAlarmHistoryEntity } from '../../user/entities/user-alarm-history.entity';
 
 @Injectable()
 export class ScheduleService {
@@ -33,7 +37,7 @@ export class ScheduleService {
   async createSchedule(
     userId: number,
     body: PostScheduleRequestDto,
-  ): Promise<number | void> {
+  ): Promise<PostScheduleResponseDto> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -44,14 +48,13 @@ export class ScheduleService {
       );
 
       await this.createScheduleArea(newScheduleId, body);
-      await this.createScheduleAlarms(newScheduleId, userId, body);
+      await this.createScheduleAlarms(userId, newScheduleId, body.alarmOptions); // (3) ALARM 정보들 INSERT + 알람 예약
 
       await queryRunner.commitTransaction();
-      return newScheduleId;
+      return PostScheduleResponseDto.of(newScheduleId);
     } catch (err) {
-      console.log(err);
       await queryRunner.rollbackTransaction();
-      Logger.error(`[create - Schedule Domain] ${err}`);
+      Logger.error(`[createSchedule] ${err}`);
       throw err;
     } finally {
       await queryRunner.release();
@@ -85,12 +88,16 @@ export class ScheduleService {
 
           const createScheduleAreaValueParam = area.value.map(
             (areaValue, idx) => {
-              return {
-                ...areaValue,
-                scheduleId: newScheduleId,
-                date: area.date,
-                sequence: idx + 1,
-              };
+              return ScheduleAreaEntity.from(
+                newScheduleId,
+                areaValue.name,
+                area.date,
+                areaValue.streetAddress,
+                areaValue.latitude,
+                areaValue.longitude,
+                idx + 1,
+                areaValue.time,
+              );
             },
           );
           this.scheduleAreaRepository.save(createScheduleAreaValueParam);
@@ -104,9 +111,9 @@ export class ScheduleService {
   async createScheduleAlarms(
     userId: number,
     newScheduleId: number,
-    body: PostScheduleRequestDto,
+    alarmOptions: string[],
   ): Promise<void> {
-    if (setCheckColumnByValue(body.alarmOptions) === CheckColumnEnum.ACTIVE) {
+    if (setCheckColumnByValue(alarmOptions) === CheckColumnEnum.ACTIVE) {
       const userAlarmSettings =
         await this.userProfileService.findUserAlarmSettingById(userId);
 
@@ -120,23 +127,29 @@ export class ScheduleService {
 
       const userStatus = await this.userService.findOneById(userId);
       const fcmToken = userStatus.fcmToken;
-      await this.userHelper.isUserFcmTokenValid(fcmToken);
+      const isFcmTokenActive = await this.userHelper.isUserFcmTokenValid(
+        fcmToken,
+      );
 
-      try {
-        await Promise.all(
-          body.alarmOptions.map(async (alarmOption) => {
-            const { id } = await this.userAlarmHistoryRepository.save({
-              userId,
-              scheduleId: newScheduleId,
-              title: this.notificationService.pushTitleBySchedule,
-              body: this.notificationService.pushBodyBySchedule,
-              alarmDate: alarmOption,
-              type: 'SCHEDULE-REMINDER',
-            });
-          }),
-        );
-      } catch (err) {
-        console.log(err);
+      if (isFcmTokenActive) {
+        try {
+          await Promise.all(
+            alarmOptions.map(async (alarmOption) => {
+              const { id } = await this.userAlarmHistoryRepository.save(
+                UserAlarmHistoryEntity.from(
+                  userId,
+                  newScheduleId,
+                  this.notificationService.pushTitleBySchedule,
+                  this.notificationService.pushBodyBySchedule,
+                  alarmOption,
+                  NotificationTypeEnum.SCHEDULE_REMINDER,
+                ),
+              );
+            }),
+          );
+        } catch (err) {
+          console.log(err);
+        }
       }
     }
   }

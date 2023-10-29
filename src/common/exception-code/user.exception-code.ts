@@ -66,4 +66,5 @@ export const UserExceptionCode = {
     '1020',
     '회원탈퇴 사유는 최대 200자까지 입력 가능합니다.',
   ),
+  NotExistUser: setExceptionCode('1021', '존재하지 않는 사용자입니다.'),
 };
