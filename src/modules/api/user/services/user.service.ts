@@ -45,26 +45,39 @@ export class UserService {
     userSocialFactory: SocialFactoryType,
     body: LoginOrSignUpRequestDto,
   ): Promise<LoginOrSignUpResponseDto> {
-    // TODO: type을 ProcessedSocialAppleInfo도 추가해야함.
-    const socialUserInfo = (await userSocialFactory.getUserSocialInfo()) as
-      | ProcessedSocialKakaoInfo
-      | any;
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    // TODO: Apple Login 구현 시 repository로 전달하는 parameter entity-from 구현
-    const newUserId = await this.createUser(socialUserInfo, body.fcmToken);
-    const newTokens = await this.authService.setUserToken(newUserId);
-    await this.userAlarmSettingRepository.save(
-      UserAlarmSettingEntity.fromValue(newUserId, body.isAlarmAccept),
-    );
+    try {
+      // TODO: type을 ProcessedSocialAppleInfo도 추가해야함.
+      const socialUserInfo = (await userSocialFactory.getUserSocialInfo()) as
+        | ProcessedSocialKakaoInfo
+        | any;
 
-    return LoginOrSignUpResponseDto.from(
-      LoginOrSignUpEnum.SIGNUP,
-      newUserId,
-      newTokens,
-    );
+      // TODO: Apple Login 구현 시 repository로 전달하는 parameter entity-from 구현
+      const newUserId = await this.createUser(socialUserInfo, body.fcmToken);
+      const newTokens = await this.authService.setUserToken(newUserId);
+      await this.userAlarmSettingRepository.save(
+        UserAlarmSettingEntity.fromValue(newUserId, body.isAlarmAccept),
+      );
+
+      await queryRunner.commitTransaction();
+      return LoginOrSignUpResponseDto.from(
+        LoginOrSignUpEnum.SIGNUP,
+        newUserId,
+        newTokens,
+      );
+    } catch (err) {
+      Logger.error(`[createSignUp - transaction error] ${err}`);
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
-  async login(
+  async createLogin(
     user: UserEntity,
     fcmToken?: string | undefined,
   ): Promise<LoginOrSignUpResponseDto> {
@@ -72,13 +85,27 @@ export class UserService {
      * @comment 로그인에서는 isAlarmAccept property를 무시한다 (알림 업데이트 X)
      */
 
-    await this.modifyById(user.id, { fcmToken });
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    return LoginOrSignUpResponseDto.from(
-      LoginOrSignUpEnum.LOGIN,
-      user.id,
-      await this.authService.setUserToken(user.id),
-    );
+    try {
+      const tokens = await this.authService.setUserToken(user.id);
+      await this.modifyById(user.id, { fcmToken });
+
+      await queryRunner.commitTransaction();
+      return LoginOrSignUpResponseDto.from(
+        LoginOrSignUpEnum.LOGIN,
+        user.id,
+        tokens,
+      );
+    } catch (err) {
+      Logger.error(`[login - transaction error] ${err}`);
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async createTokenRefresh(

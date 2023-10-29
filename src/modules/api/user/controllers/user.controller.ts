@@ -38,7 +38,7 @@ export class UserController {
       );
       return ResponseEntity.OK_WITH(HttpStatus.CREATED, signUpResult);
     }
-    const loginResult = await this.userService.login(user, body.fcmToken);
+    const loginResult = await this.userService.createLogin(user, body.fcmToken);
     return ResponseEntity.OK_WITH(HttpStatus.CREATED, loginResult);
   }
 
