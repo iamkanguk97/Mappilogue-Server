@@ -84,25 +84,39 @@ export class UserService {
   async createTokenRefresh(
     refreshToken: string,
   ): Promise<TokenRefreshResponseDto> {
-    const refreshPayload = this.jwtService.decode(
-      refreshToken,
-    ) as CustomJwtPayload;
-    const checkUserStatus = await this.findOneById(refreshPayload?.userId);
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    const isUserRefreshTokenValidResult =
-      await this.userHelper.isUserRefreshTokenValid(
-        checkUserStatus,
-        refreshPayload,
+    try {
+      const refreshPayload = this.jwtService.decode(
         refreshToken,
-      );
+      ) as CustomJwtPayload;
+      const checkUserStatus = await this.findOneById(refreshPayload?.userId);
 
-    if (!isUserRefreshTokenValidResult) {
-      throw new UnauthorizedException(UserExceptionCode.InvalidRefreshToken);
+      const isUserRefreshTokenValidResult =
+        await this.userHelper.isUserRefreshTokenValid(
+          refreshPayload,
+          refreshToken,
+          checkUserStatus,
+        );
+
+      if (!isUserRefreshTokenValidResult) {
+        throw new UnauthorizedException(UserExceptionCode.InvalidRefreshToken);
+      }
+
+      const userId = refreshPayload.userId;
+      const result = await this.authService.setUserToken(userId);
+
+      await queryRunner.commitTransaction();
+      return TokenRefreshResponseDto.from(userId, result);
+    } catch (err) {
+      Logger.error(`[createTokenRefresh] ${err}`);
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
     }
-
-    const userId = refreshPayload.userId;
-    const result = await this.authService.setUserToken(userId);
-    return TokenRefreshResponseDto.from(userId, result);
   }
 
   async findOneById(
