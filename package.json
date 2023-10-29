@@ -52,6 +52,7 @@
     "mysql2": "^3.6.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
+    "solarlunar": "^2.0.7",
     "typeorm": "^0.3.17",
     "uuid": "^9.0.1"
   },
