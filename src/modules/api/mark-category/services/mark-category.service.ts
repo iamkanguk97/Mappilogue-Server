@@ -9,12 +9,15 @@ import { StatusColumnEnum } from 'src/constants/enum';
 import { MarkCategoryDto } from '../dtos/mark-category.dto';
 import { MarkCategoryHelper } from '../helpers/mark-category.helper';
 import { MarkCategoryExceptionCode } from 'src/common/exception-code/mark-category.exception-code';
+import { DeleteMarkCategoryOptionEnum } from '../constants/mark-category.enum';
+import { MarkService } from '../../mark/services/mark.service';
 
 @Injectable()
 export class MarkCategoryService {
   constructor(
     private readonly markCategoryRepository: MarkCategoryRepository,
     private readonly markCategoryHelper: MarkCategoryHelper,
+    private readonly markService: MarkService,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -76,8 +79,32 @@ export class MarkCategoryService {
   async removeMarkCategory(
     userId: number,
     markCategoryId: number,
+    option: DeleteMarkCategoryOptionEnum,
   ): Promise<void> {
-    await this.markCategoryRepository.delete({ userId, id: markCategoryId });
+    /**
+     * 10월 29일 - 기능 추가
+     * => 카테고리 삭제시 카테고리만 삭제 또는 기록까지 삭제 옵션 추가
+     */
+
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      await this.markCategoryRepository.delete({
+        userId,
+        id: markCategoryId,
+      });
+      await this.updateMarkStatusInMarkDelete(option, markCategoryId);
+
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      Logger.error(`[removeMarkCategory] ${err}`);
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async modifyMarkCategoryTitle(
@@ -147,5 +174,16 @@ export class MarkCategoryService {
         status: StatusColumnEnum.ACTIVE,
       },
     });
+  }
+
+  async updateMarkStatusInMarkDelete(
+    option: DeleteMarkCategoryOptionEnum,
+    markCategoryId: number,
+  ): Promise<void> {
+    if (option === DeleteMarkCategoryOptionEnum.ALL) {
+      await this.markService.removeMarkByCategoryId(markCategoryId);
+      return;
+    }
+    await this.markService.modifyMarkCategoryIdToNullInMark(markCategoryId);
   }
 }
