@@ -7,7 +7,6 @@ import { ScheduleRepository } from '../repositories/schedule.repository';
 import {
   checkBetweenDatesWithNoMoment,
   getKoreanDateFormatByMultiple,
-  getKoreanDateFormatBySingle,
 } from 'src/helpers/date.helper';
 import { ScheduleExceptionCode } from 'src/common/exception-code/schedule.exception-code';
 import { ScheduleAreaRepotory } from '../repositories/schedule-area.repository';
@@ -24,11 +23,13 @@ import { ScheduleAreaEntity } from '../entities/schedule-area.entity';
 import { PostScheduleResponseDto } from '../dtos/post-schedule-response.dto';
 import { NotificationTypeEnum } from 'src/modules/core/notification/constants/notification.enum';
 import { UserAlarmHistoryEntity } from '../../user/entities/user-alarm-history.entity';
+import { ScheduleHelper } from '../helpers/schedule.helper';
+import { GetScheduleInCalenderRequestDto } from '../dtos/get-schedules-in-calender-request.dto';
+import { ISchedulesInCalender } from '../types';
 import { solar2lunar } from 'solarlunar';
 import { GetScheduleOnSpecificDateResponseDto } from '../dtos/get-schedule-on-specific-date-response.dto';
 import { ScheduleDto } from '../dtos/schedule.dto';
 import { ColorService } from '../../color/services/color.service';
-import { ScheduleHelper } from '../helpers/schedule.helper';
 
 @Injectable()
 export class ScheduleService {
@@ -113,6 +114,17 @@ export class ScheduleService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async findSchedulesInCalender(
+    userId: number,
+    query: GetScheduleInCalenderRequestDto,
+  ): Promise<ISchedulesInCalender[]> {
+    return await this.scheduleRepository.selectSchedulesInCalender(
+      userId,
+      query.year,
+      query.month,
+    );
   }
 
   async createScheduleArea(
