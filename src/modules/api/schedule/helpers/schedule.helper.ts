@@ -1,13 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { ScheduleEntity } from '../entities/schedule.entity';
 import * as _ from 'lodash';
-import { StatusColumnEnum } from 'src/constants/enum';
+import { CheckColumnEnum, StatusColumnEnum } from 'src/constants/enum';
 import { SCHEDULE_DEFAULT_TITLE } from '../constants/schedule.constant';
-import { getKoreanDateFormatByMultiple } from 'src/helpers/date.helper';
-import { ISolarToLunarResult } from '../types';
+import { IScheduleAreasById, ISolarToLunarResult } from '../types';
+import { ScheduleDto } from '../dtos/schedule.dto';
+import {
+  getKoreanDateFormatByMultiple,
+  getKoreanDateFormatBySingle,
+} from 'src/helpers/date.helper';
+import { ColorService } from '../../color/services/color.service';
+import { UserService } from '../../user/services/user.service';
+import * as moment from 'moment';
+import { ScheduleAreaDto } from '../dtos/schedule-area.dto';
 
 @Injectable()
 export class ScheduleHelper {
+  constructor(
+    private readonly colorService: ColorService,
+    private readonly userService: UserService,
+  ) {}
+
   isScheduleExist(scheduleStatus?: ScheduleEntity | undefined): boolean {
     return (
       !_.isNil(scheduleStatus) &&
@@ -51,5 +64,56 @@ export class ScheduleHelper {
       result.lMonth,
       result.lDay,
     );
+  }
+
+  async setScheduleOnDetailById(schedule: ScheduleDto): Promise<ScheduleDto> {
+    schedule._startDate = getKoreanDateFormatBySingle(schedule.getStartDate);
+    schedule._endDate = getKoreanDateFormatBySingle(schedule.getEndDate);
+    schedule._colorCode = (
+      await this.colorService.findOneById(schedule.getColorId)
+    ).getCode;
+
+    return schedule;
+  }
+
+  async setScheduleAlarmsOnDetailById(
+    schedule: ScheduleDto,
+  ): Promise<Array<string | undefined>> {
+    return schedule.getIsAlarm === CheckColumnEnum.ACTIVE
+      ? await this.userService.findUserScheduleAlarms(
+          schedule.getUserId,
+          schedule.getId,
+        )
+      : [];
+  }
+
+  preprocessScheduleAreaOnDetailById(
+    scheduleAreas: IScheduleAreasById[],
+  ): ScheduleAreaDto[] {
+    const result = [];
+    for (const scheduleArea of scheduleAreas) {
+      const dateKey = moment(scheduleArea.date).format('M월 D일');
+      const temp = result.find((r) => r.date === dateKey) || {
+        date: dateKey,
+        value: [],
+      };
+
+      const transformedItem = {
+        areaId: scheduleArea.scheduleAreaId,
+        name: scheduleArea.name,
+        streetAddress: scheduleArea.streetAddress,
+        latitude: scheduleArea.latitude,
+        longitude: scheduleArea.longitude,
+        time: scheduleArea.time,
+        sequence: scheduleArea.sequence,
+      };
+      temp.value.push(transformedItem);
+
+      if (!result.some((r) => r.date === dateKey)) {
+        result.push(temp);
+      }
+    }
+
+    return result;
   }
 }

@@ -1,3 +1,4 @@
+import { GetScheduleDetailByIdResponseDto } from './../dtos/get-schedule-detail-by-id-response.dto';
 import { setCheckColumnByValue } from 'src/helpers/common.helper';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { PostScheduleRequestDto } from '../dtos/post-schedule-request.dto';
@@ -27,6 +28,8 @@ import { GetScheduleInCalenderRequestDto } from '../dtos/get-schedules-in-calend
 import { ISchedulesInCalender } from '../types';
 import { solar2lunar } from 'solarlunar';
 import { GetScheduleOnSpecificDateResponseDto } from '../dtos/get-schedule-on-specific-date-response.dto';
+import { ColorService } from '../../color/services/color.service';
+import { ScheduleDto } from '../dtos/schedule.dto';
 
 @Injectable()
 export class ScheduleService {
@@ -37,9 +40,10 @@ export class ScheduleService {
     private readonly userProfileService: UserProfileService,
     private readonly userService: UserService,
     private readonly notificationService: NotificationService,
+    private readonly colorService: ColorService,
     private readonly userProfileHelper: UserProfileHelper,
-    private readonly userHelper: UserHelper,
     private readonly scheduleHelper: ScheduleHelper,
+    private readonly userHelper: UserHelper,
     private readonly scheduleRepository: ScheduleRepository,
     private readonly scheduleAreaRepository: ScheduleAreaRepotory,
     private readonly userAlarmHistoryRepository: UserAlarmHistoryRepository,
@@ -74,6 +78,42 @@ export class ScheduleService {
 
   async removeSchedule(userId: number, scheduleId: number): Promise<void> {
     await this.scheduleRepository.delete({ userId, id: scheduleId });
+  }
+
+  async findScheduleOnSpecificId(
+    schedule: ScheduleDto,
+  ): Promise<GetScheduleDetailByIdResponseDto> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const scheduleBaseInfo =
+        await this.scheduleHelper.setScheduleOnDetailById(schedule);
+
+      const scheduleAlarmInfo =
+        await this.scheduleHelper.setScheduleAlarmsOnDetailById(schedule);
+
+      const scheduleAreaInfo =
+        await this.scheduleAreaRepository.selectScheduleAreasById(
+          schedule.getId,
+        );
+
+      await queryRunner.commitTransaction();
+      return GetScheduleDetailByIdResponseDto.from(
+        scheduleBaseInfo,
+        scheduleAlarmInfo,
+        this.scheduleHelper.preprocessScheduleAreaOnDetailById(
+          scheduleAreaInfo,
+        ),
+      );
+    } catch (err) {
+      this.logger.error(`[findScheduleDetailById - transaction error] ${err}`);
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async findSchedulesInCalender(

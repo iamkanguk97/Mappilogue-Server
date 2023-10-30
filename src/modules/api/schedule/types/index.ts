@@ -38,3 +38,15 @@ export interface ISchedulesOnSpecificDate {
   areaName: string;
   areaTime: string;
 }
+
+export interface IScheduleAreasById {
+  scheduleAreaId: number;
+  scheduleId: number;
+  date: string;
+  name: string;
+  streetAddress: string;
+  latitude: string;
+  longitude: string;
+  time: string;
+  sequence: number;
+}
