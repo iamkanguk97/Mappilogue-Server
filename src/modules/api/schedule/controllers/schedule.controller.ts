@@ -1,3 +1,4 @@
+import { GetScheduleOnSpecificDateRequestDto } from './../dtos/get-schedule-on-specific-date-request.dto';
 import {
   Body,
   Controller,
@@ -7,6 +8,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Query,
 } from '@nestjs/common';
 import { UserId } from '../../user/decorators/user-id.decorator';
 import { PostScheduleRequestDto } from '../dtos/post-schedule-request.dto';
@@ -15,6 +17,7 @@ import { ResponseEntity } from 'src/common/response-entity';
 import { ScheduleValidationPipe } from '../pipes/schedule-validation.pipe';
 import { ScheduleDto } from '../dtos/schedule.dto';
 import { PostScheduleResponseDto } from '../dtos/post-schedule-response.dto';
+import { GetScheduleOnSpecificDateResponseDto } from '../dtos/get-schedule-on-specific-date-response.dto';
 
 @Controller('schedules')
 export class ScheduleController {
@@ -41,7 +44,14 @@ export class ScheduleController {
 
   @Get('detail-by-date')
   @HttpCode(HttpStatus.OK)
-  async getScheduleDetailByDate() {
-    return;
+  async getSchedulesOnSpecificDate(
+    @UserId() userId: number,
+    @Query() query: GetScheduleOnSpecificDateRequestDto,
+  ): Promise<ResponseEntity<GetScheduleOnSpecificDateResponseDto>> {
+    const result = await this.scheduleService.findSchedulesOnSpecificDate(
+      userId,
+      query.date,
+    );
+    return ResponseEntity.OK_WITH(HttpStatus.OK, result);
   }
 }

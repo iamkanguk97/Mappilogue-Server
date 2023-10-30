@@ -39,3 +39,16 @@ export const checkBetweenDatesWithNoMoment = (
     moment(targetDate) <= moment(endDate)
   );
 };
+
+export const getKoreanDateFormatBySingle = (date: string): string => {
+  const [year, month, day] = date.split('-').map(Number);
+  return `${year}년 ${month}월 ${day}일`;
+};
+
+export const getKoreanDateFormatByMultiple = (
+  year: number,
+  month: number,
+  day: number,
+): string => {
+  return `${year}년 ${month}월 ${day}일`;
+};

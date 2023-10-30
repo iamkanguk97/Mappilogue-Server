@@ -3,7 +3,14 @@ import {
   StatusOrCheckColumnLengthEnum,
 } from 'src/constants/enum';
 import { DefaultColumnType } from 'src/types/default-column.type';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { UserEntity } from '../../user/entities/user.entity';
 import {
   SCHEDULE_DEFAULT_TITLE,
