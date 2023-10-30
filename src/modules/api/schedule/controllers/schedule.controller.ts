@@ -1,3 +1,4 @@
+import { GetScheduleOnSpecificDateRequestDto } from './../dtos/get-schedule-on-specific-date-request.dto';
 import {
   Body,
   Controller,
@@ -18,6 +19,7 @@ import { ScheduleDto } from '../dtos/schedule.dto';
 import { PostScheduleResponseDto } from '../dtos/post-schedule-response.dto';
 import { GetScheduleInCalenderRequestDto } from '../dtos/get-schedules-in-calender-request.dto';
 import { ISchedulesInCalender } from '../types';
+import { GetScheduleOnSpecificDateResponseDto } from '../dtos/get-schedule-on-specific-date-response.dto';
 
 @Controller('schedules')
 export class ScheduleController {
@@ -44,8 +46,15 @@ export class ScheduleController {
 
   @Get('detail-by-date')
   @HttpCode(HttpStatus.OK)
-  async getScheduleDetailByDate() {
-    return;
+  async getSchedulesOnSpecificDate(
+    @UserId() userId: number,
+    @Query() query: GetScheduleOnSpecificDateRequestDto,
+  ): Promise<ResponseEntity<GetScheduleOnSpecificDateResponseDto>> {
+    const result = await this.scheduleService.findSchedulesOnSpecificDate(
+      userId,
+      query.date,
+    );
+    return ResponseEntity.OK_WITH(HttpStatus.OK, result);
   }
 
   @Get('calenders')

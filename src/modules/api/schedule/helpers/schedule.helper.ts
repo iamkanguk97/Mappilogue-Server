@@ -3,6 +3,8 @@ import { ScheduleEntity } from '../entities/schedule.entity';
 import * as _ from 'lodash';
 import { StatusColumnEnum } from 'src/constants/enum';
 import { SCHEDULE_DEFAULT_TITLE } from '../constants/schedule.constant';
+import { getKoreanDateFormatByMultiple } from 'src/helpers/date.helper';
+import { ISolarToLunarResult } from '../types';
 
 @Injectable()
 export class ScheduleHelper {
@@ -29,5 +31,25 @@ export class ScheduleHelper {
       title: scheduleTitle ?? SCHEDULE_DEFAULT_TITLE,
       body: `${startDateMonth}월 ${startDateDay}일에 있을 일정을 알려드려요!`,
     };
+  }
+
+  /**
+   * @title 양력->음력 변환결과를 가지고 음력날짜 구하는 함수
+   * @param result
+   * @returns
+   */
+  generateLunarDateBySolarToLunarResult(
+    result: number | ISolarToLunarResult,
+  ): string {
+    if (result === -1) {
+      return '';
+    }
+
+    result = result as ISolarToLunarResult;
+    return getKoreanDateFormatByMultiple(
+      result.lYear,
+      result.lMonth,
+      result.lDay,
+    );
   }
 }

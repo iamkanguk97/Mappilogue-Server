@@ -3,7 +3,10 @@ import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { PostScheduleRequestDto } from '../dtos/post-schedule-request.dto';
 import { DataSource } from 'typeorm';
 import { ScheduleRepository } from '../repositories/schedule.repository';
-import { checkBetweenDatesWithNoMoment } from 'src/helpers/date.helper';
+import {
+  checkBetweenDatesWithNoMoment,
+  getKoreanDateFormatByMultiple,
+} from 'src/helpers/date.helper';
 import { ScheduleExceptionCode } from 'src/common/exception-code/schedule.exception-code';
 import { ScheduleAreaRepotory } from '../repositories/schedule-area.repository';
 import { CheckColumnEnum, StatusColumnEnum } from 'src/constants/enum';
@@ -22,6 +25,8 @@ import { UserAlarmHistoryEntity } from '../../user/entities/user-alarm-history.e
 import { ScheduleHelper } from '../helpers/schedule.helper';
 import { GetScheduleInCalenderRequestDto } from '../dtos/get-schedules-in-calender-request.dto';
 import { ISchedulesInCalender } from '../types';
+import { solar2lunar } from 'solarlunar';
+import { GetScheduleOnSpecificDateResponseDto } from '../dtos/get-schedule-on-specific-date-response.dto';
 
 @Injectable()
 export class ScheduleService {
@@ -198,6 +203,30 @@ export class ScheduleService {
         await queryRunner.release();
       }
     }
+  }
+
+  async findSchedulesOnSpecificDate(
+    userId: number,
+    date: string,
+  ): Promise<GetScheduleOnSpecificDateResponseDto> {
+    const [year, month, day] = date.split('-').map(Number);
+    const solarToLunarResult = solar2lunar(year, month, day);
+
+    const lunarDate =
+      this.scheduleHelper.generateLunarDateBySolarToLunarResult(
+        solarToLunarResult,
+      );
+
+    const result = await this.scheduleRepository.selectSchedulesOnSpecificDate(
+      userId,
+      date,
+    );
+
+    return GetScheduleOnSpecificDateResponseDto.from(
+      getKoreanDateFormatByMultiple(year, month, day),
+      lunarDate,
+      result,
+    );
   }
 
   async findScheduleById(scheduleId: number): Promise<ScheduleEntity> {
