@@ -54,4 +54,17 @@ export class ScheduleController {
     );
     return ResponseEntity.OK_WITH(HttpStatus.OK, result);
   }
+
+  @Get('detail-by-id')
+  @HttpCode(HttpStatus.OK)
+  async getScheduleDetailById(
+    @UserId() userId: number,
+    @Query(ScheduleValidationPipe) schedule: ScheduleDto,
+  ): Promise<ResponseEntity<any>> {
+    const result = await this.scheduleService.findScheduleDetailById(
+      userId,
+      schedule,
+    );
+    return ResponseEntity.OK_WITH(HttpStatus.OK, result);
+  }
 }

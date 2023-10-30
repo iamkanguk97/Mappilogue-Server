@@ -6,8 +6,8 @@ export class ScheduleDto {
   private readonly userId: number;
   private readonly colorId: number;
   private readonly title?: string | undefined;
-  private readonly startDate: string;
-  private readonly endDate: string;
+  private startDate: string;
+  private endDate: string;
   private readonly isAlarm: CheckColumnEnum;
 
   private constructor(
@@ -42,5 +42,12 @@ export class ScheduleDto {
 
   get _id(): number {
     return this.id;
+  }
+
+  set _startDate(newStartDate: string) {
+    this.startDate = newStartDate;
+  }
+  set _endDate(newEndDate: string) {
+    this.endDate = newEndDate;
   }
 }
