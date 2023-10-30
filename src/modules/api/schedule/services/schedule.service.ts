@@ -28,8 +28,8 @@ import { GetScheduleInCalenderRequestDto } from '../dtos/get-schedules-in-calend
 import { ISchedulesInCalender } from '../types';
 import { solar2lunar } from 'solarlunar';
 import { GetScheduleOnSpecificDateResponseDto } from '../dtos/get-schedule-on-specific-date-response.dto';
-import { ScheduleDto } from '../dtos/schedule.dto';
 import { ColorService } from '../../color/services/color.service';
+import { ScheduleDto } from '../dtos/schedule.dto';
 
 @Injectable()
 export class ScheduleService {
@@ -80,7 +80,7 @@ export class ScheduleService {
     await this.scheduleRepository.delete({ userId, id: scheduleId });
   }
 
-  async findScheduleDetailById(
+  async findScheduleOnSpecificId(
     schedule: ScheduleDto,
   ): Promise<GetScheduleDetailByIdResponseDto> {
     const queryRunner = this.dataSource.createQueryRunner();

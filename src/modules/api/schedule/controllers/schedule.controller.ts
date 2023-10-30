@@ -63,7 +63,9 @@ export class ScheduleController {
   async getScheduleDetailById(
     @Query(ScheduleValidationPipe) schedule: ScheduleDto,
   ): Promise<ResponseEntity<GetScheduleDetailByIdResponseDto>> {
-    const result = await this.scheduleService.findScheduleDetailById(schedule);
+    const result = await this.scheduleService.findScheduleOnSpecificId(
+      schedule,
+    );
     return ResponseEntity.OK_WITH(HttpStatus.OK, result);
   }
 
