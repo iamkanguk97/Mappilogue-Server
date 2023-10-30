@@ -20,6 +20,8 @@ import { PostScheduleResponseDto } from '../dtos/post-schedule-response.dto';
 import { NotificationTypeEnum } from 'src/modules/core/notification/constants/notification.enum';
 import { UserAlarmHistoryEntity } from '../../user/entities/user-alarm-history.entity';
 import { ScheduleHelper } from '../helpers/schedule.helper';
+import { GetScheduleInCalenderRequestDto } from '../dtos/get-schedules-in-calender-request.dto';
+import { ISchedulesInCalender } from '../types';
 
 @Injectable()
 export class ScheduleService {
@@ -67,6 +69,17 @@ export class ScheduleService {
 
   async removeSchedule(userId: number, scheduleId: number): Promise<void> {
     await this.scheduleRepository.delete({ userId, id: scheduleId });
+  }
+
+  async findSchedulesInCalender(
+    userId: number,
+    query: GetScheduleInCalenderRequestDto,
+  ): Promise<ISchedulesInCalender[]> {
+    return await this.scheduleRepository.selectSchedulesInCalender(
+      userId,
+      query.year,
+      query.month,
+    );
   }
 
   async createScheduleArea(

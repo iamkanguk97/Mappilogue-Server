@@ -7,6 +7,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Query,
 } from '@nestjs/common';
 import { UserId } from '../../user/decorators/user-id.decorator';
 import { PostScheduleRequestDto } from '../dtos/post-schedule-request.dto';
@@ -15,6 +16,8 @@ import { ResponseEntity } from 'src/common/response-entity';
 import { ScheduleValidationPipe } from '../pipes/schedule-validation.pipe';
 import { ScheduleDto } from '../dtos/schedule.dto';
 import { PostScheduleResponseDto } from '../dtos/post-schedule-response.dto';
+import { GetScheduleInCalenderRequestDto } from '../dtos/get-schedules-in-calender-request.dto';
+import { ISchedulesInCalender } from '../types';
 
 @Controller('schedules')
 export class ScheduleController {
@@ -43,5 +46,18 @@ export class ScheduleController {
   @HttpCode(HttpStatus.OK)
   async getScheduleDetailByDate() {
     return;
+  }
+
+  @Get('calenders')
+  @HttpCode(HttpStatus.OK)
+  async getSchedulesInCalender(
+    @UserId() userId: number,
+    @Query() query: GetScheduleInCalenderRequestDto,
+  ): Promise<ResponseEntity<ISchedulesInCalender[]>> {
+    const result = await this.scheduleService.findSchedulesInCalender(
+      userId,
+      query,
+    );
+    return ResponseEntity.OK_WITH(HttpStatus.OK, result);
   }
 }
