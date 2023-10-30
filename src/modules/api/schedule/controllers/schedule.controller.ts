@@ -17,6 +17,8 @@ import { ResponseEntity } from 'src/common/response-entity';
 import { ScheduleValidationPipe } from '../pipes/schedule-validation.pipe';
 import { ScheduleDto } from '../dtos/schedule.dto';
 import { PostScheduleResponseDto } from '../dtos/post-schedule-response.dto';
+import { GetScheduleInCalenderRequestDto } from '../dtos/get-schedules-in-calender-request.dto';
+import { ISchedulesInCalender } from '../types';
 import { GetScheduleOnSpecificDateResponseDto } from '../dtos/get-schedule-on-specific-date-response.dto';
 
 @Controller('schedules')
@@ -51,6 +53,19 @@ export class ScheduleController {
     const result = await this.scheduleService.findSchedulesOnSpecificDate(
       userId,
       query.date,
+    );
+    return ResponseEntity.OK_WITH(HttpStatus.OK, result);
+  }
+
+  @Get('calenders')
+  @HttpCode(HttpStatus.OK)
+  async getSchedulesInCalender(
+    @UserId() userId: number,
+    @Query() query: GetScheduleInCalenderRequestDto,
+  ): Promise<ResponseEntity<ISchedulesInCalender[]>> {
+    const result = await this.scheduleService.findSchedulesInCalender(
+      userId,
+      query,
     );
     return ResponseEntity.OK_WITH(HttpStatus.OK, result);
   }
