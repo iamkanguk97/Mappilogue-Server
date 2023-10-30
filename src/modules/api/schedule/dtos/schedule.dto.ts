@@ -43,6 +43,12 @@ export class ScheduleDto {
   get _id(): number {
     return this.id;
   }
+  get getStartDate(): string {
+    return this.startDate;
+  }
+  get getEndDate(): string {
+    return this.endDate;
+  }
 
   set _startDate(newStartDate: string) {
     this.startDate = newStartDate;

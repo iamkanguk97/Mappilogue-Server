@@ -22,7 +22,10 @@ export class ColorEntity extends BaseEntity {
   @OneToMany(() => ScheduleEntity, (schedule) => schedule.color)
   schedules: ScheduleEntity[];
 
-  static async selectColorList(): Promise<ColorEntity[]> {
-    return await this.createQueryBuilder('color').getMany();
-  }
+  /** <10/30>
+   * @deprecated Repository 적용으로 인한 deprecated
+   */
+  // static async selectColorList(): Promise<ColorEntity[]> {
+  //   return await this.createQueryBuilder('color').getMany();
+  // }
 }

@@ -6,6 +6,7 @@ import { ScheduleRepository } from '../repositories/schedule.repository';
 import {
   checkBetweenDatesWithNoMoment,
   getKoreanDateFormatByMultiple,
+  getKoreanDateFormatBySingle,
 } from 'src/helpers/date.helper';
 import { ScheduleExceptionCode } from 'src/common/exception-code/schedule.exception-code';
 import { ScheduleAreaRepotory } from '../repositories/schedule-area.repository';
@@ -84,8 +85,8 @@ export class ScheduleService {
       console.log(userId);
       console.log(schedule);
 
-      schedule._startDate = '';
-      schedule._endDate = '';
+      schedule._startDate = getKoreanDateFormatBySingle(schedule.getStartDate);
+      schedule._endDate = getKoreanDateFormatBySingle(schedule.getEndDate);
 
       console.log(schedule);
 
