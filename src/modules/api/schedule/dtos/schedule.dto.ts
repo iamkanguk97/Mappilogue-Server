@@ -6,9 +6,11 @@ export class ScheduleDto {
   private readonly userId: number;
   private readonly colorId: number;
   private readonly title?: string | undefined;
+  private readonly isAlarm: CheckColumnEnum;
+
   private startDate: string;
   private endDate: string;
-  private readonly isAlarm: CheckColumnEnum;
+  private colorCode?: string | undefined;
 
   private constructor(
     id: number,
@@ -40,8 +42,11 @@ export class ScheduleDto {
     );
   }
 
-  get _id(): number {
+  get getId(): number {
     return this.id;
+  }
+  get getUserId(): number {
+    return this.userId;
   }
   get getStartDate(): string {
     return this.startDate;
@@ -49,11 +54,23 @@ export class ScheduleDto {
   get getEndDate(): string {
     return this.endDate;
   }
+  get getColorId(): number {
+    return this.colorId;
+  }
+  get getColorCode(): string | undefined {
+    return this.colorCode;
+  }
+  get getIsAlarm(): CheckColumnEnum {
+    return this.isAlarm;
+  }
 
   set _startDate(newStartDate: string) {
     this.startDate = newStartDate;
   }
   set _endDate(newEndDate: string) {
     this.endDate = newEndDate;
+  }
+  set _colorCode(newColorCode: string) {
+    this.colorCode = newColorCode;
   }
 }

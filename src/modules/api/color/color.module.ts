@@ -8,5 +8,6 @@ import { ColorRepository } from './repositories/color.repository';
   imports: [CustomRepositoryModule.forCustomRepository([ColorRepository])],
   controllers: [ColorController],
   providers: [ColorService],
+  exports: [ColorService],
 })
 export class ColorModule {}

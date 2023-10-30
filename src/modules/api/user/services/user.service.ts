@@ -26,6 +26,7 @@ import { LoginOrSignUpRequestDto } from '../dtos/login-or-sign-up-request.dto';
 import { UserAlarmSettingRepository } from '../repositories/user-alarm-setting.repository';
 import { UserAlarmSettingEntity } from '../entities/user-alarm-setting.entity';
 import { DataSource } from 'typeorm';
+import { UserAlarmHistoryRepository } from '../repositories/user-alarm-history.repository';
 
 @Injectable()
 export class UserService {
@@ -33,6 +34,7 @@ export class UserService {
     private readonly userRepository: UserRepository,
     private readonly userWithdrawReasonRepository: UserWithdrawReasonRepository,
     private readonly userAlarmSettingRepository: UserAlarmSettingRepository,
+    private readonly userAlarmHistoryRepository: UserAlarmHistoryRepository,
     private readonly userHelper: UserHelper,
     private readonly authService: AuthService,
     private readonly jwtService: JwtService,
@@ -229,5 +231,17 @@ export class UserService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async findUserScheduleAlarms(
+    userId: number,
+    scheduleId: number,
+  ): Promise<string[]> {
+    const result =
+      await this.userAlarmHistoryRepository.selectUserScheduleAlarms(
+        userId,
+        scheduleId,
+      );
+    return result.map((r) => r.alarmDate);
   }
 }

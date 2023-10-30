@@ -18,6 +18,7 @@ import { ScheduleValidationPipe } from '../pipes/schedule-validation.pipe';
 import { ScheduleDto } from '../dtos/schedule.dto';
 import { PostScheduleResponseDto } from '../dtos/post-schedule-response.dto';
 import { GetScheduleOnSpecificDateResponseDto } from '../dtos/get-schedule-on-specific-date-response.dto';
+import { GetScheduleDetailByIdResponseDto } from '../dtos/get-schedule-detail-by-id-response.dto';
 
 @Controller('schedules')
 export class ScheduleController {
@@ -39,7 +40,7 @@ export class ScheduleController {
     @UserId() userId: number,
     @Param(ScheduleValidationPipe) schedule: ScheduleDto,
   ): Promise<void> {
-    await this.scheduleService.removeSchedule(userId, schedule._id);
+    await this.scheduleService.removeSchedule(userId, schedule.getId);
   }
 
   @Get('detail-by-date')
@@ -58,13 +59,9 @@ export class ScheduleController {
   @Get('detail-by-id')
   @HttpCode(HttpStatus.OK)
   async getScheduleDetailById(
-    @UserId() userId: number,
     @Query(ScheduleValidationPipe) schedule: ScheduleDto,
-  ): Promise<ResponseEntity<any>> {
-    const result = await this.scheduleService.findScheduleDetailById(
-      userId,
-      schedule,
-    );
+  ): Promise<ResponseEntity<GetScheduleDetailByIdResponseDto>> {
+    const result = await this.scheduleService.findScheduleDetailById(schedule);
     return ResponseEntity.OK_WITH(HttpStatus.OK, result);
   }
 }

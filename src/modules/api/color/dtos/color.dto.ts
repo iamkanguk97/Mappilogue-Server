@@ -20,4 +20,8 @@ export class ColorDto {
   static ofByValue(color: ColorEntity): ColorDto {
     return new ColorDto(color.id, color.name, color.code);
   }
+
+  get getCode(): string {
+    return this.code;
+  }
 }
