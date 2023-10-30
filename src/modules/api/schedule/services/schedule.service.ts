@@ -209,11 +209,10 @@ export class ScheduleService {
       date,
     );
 
-    console.log(result);
-
     return GetScheduleOnSpecificDateResponseDto.from(
       getKoreanDateFormatByMultiple(year, month, day),
       lunarDate,
+      result,
     );
   }
 

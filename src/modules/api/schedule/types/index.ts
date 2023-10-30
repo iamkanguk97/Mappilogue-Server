@@ -19,3 +19,12 @@ export interface ISolarToLunarResult {
   isTerm: boolean;
   term: string;
 }
+
+export interface ISchedulesOnSpecificDate {
+  scheduleId: number;
+  title: string;
+  colorId: number;
+  colorCode: string;
+  areaName: string;
+  areaTime: string;
+}
