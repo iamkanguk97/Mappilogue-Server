@@ -42,3 +42,15 @@ export const CreateProfileImageMulterOption = (): multer.Options => {
     limits: { fileSize: 1024 * 1024 * 20 },
   };
 };
+
+export const CreateMarkImageMulterOption = (): multer.Options => {
+  return {
+    fileFilter: fileFilter(FileTypeEnum.IMAGE),
+    storage: new MulterBuilder(ImageBuilderTypeEnum.UPLOAD)
+      .allowImageMimeTypes()
+      .setResource('image')
+      .setPath('mark')
+      .build(),
+    limits: { fileSize: 1024 * 1024 * 20 },
+  };
+};

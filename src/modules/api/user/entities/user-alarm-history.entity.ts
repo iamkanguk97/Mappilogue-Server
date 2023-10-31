@@ -4,6 +4,13 @@ import {
 } from 'src/constants/enum';
 import { DefaultColumnType } from 'src/types/default-column.type';
 import { Column, Entity } from 'typeorm';
+import {
+  USER_ALARM_HISTORY_BODY_LENGTH,
+  USER_ALARM_HISTORY_DATE_LENGTH,
+  USER_ALARM_HISTORY_TITLE_LENGTH,
+  USER_ALARM_HISTORY_TYPE_LENGTH,
+} from '../constants/user.constant';
+import { NotificationTypeEnum } from 'src/modules/core/notification/constants/notification.enum';
 
 @Entity('UserAlarmHistory')
 export class UserAlarmHistoryEntity extends DefaultColumnType {
@@ -13,23 +20,23 @@ export class UserAlarmHistoryEntity extends DefaultColumnType {
   @Column('int')
   scheduleId: number;
 
-  @Column('varchar', { length: 50 })
+  @Column('varchar', { length: USER_ALARM_HISTORY_TITLE_LENGTH })
   title: string;
 
   @Column('varchar', {
-    length: 100,
+    length: USER_ALARM_HISTORY_BODY_LENGTH,
     nullable: true,
   })
   body?: string | undefined;
 
   @Column('varchar', {
     nullable: true,
-    length: 20,
+    length: USER_ALARM_HISTORY_DATE_LENGTH,
   })
   alarmDate: string;
 
-  @Column('varchar', { length: 20, nullable: true })
-  type: string;
+  @Column('varchar', { length: USER_ALARM_HISTORY_TYPE_LENGTH, nullable: true })
+  type: NotificationTypeEnum;
 
   @Column('varchar', {
     length: StatusOrCheckColumnLengthEnum.CHECK,
@@ -52,7 +59,7 @@ export class UserAlarmHistoryEntity extends DefaultColumnType {
     title: string,
     body: string,
     alarmDate: string,
-    type: string,
+    type: NotificationTypeEnum,
   ): UserAlarmHistoryEntity {
     const userAlarmHistory = new UserAlarmHistoryEntity();
 
