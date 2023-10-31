@@ -46,18 +46,17 @@ export class UserEntity extends DefaultColumnType {
   birthday?: string | undefined;
 
   @Column('varchar', {
-    nullable: true,
     length: USER_SNS_ID_LENGTH,
     unique: true,
   })
-  snsId?: string | undefined;
+  snsId: string;
 
   @Column('varchar', {
     length: USER_SNS_TYPE_LENGTH,
   })
   snsType!: UserSnsTypeEnum;
 
-  @Column('text', { nullable: true })
+  @Column('varchar', { nullable: true })
   fcmToken?: string | undefined;
 
   @OneToOne(
