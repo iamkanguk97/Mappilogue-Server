@@ -6,7 +6,7 @@ import { StatusColumnEnum } from 'src/constants/enum';
 import { IScheduleAreasById } from '../types';
 
 @CustomRepository(ScheduleAreaEntity)
-export class ScheduleAreaRepotory extends Repository<ScheduleAreaEntity> {
+export class ScheduleAreaRepository extends Repository<ScheduleAreaEntity> {
   async selectScheduleAreasById(
     scheduleId: number,
   ): Promise<IScheduleAreasById[]> {

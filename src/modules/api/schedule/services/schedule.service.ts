@@ -9,7 +9,6 @@ import {
   getKoreanDateFormatByMultiple,
 } from 'src/helpers/date.helper';
 import { ScheduleExceptionCode } from 'src/common/exception-code/schedule.exception-code';
-import { ScheduleAreaRepotory } from '../repositories/schedule-area.repository';
 import { CheckColumnEnum, StatusColumnEnum } from 'src/constants/enum';
 import { UserProfileService } from '../../user-profile/services/user-profile.service';
 import { UserService } from '../../user/services/user.service';
@@ -30,6 +29,7 @@ import { solar2lunar } from 'solarlunar';
 import { GetScheduleOnSpecificDateResponseDto } from '../dtos/get-schedule-on-specific-date-response.dto';
 import { ColorService } from '../../color/services/color.service';
 import { ScheduleDto } from '../dtos/schedule.dto';
+import { ScheduleAreaRepository } from '../repositories/schedule-area.repository';
 
 @Injectable()
 export class ScheduleService {
@@ -45,7 +45,7 @@ export class ScheduleService {
     private readonly scheduleHelper: ScheduleHelper,
     private readonly userHelper: UserHelper,
     private readonly scheduleRepository: ScheduleRepository,
-    private readonly scheduleAreaRepository: ScheduleAreaRepotory,
+    private readonly scheduleAreaRepository: ScheduleAreaRepository,
     private readonly userAlarmHistoryRepository: UserAlarmHistoryRepository,
   ) {}
 
@@ -276,5 +276,23 @@ export class ScheduleService {
         status: StatusColumnEnum.ACTIVE,
       },
     });
+  }
+
+  async modifyById(
+    scheduleId: number,
+    properties: Partial<ScheduleEntity>,
+  ): Promise<void> {
+    await this.scheduleRepository.updateById(scheduleId, properties);
+  }
+
+  async checkScheduleStatus(userId: number, scheduleId: number): Promise<void> {
+    const scheduleStatus = await this.findScheduleById(scheduleId);
+
+    if (!this.scheduleHelper.isScheduleExist(scheduleStatus)) {
+      throw new BadRequestException(ScheduleExceptionCode.ScheduleNotExist);
+    }
+    if (scheduleStatus.userId !== userId) {
+      throw new BadRequestException(ScheduleExceptionCode.ScheduleNotMine);
+    }
   }
 }

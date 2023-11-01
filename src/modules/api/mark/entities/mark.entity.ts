@@ -2,6 +2,7 @@ import { DefaultColumnType } from 'src/types/default-column.type';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { UserEntity } from '../../user/entities/user.entity';
 import { MarkCategoryEntity } from './mark-category.entity';
+import { MarkTitleLengthEnum } from '../constants/mark.enum';
 
 @Entity('Mark')
 export class MarkEntity extends DefaultColumnType {
@@ -9,10 +10,16 @@ export class MarkEntity extends DefaultColumnType {
   userId: number;
 
   @Column('int', { nullable: true })
-  markCategoryId: number;
+  markCategoryId?: number | undefined;
 
-  @Column('varchar', { length: 50 })
+  @Column('int', { nullable: true })
+  scheduleId?: number | undefined;
+
+  @Column('varchar', { length: MarkTitleLengthEnum.MAX })
   title: string;
+
+  @Column('tinytext', { nullable: true })
+  content?: string | undefined;
 
   @ManyToOne(() => UserEntity, (user) => user.marks, {
     onDelete: 'CASCADE',

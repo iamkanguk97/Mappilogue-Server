@@ -10,8 +10,11 @@ import { CommonExceptionCode } from 'src/common/exception-code/common.exception-
 import { ScheduleExceptionCode } from 'src/common/exception-code/schedule.exception-code';
 import { REGEX_SCHEDULE_AREA_TIME } from 'src/common/regex';
 import {
+  ScheduleAreaLatitudeLengthEnum,
+  ScheduleAreaLongitudeLengthEnum,
   ScheduleAreaNameLengthEnum,
   ScheduleAreaStreetAddressLengthEnum,
+  ScheduleAreaTimeLengthEnum,
 } from '../constants/schedule.enum';
 
 export class ScheduleAreaDto {
@@ -32,26 +35,35 @@ export class ScheduleAreaDto {
     ),
   )
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
-  @IsNotEmpty(
-    setValidatorContext(ScheduleExceptionCode.ScheduleAreaStreetAddressEmpty),
-  )
-  streetAddress: string;
+  @IsOptional()
+  streetAddress?: string | undefined;
 
-  @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
-  @IsNotEmpty(
-    setValidatorContext(ScheduleExceptionCode.ScheduleAreaLatitudeEmpty),
+  @Length(
+    ScheduleAreaLatitudeLengthEnum.MIN,
+    ScheduleAreaLatitudeLengthEnum.MAX,
+    setValidatorContext(ScheduleExceptionCode.ScheduleAreaLatitudeLengthError),
   )
-  latitude: string;
+  @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
+  @IsOptional()
+  latitude?: string | undefined;
 
-  @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
-  @IsNotEmpty(
-    setValidatorContext(ScheduleExceptionCode.ScheduleAreaLongitudeEmpty),
+  @Length(
+    ScheduleAreaLongitudeLengthEnum.MIN,
+    ScheduleAreaLongitudeLengthEnum.MAX,
+    setValidatorContext(ScheduleExceptionCode.ScheduleAreaLongitudeLengthError),
   )
-  longitude: string;
+  @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
+  @IsOptional()
+  longitude?: string | undefined;
 
   @Matches(
     REGEX_SCHEDULE_AREA_TIME,
     setValidatorContext(ScheduleExceptionCode.ScheduleAreaTimeErrorFormat),
+  )
+  @Length(
+    ScheduleAreaTimeLengthEnum.MIN,
+    ScheduleAreaTimeLengthEnum.MAX,
+    setValidatorContext(ScheduleExceptionCode.ScheduleAreaTimeLengthError),
   )
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsOptional()

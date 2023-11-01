@@ -13,6 +13,6 @@ import { MarkModule } from '../mark/mark.module';
   ],
   controllers: [MarkCategoryController],
   providers: [MarkCategoryService, MarkCategoryHelper],
-  exports: [MarkCategoryHelper],
+  exports: [MarkCategoryService, MarkCategoryHelper],
 })
 export class MarkCategoryModule {}

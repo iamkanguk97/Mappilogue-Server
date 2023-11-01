@@ -2,9 +2,13 @@ import { DefaultColumnType } from 'src/types/default-column.type';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { ScheduleEntity } from './schedule.entity';
 import {
+  ScheduleAreaLatitudeLengthEnum,
+  ScheduleAreaLongitudeLengthEnum,
   ScheduleAreaNameLengthEnum,
   ScheduleAreaStreetAddressLengthEnum,
+  ScheduleAreaTimeLengthEnum,
 } from '../constants/schedule.enum';
+import { SCHEDULE_AREA_DATE_LENGTH } from '../constants/schedule.constant';
 
 @Entity('ScheduleArea')
 export class ScheduleAreaEntity extends DefaultColumnType {
@@ -14,23 +18,32 @@ export class ScheduleAreaEntity extends DefaultColumnType {
   @Column('varchar', { length: ScheduleAreaNameLengthEnum.MAX })
   name!: string;
 
-  @Column('varchar', { length: 20 })
+  @Column('varchar', { length: SCHEDULE_AREA_DATE_LENGTH })
   date!: string;
-
-  @Column('varchar', { length: ScheduleAreaStreetAddressLengthEnum.MAX })
-  streetAddress!: string;
-
-  @Column('varchar', { length: 100 })
-  latitude!: string;
-
-  @Column('varchar', { length: 100 })
-  longitude!: string;
 
   @Column('varchar', {
     nullable: true,
-    length: 10,
+    length: ScheduleAreaStreetAddressLengthEnum.MAX,
   })
-  time?: string;
+  streetAddress?: string | undefined;
+
+  @Column('varchar', {
+    nullable: true,
+    length: ScheduleAreaLatitudeLengthEnum.MAX,
+  })
+  latitude?: string | undefined;
+
+  @Column('varchar', {
+    nullable: true,
+    length: ScheduleAreaLongitudeLengthEnum.MAX,
+  })
+  longitude?: string | undefined;
+
+  @Column('varchar', {
+    nullable: true,
+    length: ScheduleAreaTimeLengthEnum.MAX,
+  })
+  time?: string | undefined;
 
   @Column('int')
   sequence!: number;

@@ -45,22 +45,22 @@ export const ScheduleExceptionCode = {
     '2011',
     '일정에 해당하는 장소의 정보가 누락되었습니다.',
   ),
-  ScheduleAreaLatitudeEmpty: setExceptionCode(
-    '2012',
-    '일정 장소의 위도를 입력해주세요.',
-  ),
-  ScheduleAreaLongitudeEmpty: setExceptionCode(
-    '2013',
-    '일정 장소의 경도를 입력해주세요.',
-  ),
+  // ScheduleAreaLatitudeEmpty: setExceptionCode(
+  //   '2012',
+  //   '일정 장소의 위도를 입력해주세요.',
+  // ),
+  // ScheduleAreaLongitudeEmpty: setExceptionCode(
+  //   '2013',
+  //   '일정 장소의 경도를 입력해주세요.',
+  // ),
   ScheduleAreaTimeErrorFormat: setExceptionCode(
     '2014',
     '일정 장소의 시간의 형식이 잘못되었습니다. h:mm AM/PM 형태로 입력해주세요.',
   ),
-  ScheduleAreaStreetAddressEmpty: setExceptionCode(
-    '2015',
-    '일정 장소의 도로명 주소가 누락되었습니다.',
-  ),
+  // ScheduleAreaStreetAddressEmpty: setExceptionCode(
+  //   '2015',
+  //   '일정 장소의 도로명 주소가 누락되었습니다.',
+  // ),
   ScheduleAreaStreetAddressLengthError: setExceptionCode(
     '2016',
     '일정 장소의 도로명 주소는 최대 100자까지 입력 가능합니다.',
@@ -80,4 +80,16 @@ export const ScheduleExceptionCode = {
   ScheduleIdEmpty: setExceptionCode('2020', '일정 아이디를 입력해주세요.'),
   ScheduleNotExist: setExceptionCode('2021', '존재하지 않는 일정입니다.'),
   ScheduleNotMine: setExceptionCode('2022', '본인의 스케줄이 아닙니다.'),
+  ScheduleAreaLatitudeLengthError: setExceptionCode(
+    '2023',
+    '일정 장소의 위도는 최대 100자까지 입력 가능합니다.',
+  ),
+  ScheduleAreaLongitudeLengthError: setExceptionCode(
+    '2024',
+    '일정 장소의 경도는 최대 100자까지 입력가능합니다.',
+  ),
+  ScheduleAreaTimeLengthError: setExceptionCode(
+    '2025',
+    '일정 장소의 시간은 최대 10자까지 입력 가능합니다.',
+  ),
 };

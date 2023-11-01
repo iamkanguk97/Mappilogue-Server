@@ -16,6 +16,7 @@ import { MarkValidationPipe } from '../pipes/mark-validation.pipe';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { CreateMarkImageMulterOption } from 'src/common/multer/multer.option';
 import { ResponseEntity } from 'src/common/response-entity';
+import { PostMarkPipe } from '../pipes/post-mark.pipe';
 
 @Controller('marks')
 export class MarkController {
@@ -27,11 +28,8 @@ export class MarkController {
   async postMark(
     @UserId() userId: number,
     @UploadedFiles() files: Express.MulterS3.File[],
-    @Body() body: any,
+    @Body(PostMarkPipe) body: any,
   ) {
-    console.log(userId);
-    console.log(files);
-    console.log(body);
     const result = await this.markService.createMark(userId, files, body);
     return ResponseEntity.OK_WITH(HttpStatus.CREATED, result);
   }

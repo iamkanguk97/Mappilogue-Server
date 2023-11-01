@@ -186,4 +186,23 @@ export class MarkCategoryService {
     }
     await this.markService.modifyMarkCategoryIdToNullInMark(markCategoryId);
   }
+
+  async checkMarkCategoryStatus(
+    userId: number,
+    markCategoryId: number,
+  ): Promise<void> {
+    const markCategoryStatus = await this.findOneById(markCategoryId);
+
+    if (!this.markCategoryHelper.isMarkCategoryExist(markCategoryStatus)) {
+      throw new BadRequestException(
+        MarkCategoryExceptionCode.MarkCategoryNotExist,
+      );
+    }
+
+    if (markCategoryStatus.userId !== userId) {
+      throw new BadRequestException(
+        MarkCategoryExceptionCode.MarkCategoryNotMine,
+      );
+    }
+  }
 }
