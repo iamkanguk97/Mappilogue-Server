@@ -12,9 +12,7 @@ export class ColorDto {
   }
 
   static ofByArray(colors: ColorEntity[]): ColorDto[] {
-    return colors.map(
-      (color) => new ColorDto(color.id, color.name, color.code),
-    );
+    return colors.map((color) => this.ofByValue(color));
   }
 
   static ofByValue(color: ColorEntity): ColorDto {

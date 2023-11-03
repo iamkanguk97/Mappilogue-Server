@@ -1,15 +1,21 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ColorController } from './color.controller';
 import { ColorService } from '../services/color.service';
-import { CustomCacheModule } from 'src/modules/core/custom-cache/custom-cache.module';
+import { ColorRepository } from '../repositories/color.repository';
+import { CoreModule } from 'src/modules/core/core.module';
+import { CustomRepositoryModule } from 'src/modules/core/custom-repository/custom-repository.module';
 
 describe('ColorController', () => {
   let colorController: ColorController;
   let colorService: ColorService;
+  let module: TestingModule;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [CustomCacheModule],
+    module = await Test.createTestingModule({
+      imports: [
+        CoreModule,
+        CustomRepositoryModule.forCustomRepository([ColorRepository]),
+      ],
       controllers: [ColorController],
       providers: [ColorService],
     }).compile();
@@ -18,7 +24,16 @@ describe('ColorController', () => {
     colorService = module.get<ColorService>(ColorService);
   });
 
-  it('ColorController가 정의되어 있어야 합니다.', () => {
+  it('ColorController와 ColorService가 정의되어 있어야 합니다.', () => {
     expect(colorController).toBeDefined();
+    expect(colorService).toBeDefined();
+  });
+
+  // describe('ColorController - getColorList', () => {
+  //   return;
+  // });
+
+  afterAll(async () => {
+    await module.close();
   });
 });

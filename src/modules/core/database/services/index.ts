@@ -19,7 +19,8 @@ export class DatabaseService implements TypeOrmOptionsFactory {
       logging: true,
       synchronize: this.customConfigService.isLocal(),
       charset: 'utf8mb4',
-      timezone: 'Asia/Seoul',
+      // timezone: 'Asia/Seoul',
+      timezone: 'Z',
       migrationsTableName: 'migrations',
     };
   }

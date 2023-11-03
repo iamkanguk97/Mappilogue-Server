@@ -7,17 +7,19 @@ import { MarkController } from './controllers/mark.controller';
 import { MarkService } from './services/mark.service';
 import { MarkHelper } from './helpers/mark.helper';
 import { MarkCategoryRepository } from './repositories/mark-category.repository';
+import { MarkCategoryModule } from '../mark-category/mark-category.module';
 
 @Module({
   imports: [
     ScheduleModule,
+    MarkCategoryModule,
     CustomRepositoryModule.forCustomRepository([
       MarkRepository,
       MarkCategoryRepository,
     ]),
   ],
   controllers: [MarkController],
-  providers: [MarkService, MarkCategoryService, MarkHelper],
+  providers: [MarkService, MarkHelper, MarkCategoryService],
   exports: [MarkService, MarkHelper],
 })
 export class MarkModule {}

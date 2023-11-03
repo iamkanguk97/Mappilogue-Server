@@ -8,7 +8,6 @@ import { MarkModule } from '../mark/mark.module';
 
 @Module({
   imports: [
-    MarkModule,
     CustomRepositoryModule.forCustomRepository([MarkCategoryRepository]),
   ],
   controllers: [MarkCategoryController],
