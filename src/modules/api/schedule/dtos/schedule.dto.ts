@@ -5,8 +5,8 @@ export class ScheduleDto {
   private readonly id: number;
   private readonly userId: number;
   private readonly colorId: number;
-  private readonly title?: string | undefined;
   private readonly isAlarm: CheckColumnEnum;
+  private readonly title?: string | undefined;
 
   private startDate: string;
   private endDate: string;
@@ -30,7 +30,7 @@ export class ScheduleDto {
     this.title = title;
   }
 
-  static from(scheduleEntity: ScheduleEntity): ScheduleDto {
+  static of(scheduleEntity: ScheduleEntity): ScheduleDto {
     return new ScheduleDto(
       scheduleEntity.id,
       scheduleEntity.userId,
@@ -45,32 +45,40 @@ export class ScheduleDto {
   get getId(): number {
     return this.id;
   }
+
   get getUserId(): number {
     return this.userId;
   }
+
   get getStartDate(): string {
     return this.startDate;
   }
+
   get getEndDate(): string {
     return this.endDate;
   }
+
   get getColorId(): number {
     return this.colorId;
   }
+
   get getColorCode(): string | undefined {
     return this.colorCode;
   }
+
   get getIsAlarm(): CheckColumnEnum {
     return this.isAlarm;
   }
 
-  set _startDate(newStartDate: string) {
+  set setStartDate(newStartDate: string) {
     this.startDate = newStartDate;
   }
-  set _endDate(newEndDate: string) {
+
+  set setEndDate(newEndDate: string) {
     this.endDate = newEndDate;
   }
-  set _colorCode(newColorCode: string) {
+
+  set setColorCode(newColorCode: string) {
     this.colorCode = newColorCode;
   }
 }

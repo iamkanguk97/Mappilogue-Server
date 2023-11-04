@@ -69,8 +69,8 @@ export class ScheduleService {
       await queryRunner.commitTransaction();
       return PostScheduleResponseDto.of(newScheduleId);
     } catch (err) {
+      this.logger.error(`[createSchedule - transaction error] ${err}`);
       await queryRunner.rollbackTransaction();
-      Logger.error(`[createSchedule] ${err}`);
       throw err;
     } finally {
       await queryRunner.release();
@@ -312,7 +312,10 @@ export class ScheduleService {
     }
   }
 
-  async checkScheduleStatus(userId: number, scheduleId: number): Promise<void> {
+  async checkScheduleStatus(
+    userId: number,
+    scheduleId: number,
+  ): Promise<ScheduleDto> {
     const scheduleStatus = await this.findScheduleById(scheduleId);
 
     if (!this.scheduleHelper.isScheduleExist(scheduleStatus)) {
@@ -321,6 +324,8 @@ export class ScheduleService {
     if (scheduleStatus.userId !== userId) {
       throw new BadRequestException(ScheduleExceptionCode.ScheduleNotMine);
     }
+
+    return ScheduleDto.of(scheduleStatus);
   }
 
   async modifyScheduleArea(

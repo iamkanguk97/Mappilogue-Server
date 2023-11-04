@@ -30,11 +30,8 @@ export interface ISolarToLunarResult {
   term: string;
 }
 
-export interface ISchedulesOnSpecificDate {
-  scheduleId: number;
-  title: string;
-  colorId: number;
-  colorCode: string;
+export interface ISchedulesOnSpecificDate
+  extends Omit<ISchedulesInCalender, 'userId'> {
   areaName: string;
   areaTime: string;
 }

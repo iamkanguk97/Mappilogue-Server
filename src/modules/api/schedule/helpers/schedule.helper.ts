@@ -67,9 +67,9 @@ export class ScheduleHelper {
   }
 
   async setScheduleOnDetailById(schedule: ScheduleDto): Promise<ScheduleDto> {
-    schedule._startDate = getKoreanDateFormatBySingle(schedule.getStartDate);
-    schedule._endDate = getKoreanDateFormatBySingle(schedule.getEndDate);
-    schedule._colorCode = (
+    schedule.setStartDate = getKoreanDateFormatBySingle(schedule.getStartDate);
+    schedule.setEndDate = getKoreanDateFormatBySingle(schedule.getEndDate);
+    schedule.setColorCode = (
       await this.colorService.findOneById(schedule.getColorId)
     ).getCode;
 
