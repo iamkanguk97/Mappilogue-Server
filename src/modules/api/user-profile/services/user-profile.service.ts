@@ -17,6 +17,8 @@ import { StatusColumnEnum } from 'src/constants/enum';
 
 @Injectable()
 export class UserProfileService {
+  private readonly logger = new Logger(UserProfileService.name);
+
   constructor(
     private readonly dataSource: DataSource,
     private readonly userService: UserService,
@@ -56,6 +58,7 @@ export class UserProfileService {
 
       await queryRunner.commitTransaction();
     } catch (err) {
+      this.logger.error(`[modifyUserProfileImage - transaction error] ${err}`);
       await queryRunner.rollbackTransaction();
       Logger.error(`[modifyUserProfileImage] ${err}`);
       throw err;
