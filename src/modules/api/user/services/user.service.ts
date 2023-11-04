@@ -31,16 +31,16 @@ import { UserAlarmHistoryRepository } from '../repositories/user-alarm-history.r
 @Injectable()
 export class UserService {
   constructor(
+    private readonly dataSource: DataSource,
     private readonly userRepository: UserRepository,
     private readonly userWithdrawReasonRepository: UserWithdrawReasonRepository,
     private readonly userAlarmSettingRepository: UserAlarmSettingRepository,
     private readonly userAlarmHistoryRepository: UserAlarmHistoryRepository,
-    private readonly userHelper: UserHelper,
     private readonly authService: AuthService,
     private readonly jwtService: JwtService,
-    private readonly jwtHelper: JwtHelper,
     private readonly customCacheService: CustomCacheService,
-    private readonly dataSource: DataSource,
+    private readonly userHelper: UserHelper,
+    private readonly jwtHelper: JwtHelper,
   ) {}
 
   async createSignUp(

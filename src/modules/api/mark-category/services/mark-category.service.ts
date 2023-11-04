@@ -15,10 +15,10 @@ import { MarkService } from '../../mark/services/mark.service';
 @Injectable()
 export class MarkCategoryService {
   constructor(
-    private readonly markCategoryRepository: MarkCategoryRepository,
-    private readonly markCategoryHelper: MarkCategoryHelper,
-    private readonly markService: MarkService,
     private readonly dataSource: DataSource,
+    private readonly markCategoryRepository: MarkCategoryRepository,
+    private readonly markService: MarkService,
+    private readonly markCategoryHelper: MarkCategoryHelper,
   ) {}
 
   async findMarkCategories(userId: number) {

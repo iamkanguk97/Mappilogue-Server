@@ -9,11 +9,11 @@ import { UserProfileHelper } from './helpers/user-profile.helper';
 
 @Module({
   imports: [
+    UserModule,
     CustomRepositoryModule.forCustomRepository([
       UserRepository,
       UserAlarmSettingRepository,
     ]),
-    UserModule,
   ],
   controllers: [UserProfileController],
   providers: [UserProfileService, UserProfileHelper],

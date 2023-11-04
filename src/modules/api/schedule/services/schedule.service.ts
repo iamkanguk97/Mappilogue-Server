@@ -25,7 +25,6 @@ import { UserAlarmHistoryEntity } from '../../user/entities/user-alarm-history.e
 import { ScheduleHelper } from '../helpers/schedule.helper';
 import { solar2lunar } from 'solarlunar';
 import { GetScheduleOnSpecificDateResponseDto } from '../dtos/get-schedule-on-specific-date-response.dto';
-import { ColorService } from '../../color/services/color.service';
 import { ScheduleDto } from '../dtos/schedule.dto';
 import { ScheduleAreaRepository } from '../repositories/schedule-area.repository';
 import { PutScheduleRequestDto } from '../dtos/put-schedule-request.dto';
@@ -38,16 +37,15 @@ export class ScheduleService {
 
   constructor(
     private readonly dataSource: DataSource,
-    private readonly userProfileService: UserProfileService,
-    private readonly userService: UserService,
-    private readonly notificationService: NotificationService,
-    private readonly colorService: ColorService,
-    private readonly userProfileHelper: UserProfileHelper,
-    private readonly scheduleHelper: ScheduleHelper,
-    private readonly userHelper: UserHelper,
     private readonly scheduleRepository: ScheduleRepository,
     private readonly scheduleAreaRepository: ScheduleAreaRepository,
     private readonly userAlarmHistoryRepository: UserAlarmHistoryRepository,
+    private readonly userService: UserService,
+    private readonly userProfileService: UserProfileService,
+    private readonly notificationService: NotificationService,
+    private readonly userProfileHelper: UserProfileHelper,
+    private readonly scheduleHelper: ScheduleHelper,
+    private readonly userHelper: UserHelper,
   ) {}
 
   async createSchedule(

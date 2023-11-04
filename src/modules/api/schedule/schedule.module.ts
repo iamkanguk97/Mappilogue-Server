@@ -3,19 +3,17 @@ import { ScheduleController } from './controllers/schedule.controller';
 import { ScheduleService } from './services/schedule.service';
 import { CustomRepositoryModule } from 'src/modules/core/custom-repository/custom-repository.module';
 import { ScheduleRepository } from './repositories/schedule.repository';
-import { NotificationModule } from 'src/modules/core/notification/notification.module';
-import { UserModule } from '../user/user.module';
 import { UserAlarmHistoryRepository } from '../user/repositories/user-alarm-history.repository';
-import { ColorModule } from '../color/color.module';
 import { ScheduleHelper } from './helpers/schedule.helper';
 import { ScheduleAreaRepository } from './repositories/schedule-area.repository';
 import { ScheduleValidationPipe } from './pipes/schedule-validation.pipe';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ScheduleEntity } from './entities/schedule.entity';
+import { ScheduleAreaEntity } from './entities/schedule-area.entity';
 
 @Module({
   imports: [
-    UserModule,
-    ColorModule,
-    NotificationModule,
+    TypeOrmModule.forFeature([ScheduleEntity, ScheduleAreaEntity]),
     CustomRepositoryModule.forCustomRepository([
       ScheduleRepository,
       ScheduleAreaRepository,
