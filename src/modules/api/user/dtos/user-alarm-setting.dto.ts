@@ -35,6 +35,18 @@ export class UserAlarmSettingDto {
     );
   }
 
+  static of(
+    userAlarmSettingEntity: UserAlarmSettingEntity,
+  ): UserAlarmSettingDto {
+    return new UserAlarmSettingDto(
+      userAlarmSettingEntity.userId,
+      userAlarmSettingEntity.isTotalAlarm,
+      userAlarmSettingEntity.isNoticeAlarm,
+      userAlarmSettingEntity.isMarketingAlarm,
+      userAlarmSettingEntity.isScheduleReminderAlarm,
+    );
+  }
+
   get getIsTotalAlarm(): CheckColumnEnum {
     return this.isTotalAlarm;
   }

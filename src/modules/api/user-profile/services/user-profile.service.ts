@@ -70,9 +70,14 @@ export class UserProfileService {
   }
 
   async findUserAlarmSettingById(userId: number): Promise<UserAlarmSettingDto> {
-    const result =
-      await this.userAlarmSettingRepository.selectUserAlarmSettingById(userId);
-    return UserAlarmSettingDto.from(userId, result);
+    const result = await this.userAlarmSettingRepository.findOne({
+      where: {
+        userId,
+        status: StatusColumnEnum.ACTIVE,
+      },
+    });
+
+    return UserAlarmSettingDto.of(result);
   }
 
   async modifyUserAlarmSetting(
