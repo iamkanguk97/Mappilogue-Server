@@ -30,6 +30,7 @@ import { GetScheduleOnSpecificDateResponseDto } from '../dtos/get-schedule-on-sp
 import { ColorService } from '../../color/services/color.service';
 import { ScheduleDto } from '../dtos/schedule.dto';
 import { ScheduleAreaRepository } from '../repositories/schedule-area.repository';
+import { PutScheduleRequestDto } from '../dtos/put-schedule-request.dto';
 
 @Injectable()
 export class ScheduleService {
@@ -285,8 +286,30 @@ export class ScheduleService {
     await this.scheduleRepository.updateById(scheduleId, properties);
   }
 
-  async modifySchedule(schedule: ScheduleDto) {
-    return;
+  async modifySchedule(
+    schedule: ScheduleDto,
+    body: PutScheduleRequestDto,
+  ): Promise<void> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      await this.modifyById(
+        schedule.getId,
+        body.toScheduleEntity(schedule.getUserId),
+      );
+      await this.modifyScheduleArea(schedule.getId, body);
+      await this.modifyScheduleAlarms(); // TODO: 일정 수정 시 알림 적용해야함
+
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      this.logger.error(`[modifySchedule - transaction error] ${err}`);
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async checkScheduleStatus(userId: number, scheduleId: number): Promise<void> {
@@ -298,5 +321,34 @@ export class ScheduleService {
     if (scheduleStatus.userId !== userId) {
       throw new BadRequestException(ScheduleExceptionCode.ScheduleNotMine);
     }
+  }
+
+  async modifyScheduleArea(
+    scheduleId: number,
+    body: PutScheduleRequestDto,
+  ): Promise<void> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      await this.scheduleAreaRepository.delete({
+        scheduleId,
+        status: StatusColumnEnum.ACTIVE,
+      });
+      await this.createScheduleArea(scheduleId, body);
+
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      this.logger.error(`[modifyScheduleArea - transaction error] ${err}`);
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async modifyScheduleAlarms() {
+    return;
   }
 }

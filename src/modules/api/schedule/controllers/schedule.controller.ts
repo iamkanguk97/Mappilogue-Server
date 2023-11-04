@@ -22,6 +22,7 @@ import { GetScheduleInCalenderRequestDto } from '../dtos/get-schedules-in-calend
 import { ISchedulesInCalender } from '../types';
 import { GetScheduleOnSpecificDateResponseDto } from '../dtos/get-schedule-on-specific-date-response.dto';
 import { GetScheduleDetailByIdResponseDto } from '../dtos/get-schedule-detail-by-id-response.dto';
+import { PutScheduleRequestDto } from '../dtos/put-schedule-request.dto';
 
 @Controller('schedules')
 export class ScheduleController {
@@ -87,7 +88,8 @@ export class ScheduleController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async putSchedule(
     @Param(ScheduleValidationPipe) schedule: ScheduleDto,
+    @Body() body: PutScheduleRequestDto,
   ): Promise<void> {
-    await this.scheduleService.modifySchedule(schedule);
+    await this.scheduleService.modifySchedule(schedule, body);
   }
 }
