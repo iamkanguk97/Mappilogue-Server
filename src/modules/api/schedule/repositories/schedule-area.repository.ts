@@ -16,9 +16,9 @@ export class ScheduleAreaRepository extends Repository<ScheduleAreaEntity> {
         'SA.scheduleId AS scheduleId',
         'SA.date AS date',
         'SA.name AS name',
-        'SA.streetAddress AS streetAddress',
-        'SA.latitude AS latitude',
-        'SA.longitude AS longitude',
+        'IFNULL(SA.streetAddress, "") AS streetAddress',
+        'IFNULL(SA.latitude, "") AS latitude',
+        'IFNULL(SA.longitude, "") AS longitude',
         'IFNULL(SA.time, "") AS time',
         'SA.sequence AS sequence',
       ])
