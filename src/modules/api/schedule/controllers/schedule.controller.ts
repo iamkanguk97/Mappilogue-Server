@@ -18,11 +18,11 @@ import { ResponseEntity } from 'src/common/response-entity';
 import { ScheduleValidationPipe } from '../pipes/schedule-validation.pipe';
 import { ScheduleDto } from '../dtos/schedule.dto';
 import { PostScheduleResponseDto } from '../dtos/post-schedule-response.dto';
-import { GetScheduleInCalenderRequestDto } from '../dtos/get-schedules-in-calender-request.dto';
-import { ISchedulesInCalender } from '../types';
+import { GetSchedulesInCalenderRequestDto } from '../dtos/get-schedules-in-calender-request.dto';
 import { GetScheduleOnSpecificDateResponseDto } from '../dtos/get-schedule-on-specific-date-response.dto';
 import { GetScheduleDetailByIdResponseDto } from '../dtos/get-schedule-detail-by-id-response.dto';
 import { PutScheduleRequestDto } from '../dtos/put-schedule-request.dto';
+import { GetSchedulesInCalenderResponseDto } from '../dtos/get-schedules-in-calender-response.dto';
 
 @Controller('schedules')
 export class ScheduleController {
@@ -41,10 +41,9 @@ export class ScheduleController {
   @Delete('/:scheduleId')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteSchedule(
-    @UserId() userId: number,
     @Param(ScheduleValidationPipe) schedule: ScheduleDto,
   ): Promise<void> {
-    await this.scheduleService.removeSchedule(userId, schedule.getId);
+    await this.scheduleService.removeSchedule(schedule);
   }
 
   @Get('detail-by-date')
@@ -75,8 +74,8 @@ export class ScheduleController {
   @HttpCode(HttpStatus.OK)
   async getSchedulesInCalender(
     @UserId() userId: number,
-    @Query() query: GetScheduleInCalenderRequestDto,
-  ): Promise<ResponseEntity<ISchedulesInCalender[]>> {
+    @Query() query: GetSchedulesInCalenderRequestDto,
+  ): Promise<ResponseEntity<GetSchedulesInCalenderResponseDto>> {
     const result = await this.scheduleService.findSchedulesInCalender(
       userId,
       query,

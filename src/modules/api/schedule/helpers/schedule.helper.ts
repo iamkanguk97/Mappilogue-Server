@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { ScheduleEntity } from '../entities/schedule.entity';
-import * as _ from 'lodash';
 import { CheckColumnEnum, StatusColumnEnum } from 'src/constants/enum';
 import { SCHEDULE_DEFAULT_TITLE } from '../constants/schedule.constant';
-import { IScheduleAreasById, ISolarToLunarResult } from '../types';
+import {
+  IProcessedScheduleAreasById,
+  IScheduleAreasById,
+  ISolarToLunarResult,
+} from '../types';
 import { ScheduleDto } from '../dtos/schedule.dto';
 import {
   getKoreanDateFormatByMultiple,
@@ -12,7 +15,7 @@ import {
 import { ColorService } from '../../color/services/color.service';
 import { UserService } from '../../user/services/user.service';
 import * as moment from 'moment';
-import { ScheduleAreaDto } from '../dtos/schedule-area.dto';
+import * as _ from 'lodash';
 
 @Injectable()
 export class ScheduleHelper {
@@ -89,7 +92,7 @@ export class ScheduleHelper {
 
   preprocessScheduleAreaOnDetailById(
     scheduleAreas: IScheduleAreasById[],
-  ): ScheduleAreaDto[] {
+  ): IProcessedScheduleAreasById[] {
     const result = [];
     for (const scheduleArea of scheduleAreas) {
       const dateKey = moment(scheduleArea.date).format('M월 D일');
@@ -99,7 +102,7 @@ export class ScheduleHelper {
       };
 
       const transformedItem = {
-        areaId: scheduleArea.scheduleAreaId,
+        scheduleAreaId: scheduleArea.scheduleAreaId,
         name: scheduleArea.name,
         streetAddress: scheduleArea.streetAddress,
         latitude: scheduleArea.latitude,

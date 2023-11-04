@@ -23,14 +23,14 @@ import { PostScheduleResponseDto } from '../dtos/post-schedule-response.dto';
 import { NotificationTypeEnum } from 'src/modules/core/notification/constants/notification.enum';
 import { UserAlarmHistoryEntity } from '../../user/entities/user-alarm-history.entity';
 import { ScheduleHelper } from '../helpers/schedule.helper';
-import { GetScheduleInCalenderRequestDto } from '../dtos/get-schedules-in-calender-request.dto';
-import { ISchedulesInCalender } from '../types';
 import { solar2lunar } from 'solarlunar';
 import { GetScheduleOnSpecificDateResponseDto } from '../dtos/get-schedule-on-specific-date-response.dto';
 import { ColorService } from '../../color/services/color.service';
 import { ScheduleDto } from '../dtos/schedule.dto';
 import { ScheduleAreaRepository } from '../repositories/schedule-area.repository';
 import { PutScheduleRequestDto } from '../dtos/put-schedule-request.dto';
+import { GetSchedulesInCalenderResponseDto } from '../dtos/get-schedules-in-calender-response.dto';
+import { GetSchedulesInCalenderRequestDto } from '../dtos/get-schedules-in-calender-request.dto';
 
 @Injectable()
 export class ScheduleService {
@@ -77,8 +77,11 @@ export class ScheduleService {
     }
   }
 
-  async removeSchedule(userId: number, scheduleId: number): Promise<void> {
-    await this.scheduleRepository.delete({ userId, id: scheduleId });
+  async removeSchedule(schedule: ScheduleDto): Promise<void> {
+    await this.scheduleRepository.delete({
+      userId: schedule.getUserId,
+      id: schedule.getId,
+    });
   }
 
   async findScheduleOnSpecificId(
@@ -119,13 +122,15 @@ export class ScheduleService {
 
   async findSchedulesInCalender(
     userId: number,
-    query: GetScheduleInCalenderRequestDto,
-  ): Promise<ISchedulesInCalender[]> {
-    return await this.scheduleRepository.selectSchedulesInCalender(
+    query: GetSchedulesInCalenderRequestDto,
+  ): Promise<GetSchedulesInCalenderResponseDto> {
+    const result = await this.scheduleRepository.selectSchedulesInCalender(
       userId,
       query.year,
       query.month,
     );
+
+    return GetSchedulesInCalenderResponseDto.of(result);
   }
 
   async createScheduleArea(

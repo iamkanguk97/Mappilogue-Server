@@ -47,3 +47,8 @@ export interface IScheduleAreasById {
   time: string;
   sequence: number;
 }
+
+export interface IProcessedScheduleAreasById {
+  date: string;
+  value: Omit<IScheduleAreasById, 'scheduleId' | 'date'>[];
+}
