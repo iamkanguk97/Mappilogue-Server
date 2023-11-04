@@ -16,16 +16,4 @@ export class UserAlarmSettingRepository extends Repository<UserAlarmSettingEntit
       })
       .getRawOne();
   }
-
-  async updateUserAlarmSettingById(
-    userId: number,
-    body: UserAlarmSettingEntity,
-  ): Promise<void> {
-    await this.createQueryBuilder()
-      .update()
-      .set(body)
-      .where('userId = :userId', { userId })
-      .andWhere('status = :status', { status: StatusColumnEnum.ACTIVE })
-      .execute();
-  }
 }

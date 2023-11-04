@@ -13,6 +13,7 @@ import { USER_DEFAULT_PROFILE_IMAGE } from '../../user/constants/user.constant';
 import { UserAlarmSettingRepository } from '../../user/repositories/user-alarm-setting.repository';
 import { UserAlarmSettingDto } from '../../user/dtos/user-alarm-setting.dto';
 import { PutUserAlarmSettingRequestDto } from '../dtos/put-user-alarm-setting-request.dto';
+import { StatusColumnEnum } from 'src/constants/enum';
 
 @Injectable()
 export class UserProfileService {
@@ -78,8 +79,8 @@ export class UserProfileService {
     userId: number,
     body: PutUserAlarmSettingRequestDto,
   ): Promise<void> {
-    await this.userAlarmSettingRepository.updateUserAlarmSettingById(
-      userId,
+    await this.userAlarmSettingRepository.update(
+      { userId, status: StatusColumnEnum.ACTIVE },
       body.toEntity(),
     );
   }
