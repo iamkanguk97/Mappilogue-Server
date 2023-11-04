@@ -8,6 +8,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { UserId } from '../../user/decorators/user-id.decorator';
@@ -80,5 +81,13 @@ export class ScheduleController {
       query,
     );
     return ResponseEntity.OK_WITH(HttpStatus.OK, result);
+  }
+
+  @Put('/:scheduleId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async putSchedule(
+    @Param(ScheduleValidationPipe) schedule: ScheduleDto,
+  ): Promise<void> {
+    await this.scheduleService.modifySchedule(schedule);
   }
 }

@@ -8,8 +8,7 @@ import { MarkCategoryService } from '../../mark-category/services/mark-category.
 @Injectable()
 export class MarkHelper {
   constructor(
-    private readonly scheduleService: ScheduleService,
-    private readonly markCategoryService: MarkCategoryService,
+    private readonly scheduleService: ScheduleService, // private readonly markCategoryService: MarkCategoryService,
   ) {}
 
   isMarkExist(markStatus?: MarkEntity | undefined): boolean {
@@ -29,15 +28,15 @@ export class MarkHelper {
     }
   }
 
-  async isValidMarkCategoryByCreateMark(
-    userId: number,
-    markCategoryId?: number | undefined,
-  ): Promise<void> {
-    if (!_.isNil(markCategoryId)) {
-      await this.markCategoryService.checkMarkCategoryStatus(
-        userId,
-        markCategoryId,
-      );
-    }
-  }
+  // async isValidMarkCategoryByCreateMark(
+  //   userId: number,
+  //   markCategoryId?: number | undefined,
+  // ): Promise<void> {
+  //   if (!_.isNil(markCategoryId)) {
+  //     await this.markCategoryService.checkMarkCategoryStatus(
+  //       userId,
+  //       markCategoryId,
+  //     );
+  //   }
+  // }
 }

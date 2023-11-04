@@ -285,6 +285,10 @@ export class ScheduleService {
     await this.scheduleRepository.updateById(scheduleId, properties);
   }
 
+  async modifySchedule(schedule: ScheduleDto) {
+    return;
+  }
+
   async checkScheduleStatus(userId: number, scheduleId: number): Promise<void> {
     const scheduleStatus = await this.findScheduleById(scheduleId);
 

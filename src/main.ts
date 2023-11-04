@@ -57,7 +57,7 @@ async function bootstrap() {
 
   app.disable('x-powered-by');
 
-  const PORT = customConfigService.get<number>(ENVIRONMENT_KEY.PORT) || 3000;
+  const PORT = customConfigService.get<number>(ENVIRONMENT_KEY.PORT) || 3030;
   await app.listen(PORT);
   Logger.log(`🐥 Server is Running on PORT ${PORT}! 🐥`);
 

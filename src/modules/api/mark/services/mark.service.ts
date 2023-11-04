@@ -35,10 +35,10 @@ export class MarkService {
       // metadata 배열이 있으면 -> 사진 정보와 mapping 시켜서 insert
 
       await this.markHelper.setScheduleColorByCreateMark(userId, body); // (1)
-      await this.markHelper.isValidMarkCategoryByCreateMark(
-        userId,
-        body?.markCategoryId,
-      ); // (2);
+      // await this.markHelper.isValidMarkCategoryByCreateMark(
+      //   userId,
+      //   body?.markCategoryId,
+      // ); // (2);
 
       await queryRunner.commitTransaction();
     } catch (err) {
