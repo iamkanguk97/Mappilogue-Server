@@ -23,6 +23,7 @@ import { GetScheduleOnSpecificDateResponseDto } from '../dtos/get-schedule-on-sp
 import { GetScheduleDetailByIdResponseDto } from '../dtos/get-schedule-detail-by-id-response.dto';
 import { PutScheduleRequestDto } from '../dtos/put-schedule-request.dto';
 import { GetSchedulesInCalenderResponseDto } from '../dtos/get-schedules-in-calender-response.dto';
+import { GetScheduleAreasByIdResponseDto } from '../dtos/get-schedule-areas-by-id-response.dto';
 
 @Controller('schedules')
 export class ScheduleController {
@@ -90,5 +91,16 @@ export class ScheduleController {
     @Body() body: PutScheduleRequestDto,
   ): Promise<void> {
     await this.scheduleService.modifySchedule(schedule, body);
+  }
+
+  @Get('/:scheduleId/areas')
+  @HttpCode(HttpStatus.OK)
+  async getScheduleAreasById(
+    @Param(ScheduleValidationPipe) schedule: ScheduleDto,
+  ): Promise<ResponseEntity<GetScheduleAreasByIdResponseDto>> {
+    const result = await this.scheduleService.findScheduleAreasById(
+      schedule.getId,
+    );
+    return ResponseEntity.OK_WITH(HttpStatus.OK, result);
   }
 }

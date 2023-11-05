@@ -30,6 +30,7 @@ import { ScheduleAreaRepository } from '../repositories/schedule-area.repository
 import { PutScheduleRequestDto } from '../dtos/put-schedule-request.dto';
 import { GetSchedulesInCalenderResponseDto } from '../dtos/get-schedules-in-calender-response.dto';
 import { GetSchedulesInCalenderRequestDto } from '../dtos/get-schedules-in-calender-request.dto';
+import { GetScheduleAreasByIdResponseDto } from '../dtos/get-schedule-areas-by-id-response.dto';
 
 @Injectable()
 export class ScheduleService {
@@ -313,6 +314,15 @@ export class ScheduleService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async findScheduleAreasById(
+    scheduleId: number,
+  ): Promise<GetScheduleAreasByIdResponseDto> {
+    const result = await this.scheduleAreaRepository.selectScheduleAreasById(
+      scheduleId,
+    );
+    return GetScheduleAreasByIdResponseDto.of(result);
   }
 
   async checkScheduleStatus(
