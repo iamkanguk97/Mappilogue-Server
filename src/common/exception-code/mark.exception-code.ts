@@ -13,4 +13,16 @@ export const MarkExceptionCode = {
     '5006',
     '기록 제목은 최대 50자까지 입력 가능합니다.',
   ),
+  MarkMetadataIsMainImageEmpty: setExceptionCode(
+    '5007',
+    '대표 이미지 여부를 입력해주세요.',
+  ),
+  MarkMainImageMustOne: setExceptionCode(
+    '5008',
+    '대표 이미지는 필수로 1개 설정해야 합니다.',
+  ),
+  MarkMetadataLengthError: setExceptionCode(
+    '5009',
+    'MarkMetadata의 배열 길이는 업로드하신 사진의 개수와 동일해야 합니다.',
+  ),
 };

@@ -15,21 +15,27 @@ import { DeleteMarkRequestDto } from '../dtos/delete-mark-request.dto';
 import { MarkValidationPipe } from '../pipes/mark-validation.pipe';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { CreateMarkImageMulterOption } from 'src/common/multer/multer.option';
+import { FormDataJsonInterceptor } from 'src/interceptors/form-data-json.interceptor';
+import { PostMarkRequestDto } from '../dtos/post-mark-request.dto';
+import { PostMarkValidationPipe } from '../pipes/post-mark-validation.pipe';
 import { ResponseEntity } from 'src/common/response-entity';
-import { PostMarkPipe } from '../pipes/post-mark.pipe';
+import { PostMarkResponseDto } from '../dtos/post-mark-response.dto';
 
 @Controller('marks')
 export class MarkController {
   constructor(private readonly markService: MarkService) {}
 
-  @UseInterceptors(FilesInterceptor('image', 10, CreateMarkImageMulterOption()))
+  @UseInterceptors(
+    FilesInterceptor('image', 10, CreateMarkImageMulterOption()),
+    FormDataJsonInterceptor,
+  )
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async postMark(
     @UserId() userId: number,
     @UploadedFiles() files: Express.MulterS3.File[],
-    @Body(PostMarkPipe) body: any,
-  ) {
+    @Body(PostMarkValidationPipe) body: PostMarkRequestDto,
+  ): Promise<ResponseEntity<PostMarkResponseDto>> {
     const result = await this.markService.createMark(userId, files, body);
     return ResponseEntity.OK_WITH(HttpStatus.CREATED, result);
   }

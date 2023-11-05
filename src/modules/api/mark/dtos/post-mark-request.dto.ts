@@ -1,10 +1,11 @@
 import {
+  IsArray,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
   Length,
-  ValidateIf,
+  ValidateNested,
 } from 'class-validator';
 import { setValidatorContext } from 'src/common/common';
 import { CommonExceptionCode } from 'src/common/exception-code/common.exception-code';
@@ -13,6 +14,8 @@ import { ColorIdRangeEnum } from '../../color/constants/color.enum';
 import { ColorExceptionCode } from 'src/common/exception-code/color.exception-code';
 import { MarkExceptionCode } from 'src/common/exception-code/mark.exception-code';
 import { MarkTitleLengthEnum } from '../constants/mark.enum';
+import { MarkMetadataDto } from './mark-metadata.dto';
+import { Type } from 'class-transformer';
 
 export class PostMarkRequestDto {
   @IsNumber({}, setValidatorContext(CommonExceptionCode.MustNumberType))
@@ -41,13 +44,16 @@ export class PostMarkRequestDto {
   @IsNotEmpty(setValidatorContext(MarkExceptionCode.MarkTitleEmpty))
   title: string;
 
-  @IsNumber({}, setValidatorContext(CommonExceptionCode.MustNumberType))
-  @IsOptional()
-  mainScheduleAreaId?: number | undefined;
+  // @IsNumber({}, setValidatorContext(CommonExceptionCode.MustNumberType))
+  // @IsOptional()
+  // mainScheduleAreaId?: number | undefined;
 
-  @IsOptional()
-  mainLocationInfo?: any | undefined;
+  // @IsOptional()
+  // mainLocationInfo?: any | undefined;
 
+  @ValidateNested({ each: true })
+  @Type(() => MarkMetadataDto)
+  @IsArray(setValidatorContext(CommonExceptionCode.MustArrayType))
   @IsOptional()
-  markMetadata: any;
+  markMetadata?: MarkMetadataDto[] | undefined;
 }

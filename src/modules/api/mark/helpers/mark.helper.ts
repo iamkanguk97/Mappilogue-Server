@@ -3,7 +3,8 @@ import { MarkEntity } from '../entities/mark.entity';
 import { StatusColumnEnum } from 'src/constants/enum';
 import * as _ from 'lodash';
 import { ScheduleService } from '../../schedule/services/schedule.service';
-import { MarkCategoryService } from '../../mark-category/services/mark-category.service';
+import { MarkMetadataDto } from '../dtos/mark-metadata.dto';
+import { MarkMetadataEntity } from '../entities/mark-metadata.entity';
 
 @Injectable()
 export class MarkHelper {
@@ -17,26 +18,26 @@ export class MarkHelper {
     );
   }
 
-  async setScheduleColorByCreateMark(userId: number, body: any): Promise<void> {
-    if (!_.isNil(body?.scheduleId)) {
-      const scheduleId = body.scheduleId;
-
-      await this.scheduleService.checkScheduleStatus(userId, scheduleId);
-      await this.scheduleService.modifyById(scheduleId, {
-        colorId: body.colorId,
-      });
-    }
+  /**
+   * @title 업로드된 이미지와 MarkMetadata와 Mapping
+   * @param markId
+   * @param files
+   * @param metadata
+   * @returns
+   */
+  mappingMarkMetadataWithImages(
+    markId: number,
+    files: Express.MulterS3.File[],
+    metadata?: MarkMetadataDto[] | undefined,
+  ): MarkMetadataEntity[] {
+    return metadata.map((md, idx) =>
+      MarkMetadataEntity.from(
+        markId,
+        files[idx].location,
+        md.isMainImage,
+        files[idx].key,
+        md.caption,
+      ),
+    );
   }
-
-  // async isValidMarkCategoryByCreateMark(
-  //   userId: number,
-  //   markCategoryId?: number | undefined,
-  // ): Promise<void> {
-  //   if (!_.isNil(markCategoryId)) {
-  //     await this.markCategoryService.checkMarkCategoryStatus(
-  //       userId,
-  //       markCategoryId,
-  //     );
-  //   }
-  // }
 }

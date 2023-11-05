@@ -8,6 +8,7 @@ import { REQUEST } from '@nestjs/core';
 import { MarkService } from '../services/mark.service';
 import { MarkHelper } from '../helpers/mark.helper';
 import { MarkExceptionCode } from 'src/common/exception-code/mark.exception-code';
+import * as _ from 'lodash';
 
 @Injectable()
 export class MarkValidationPipe implements PipeTransform {
@@ -20,6 +21,10 @@ export class MarkValidationPipe implements PipeTransform {
   async transform<T extends { markId: number }>(value: T): Promise<T> {
     const userId = this.request['user'].id;
     const markId = value.markId;
+
+    if (_.isNil(markId)) {
+      throw new BadRequestException(MarkExceptionCode.MarkIdEmpty);
+    }
 
     const markStatus = await this.markService.findOneById(markId);
 

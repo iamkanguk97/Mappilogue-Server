@@ -8,6 +8,7 @@ import { MarkService } from './services/mark.service';
 import { MarkHelper } from './helpers/mark.helper';
 import { MarkCategoryRepository } from './repositories/mark-category.repository';
 import { MarkCategoryModule } from '../mark-category/mark-category.module';
+import { MarkMetadataRepository } from './repositories/mark-metadata.repository';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { MarkCategoryModule } from '../mark-category/mark-category.module';
     CustomRepositoryModule.forCustomRepository([
       MarkRepository,
       MarkCategoryRepository,
+      MarkMetadataRepository,
     ]),
   ],
   controllers: [MarkController],
