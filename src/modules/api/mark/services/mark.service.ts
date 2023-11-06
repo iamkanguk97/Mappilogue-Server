@@ -35,18 +35,10 @@ export class MarkService {
     try {
       // mainScheduleAreaId가 null이면 -> mainLocationInfo object 확인
       // mainScheduleAreaId가 null이 아니면 -> 유효성 검사 후 그대로 INSERT
-      // metadata 배열이 없으면 content insert
 
-      const insertMarkParam = {};
-
-      const { id: markId } = await this.markRepository.save({
-        userId,
-        title: body.title,
-        markCategoryId: body.markCategoryId,
-        scheduleId: body.scheduleId,
-        content: '',
-        colorId: body.colorId,
-      });
+      const { id: markId } = await this.markRepository.save(
+        body.toMarkEntity(userId),
+      );
       await this.modifyScheduleColorByCreateMark(body);
       await this.createMarkMetadata(markId, files, body);
 
@@ -68,15 +60,6 @@ export class MarkService {
     // metadata?: MarkMetadataDto[] | undefined,
   ): Promise<void> {
     const metadata = body.markMetadata ?? [];
-
-    if (!metadata.length) {
-      await this.markRepository.update(
-        { id: markId },
-        { content: body.content },
-      );
-      return;
-    }
-
     await this.markMetadataRepository.save(
       this.markHelper.mappingMarkMetadataWithImages(markId, files, metadata),
     );

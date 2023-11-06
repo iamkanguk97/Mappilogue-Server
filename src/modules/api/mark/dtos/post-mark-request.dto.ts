@@ -17,6 +17,7 @@ import { MarkTitleLengthEnum } from '../constants/mark.enum';
 import { MarkMetadataDto } from './mark-metadata.dto';
 import { Type } from 'class-transformer';
 import { MarkEntity } from '../entities/mark.entity';
+import { MarkMainLocationDto } from './mark-main-location.dto';
 
 export class PostMarkRequestDto {
   @IsNumber({}, setValidatorContext(CommonExceptionCode.MustNumberType))
@@ -49,12 +50,12 @@ export class PostMarkRequestDto {
   @IsOptional()
   content?: string | undefined;
 
-  // @IsNumber({}, setValidatorContext(CommonExceptionCode.MustNumberType))
-  // @IsOptional()
-  // mainScheduleAreaId?: number | undefined;
+  @IsNumber({}, setValidatorContext(CommonExceptionCode.MustNumberType))
+  @IsOptional()
+  mainScheduleAreaId?: number | undefined;
 
-  // @IsOptional()
-  // mainLocationInfo?: any | undefined;
+  @IsOptional()
+  mainLocation?: MarkMainLocationDto | undefined;
 
   @ValidateNested({ each: true })
   @Type(() => MarkMetadataDto)

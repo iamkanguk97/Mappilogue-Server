@@ -74,6 +74,9 @@ export class PostMarkValidationPipe implements PipeTransform {
         }
       }
 
+      // mainScheduleAreaId가 null이 아니면 mainLocation이 null이어야 함
+      // mainLocation이 null이 아니면 mainScheduleAreaId는 null이어야 한다.
+
       return value;
     } catch (err) {
       this.logger.error(`[PostMarkValidationPipe] ${err}`);
