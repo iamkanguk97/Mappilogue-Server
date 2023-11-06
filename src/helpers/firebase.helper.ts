@@ -10,6 +10,13 @@ export function setFirebaseCredential(dirname: string): string {
     case 'dev2':
       return path.join(dirname, '..', 'src/config/firebase-admin.json');
     default:
-      return path.join(dirname, '..', '..', 'config/firebase-admin.json');
+      return path.join(
+        dirname,
+        '..',
+        '..',
+        '..',
+        '..',
+        'config/firebase-admin.json',
+      );
   }
 }
