@@ -120,6 +120,24 @@ export class MulterBuilder {
     });
   }
 
+  markImageBuild(): multer.StorageEngine {
+    return multerS3({
+      s3: this.s3 as S3Client,
+      bucket: this.bucketName,
+      contentType: multerS3.AUTO_CONTENT_TYPE,
+      key: (
+        req: Request,
+        file: Express.Multer.File,
+        callback: (error: any, key?: string) => void,
+      ) => {
+        const splitedFileNames = file.originalname.split('.');
+        const extension = splitedFileNames.at(splitedFileNames.length - 1);
+        const filename = `mark:${new Date().getTime()}.${extension}`;
+        return callback(null, encodeURI(`${this.resource}/${filename}`));
+      },
+    });
+  }
+
   async delete(imageKey: string): Promise<void> {
     if (imageKey !== '') {
       const awsS3 = this.s3 as AWS.S3;

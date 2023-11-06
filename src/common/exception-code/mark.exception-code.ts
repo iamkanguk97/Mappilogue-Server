@@ -25,4 +25,8 @@ export const MarkExceptionCode = {
     '5009',
     'MarkMetadata의 배열 길이는 업로드하신 사진의 개수와 동일해야 합니다.',
   ),
+  MarkContentNotExistWhenMetadatIsExist: setExceptionCode(
+    '5010',
+    'markMetadata를 입력하셨을땐 content를 입력할 수 없습니다.',
+  ),
 };

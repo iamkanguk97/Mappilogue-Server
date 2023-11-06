@@ -12,11 +12,8 @@ import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { MarkCategoryService } from '../../mark-category/services/mark-category.service';
 import { MarkExceptionCode } from 'src/common/exception-code/mark.exception-code';
-import {
-  ImageBuilderTypeEnum,
-  MulterBuilder,
-} from 'src/common/multer/multer.builder';
 import { CheckColumnEnum } from 'src/constants/enum';
+import { MarkHelper } from '../helpers/mark.helper';
 
 @Injectable()
 export class PostMarkValidationPipe implements PipeTransform {
@@ -26,6 +23,7 @@ export class PostMarkValidationPipe implements PipeTransform {
     @Inject(REQUEST) private readonly request: Request,
     private readonly scheduleService: ScheduleService,
     private readonly markCategoryService: MarkCategoryService,
+    private readonly markHelper: MarkHelper,
   ) {}
 
   async transform(value: PostMarkRequestDto): Promise<PostMarkRequestDto> {
@@ -58,6 +56,13 @@ export class PostMarkValidationPipe implements PipeTransform {
 
       // markMetadata가 null이 아니면 isMainImage가 무조건 1개여야함
       if (!_.isNil(value?.markMetadata)) {
+        // markMetadata가 null이 아니면 content는 null 이어야함
+        if (!_.isNil(value.content)) {
+          throw new BadRequestException(
+            MarkExceptionCode.MarkContentNotExistWhenMetadatIsExist,
+          );
+        }
+
         const isMainImageCount = value.markMetadata.reduce(
           (acc, obj) =>
             obj.isMainImage === CheckColumnEnum.ACTIVE ? acc + 1 : acc,
@@ -72,20 +77,10 @@ export class PostMarkValidationPipe implements PipeTransform {
       return value;
     } catch (err) {
       this.logger.error(`[PostMarkValidationPipe] ${err}`);
-
-      if (
-        err.response.code === MarkExceptionCode.MarkMetadataLengthError.code
-      ) {
-        const imageDeleteBuilder = new MulterBuilder(
-          ImageBuilderTypeEnum.DELETE,
-          userId,
-        );
-
-        for (const idx in markImages) {
-          await imageDeleteBuilder.delete(markImages[idx].key);
-        }
-      }
-
+      await this.markHelper.deleteUploadedMarkImageWhenError(
+        userId,
+        markImages,
+      );
       throw err;
     }
   }

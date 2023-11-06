@@ -37,6 +37,8 @@ export class MarkService {
       // mainScheduleAreaId가 null이 아니면 -> 유효성 검사 후 그대로 INSERT
       // metadata 배열이 없으면 content insert
 
+      const insertMarkParam = {};
+
       const { id: markId } = await this.markRepository.save({
         userId,
         title: body.title,
@@ -46,7 +48,7 @@ export class MarkService {
         colorId: body.colorId,
       });
       await this.modifyScheduleColorByCreateMark(body);
-      await this.createMarkMetadata(markId, files, body?.markMetadata);
+      await this.createMarkMetadata(markId, files, body);
 
       await queryRunner.commitTransaction();
       return PostMarkResponseDto.of(markId);
@@ -62,8 +64,19 @@ export class MarkService {
   async createMarkMetadata(
     markId: number,
     files: Express.MulterS3.File[],
-    metadata?: MarkMetadataDto[] | undefined,
+    body: PostMarkRequestDto,
+    // metadata?: MarkMetadataDto[] | undefined,
   ): Promise<void> {
+    const metadata = body.markMetadata ?? [];
+
+    if (!metadata.length) {
+      await this.markRepository.update(
+        { id: markId },
+        { content: body.content },
+      );
+      return;
+    }
+
     await this.markMetadataRepository.save(
       this.markHelper.mappingMarkMetadataWithImages(markId, files, metadata),
     );

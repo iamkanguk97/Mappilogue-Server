@@ -9,6 +9,9 @@ export class MarkEntity extends DefaultColumnType {
   @Column('int')
   userId: number;
 
+  @Column('int')
+  colorId: number;
+
   @Column('int', { nullable: true })
   markCategoryId?: number | undefined;
 
@@ -33,4 +36,24 @@ export class MarkEntity extends DefaultColumnType {
   })
   @JoinColumn({ name: 'markCategoryId', referencedColumnName: 'id' })
   markCategory: MarkCategoryEntity;
+
+  static from(
+    userId: number,
+    title: string,
+    colorId: number,
+    markCategoryId?: number | undefined,
+    scheduleId?: number | undefined,
+    content?: string | undefined,
+  ): MarkEntity {
+    const mark = new MarkEntity();
+
+    mark.userId = userId;
+    mark.title = title;
+    mark.colorId = colorId;
+    mark.markCategoryId = markCategoryId;
+    mark.scheduleId = scheduleId;
+    mark.content = content;
+
+    return mark;
+  }
 }

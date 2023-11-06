@@ -5,6 +5,10 @@ import * as _ from 'lodash';
 import { ScheduleService } from '../../schedule/services/schedule.service';
 import { MarkMetadataDto } from '../dtos/mark-metadata.dto';
 import { MarkMetadataEntity } from '../entities/mark-metadata.entity';
+import {
+  ImageBuilderTypeEnum,
+  MulterBuilder,
+} from 'src/common/multer/multer.builder';
 
 @Injectable()
 export class MarkHelper {
@@ -39,5 +43,28 @@ export class MarkHelper {
         md.caption,
       ),
     );
+  }
+
+  /**
+   * @title 기록 관련 API 진행 시 에러 발생한 경우 Multer로 선 업로드된 사진 Delete
+   * @param userId
+   * @param markImages
+   */
+  async deleteUploadedMarkImageWhenError(
+    userId: number,
+    markImages:
+      | { [fieldname: string]: Express.Multer.File[] }
+      | Express.Multer.File[],
+  ): Promise<void> {
+    const imageDeleteBuilder = new MulterBuilder(
+      ImageBuilderTypeEnum.DELETE,
+      userId,
+    );
+
+    for (const idx in markImages) {
+      await imageDeleteBuilder.delete(markImages[idx].key);
+    }
+
+    return;
   }
 }

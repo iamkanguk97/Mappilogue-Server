@@ -16,6 +16,7 @@ import { MarkExceptionCode } from 'src/common/exception-code/mark.exception-code
 import { MarkTitleLengthEnum } from '../constants/mark.enum';
 import { MarkMetadataDto } from './mark-metadata.dto';
 import { Type } from 'class-transformer';
+import { MarkEntity } from '../entities/mark.entity';
 
 export class PostMarkRequestDto {
   @IsNumber({}, setValidatorContext(CommonExceptionCode.MustNumberType))
@@ -44,6 +45,10 @@ export class PostMarkRequestDto {
   @IsNotEmpty(setValidatorContext(MarkExceptionCode.MarkTitleEmpty))
   title: string;
 
+  @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
+  @IsOptional()
+  content?: string | undefined;
+
   // @IsNumber({}, setValidatorContext(CommonExceptionCode.MustNumberType))
   // @IsOptional()
   // mainScheduleAreaId?: number | undefined;
@@ -56,4 +61,15 @@ export class PostMarkRequestDto {
   @IsArray(setValidatorContext(CommonExceptionCode.MustArrayType))
   @IsOptional()
   markMetadata?: MarkMetadataDto[] | undefined;
+
+  toMarkEntity(userId: number): MarkEntity {
+    return MarkEntity.from(
+      userId,
+      this.title,
+      this.colorId,
+      this.markCategoryId,
+      this.scheduleId,
+      this.content,
+    );
+  }
 }
