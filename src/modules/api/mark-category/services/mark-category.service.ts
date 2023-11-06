@@ -11,29 +11,39 @@ import { MarkCategoryHelper } from '../helpers/mark-category.helper';
 import { MarkCategoryExceptionCode } from 'src/common/exception-code/mark-category.exception-code';
 import { DeleteMarkCategoryOptionEnum } from '../constants/mark-category.enum';
 import { MarkService } from '../../mark/services/mark.service';
+import { MarkRepository } from '../../mark/repositories/mark.repository';
+import { CustomCacheService } from 'src/modules/core/custom-cache/services/custom-cache.service';
 
 @Injectable()
 export class MarkCategoryService {
   constructor(
     private readonly dataSource: DataSource,
+    private readonly markRepository: MarkRepository,
     private readonly markCategoryRepository: MarkCategoryRepository,
+    private readonly customCacheService: CustomCacheService,
     private readonly markService: MarkService,
     private readonly markCategoryHelper: MarkCategoryHelper,
   ) {}
 
-  async findMarkCategories(userId: number) {
-    /** <TODO>
-     * - totalCategoryMarkCount ==> Mark 부분 작업 시작하면 UPDATE 해줘야함.
-     * - query select할 때 count query도 추가해야함.
-     */
-
-    const totalCategoryMarkCount = 0; // TODO: Mark 부분 작업 시작하면 UPDATE 해줘야함.
+  async findMarkCategories(
+    userId: number,
+  ): Promise<GetMarkCategoriesResponseDto> {
     const result =
       await this.markCategoryRepository.selectMarkCategoriesByUserId(userId);
 
+    const markExceptCategoryCount =
+      await this.markRepository.selectMarkExceptCategoryCount(userId);
+    const markHaveCategoryCount = result.reduce(
+      (acc, obj) => acc + Number(obj.markCount),
+      0,
+    );
+
+    const totalCategoryMarkCount =
+      markExceptCategoryCount + markHaveCategoryCount;
+
     return GetMarkCategoriesResponseDto.from(
       totalCategoryMarkCount,
-      MarkCategoryEntity.toDto(result),
+      result.map((r) => MarkCategoryDto.of(r)),
     );
   }
 
@@ -134,7 +144,7 @@ export class MarkCategoryService {
 
       const isEqualWithRequestData =
         this.markCategoryHelper.isMarkCategoryEqualWithRequestById(
-          MarkCategoryEntity.toDto(markCategoriesBeforeUpdate),
+          markCategoriesBeforeUpdate.map((r) => MarkCategoryDto.of(r)),
           categories,
         );
 

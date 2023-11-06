@@ -8,9 +8,10 @@ import { CronJob } from 'cron';
 import * as firebase from 'firebase-admin';
 import { InternalServerExceptionCode } from 'src/common/exception-code/internal-server.exception-code';
 import { CheckColumnEnum } from 'src/constants/enum';
+import { setFirebaseCredential } from 'src/helpers/firebase.helper';
 
 firebase.initializeApp({
-  credential: firebase.credential.cert('src/config/firebase-admin.json'),
+  credential: firebase.credential.cert(setFirebaseCredential(__dirname)),
 });
 
 @Injectable()
