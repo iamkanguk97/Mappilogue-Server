@@ -3,6 +3,7 @@ import { setValidatorContext } from 'src/common/common';
 import { CommonExceptionCode } from 'src/common/exception-code/common.exception-code';
 import { MarkCategoryExceptionCode } from 'src/common/exception-code/mark-category.exception-code';
 import { CheckColumnEnum } from 'src/constants/enum';
+import { TMarkCategoryByUserId } from '../types';
 
 export class MarkCategoryDto {
   /**
@@ -28,15 +29,30 @@ export class MarkCategoryDto {
   @IsNotEmpty(setValidatorContext(MarkCategoryExceptionCode.IsMarkedInMapEmpty))
   isMarkedInMap: CheckColumnEnum;
 
-  constructor(
+  @IsOptional()
+  markCount: number;
+
+  private constructor(
     id: number,
     title: string,
     sequence: number,
     isMarkedInMap: CheckColumnEnum,
+    markCount: number,
   ) {
     this.id = id;
     this.title = title;
     this.sequence = sequence;
     this.isMarkedInMap = isMarkedInMap;
+    this.markCount = markCount;
+  }
+
+  static of(markCategory: TMarkCategoryByUserId): MarkCategoryDto {
+    return new MarkCategoryDto(
+      markCategory.id,
+      markCategory.title,
+      markCategory.sequence,
+      markCategory.isMarkedInMap,
+      Number(markCategory.markCount),
+    );
   }
 }

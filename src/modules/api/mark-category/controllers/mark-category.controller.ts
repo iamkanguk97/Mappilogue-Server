@@ -21,6 +21,7 @@ import { MarkCategoryValidationPipe } from '../pipes/mark-category-validation.pi
 import { DeleteMarkCategoryRequestDto } from '../dtos/delete-mark-category-request.dto';
 import { PutMarkCategoryRequestDto } from '../dtos/put-mark-category-request.dto';
 import { DeleteMarkCategoryOptionRequestDto } from '../dtos/delete-mark-category-option-request.dto';
+import { GetMarkCategoriesResponseDto } from '../dtos/get-mark-categories-response.dto';
 
 @Controller('marks/categories')
 export class MarkCategoryController {
@@ -28,7 +29,9 @@ export class MarkCategoryController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  async getMarkCategories(@UserId() userId: number) {
+  async getMarkCategories(
+    @UserId() userId: number,
+  ): Promise<ResponseEntity<GetMarkCategoriesResponseDto>> {
     const result = await this.markCategoryService.findMarkCategories(userId);
     return ResponseEntity.OK_WITH(HttpStatus.OK, result);
   }

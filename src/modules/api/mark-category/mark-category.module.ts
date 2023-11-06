@@ -1,3 +1,4 @@
+import { MarkRepository } from './../mark/repositories/mark.repository';
 import { Module } from '@nestjs/common';
 import { MarkCategoryController } from './controllers/mark-category.controller';
 import { MarkCategoryService } from './services/mark-category.service';
@@ -10,7 +11,10 @@ import { MarkCategoryEntity } from '../mark/entities/mark-category.entity';
 @Module({
   imports: [
     TypeOrmModule.forFeature([MarkCategoryEntity]),
-    CustomRepositoryModule.forCustomRepository([MarkCategoryRepository]),
+    CustomRepositoryModule.forCustomRepository([
+      MarkRepository,
+      MarkCategoryRepository,
+    ]),
   ],
   controllers: [MarkCategoryController],
   providers: [MarkCategoryService, MarkCategoryHelper],
