@@ -9,6 +9,8 @@ import { ENVIRONMENT_KEY } from 'src/modules/core/custom-config/constants/custom
 import { Request } from 'express';
 import { CustomConfigService } from 'src/modules/core/custom-config/services';
 import { config } from 'dotenv';
+import { v4 as uuidv4 } from 'uuid';
+import { isDefined } from 'src/helpers/common.helper';
 
 config();
 const customConfigService = new CustomConfigService(new ConfigService());
@@ -114,6 +116,27 @@ export class MulterBuilder {
         const filename = !_.isNil(this.path)
           ? `${this.path}/user${userId}:${new Date().getTime()}.${extension}`
           : `user${this._userId}:${new Date().getTime()}.${extension}`;
+
+        return callback(null, encodeURI(`${this.resource}/${filename}`));
+      },
+    });
+  }
+
+  markImageBuild(): multer.StorageEngine {
+    return multerS3({
+      s3: this.s3 as S3Client,
+      bucket: this.bucketName,
+      contentType: multerS3.AUTO_CONTENT_TYPE,
+      key: (
+        req: Request,
+        file: Express.Multer.File,
+        callback: (error: any, key?: string) => void,
+      ) => {
+        const splitedFileNames = file.originalname.split('.');
+        const extension = splitedFileNames.at(splitedFileNames.length - 1);
+        const filename = isDefined(this.path)
+          ? `${this.path}/mark:${uuidv4()}.${extension}`
+          : `mark:${uuidv4()}.${extension}`; // new Date로 하니까 파일명 중복되는 현상 발생했음 --> uuid로
 
         return callback(null, encodeURI(`${this.resource}/${filename}`));
       },

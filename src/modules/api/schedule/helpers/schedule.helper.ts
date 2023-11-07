@@ -14,8 +14,10 @@ import {
 } from 'src/helpers/date.helper';
 import { ColorService } from '../../color/services/color.service';
 import { UserService } from '../../user/services/user.service';
+import { ScheduleAreaEntity } from '../entities/schedule-area.entity';
+import { isDefined } from 'src/helpers/common.helper';
+
 import * as moment from 'moment';
-import * as _ from 'lodash';
 
 @Injectable()
 export class ScheduleHelper {
@@ -24,10 +26,29 @@ export class ScheduleHelper {
     private readonly userService: UserService,
   ) {}
 
+  /**
+   * @title check schedule is exist or not
+   * @param scheduleStatus
+   * @returns
+   */
   isScheduleExist(scheduleStatus?: ScheduleEntity | undefined): boolean {
     return (
-      !_.isNil(scheduleStatus) &&
+      isDefined(scheduleStatus) &&
       scheduleStatus.status !== StatusColumnEnum.DELETED
+    );
+  }
+
+  /**
+   * @title check schedule-area is exist or not
+   * @param scheduleAreaStatus
+   * @returns
+   */
+  isScheduleAreaExist(
+    scheduleAreaStatus?: ScheduleAreaEntity | undefined,
+  ): boolean {
+    return (
+      isDefined(scheduleAreaStatus) &&
+      scheduleAreaStatus.status !== StatusColumnEnum.DELETED
     );
   }
 

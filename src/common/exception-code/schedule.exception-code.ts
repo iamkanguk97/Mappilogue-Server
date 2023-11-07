@@ -100,4 +100,12 @@ export const ScheduleExceptionCode = {
     '2027',
     '캘린더를 조회할 월을 입력해주세요.',
   ),
+  ScheduleAreaNotExist: setExceptionCode(
+    '2028',
+    '존재하지 않는 일정 지역입니다.',
+  ),
+  ScheduleAreaNotMathWithSchedule: setExceptionCode(
+    '2029',
+    '해당 일정의 지역이 아닙니다.',
+  ),
 };

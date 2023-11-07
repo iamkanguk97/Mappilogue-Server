@@ -30,6 +30,7 @@ import { ScheduleAreaRepository } from '../repositories/schedule-area.repository
 import { PutScheduleRequestDto } from '../dtos/put-schedule-request.dto';
 import { GetSchedulesInCalenderResponseDto } from '../dtos/get-schedules-in-calender-response.dto';
 import { GetSchedulesInCalenderRequestDto } from '../dtos/get-schedules-in-calender-request.dto';
+import { GetScheduleAreasByIdResponseDto } from '../dtos/get-schedule-areas-by-id-response.dto';
 
 @Injectable()
 export class ScheduleService {
@@ -282,6 +283,17 @@ export class ScheduleService {
     });
   }
 
+  async findScheduleAreaById(
+    scheduleAreaId: number,
+  ): Promise<ScheduleAreaEntity> {
+    return this.scheduleAreaRepository.findOne({
+      where: {
+        id: scheduleAreaId,
+        status: StatusColumnEnum.ACTIVE,
+      },
+    });
+  }
+
   async modifyById(
     scheduleId: number,
     properties: Partial<ScheduleEntity>,
@@ -315,6 +327,15 @@ export class ScheduleService {
     }
   }
 
+  async findScheduleAreasById(
+    scheduleId: number,
+  ): Promise<GetScheduleAreasByIdResponseDto> {
+    const result = await this.scheduleAreaRepository.selectScheduleAreasById(
+      scheduleId,
+    );
+    return GetScheduleAreasByIdResponseDto.of(result);
+  }
+
   async checkScheduleStatus(
     userId: number,
     scheduleId: number,
@@ -329,6 +350,24 @@ export class ScheduleService {
     }
 
     return ScheduleDto.of(scheduleStatus);
+  }
+
+  async checkScheduleAreaStatus(
+    scheduleAreaId: number,
+    scheduleId: number,
+  ): Promise<void> {
+    const scheduleAreaStatus = await this.findScheduleAreaById(scheduleAreaId);
+
+    if (!this.scheduleHelper.isScheduleAreaExist(scheduleAreaStatus)) {
+      throw new BadRequestException(ScheduleExceptionCode.ScheduleAreaNotExist);
+    }
+    if (scheduleAreaStatus.scheduleId !== scheduleId) {
+      throw new BadRequestException(
+        ScheduleExceptionCode.ScheduleAreaNotMathWithSchedule,
+      );
+    }
+
+    return;
   }
 
   async modifyScheduleArea(

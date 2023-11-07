@@ -50,7 +50,7 @@ export const CreateMarkImageMulterOption = (): multer.Options => {
       .allowImageMimeTypes()
       .setResource('image')
       .setPath('mark')
-      .build(),
+      .markImageBuild(),
     limits: { fileSize: 1024 * 1024 * 20 },
   };
 };

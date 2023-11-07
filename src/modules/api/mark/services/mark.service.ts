@@ -3,10 +3,13 @@ import { Injectable, Logger } from '@nestjs/common';
 import { MarkRepository } from '../repositories/mark.repository';
 import { MarkEntity } from '../entities/mark.entity';
 import { StatusColumnEnum } from 'src/constants/enum';
-import * as _ from 'lodash';
-import { ScheduleService } from '../../schedule/services/schedule.service';
-import { ScheduleHelper } from '../../schedule/helpers/schedule.helper';
 import { MarkHelper } from '../helpers/mark.helper';
+import { PostMarkRequestDto } from '../dtos/post-mark-request.dto';
+import { MarkMetadataRepository } from '../repositories/mark-metadata.repository';
+import { ScheduleService } from '../../schedule/services/schedule.service';
+import { PostMarkResponseDto } from '../dtos/post-mark-response.dto';
+import { MarkLocationRepository } from '../repositories/mark-location.repository';
+import { isDefined } from 'src/helpers/common.helper';
 
 @Injectable()
 export class MarkService {
@@ -15,38 +18,70 @@ export class MarkService {
   constructor(
     private readonly dataSource: DataSource,
     private readonly markRepository: MarkRepository,
+    private readonly markMetadataRepository: MarkMetadataRepository,
+    private readonly markLocationRepository: MarkLocationRepository,
     private readonly scheduleService: ScheduleService,
-    private readonly scheduleHelper: ScheduleHelper,
     private readonly markHelper: MarkHelper,
   ) {}
 
-  async createMark(userId: number, files: Express.MulterS3.File[], body: any) {
+  async createMark(
+    userId: number,
+    files: Express.MulterS3.File[],
+    body: PostMarkRequestDto,
+  ): Promise<PostMarkResponseDto> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
-      // colorId가 있음 -> scheduleId가 null이 아닌경우 ==> update 필요 (1)
-      // markCategoryId가 있으면 => 유효성 검사 싹다 해야함 (2)
-
-      // mainScheduleAreaId가 null이면 -> mainLocationInfo object 확인
-      // mainScheduleAreaId가 null이 아니면 -> 유효성 검사 후 그대로 INSERT
-      // metadata 배열이 없으면 content insert
-      // metadata 배열이 있으면 -> 사진 정보와 mapping 시켜서 insert
-
-      await this.markHelper.setScheduleColorByCreateMark(userId, body); // (1)
-      // await this.markHelper.isValidMarkCategoryByCreateMark(
-      //   userId,
-      //   body?.markCategoryId,
-      // ); // (2);
+      const { id: markId } = await this.markRepository.save(
+        body.toMarkEntity(userId),
+      );
+      await this.modifyScheduleColorByCreateMark(body);
+      await this.createMarkMetadata(markId, files, body);
+      await this.createMarkMainLocation(markId, body);
 
       await queryRunner.commitTransaction();
+      return PostMarkResponseDto.of(markId);
     } catch (err) {
       this.logger.error(`[createMark - transaction error] ${err}`);
+      await this.markHelper.deleteUploadedMarkImageWhenError(userId, files);
       await queryRunner.rollbackTransaction();
       throw err;
     } finally {
       await queryRunner.release();
+    }
+  }
+
+  async createMarkMetadata(
+    markId: number,
+    files: Express.MulterS3.File[],
+    body: PostMarkRequestDto,
+  ): Promise<void> {
+    const metadata = body.markMetadata ?? [];
+    await this.markMetadataRepository.save(
+      this.markHelper.mappingMarkMetadataWithImages(markId, files, metadata),
+    );
+  }
+
+  async createMarkMainLocation(
+    markId: number,
+    body: PostMarkRequestDto,
+  ): Promise<void> {
+    if (isDefined(body.mainScheduleAreaId) || isDefined(body.mainLocation)) {
+      const insertMarkLocationParam =
+        this.markHelper.setCreateMarkLocationParam(markId, body);
+      await this.markLocationRepository.save(insertMarkLocationParam);
+    }
+  }
+
+  async modifyScheduleColorByCreateMark(
+    body: PostMarkRequestDto,
+  ): Promise<void> {
+    if (isDefined(body.scheduleId)) {
+      await this.scheduleService.modifyById(body.scheduleId, {
+        colorId: body.colorId,
+      });
     }
   }
 
