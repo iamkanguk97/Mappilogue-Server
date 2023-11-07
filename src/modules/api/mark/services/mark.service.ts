@@ -1,5 +1,5 @@
 import { DataSource } from 'typeorm';
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { MarkRepository } from '../repositories/mark.repository';
 import { MarkEntity } from '../entities/mark.entity';
 import { StatusColumnEnum } from 'src/constants/enum';
@@ -10,6 +10,8 @@ import { ScheduleService } from '../../schedule/services/schedule.service';
 import { PostMarkResponseDto } from '../dtos/post-mark-response.dto';
 import { MarkLocationRepository } from '../repositories/mark-location.repository';
 import { isDefined } from 'src/helpers/common.helper';
+import { MarkExceptionCode } from 'src/common/exception-code/mark.exception-code';
+import { MarkDto } from '../dtos/mark.dto';
 
 @Injectable()
 export class MarkService {
@@ -46,6 +48,36 @@ export class MarkService {
     } catch (err) {
       this.logger.error(`[createMark - transaction error] ${err}`);
       await this.markHelper.deleteUploadedMarkImageWhenError(userId, files);
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async findMarkOnSpecificId(mark: MarkDto) {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      // 일반부분 조회하기
+
+      // metadata 부분 조회하기
+      const markMetadatas =
+        await this.markMetadataRepository.selectMarkMetadatasByMarkId(
+          mark.getId,
+        );
+
+      console.log(markMetadatas);
+
+      await queryRunner.commitTransaction();
+      return {
+        base: mark,
+        markMetadata: markMetadatas,
+      };
+    } catch (err) {
+      this.logger.error(`[findMarkOnSpecificId - transaction error] ${err}`);
       await queryRunner.rollbackTransaction();
       throw err;
     } finally {
@@ -109,5 +141,18 @@ export class MarkService {
         status: StatusColumnEnum.ACTIVE,
       },
     });
+  }
+
+  async checkMarkStatus(userId: number, markId: number): Promise<MarkDto> {
+    const markStatus = await this.findOneById(markId);
+
+    if (!this.markHelper.isMarkExist(markStatus)) {
+      throw new BadRequestException(MarkExceptionCode.MarkNotExist);
+    }
+    if (markStatus.userId !== userId) {
+      throw new BadRequestException(MarkExceptionCode.MarkNotMine);
+    }
+
+    return MarkDto.of(markStatus);
   }
 }

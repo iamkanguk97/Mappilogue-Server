@@ -2,10 +2,13 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
   Post,
+  Put,
+  Query,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
@@ -20,6 +23,7 @@ import { PostMarkRequestDto } from '../dtos/post-mark-request.dto';
 import { PostMarkValidationPipe } from '../pipes/post-mark-validation.pipe';
 import { ResponseEntity } from 'src/common/response-entity';
 import { PostMarkResponseDto } from '../dtos/post-mark-response.dto';
+import { MarkDto } from '../dtos/mark.dto';
 
 @Controller('marks')
 export class MarkController {
@@ -47,5 +51,24 @@ export class MarkController {
     @Param(MarkValidationPipe) param: DeleteMarkRequestDto,
   ): Promise<void> {
     await this.markService.removeMark(userId, param.markId);
+  }
+
+  @Get()
+  @HttpCode(HttpStatus.OK)
+  async getMarkDetailById(@Query(MarkValidationPipe) mark: MarkDto) {
+    const result = await this.markService.findMarkOnSpecificId(mark);
+    return ResponseEntity.OK_WITH(HttpStatus.OK, result);
+  }
+
+  @Put('/:markId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async putMark() {
+    return;
+  }
+
+  @Get()
+  @HttpCode(HttpStatus.OK)
+  async getMarkListByCategoryId() {
+    return;
   }
 }

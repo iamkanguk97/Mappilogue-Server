@@ -2,40 +2,37 @@ import {
   BadRequestException,
   Inject,
   Injectable,
+  Logger,
   PipeTransform,
 } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { MarkService } from '../services/mark.service';
-import { MarkHelper } from '../helpers/mark.helper';
 import { MarkExceptionCode } from 'src/common/exception-code/mark.exception-code';
-import * as _ from 'lodash';
+import { isDefined } from 'src/helpers/common.helper';
+import { MarkDto } from '../dtos/mark.dto';
 
 @Injectable()
 export class MarkValidationPipe implements PipeTransform {
+  private readonly logger = new Logger(MarkValidationPipe.name);
+
   constructor(
     @Inject(REQUEST) private readonly request: Request,
     private readonly markService: MarkService,
-    private readonly markHelper: MarkHelper,
   ) {}
 
-  async transform<T extends { markId: number }>(value: T): Promise<T> {
-    const userId = this.request['user'].id;
-    const markId = value.markId;
+  async transform<T extends { markId: number }>(value: T): Promise<MarkDto> {
+    try {
+      const userId = this.request['user'].id;
+      const markId = value?.markId;
 
-    if (_.isNil(markId)) {
-      throw new BadRequestException(MarkExceptionCode.MarkIdEmpty);
+      if (!isDefined(markId)) {
+        throw new BadRequestException(MarkExceptionCode.MarkIdEmpty);
+      }
+
+      return await this.markService.checkMarkStatus(userId, markId);
+    } catch (err) {
+      this.logger.error(`[MarkValidationPipe] ${err}`);
+      throw err;
     }
-
-    const markStatus = await this.markService.findOneById(markId);
-
-    if (!this.markHelper.isMarkExist(markStatus)) {
-      throw new BadRequestException(MarkExceptionCode.MarkNotExist);
-    }
-
-    if (markStatus.userId !== userId) {
-      throw new BadRequestException(MarkExceptionCode.MarkNotMine);
-    }
-
-    return value;
   }
 }
