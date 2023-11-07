@@ -54,6 +54,8 @@ export class PostMarkRequestDto {
   @IsOptional()
   mainScheduleAreaId?: number | undefined;
 
+  @ValidateNested({ each: true })
+  @Type(() => MarkMainLocationDto)
   @IsOptional()
   mainLocation?: MarkMainLocationDto | undefined;
 

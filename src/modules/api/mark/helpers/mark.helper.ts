@@ -9,6 +9,7 @@ import {
   ImageBuilderTypeEnum,
   MulterBuilder,
 } from 'src/common/multer/multer.builder';
+import { PostMarkRequestDto } from '../dtos/post-mark-request.dto';
 
 @Injectable()
 export class MarkHelper {
@@ -66,5 +67,28 @@ export class MarkHelper {
     }
 
     return;
+  }
+
+  /**
+   * @title MarkLocation을 insert할 Parameter를 만들어주는 함수
+   * @param markId
+   * @param body
+   * @returns
+   */
+  setCreateMarkLocationParam(markId: number, body: PostMarkRequestDto) {
+    if (!_.isNil(body.mainScheduleAreaId)) {
+      return {
+        markId,
+        scheduleAreaId: body.mainScheduleAreaId,
+      };
+    }
+
+    return {
+      markId,
+      name: body.mainLocation.name,
+      streetAddress: body.mainLocation.streetAddress,
+      latitude: body.mainLocation.latitude,
+      longitude: body.mainLocation.longitude,
+    };
   }
 }

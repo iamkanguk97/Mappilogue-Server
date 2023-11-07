@@ -6,7 +6,6 @@ import {
   PipeTransform,
 } from '@nestjs/common';
 import { PostMarkRequestDto } from '../dtos/post-mark-request.dto';
-import * as _ from 'lodash';
 import { ScheduleService } from '../../schedule/services/schedule.service';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
@@ -14,6 +13,7 @@ import { MarkCategoryService } from '../../mark-category/services/mark-category.
 import { MarkExceptionCode } from 'src/common/exception-code/mark.exception-code';
 import { CheckColumnEnum } from 'src/constants/enum';
 import { MarkHelper } from '../helpers/mark.helper';
+import { isDefined } from 'src/helpers/common.helper';
 
 @Injectable()
 export class PostMarkValidationPipe implements PipeTransform {
@@ -33,7 +33,7 @@ export class PostMarkValidationPipe implements PipeTransform {
 
     try {
       // scheduleId가 null이 아니면 scheduleStatus를 확인하고 ColorId Update 필요
-      if (!_.isNil(value?.scheduleId)) {
+      if (isDefined(value?.scheduleId)) {
         await this.scheduleService.checkScheduleStatus(
           userId,
           value.scheduleId,
@@ -41,7 +41,7 @@ export class PostMarkValidationPipe implements PipeTransform {
       }
 
       // markCategoryId가 null이 아니면 유효성 검사 필요
-      if (!_.isNil(value?.markCategoryId)) {
+      if (isDefined(value?.markCategoryId)) {
         await this.markCategoryService.checkMarkCategoryStatus(
           userId,
           value.markCategoryId,
@@ -55,9 +55,9 @@ export class PostMarkValidationPipe implements PipeTransform {
       }
 
       // markMetadata가 null이 아니면 isMainImage가 무조건 1개여야함
-      if (!_.isNil(value?.markMetadata)) {
+      if (isDefined(value?.markMetadata)) {
         // markMetadata가 null이 아니면 content는 null 이어야함
-        if (!_.isNil(value.content)) {
+        if (isDefined(value.content)) {
           throw new BadRequestException(
             MarkExceptionCode.MarkContentNotExistWhenMetadatIsExist,
           );
@@ -74,8 +74,14 @@ export class PostMarkValidationPipe implements PipeTransform {
         }
       }
 
-      // mainScheduleAreaId가 null이 아니면 mainLocation이 null이어야 함
-      // mainLocation이 null이 아니면 mainScheduleAreaId는 null이어야 한다.
+      if (
+        isDefined(value.mainScheduleAreaId) &&
+        isDefined(value.mainLocation)
+      ) {
+        throw new BadRequestException(
+          MarkExceptionCode.MainScheduleAreaIdAndMainLocationBothInclude,
+        );
+      }
 
       return value;
     } catch (err) {

@@ -29,4 +29,28 @@ export const MarkExceptionCode = {
     '5010',
     'markMetadata를 입력하셨을땐 content를 입력할 수 없습니다.',
   ),
+  MainScheduleAreaIdAndMainLocationBothInclude: setExceptionCode(
+    '5011',
+    'mainScheduleAreaId와 mainLocation을 같이 입력하실 수 없습니다.',
+  ),
+  MarkLocationNameEmpty: setExceptionCode(
+    '5012',
+    '기록 대표위치 이름을 입력해주세요.',
+  ),
+  MarkLocationNameLengthError: setExceptionCode(
+    '5013',
+    '기록 대표위치 이름은 최대 30자까지 입력 가능합니다.',
+  ),
+  MarkLocationStreetAddressLengthError: setExceptionCode(
+    '5014',
+    '기록 대표위치 도로명주소는 최대 100자까지 입력 가능합니다.',
+  ),
+  MarkLocationLatitudeLengthError: setExceptionCode(
+    '5015',
+    '기록 대표위치 위도는 최대 100자까지 입력 가능합니다.',
+  ),
+  MarkLocationLongitudeLengthError: setExceptionCode(
+    '5016',
+    '기록 대표위치 경도는 최대 100자까지 입력 가능합니다.',
+  ),
 };

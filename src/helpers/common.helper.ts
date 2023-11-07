@@ -18,3 +18,12 @@ export function isEmptyArray<T>(arr: Array<T>): boolean {
 export function setCheckColumnByValue<T>(value: T): CheckColumnEnum {
   return _.isNil(value) ? CheckColumnEnum.INACTIVE : CheckColumnEnum.ACTIVE;
 }
+
+/**
+ * @title null 또는 undefined인지 확인하는 함수
+ * @param value
+ * @returns
+ */
+export function isDefined<T>(value: T | undefined | null): boolean {
+  return <T>value !== undefined && <T>value !== null;
+}

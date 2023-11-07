@@ -9,6 +9,7 @@ import { MarkHelper } from './helpers/mark.helper';
 import { MarkCategoryRepository } from './repositories/mark-category.repository';
 import { MarkCategoryModule } from '../mark-category/mark-category.module';
 import { MarkMetadataRepository } from './repositories/mark-metadata.repository';
+import { MarkLocationRepository } from './repositories/mark-location.repository';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { MarkMetadataRepository } from './repositories/mark-metadata.repository'
       MarkRepository,
       MarkCategoryRepository,
       MarkMetadataRepository,
+      MarkLocationRepository,
     ]),
   ],
   controllers: [MarkController],
