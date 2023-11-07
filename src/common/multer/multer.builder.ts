@@ -10,6 +10,7 @@ import { Request } from 'express';
 import { CustomConfigService } from 'src/modules/core/custom-config/services';
 import { config } from 'dotenv';
 import { v4 as uuidv4 } from 'uuid';
+import { isDefined } from 'src/helpers/common.helper';
 
 config();
 const customConfigService = new CustomConfigService(new ConfigService());
@@ -133,7 +134,7 @@ export class MulterBuilder {
       ) => {
         const splitedFileNames = file.originalname.split('.');
         const extension = splitedFileNames.at(splitedFileNames.length - 1);
-        const filename = !_.isNil(this.path)
+        const filename = isDefined(this.path)
           ? `${this.path}/mark:${uuidv4()}.${extension}`
           : `mark:${uuidv4()}.${extension}`; // new Date로 하니까 파일명 중복되는 현상 발생했음 --> uuid로
 

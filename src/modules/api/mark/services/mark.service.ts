@@ -6,10 +6,10 @@ import { StatusColumnEnum } from 'src/constants/enum';
 import { MarkHelper } from '../helpers/mark.helper';
 import { PostMarkRequestDto } from '../dtos/post-mark-request.dto';
 import { MarkMetadataRepository } from '../repositories/mark-metadata.repository';
-import * as _ from 'lodash';
 import { ScheduleService } from '../../schedule/services/schedule.service';
 import { PostMarkResponseDto } from '../dtos/post-mark-response.dto';
 import { MarkLocationRepository } from '../repositories/mark-location.repository';
+import { isDefined } from 'src/helpers/common.helper';
 
 @Injectable()
 export class MarkService {
@@ -68,7 +68,7 @@ export class MarkService {
     markId: number,
     body: PostMarkRequestDto,
   ): Promise<void> {
-    if (!_.isNil(body.mainScheduleAreaId) || !_.isNil(body.mainLocation)) {
+    if (isDefined(body.mainScheduleAreaId) || isDefined(body.mainLocation)) {
       const insertMarkLocationParam =
         this.markHelper.setCreateMarkLocationParam(markId, body);
       await this.markLocationRepository.save(insertMarkLocationParam);
@@ -78,7 +78,7 @@ export class MarkService {
   async modifyScheduleColorByCreateMark(
     body: PostMarkRequestDto,
   ): Promise<void> {
-    if (!_.isNil(body.scheduleId)) {
+    if (isDefined(body.scheduleId)) {
       await this.scheduleService.modifyById(body.scheduleId, {
         colorId: body.colorId,
       });

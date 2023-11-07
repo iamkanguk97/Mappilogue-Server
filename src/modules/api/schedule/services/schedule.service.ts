@@ -283,6 +283,17 @@ export class ScheduleService {
     });
   }
 
+  async findScheduleAreaById(
+    scheduleAreaId: number,
+  ): Promise<ScheduleAreaEntity> {
+    return this.scheduleAreaRepository.findOne({
+      where: {
+        id: scheduleAreaId,
+        status: StatusColumnEnum.ACTIVE,
+      },
+    });
+  }
+
   async modifyById(
     scheduleId: number,
     properties: Partial<ScheduleEntity>,
@@ -339,6 +350,24 @@ export class ScheduleService {
     }
 
     return ScheduleDto.of(scheduleStatus);
+  }
+
+  async checkScheduleAreaStatus(
+    scheduleAreaId: number,
+    scheduleId: number,
+  ): Promise<void> {
+    const scheduleAreaStatus = await this.findScheduleAreaById(scheduleAreaId);
+
+    if (!this.scheduleHelper.isScheduleAreaExist(scheduleAreaStatus)) {
+      throw new BadRequestException(ScheduleExceptionCode.ScheduleAreaNotExist);
+    }
+    if (scheduleAreaStatus.scheduleId !== scheduleId) {
+      throw new BadRequestException(
+        ScheduleExceptionCode.ScheduleAreaNotMathWithSchedule,
+      );
+    }
+
+    return;
   }
 
   async modifyScheduleArea(

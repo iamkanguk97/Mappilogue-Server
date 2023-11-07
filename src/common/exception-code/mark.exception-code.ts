@@ -53,4 +53,8 @@ export const MarkExceptionCode = {
     '5016',
     '기록 대표위치 경도는 최대 100자까지 입력 가능합니다.',
   ),
+  MustScheduleIdExistWhenScheduleAreaIdExist: setExceptionCode(
+    '5017',
+    'mainScheduleAreaId가 있으면 scheduleId를 필수로 입력해주셔야 합니다.',
+  ),
 };

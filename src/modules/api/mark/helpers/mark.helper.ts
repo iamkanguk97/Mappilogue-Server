@@ -1,7 +1,7 @@
+import { isDefined } from 'src/helpers/common.helper';
 import { Injectable } from '@nestjs/common';
 import { MarkEntity } from '../entities/mark.entity';
-import { StatusColumnEnum } from 'src/constants/enum';
-import * as _ from 'lodash';
+import { CheckColumnEnum, StatusColumnEnum } from 'src/constants/enum';
 import { ScheduleService } from '../../schedule/services/schedule.service';
 import { MarkMetadataDto } from '../dtos/mark-metadata.dto';
 import { MarkMetadataEntity } from '../entities/mark-metadata.entity';
@@ -10,6 +10,9 @@ import {
   MulterBuilder,
 } from 'src/common/multer/multer.builder';
 import { PostMarkRequestDto } from '../dtos/post-mark-request.dto';
+import { MarkLocationEntity } from '../entities/mark-location.entity';
+
+import * as _ from 'lodash';
 
 @Injectable()
 export class MarkHelper {
@@ -75,20 +78,36 @@ export class MarkHelper {
    * @param body
    * @returns
    */
-  setCreateMarkLocationParam(markId: number, body: PostMarkRequestDto) {
-    if (!_.isNil(body.mainScheduleAreaId)) {
-      return {
-        markId,
-        scheduleAreaId: body.mainScheduleAreaId,
-      };
+  setCreateMarkLocationParam(
+    markId: number,
+    body: PostMarkRequestDto,
+  ): MarkLocationEntity {
+    if (isDefined(body.mainScheduleAreaId)) {
+      return body.toMarkLocationEntity(markId, body.mainScheduleAreaId);
     }
+    return body.mainLocation.toMarkLocationEntity(markId);
+  }
 
-    return {
-      markId,
-      name: body.mainLocation.name,
-      streetAddress: body.mainLocation.streetAddress,
-      latitude: body.mainLocation.latitude,
-      longitude: body.mainLocation.longitude,
-    };
+  /**
+   * @title markMetadata의 배열에서 isMainImage가 ACTIVE인 값 개수 파악하는 함수
+   * @param metadata
+   * @returns
+   */
+  getMarkMainImageStatusCount(metadata: MarkMetadataDto[]): number {
+    return metadata.reduce(
+      (acc, obj) =>
+        obj.isMainImage === CheckColumnEnum.ACTIVE ? acc + 1 : acc,
+      0,
+    );
+  }
+
+  /**
+   * @title 대표 이미지 업로드 가능한지 확인하는 함수
+   * @param metadata
+   * @returns
+   */
+  checkMarkMainImageCanUpload(metadata: MarkMetadataDto[]): boolean {
+    const isMainImageCount = this.getMarkMainImageStatusCount(metadata);
+    return isMainImageCount === 1;
   }
 }

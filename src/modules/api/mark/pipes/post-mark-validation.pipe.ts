@@ -11,7 +11,6 @@ import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { MarkCategoryService } from '../../mark-category/services/mark-category.service';
 import { MarkExceptionCode } from 'src/common/exception-code/mark.exception-code';
-import { CheckColumnEnum } from 'src/constants/enum';
 import { MarkHelper } from '../helpers/mark.helper';
 import { isDefined } from 'src/helpers/common.helper';
 
@@ -31,49 +30,73 @@ export class PostMarkValidationPipe implements PipeTransform {
     const markImages = this.request['files'];
     const markMetadata = value.markMetadata ?? [];
 
+    let isScheduleIdExist = false;
+
     try {
-      // scheduleId가 null이 아니면 scheduleStatus를 확인하고 ColorId Update 필요
-      if (isDefined(value?.scheduleId)) {
+      /**
+       * @Validate RequestDTO에 scheduleId가 있으면 => 유효성 검사 필요
+       */
+      if (isDefined(value.scheduleId)) {
+        isScheduleIdExist = true;
         await this.scheduleService.checkScheduleStatus(
           userId,
           value.scheduleId,
         );
       }
 
-      // markCategoryId가 null이 아니면 유효성 검사 필요
-      if (isDefined(value?.markCategoryId)) {
+      /**
+       * @Validate RequestDTO에 markCategoryId가 있으면 => 유효성 검사 필요
+       */
+      if (isDefined(value.markCategoryId)) {
         await this.markCategoryService.checkMarkCategoryStatus(
           userId,
           value.markCategoryId,
         );
       }
 
+      /**
+       * @Validate RequestDTO에 mainScheduleAreaId가 있으면?
+       * - scheduleId가 필수로 있어야 한다.
+       * - 위에가 확인되면 mainScheduleAreaId에 대해 유효성 검사.
+       */
+      if (isDefined(value.mainScheduleAreaId) && !isScheduleIdExist) {
+        throw new BadRequestException(
+          MarkExceptionCode.MustScheduleIdExistWhenScheduleAreaIdExist,
+        );
+      }
+      if (isDefined(value.mainScheduleAreaId) && isScheduleIdExist) {
+        await this.scheduleService.checkScheduleAreaStatus(
+          value.mainScheduleAreaId,
+          value.scheduleId,
+        );
+      }
+
+      /**
+       * @Validate image 설정한 개수와 RequestDTO의 markMetadata 배열의 길이와 동일해야 한다.
+       */
       if (markImages.length !== markMetadata.length) {
         throw new BadRequestException(
           MarkExceptionCode.MarkMetadataLengthError,
         );
       }
 
-      // markMetadata가 null이 아니면 isMainImage가 무조건 1개여야함
-      if (isDefined(value?.markMetadata)) {
-        // markMetadata가 null이 아니면 content는 null 이어야함
-        if (isDefined(value.content)) {
-          throw new BadRequestException(
-            MarkExceptionCode.MarkContentNotExistWhenMetadatIsExist,
-          );
-        }
-
-        const isMainImageCount = value.markMetadata.reduce(
-          (acc, obj) =>
-            obj.isMainImage === CheckColumnEnum.ACTIVE ? acc + 1 : acc,
-          0,
+      /**
+       * @Validate RequestDTO에 markMetadata가 있는 경우?
+       * - content는 없어야 한다. (content는 이미지를 안올린 경우의 내용임)
+       * - isMainImage는 무조건 1개여야 한다.
+       */
+      if (isDefined(value.markMetadata) && isDefined(value.content)) {
+        throw new BadRequestException(
+          MarkExceptionCode.MarkContentNotExistWhenMetadatIsExist,
         );
-
-        if (isMainImageCount === 0 || isMainImageCount > 1) {
-          throw new BadRequestException(MarkExceptionCode.MarkMainImageMustOne);
-        }
+      }
+      if (!this.markHelper.checkMarkMainImageCanUpload(value.markMetadata)) {
+        throw new BadRequestException(MarkExceptionCode.MarkMainImageMustOne);
       }
 
+      /**
+       * @Validate RequestDTO에 mainScheduleAreaId와 mainLocation이 같이 있으면 안된다.
+       */
       if (
         isDefined(value.mainScheduleAreaId) &&
         isDefined(value.mainLocation)

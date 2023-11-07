@@ -18,6 +18,7 @@ import { MarkMetadataDto } from './mark-metadata.dto';
 import { Type } from 'class-transformer';
 import { MarkEntity } from '../entities/mark.entity';
 import { MarkMainLocationDto } from './mark-main-location.dto';
+import { MarkLocationEntity } from '../entities/mark-location.entity';
 
 export class PostMarkRequestDto {
   @IsNumber({}, setValidatorContext(CommonExceptionCode.MustNumberType))
@@ -74,5 +75,12 @@ export class PostMarkRequestDto {
       this.scheduleId,
       this.content,
     );
+  }
+
+  toMarkLocationEntity(
+    markId: number,
+    scheduleAreaId: number,
+  ): MarkLocationEntity {
+    return MarkLocationEntity.from(markId, scheduleAreaId);
   }
 }

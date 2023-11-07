@@ -8,6 +8,7 @@ import { setValidatorContext } from 'src/common/common';
 import { CommonExceptionCode } from 'src/common/exception-code/common.exception-code';
 import { MarkExceptionCode } from 'src/common/exception-code/mark.exception-code';
 import { MarkLocationNameLengthEnum } from '../constants/mark.enum';
+import { MarkLocationEntity } from '../entities/mark-location.entity';
 
 export class MarkMainLocationDto {
   @Length(
@@ -45,4 +46,15 @@ export class MarkMainLocationDto {
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsOptional()
   longitude?: string | undefined;
+
+  toMarkLocationEntity(markId: number): MarkLocationEntity {
+    return MarkLocationEntity.from(
+      markId,
+      undefined,
+      this.name,
+      this.streetAddress,
+      this.latitude,
+      this.longitude,
+    );
+  }
 }
