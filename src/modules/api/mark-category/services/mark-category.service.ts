@@ -16,6 +16,8 @@ import { CustomCacheService } from 'src/modules/core/custom-cache/services/custo
 
 @Injectable()
 export class MarkCategoryService {
+  private readonly logger = new Logger(MarkCategoryService.name);
+
   constructor(
     private readonly dataSource: DataSource,
     private readonly markRepository: MarkRepository,
@@ -28,23 +30,36 @@ export class MarkCategoryService {
   async findMarkCategories(
     userId: number,
   ): Promise<GetMarkCategoriesResponseDto> {
-    const result =
-      await this.markCategoryRepository.selectMarkCategoriesByUserId(userId);
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    const markExceptCategoryCount =
-      await this.markRepository.selectMarkExceptCategoryCount(userId);
-    const markHaveCategoryCount = result.reduce(
-      (acc, obj) => acc + Number(obj.markCount),
-      0,
-    );
+    try {
+      const result =
+        await this.markCategoryRepository.selectMarkCategoriesByUserId(userId);
 
-    const totalCategoryMarkCount =
-      markExceptCategoryCount + markHaveCategoryCount;
+      const markExceptCategoryCount =
+        await this.markRepository.selectMarkExceptCategoryCount(userId);
+      const markHaveCategoryCount = result.reduce(
+        (acc, obj) => acc + Number(obj.markCount),
+        0,
+      );
 
-    return GetMarkCategoriesResponseDto.from(
-      totalCategoryMarkCount,
-      result.map((r) => MarkCategoryDto.of(r)),
-    );
+      const totalCategoryMarkCount =
+        markExceptCategoryCount + markHaveCategoryCount;
+
+      await queryRunner.commitTransaction();
+      return GetMarkCategoriesResponseDto.from(
+        totalCategoryMarkCount,
+        result.map((r) => MarkCategoryDto.of(r)),
+      );
+    } catch (err) {
+      this.logger.error(`[findMarkCategories - transaction error] ${err}`);
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async createMarkCategory(
