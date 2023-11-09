@@ -1,5 +1,5 @@
-import { DataSource } from 'typeorm';
-import { Injectable, Logger } from '@nestjs/common';
+import { DataSource, Equal } from 'typeorm';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { MarkRepository } from '../repositories/mark.repository';
 import { MarkEntity } from '../entities/mark.entity';
 import { StatusColumnEnum } from 'src/constants/enum';
@@ -10,6 +10,11 @@ import { ScheduleService } from '../../schedule/services/schedule.service';
 import { PostMarkResponseDto } from '../dtos/post-mark-response.dto';
 import { MarkLocationRepository } from '../repositories/mark-location.repository';
 import { isDefined } from 'src/helpers/common.helper';
+import { MarkExceptionCode } from 'src/common/exception-code/mark.exception-code';
+import { MarkDto } from '../dtos/mark.dto';
+import { GetMarkDetailByIdResponseDto } from '../dtos/get-mark-detail-by-id-response.dto';
+import { MarkCategoryRepository } from '../repositories/mark-category.repository';
+import { MarkLocationDto } from '../dtos/mark-location.dto';
 
 @Injectable()
 export class MarkService {
@@ -20,6 +25,7 @@ export class MarkService {
     private readonly markRepository: MarkRepository,
     private readonly markMetadataRepository: MarkMetadataRepository,
     private readonly markLocationRepository: MarkLocationRepository,
+    private readonly markCategoryRepository: MarkCategoryRepository,
     private readonly scheduleService: ScheduleService,
     private readonly markHelper: MarkHelper,
   ) {}
@@ -46,6 +52,58 @@ export class MarkService {
     } catch (err) {
       this.logger.error(`[createMark - transaction error] ${err}`);
       await this.markHelper.deleteUploadedMarkImageWhenError(userId, files);
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async findMarkOnSpecificId(
+    mark: MarkDto,
+  ): Promise<GetMarkDetailByIdResponseDto> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const markCategoryName =
+        (
+          await this.markCategoryRepository.findOne({
+            select: {
+              title: true,
+            },
+            where: {
+              id: Equal(mark.getMarkCategoryId),
+              status: StatusColumnEnum.ACTIVE,
+            },
+          })
+        ).title ?? '';
+
+      const markLocation = await this.markLocationRepository.findOne({
+        where: {
+          markId: mark.getId,
+          status: StatusColumnEnum.ACTIVE,
+        },
+      });
+
+      const param = {
+        markCategoryId: mark.getMarkCategoryId,
+        markCategoryName,
+        markLocation: MarkLocationDto.of(markLocation),
+        content: mark.getContent,
+      };
+
+      // metadata 부분 조회하기
+      const markMetadatas =
+        await this.markMetadataRepository.selectMarkMetadatasByMarkId(
+          mark.getId,
+        );
+
+      await queryRunner.commitTransaction();
+      return GetMarkDetailByIdResponseDto.from(param, markMetadatas);
+    } catch (err) {
+      this.logger.error(`[findMarkOnSpecificId - transaction error] ${err}`);
       await queryRunner.rollbackTransaction();
       throw err;
     } finally {
@@ -109,5 +167,18 @@ export class MarkService {
         status: StatusColumnEnum.ACTIVE,
       },
     });
+  }
+
+  async checkMarkStatus(userId: number, markId: number): Promise<MarkDto> {
+    const markStatus = await this.findOneById(markId);
+
+    if (!this.markHelper.isMarkExist(markStatus)) {
+      throw new BadRequestException(MarkExceptionCode.MarkNotExist);
+    }
+    if (markStatus.userId !== userId) {
+      throw new BadRequestException(MarkExceptionCode.MarkNotMine);
+    }
+
+    return MarkDto.of(markStatus);
   }
 }
