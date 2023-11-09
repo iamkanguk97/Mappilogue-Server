@@ -12,17 +12,20 @@ import {
 import { PostMarkRequestDto } from '../dtos/post-mark-request.dto';
 import { MarkLocationEntity } from '../entities/mark-location.entity';
 
-import * as _ from 'lodash';
-
 @Injectable()
 export class MarkHelper {
   constructor(
     private readonly scheduleService: ScheduleService, // private readonly markCategoryService: MarkCategoryService,
   ) {}
 
+  /**
+   * @title 해당 기록이 존재하는지 확인
+   * @param markStatus
+   * @returns
+   */
   isMarkExist(markStatus?: MarkEntity | undefined): boolean {
     return (
-      !_.isNil(markStatus) && markStatus.status !== StatusColumnEnum.DELETED
+      isDefined(markStatus) && markStatus.status !== StatusColumnEnum.DELETED
     );
   }
 

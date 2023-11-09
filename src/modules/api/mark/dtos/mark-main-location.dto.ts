@@ -57,4 +57,8 @@ export class MarkMainLocationDto {
       this.longitude,
     );
   }
+
+  static of(markLocation: MarkLocationEntity) {
+    return;
+  }
 }

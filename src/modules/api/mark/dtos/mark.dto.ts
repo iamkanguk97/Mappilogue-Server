@@ -42,4 +42,12 @@ export class MarkDto {
   get getId(): number {
     return this.id;
   }
+
+  get getMarkCategoryId(): number | undefined {
+    return this.markCategoryId;
+  }
+
+  get getContent(): string | undefined {
+    return this.content ?? '';
+  }
 }

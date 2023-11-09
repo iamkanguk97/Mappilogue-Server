@@ -1,4 +1,4 @@
-import { DataSource } from 'typeorm';
+import { DataSource, Equal } from 'typeorm';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { MarkRepository } from '../repositories/mark.repository';
 import { MarkEntity } from '../entities/mark.entity';
@@ -12,6 +12,9 @@ import { MarkLocationRepository } from '../repositories/mark-location.repository
 import { isDefined } from 'src/helpers/common.helper';
 import { MarkExceptionCode } from 'src/common/exception-code/mark.exception-code';
 import { MarkDto } from '../dtos/mark.dto';
+import { GetMarkDetailByIdResponseDto } from '../dtos/get-mark-detail-by-id-response.dto';
+import { MarkCategoryRepository } from '../repositories/mark-category.repository';
+import { MarkLocationDto } from '../dtos/mark-location.dto';
 
 @Injectable()
 export class MarkService {
@@ -22,6 +25,7 @@ export class MarkService {
     private readonly markRepository: MarkRepository,
     private readonly markMetadataRepository: MarkMetadataRepository,
     private readonly markLocationRepository: MarkLocationRepository,
+    private readonly markCategoryRepository: MarkCategoryRepository,
     private readonly scheduleService: ScheduleService,
     private readonly markHelper: MarkHelper,
   ) {}
@@ -55,13 +59,40 @@ export class MarkService {
     }
   }
 
-  async findMarkOnSpecificId(mark: MarkDto) {
+  async findMarkOnSpecificId(
+    mark: MarkDto,
+  ): Promise<GetMarkDetailByIdResponseDto> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
-      // 일반부분 조회하기
+      const markCategoryName =
+        (
+          await this.markCategoryRepository.findOne({
+            select: {
+              title: true,
+            },
+            where: {
+              id: Equal(mark.getMarkCategoryId),
+              status: StatusColumnEnum.ACTIVE,
+            },
+          })
+        ).title ?? '';
+
+      const markLocation = await this.markLocationRepository.findOne({
+        where: {
+          markId: mark.getId,
+          status: StatusColumnEnum.ACTIVE,
+        },
+      });
+
+      const param = {
+        markCategoryId: mark.getMarkCategoryId,
+        markCategoryName,
+        markLocation: MarkLocationDto.of(markLocation),
+        content: mark.getContent,
+      };
 
       // metadata 부분 조회하기
       const markMetadatas =
@@ -69,13 +100,8 @@ export class MarkService {
           mark.getId,
         );
 
-      console.log(markMetadatas);
-
       await queryRunner.commitTransaction();
-      return {
-        base: mark,
-        markMetadata: markMetadatas,
-      };
+      return GetMarkDetailByIdResponseDto.from(param, markMetadatas);
     } catch (err) {
       this.logger.error(`[findMarkOnSpecificId - transaction error] ${err}`);
       await queryRunner.rollbackTransaction();
