@@ -111,6 +111,11 @@ export class MarkService {
     }
   }
 
+  async findMarkListByCategoryId(userId: number, markCategoryId: number) {
+    // markCategoryId가 -1이면 전체 카테고리, 아니면 특정 카테고리
+    return;
+  }
+
   async createMarkMetadata(
     markId: number,
     files: Express.MulterS3.File[],

@@ -8,7 +8,13 @@ import {
   HttpStatus,
   Param,
   Post,
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
   Put,
+=======
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
   Query,
 } from '@nestjs/common';
 import { UserId } from '../../user/decorators/user-id.decorator';
@@ -100,6 +106,32 @@ export class ScheduleController {
   ): Promise<ResponseEntity<GetScheduleAreasByIdResponseDto>> {
     const result = await this.scheduleService.findScheduleAreasById(
       schedule.getId,
+    );
+    return ResponseEntity.OK_WITH(HttpStatus.OK, result);
+  }
+
+  @Get('detail-by-id')
+  @HttpCode(HttpStatus.OK)
+  async getScheduleDetailById(
+    @UserId() userId: number,
+    @Query(ScheduleValidationPipe) schedule: ScheduleDto,
+  ): Promise<ResponseEntity<any>> {
+    const result = await this.scheduleService.findScheduleDetailById(
+      userId,
+      schedule,
+    );
+    return ResponseEntity.OK_WITH(HttpStatus.OK, result);
+  }
+
+  @Get('detail-by-id')
+  @HttpCode(HttpStatus.OK)
+  async getScheduleDetailById(
+    @UserId() userId: number,
+    @Query(ScheduleValidationPipe) schedule: ScheduleDto,
+  ): Promise<ResponseEntity<any>> {
+    const result = await this.scheduleService.findScheduleDetailById(
+      userId,
+      schedule,
     );
     return ResponseEntity.OK_WITH(HttpStatus.OK, result);
   }

@@ -24,6 +24,7 @@ import { PostMarkValidationPipe } from '../pipes/post-mark-validation.pipe';
 import { ResponseEntity } from 'src/entities/common/response.entity';
 import { PostMarkResponseDto } from '../dtos/post-mark-response.dto';
 import { MarkDto } from '../dtos/mark.dto';
+import { MarkCategoryValidationPipe } from '../../mark-category/pipes/mark-category-validation.pipe';
 
 @Controller('marks')
 export class MarkController {
@@ -68,7 +69,20 @@ export class MarkController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  async getMarkListByCategoryId() {
+  async getMarkListByCategoryId(
+    @UserId() userId: number,
+    @Query(MarkCategoryValidationPipe) query: any,
+  ) {
+    const result = await this.markService.findMarkListByCategoryId(
+      userId,
+      query.markCategoryId,
+    );
+    return ResponseEntity.OK_WITH(HttpStatus.OK, result);
+  }
+
+  @Get()
+  @HttpCode(HttpStatus.OK)
+  async getMarksInUserPosition(@UserId() userId: number) {
     return;
   }
 }

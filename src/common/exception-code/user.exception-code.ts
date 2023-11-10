@@ -67,4 +67,12 @@ export const UserExceptionCode = {
     '회원탈퇴 사유는 최대 200자까지 입력 가능합니다.',
   ),
   NotExistUser: setExceptionCode('1021', '존재하지 않는 사용자입니다.'),
+  GetUserHomeOptionEmpty: setExceptionCode(
+    '1022',
+    '홈화면 조회 옵션을 입력해주세요.',
+  ),
+  GetUserHomeOptionErrorType: setExceptionCode(
+    '1023',
+    '홈화면 조회 옵션은 NOW 또는 AFTER로 입력해주세요.',
+  ),
 };

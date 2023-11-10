@@ -25,12 +25,12 @@ import { UserAlarmHistoryEntity } from '../../user/entities/user-alarm-history.e
 import { ScheduleHelper } from '../helpers/schedule.helper';
 import { solar2lunar } from 'solarlunar';
 import { GetScheduleOnSpecificDateResponseDto } from '../dtos/get-schedule-on-specific-date-response.dto';
-import { ScheduleDto } from '../dtos/schedule.dto';
 import { ScheduleAreaRepository } from '../repositories/schedule-area.repository';
 import { PutScheduleRequestDto } from '../dtos/put-schedule-request.dto';
 import { GetSchedulesInCalenderResponseDto } from '../dtos/get-schedules-in-calender-response.dto';
 import { GetSchedulesInCalenderRequestDto } from '../dtos/get-schedules-in-calender-request.dto';
 import { GetScheduleAreasByIdResponseDto } from '../dtos/get-schedule-areas-by-id-response.dto';
+import { ScheduleDto } from '../dtos/schedule.dto';
 
 @Injectable()
 export class ScheduleService {
@@ -132,6 +132,30 @@ export class ScheduleService {
     return GetSchedulesInCalenderResponseDto.of(result);
   }
 
+  async findScheduleDetailById(userId: number, schedule: ScheduleDto) {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      console.log(userId);
+      console.log(schedule);
+
+      schedule._startDate = '';
+      schedule._endDate = '';
+
+      console.log(schedule);
+
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      this.logger.error(`[findScheduleDetailById - transaction error] ${err}`);
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
   async createScheduleArea(
     newScheduleId: number,
     body: PostScheduleRequestDto,
@@ -167,6 +191,7 @@ export class ScheduleService {
               );
             },
           );
+
           this.scheduleAreaRepository.save(createScheduleAreaValueParam);
         }),
       );

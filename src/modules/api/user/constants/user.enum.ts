@@ -12,3 +12,8 @@ export enum LoginOrSignUpEnum {
   LOGIN = 'LOGIN',
   SIGNUP = 'SIGNUP',
 }
+
+export enum GetHomeOptionEnum {
+  NOW = 'NOW',
+  AFTER = 'AFTER',
+}

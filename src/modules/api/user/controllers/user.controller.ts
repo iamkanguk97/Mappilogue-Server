@@ -1,4 +1,12 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { LoginOrSignUpRequestDto } from '../dtos/login-or-sign-up-request.dto';
 import { ResponseEntity } from 'src/entities/common/response.entity';
 import { UserService } from '../services/user.service';
@@ -9,6 +17,7 @@ import { LoginOrSignUpResponseDto } from '../dtos/login-or-sign-up-response.dto'
 import { UserSocialFactory } from '../factories/user-social.factory';
 import { Public } from 'src/modules/core/auth/decorators/auth.decorator';
 import { UserId } from '../decorators/user-id.decorator';
+import { TERMS_OF_SERVICE_URL } from 'src/constants/constant';
 import { User } from '../decorators/user.decorator';
 import { DecodedUserToken } from '../types';
 import { PostUserWithdrawRequestDto } from '../dtos/post-user-withdraw-request.dto';
@@ -65,5 +74,21 @@ export class UserController {
     @Body() body: PostUserWithdrawRequestDto,
   ): Promise<void> {
     await this.userService.createWithdraw(user, body);
+  }
+
+  @Get('homes')
+  @HttpCode(HttpStatus.OK)
+  async getHome(
+    @UserId() userId: number,
+    @Query() query: GetHomeOptionRequestDto,
+  ) {
+    const result = await this.userService.findHome(userId, query.option);
+    return ResponseEntity.OK_WITH(HttpStatus.OK, result);
+  }
+
+  termsOfServiceUrl(): ResponseEntity<{ link: string }> {
+    return ResponseEntity.OK_WITH(HttpStatus.OK, {
+      link: TERMS_OF_SERVICE_URL,
+    });
   }
 }

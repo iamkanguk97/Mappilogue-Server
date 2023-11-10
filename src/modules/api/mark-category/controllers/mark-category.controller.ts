@@ -17,11 +17,11 @@ import { ResponseEntity } from 'src/entities/common/response.entity';
 import { PostMarkCategoryRequestDto } from '../dtos/post-mark-category-request.dto';
 import { PostMarkCategoryResponseDto } from '../dtos/post-mark-category-response.dto';
 import { PatchMarkCategoryTitleRequestDto } from '../dtos/patch-mark-category-title-request.dto';
-import { MarkCategoryValidationPipe } from '../pipes/mark-category-validation.pipe';
 import { DeleteMarkCategoryRequestDto } from '../dtos/delete-mark-category-request.dto';
 import { PutMarkCategoryRequestDto } from '../dtos/put-mark-category-request.dto';
 import { DeleteMarkCategoryOptionRequestDto } from '../dtos/delete-mark-category-option-request.dto';
 import { GetMarkCategoriesResponseDto } from '../dtos/get-mark-categories-response.dto';
+import { MarkCategoryValidationPipe } from '../pipes/mark-category-validation.pipe';
 
 @Controller('marks/categories')
 export class MarkCategoryController {

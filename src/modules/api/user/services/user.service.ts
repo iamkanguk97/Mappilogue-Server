@@ -12,7 +12,7 @@ import { UserHelper } from '../helpers/user.helper';
 import { CustomCacheService } from 'src/modules/core/custom-cache/services/custom-cache.service';
 import { TokenRefreshResponseDto } from '../dtos/token-refresh-response.dto';
 import { LoginOrSignUpResponseDto } from '../dtos/login-or-sign-up-response.dto';
-import { LoginOrSignUpEnum } from '../constants/user.enum';
+import { GetHomeOptionEnum, LoginOrSignUpEnum } from '../constants/user.enum';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 import { DecodedUserToken, ProcessedSocialKakaoInfo } from '../types';
 import { PostUserWithdrawRequestDto } from '../dtos/post-user-withdraw-request.dto';
@@ -243,5 +243,13 @@ export class UserService {
         scheduleId,
       );
     return result.map((r) => r.alarmDate);
+  }
+
+  async findHome(userId: number, option: GetHomeOptionEnum) {
+    console.log(userId, option);
+
+    // 마크한 기록
+    // 오늘의 일정 OR 다가오는 일정
+    // 알림 여부
   }
 }

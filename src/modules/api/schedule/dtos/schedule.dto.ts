@@ -5,6 +5,15 @@ export class ScheduleDto {
   private readonly id: number;
   private readonly userId: number;
   private readonly colorId: number;
+<<<<<<< Updated upstream
+=======
+  private readonly title?: string | undefined;
+  private startDate: string;
+  private endDate: string;
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
   private readonly isAlarm: CheckColumnEnum;
   private readonly title?: string | undefined;
 
@@ -46,6 +55,8 @@ export class ScheduleDto {
     return this.id;
   }
 
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
   get getUserId(): number {
     return this.userId;
   }
@@ -81,4 +92,17 @@ export class ScheduleDto {
   set setColorCode(newColorCode: string) {
     this.colorCode = newColorCode;
   }
+=======
+=======
+>>>>>>> Stashed changes
+  set _startDate(newStartDate: string) {
+    this.startDate = newStartDate;
+  }
+  set _endDate(newEndDate: string) {
+    this.endDate = newEndDate;
+  }
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
 }
