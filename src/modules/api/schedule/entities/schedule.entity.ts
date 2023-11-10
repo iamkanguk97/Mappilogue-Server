@@ -47,10 +47,7 @@ export class ScheduleEntity extends DefaultColumnType {
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
   user: UserEntity;
 
-  @ManyToOne(() => ColorEntity, (color) => color.schedules, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
+  @ManyToOne(() => ColorEntity, (color) => color.schedules)
   @JoinColumn({ name: 'colorId', referencedColumnName: 'id' })
   color: ColorEntity;
 

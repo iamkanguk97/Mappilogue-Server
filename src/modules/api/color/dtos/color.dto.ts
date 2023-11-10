@@ -1,25 +1,33 @@
 import { ColorEntity } from '../entities/color.entity';
+import { Exclude, Expose } from 'class-transformer';
 
 export class ColorDto {
-  private readonly id: number;
-  private readonly name: string;
-  private readonly code: string;
+  @Exclude() private readonly _id: number;
+  @Exclude() private readonly _name: string;
+  @Exclude() private readonly _code: string;
 
   constructor(id: number, name: string, code: string) {
-    this.id = id;
-    this.name = name;
-    this.code = code;
+    this._id = id;
+    this._name = name;
+    this._code = code;
   }
 
-  static ofByArray(colors: ColorEntity[]): ColorDto[] {
-    return colors.map((color) => this.ofByValue(color));
-  }
-
-  static ofByValue(color: ColorEntity): ColorDto {
+  static of(color: ColorEntity): ColorDto {
     return new ColorDto(color.id, color.name, color.code);
   }
 
-  get getCode(): string {
-    return this.code;
+  @Expose()
+  get id(): number {
+    return this._id;
+  }
+
+  @Expose()
+  get name(): string {
+    return this._name;
+  }
+
+  @Expose()
+  get code(): string {
+    return this._code;
   }
 }

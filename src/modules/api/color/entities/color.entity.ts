@@ -1,18 +1,10 @@
-import {
-  BaseEntity,
-  Column,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { ColorCodeLength, ColorNameLength } from '../constants/color.enum';
 import { ScheduleEntity } from '../../schedule/entities/schedule.entity';
+import { CommonEntity } from 'src/entities/common/common.entity';
 
 @Entity('Color')
-export class ColorEntity extends BaseEntity {
-  @PrimaryGeneratedColumn('increment', { type: 'int' })
-  id: number;
-
+export class ColorEntity extends CommonEntity {
   @Column('varchar', { length: ColorNameLength.MAX })
   name: string;
 

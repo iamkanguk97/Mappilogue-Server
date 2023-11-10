@@ -95,7 +95,7 @@ export class ScheduleHelper {
     schedule.setEndDate = getKoreanDateFormatBySingle(schedule.getEndDate);
     schedule.setColorCode = (
       await this.colorService.findOneById(schedule.getColorId)
-    ).getCode;
+    ).code;
 
     return schedule;
   }
