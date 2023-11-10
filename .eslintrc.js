@@ -15,6 +15,10 @@ module.exports = {
     node: true,
     jest: true,
   },
+  parserOptions: {
+    project: './tsconfig.json',
+    sourceType: 'module',
+  },
   ignorePatterns: ['.eslintrc.js'],
   rules: {
     '@typescript-eslint/interface-name-prefix': 'off',

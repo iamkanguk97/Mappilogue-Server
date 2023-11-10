@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { MarkCategoryService } from '../services/mark-category.service';
 import { UserId } from '../../user/decorators/user-id.decorator';
-import { ResponseEntity } from 'src/common/response-entity';
+import { ResponseEntity } from 'src/entities/common/response.entity';
 import { PostMarkCategoryRequestDto } from '../dtos/post-mark-category-request.dto';
 import { PostMarkCategoryResponseDto } from '../dtos/post-mark-category-response.dto';
 import { PatchMarkCategoryTitleRequestDto } from '../dtos/patch-mark-category-title-request.dto';

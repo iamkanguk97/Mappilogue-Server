@@ -3,7 +3,7 @@ import * as Joi from 'joi';
 
 export const CUSTOM_CONFIG_VALIDATOR: ConfigModuleOptions = {
   isGlobal: true,
-  envFilePath: '../../../../.env',
+  envFilePath: process.env.NODE_ENV === 'test' ? '.env' : '../../../../.env',
   validationOptions: Joi.object({
     DATABASE_HOST: Joi.string().required(),
     DATABASE_PORT: Joi.number().required(),

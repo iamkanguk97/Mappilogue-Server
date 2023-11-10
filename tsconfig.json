@@ -17,7 +17,11 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "paths": {
+      // "@src/*": ["./src/*"],
+      "@test/*": ["./test/*"]
+    }
   },
-  "include": ["src/**/*", "src/config/firebase-admin.json"]
+  "include": ["src/**/*", "./test/**/*", "src/config/firebase-admin.json"]
 }

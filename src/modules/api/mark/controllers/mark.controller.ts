@@ -21,7 +21,7 @@ import { CreateMarkImageMulterOption } from 'src/common/multer/multer.option';
 import { FormDataJsonInterceptor } from 'src/interceptors/form-data-json.interceptor';
 import { PostMarkRequestDto } from '../dtos/post-mark-request.dto';
 import { PostMarkValidationPipe } from '../pipes/post-mark-validation.pipe';
-import { ResponseEntity } from 'src/common/response-entity';
+import { ResponseEntity } from 'src/entities/common/response.entity';
 import { PostMarkResponseDto } from '../dtos/post-mark-response.dto';
 import { MarkDto } from '../dtos/mark.dto';
 

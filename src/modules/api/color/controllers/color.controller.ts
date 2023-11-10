@@ -6,7 +6,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ColorService } from '../services/color.service';
-import { ResponseEntity } from 'src/common/response-entity';
+import { ResponseEntity } from 'src/entities/common/response.entity';
 import { ColorDto } from '../dtos/color.dto';
 import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
 import { COLOR_LIST_CACHE_KEY } from '../constants/color.constant';
