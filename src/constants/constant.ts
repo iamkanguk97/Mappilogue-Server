@@ -8,3 +8,5 @@ export const IMAGE_MIME_TYPES = [
   'image/webp',
 ];
 export const MEDIA_MIME_TYPES = ['video/mp4'];
+
+export const CACHE_PERSISTANT_TTL = 0;
