@@ -76,15 +76,15 @@ export class UserController {
     await this.userService.createWithdraw(user, body);
   }
 
-  @Get('homes')
-  @HttpCode(HttpStatus.OK)
-  async getHome(
-    @UserId() userId: number,
-    @Query() query: GetHomeOptionRequestDto,
-  ) {
-    const result = await this.userService.findHome(userId, query.option);
-    return ResponseEntity.OK_WITH(HttpStatus.OK, result);
-  }
+  // @Get('homes')
+  // @HttpCode(HttpStatus.OK)
+  // async getHome(
+  //   @UserId() userId: number,
+  //   @Query() query: GetHomeOptionRequestDto,
+  // ) {
+  //   const result = await this.userService.findHome(userId, query.option);
+  //   return ResponseEntity.OK_WITH(HttpStatus.OK, result);
+  // }
 
   termsOfServiceUrl(): ResponseEntity<{ link: string }> {
     return ResponseEntity.OK_WITH(HttpStatus.OK, {

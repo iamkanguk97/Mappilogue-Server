@@ -2,12 +2,12 @@ import {
   CheckColumnEnum,
   StatusOrCheckColumnLengthEnum,
 } from 'src/constants/enum';
-import { DefaultColumnType } from 'src/types/default-column.type';
 import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import { UserEntity } from './user.entity';
+import { CommonEntity } from 'src/entities/common/common.entity';
 
 @Entity('UserAlarmSetting')
-export class UserAlarmSettingEntity extends DefaultColumnType {
+export class UserAlarmSettingEntity extends CommonEntity {
   @Column('int')
   userId: number;
 

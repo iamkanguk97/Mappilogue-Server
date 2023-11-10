@@ -13,8 +13,8 @@ export class UserProfileHelper {
   checkCanSendScheduleAlarm(userAlarmSettings: UserAlarmSettingDto): boolean {
     return (
       !_.isNil(userAlarmSettings) &&
-      userAlarmSettings.getIsTotalAlarm === CheckColumnEnum.ACTIVE &&
-      userAlarmSettings.getIsScheduleReminderAlarm === CheckColumnEnum.ACTIVE
+      userAlarmSettings.isTotalAlarm === CheckColumnEnum.ACTIVE &&
+      userAlarmSettings.isScheduleReminderAlarm === CheckColumnEnum.ACTIVE
     );
   }
 }

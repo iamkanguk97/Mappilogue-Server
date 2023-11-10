@@ -1,12 +1,13 @@
 import { CheckColumnEnum } from 'src/constants/enum';
 import { UserAlarmSettingEntity } from '../entities/user-alarm-setting.entity';
+import { Exclude, Expose } from 'class-transformer';
 
 export class UserAlarmSettingDto {
-  private readonly userId: number;
-  private readonly isTotalAlarm: CheckColumnEnum;
-  private readonly isNoticeAlarm: CheckColumnEnum;
-  private readonly isMarketingAlarm: CheckColumnEnum;
-  private readonly isScheduleReminderAlarm: CheckColumnEnum;
+  @Exclude() private readonly _userId: number;
+  @Exclude() private readonly _isTotalAlarm: CheckColumnEnum;
+  @Exclude() private readonly _isNoticeAlarm: CheckColumnEnum;
+  @Exclude() private readonly _isMarketingAlarm: CheckColumnEnum;
+  @Exclude() private readonly _isScheduleReminderAlarm: CheckColumnEnum;
 
   private constructor(
     userId: number,
@@ -15,11 +16,11 @@ export class UserAlarmSettingDto {
     isMarketingAlarm: CheckColumnEnum,
     isScheduleReminderAlarm: CheckColumnEnum,
   ) {
-    this.userId = userId;
-    this.isTotalAlarm = isTotalAlarm;
-    this.isNoticeAlarm = isNoticeAlarm;
-    this.isMarketingAlarm = isMarketingAlarm;
-    this.isScheduleReminderAlarm = isScheduleReminderAlarm;
+    this._userId = userId;
+    this._isTotalAlarm = isTotalAlarm;
+    this._isNoticeAlarm = isNoticeAlarm;
+    this._isMarketingAlarm = isMarketingAlarm;
+    this._isScheduleReminderAlarm = isScheduleReminderAlarm;
   }
 
   static from(
@@ -47,11 +48,23 @@ export class UserAlarmSettingDto {
     );
   }
 
-  get getIsTotalAlarm(): CheckColumnEnum {
-    return this.isTotalAlarm;
+  @Expose()
+  get isTotalAlarm(): CheckColumnEnum {
+    return this._isTotalAlarm;
   }
 
-  get getIsScheduleReminderAlarm(): CheckColumnEnum {
-    return this.isScheduleReminderAlarm;
+  @Expose()
+  get isNoticeAlarm(): CheckColumnEnum {
+    return this._isNoticeAlarm;
+  }
+
+  @Expose()
+  get isMarketingAlarm(): CheckColumnEnum {
+    return this._isMarketingAlarm;
+  }
+
+  @Expose()
+  get isScheduleReminderAlarm(): CheckColumnEnum {
+    return this._isScheduleReminderAlarm;
   }
 }

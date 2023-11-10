@@ -76,7 +76,6 @@ export class UserProfileService {
     const result = await this.userAlarmSettingRepository.findOne({
       where: {
         userId,
-        status: StatusColumnEnum.ACTIVE,
       },
     });
 
@@ -87,9 +86,6 @@ export class UserProfileService {
     userId: number,
     body: PutUserAlarmSettingRequestDto,
   ): Promise<void> {
-    await this.userAlarmSettingRepository.update(
-      { userId, status: StatusColumnEnum.ACTIVE },
-      body.toEntity(),
-    );
+    await this.userAlarmSettingRepository.update({ userId }, body.toEntity());
   }
 }
