@@ -1,16 +1,33 @@
+import { Exclude, Expose } from 'class-transformer';
+
 export class ResponseEntity<T> {
-  private readonly isSuccess: boolean;
-  private readonly statusCode: number;
-  private readonly result: T;
+  @Exclude() private readonly _isSuccess: boolean;
+  @Exclude() private readonly _statusCode: number;
+  @Exclude() private readonly _result: T;
 
   private constructor(
     isSuccess: boolean,
     statusCode: number,
     result?: T | undefined,
   ) {
-    this.isSuccess = isSuccess;
-    this.statusCode = statusCode;
-    this.result = result;
+    this._isSuccess = isSuccess;
+    this._statusCode = statusCode;
+    this._result = result;
+  }
+
+  @Expose()
+  get isSuccess() {
+    return this._isSuccess;
+  }
+
+  @Expose()
+  get statusCode() {
+    return this._statusCode;
+  }
+
+  @Expose()
+  get result() {
+    return this._result;
   }
 
   static OK(statusCode: number): ResponseEntity<undefined> {
