@@ -41,4 +41,8 @@ export class MarkCategoryHelper {
 
     return true;
   }
+
+  setMarkCategoriesRedisKey(userId: number): string {
+    return `mark_categories_userId_${userId}`;
+  }
 }

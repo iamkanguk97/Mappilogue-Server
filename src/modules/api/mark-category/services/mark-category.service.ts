@@ -12,7 +12,6 @@ import { MarkCategoryExceptionCode } from 'src/common/exception-code/mark-catego
 import { DeleteMarkCategoryOptionEnum } from '../constants/mark-category.enum';
 import { MarkService } from '../../mark/services/mark.service';
 import { MarkRepository } from '../../mark/repositories/mark.repository';
-import { CustomCacheService } from 'src/modules/core/custom-cache/services/custom-cache.service';
 
 @Injectable()
 export class MarkCategoryService {
@@ -22,7 +21,6 @@ export class MarkCategoryService {
     private readonly dataSource: DataSource,
     private readonly markRepository: MarkRepository,
     private readonly markCategoryRepository: MarkCategoryRepository,
-    private readonly customCacheService: CustomCacheService,
     private readonly markService: MarkService,
     private readonly markCategoryHelper: MarkCategoryHelper,
   ) {}
@@ -49,6 +47,7 @@ export class MarkCategoryService {
         markExceptCategoryCount + markHaveCategoryCount;
 
       await queryRunner.commitTransaction();
+
       return GetMarkCategoriesResponseDto.from(
         totalCategoryMarkCount,
         result.map((r) => MarkCategoryDto.of(r)),

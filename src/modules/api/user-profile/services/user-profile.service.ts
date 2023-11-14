@@ -1,5 +1,5 @@
 import { DataSource } from 'typeorm';
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { UserService } from '../../user/services/user.service';
 import { PatchUserNicknameRequestDto } from '../dtos/patch-user-nickname-request.dto';
 import { DecodedUserToken } from '../../user/types';
@@ -13,7 +13,7 @@ import { USER_DEFAULT_PROFILE_IMAGE } from '../../user/constants/user.constant';
 import { UserAlarmSettingRepository } from '../../user/repositories/user-alarm-setting.repository';
 import { UserAlarmSettingDto } from '../../user/dtos/user-alarm-setting.dto';
 import { PutUserAlarmSettingRequestDto } from '../dtos/put-user-alarm-setting-request.dto';
-import { StatusColumnEnum } from 'src/constants/enum';
+import { isDefined } from 'src/helpers/common.helper';
 
 @Injectable()
 export class UserProfileService {
@@ -72,12 +72,22 @@ export class UserProfileService {
     );
   }
 
+  /**
+   * - 사용자 알림은 회원가입 할 때 생성되고, 삭제되면 삭제된다.
+   * - 회원탈퇴시 User 테이블에도 softDelete, 연결된 테이블에서도 softDelete
+   * @param userId
+   * @returns
+   */
   async findUserAlarmSettingById(userId: number): Promise<UserAlarmSettingDto> {
-    const result = await this.userAlarmSettingRepository.findOne({
+    const result = await this.userAlarmSettingRepository.findOneOrFail({
       where: {
         userId,
       },
     });
+
+    if (!isDefined(result)) {
+      throw new BadRequestException('조회 결과가 없습니다.');
+    }
 
     return UserAlarmSettingDto.of(result);
   }

@@ -75,4 +75,8 @@ export const UserExceptionCode = {
     '1023',
     '홈화면 조회 옵션은 NOW 또는 AFTER로 입력해주세요.',
   ),
+  GetUserAlarmSettingsNoResult: setExceptionCode(
+    '1024',
+    '사용자 알림 설정 내역 조회 결과값이 없습니다. 관리자에게 문의해주세요.',
+  ),
 };

@@ -1,3 +1,4 @@
+import { CustomCacheService } from 'src/modules/core/custom-cache/services/custom-cache.service';
 import {
   Body,
   Controller,
@@ -22,17 +23,40 @@ import { PutMarkCategoryRequestDto } from '../dtos/put-mark-category-request.dto
 import { DeleteMarkCategoryOptionRequestDto } from '../dtos/delete-mark-category-option-request.dto';
 import { GetMarkCategoriesResponseDto } from '../dtos/get-mark-categories-response.dto';
 import { MarkCategoryValidationPipe } from '../pipes/mark-category-validation.pipe';
+import { isDefined } from 'src/helpers/common.helper';
+import { CACHE_PERSISTANT_TTL } from 'src/constants/constant';
+import { MarkCategoryHelper } from '../helpers/mark-category.helper';
 
 @Controller('marks/categories')
 export class MarkCategoryController {
-  constructor(private readonly markCategoryService: MarkCategoryService) {}
+  constructor(
+    private readonly customCacheService: CustomCacheService,
+    private readonly markCategoryService: MarkCategoryService,
+    private readonly markCategoryHelper: MarkCategoryHelper,
+  ) {}
 
   @Get()
   @HttpCode(HttpStatus.OK)
   async getMarkCategories(
     @UserId() userId: number,
   ): Promise<ResponseEntity<GetMarkCategoriesResponseDto>> {
+    const redisKey = this.markCategoryHelper.setMarkCategoriesRedisKey(userId);
+    const checkInRedisResult = await this.customCacheService.getValue(redisKey);
+
+    if (isDefined(checkInRedisResult)) {
+      return ResponseEntity.OK_WITH(
+        HttpStatus.OK,
+        checkInRedisResult as GetMarkCategoriesResponseDto,
+      );
+    }
+
     const result = await this.markCategoryService.findMarkCategories(userId);
+    await this.customCacheService.setValueWithTTL(
+      redisKey,
+      result,
+      CACHE_PERSISTANT_TTL,
+    );
+
     return ResponseEntity.OK_WITH(HttpStatus.OK, result);
   }
 

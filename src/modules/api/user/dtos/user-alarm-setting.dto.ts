@@ -23,21 +23,8 @@ export class UserAlarmSettingDto {
     this._isScheduleReminderAlarm = isScheduleReminderAlarm;
   }
 
-  static from(
-    userId: number,
-    userAlarmSettingEntity: UserAlarmSettingEntity,
-  ): UserAlarmSettingDto {
-    return new UserAlarmSettingDto(
-      userId,
-      userAlarmSettingEntity.isTotalAlarm,
-      userAlarmSettingEntity.isNoticeAlarm,
-      userAlarmSettingEntity.isMarketingAlarm,
-      userAlarmSettingEntity.isScheduleReminderAlarm,
-    );
-  }
-
   static of(
-    userAlarmSettingEntity: UserAlarmSettingEntity,
+    userAlarmSettingEntity?: UserAlarmSettingEntity | undefined,
   ): UserAlarmSettingDto {
     return new UserAlarmSettingDto(
       userAlarmSettingEntity.userId,
@@ -46,6 +33,11 @@ export class UserAlarmSettingDto {
       userAlarmSettingEntity.isMarketingAlarm,
       userAlarmSettingEntity.isScheduleReminderAlarm,
     );
+  }
+
+  @Expose()
+  get userId(): number {
+    return this._userId;
   }
 
   @Expose()

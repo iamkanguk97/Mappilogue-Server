@@ -18,11 +18,7 @@ export class CustomCacheService {
     await this.cacheManager.del(key);
   }
 
-  async setValueWithTTL(
-    key: string,
-    value: string,
-    ttl: number,
-  ): Promise<void> {
+  async setValueWithTTL<T>(key: string, value: T, ttl: number): Promise<void> {
     await this.cacheManager.set(key, value, { ttl });
   }
 }

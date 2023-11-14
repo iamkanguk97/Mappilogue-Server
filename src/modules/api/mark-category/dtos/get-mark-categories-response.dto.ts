@@ -12,7 +12,10 @@ export class GetMarkCategoriesResponseDto {
     this.markCategories = markCategories;
   }
 
-  static from(totalCategoryMarkCount, markCategories: MarkCategoryDto[]) {
+  static from(
+    totalCategoryMarkCount: number,
+    markCategories: MarkCategoryDto[],
+  ): GetMarkCategoriesResponseDto {
     return new GetMarkCategoriesResponseDto(
       totalCategoryMarkCount,
       markCategories,
