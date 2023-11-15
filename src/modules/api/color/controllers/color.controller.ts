@@ -1,14 +1,8 @@
-import {
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
 import { ColorService } from '../services/color.service';
 import { ResponseEntity } from 'src/entities/common/response.entity';
 import { ColorDto } from '../dtos/color.dto';
-import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
+import { CacheKey, CacheTTL } from '@nestjs/cache-manager';
 import { COLOR_LIST_CACHE_KEY } from '../constants/color.constant';
 import { Public } from 'src/modules/core/auth/decorators/auth.decorator';
 import { CACHE_PERSISTANT_TTL } from 'src/constants/constant';
@@ -20,7 +14,6 @@ export class ColorController {
   @Public()
   @Get()
   @HttpCode(HttpStatus.OK)
-  @UseInterceptors(CacheInterceptor)
   @CacheKey(COLOR_LIST_CACHE_KEY)
   @CacheTTL(CACHE_PERSISTANT_TTL)
   async getColorList(): Promise<ResponseEntity<ColorDto[]>> {

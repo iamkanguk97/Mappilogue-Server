@@ -1,15 +1,26 @@
+import { Exclude, Expose } from 'class-transformer';
 import { MarkCategoryDto } from './mark-category.dto';
 
 export class GetMarkCategoriesResponseDto {
-  private readonly totalCategoryMarkCount: number;
-  private readonly markCategories: MarkCategoryDto[];
+  @Exclude() private readonly _totalCategoryMarkCount: number;
+  @Exclude() private readonly _markCategories: MarkCategoryDto[];
 
   private constructor(
     totalCategoryMarkCount: number,
     markCategories: MarkCategoryDto[],
   ) {
-    this.totalCategoryMarkCount = totalCategoryMarkCount;
-    this.markCategories = markCategories;
+    this._totalCategoryMarkCount = totalCategoryMarkCount;
+    this._markCategories = markCategories;
+  }
+
+  @Expose()
+  get totalCategoryMarkCount(): number {
+    return this._totalCategoryMarkCount;
+  }
+
+  @Expose()
+  get markCategories(): MarkCategoryDto[] {
+    return this._markCategories;
   }
 
   static from(

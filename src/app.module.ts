@@ -1,7 +1,8 @@
+import { CustomCacheInterceptor } from 'src/interceptors/custom-cache.interceptor';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { PROJECT_MODULES } from './modules';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AuthGuard } from './modules/core/auth/guards/auth.guard';
 
 @Module({
@@ -11,6 +12,10 @@ import { AuthGuard } from './modules/core/auth/guards/auth.guard';
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: CustomCacheInterceptor,
     },
   ],
 })
