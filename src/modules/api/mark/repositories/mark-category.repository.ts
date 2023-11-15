@@ -3,9 +3,9 @@ import { MarkCategoryEntity } from '../entities/mark-category.entity';
 import { Repository } from 'typeorm';
 import { StatusColumnEnum } from 'src/constants/enum';
 import { MARK_CATEGORY_EMPTY_SEQUENCE } from '../../mark-category/constants/mark-category.constant';
-import * as _ from 'lodash';
 import { MarkEntity } from '../entities/mark.entity';
 import { TMarkCategoryByUserId } from '../../mark-category/types';
+import { isDefined } from 'src/helpers/common.helper';
 
 @CustomRepository(MarkCategoryEntity)
 export class MarkCategoryRepository extends Repository<MarkCategoryEntity> {
@@ -40,6 +40,6 @@ export class MarkCategoryRepository extends Repository<MarkCategoryEntity> {
       .limit(1)
       .getRawOne();
 
-    return _.isNil(result) ? MARK_CATEGORY_EMPTY_SEQUENCE : result.sequence;
+    return !isDefined(result) ? MARK_CATEGORY_EMPTY_SEQUENCE : result.sequence;
   }
 }
