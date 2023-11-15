@@ -9,6 +9,7 @@ import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
 import { MarkCategoryService } from '../services/mark-category.service';
 import { MarkCategoryExceptionCode } from 'src/common/exception-code/mark-category.exception-code';
+import { isDefined } from 'src/helpers/common.helper';
 
 @Injectable()
 export class MarkCategoryValidationPipe implements PipeTransform {
@@ -26,7 +27,7 @@ export class MarkCategoryValidationPipe implements PipeTransform {
       markCategoryId,
     );
 
-    if (!this.markCategoryHelper.isMarkCategoryExist(markCategoryStatus)) {
+    if (!isDefined(markCategoryStatus)) {
       throw new BadRequestException(
         MarkCategoryExceptionCode.MarkCategoryNotExist,
       );

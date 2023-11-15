@@ -5,13 +5,13 @@ import { DataSource } from 'typeorm';
 import { MarkCategoryEntity } from '../../mark/entities/mark-category.entity';
 import { PostMarkCategoryResponseDto } from '../dtos/post-mark-category-response.dto';
 import { PatchMarkCategoryTitleRequestDto } from '../dtos/patch-mark-category-title-request.dto';
-import { StatusColumnEnum } from 'src/constants/enum';
 import { MarkCategoryDto } from '../dtos/mark-category.dto';
 import { MarkCategoryHelper } from '../helpers/mark-category.helper';
 import { MarkCategoryExceptionCode } from 'src/common/exception-code/mark-category.exception-code';
 import { DeleteMarkCategoryOptionEnum } from '../constants/mark-category.enum';
 import { MarkService } from '../../mark/services/mark.service';
 import { MarkRepository } from '../../mark/repositories/mark.repository';
+import { isDefined } from 'src/helpers/common.helper';
 
 @Injectable()
 export class MarkCategoryService {
@@ -85,19 +85,18 @@ export class MarkCategoryService {
       ).id;
 
       await queryRunner.commitTransaction();
+      return PostMarkCategoryResponseDto.from(
+        newMarkCategoryId,
+        title,
+        newMarkCategorySequenceNo,
+      );
     } catch (err) {
-      Logger.error(`[createMarkCategory] ${err}`);
+      this.logger.error(`[createMarkCategory - transaction error] ${err}`);
       await queryRunner.rollbackTransaction();
       throw err;
     } finally {
       await queryRunner.release();
     }
-
-    return PostMarkCategoryResponseDto.from(
-      newMarkCategoryId,
-      title,
-      newMarkCategorySequenceNo,
-    );
   }
 
   async removeMarkCategory(
@@ -195,7 +194,6 @@ export class MarkCategoryService {
     return await this.markCategoryRepository.findOne({
       where: {
         id: markCategoryId,
-        status: StatusColumnEnum.ACTIVE,
       },
     });
   }
@@ -217,7 +215,7 @@ export class MarkCategoryService {
   ): Promise<void> {
     const markCategoryStatus = await this.findOneById(markCategoryId);
 
-    if (!this.markCategoryHelper.isMarkCategoryExist(markCategoryStatus)) {
+    if (!isDefined(markCategoryStatus)) {
       throw new BadRequestException(
         MarkCategoryExceptionCode.MarkCategoryNotExist,
       );

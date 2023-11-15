@@ -36,7 +36,6 @@ export class MarkCategoryRepository extends Repository<MarkCategoryEntity> {
     const result = await this.createQueryBuilder()
       .select('sequence')
       .where('userId = :userId', { userId })
-      .andWhere('status = :status', { status: StatusColumnEnum.ACTIVE })
       .orderBy('sequence', 'DESC')
       .limit(1)
       .getRawOne();

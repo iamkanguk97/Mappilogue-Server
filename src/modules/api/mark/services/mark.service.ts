@@ -75,7 +75,6 @@ export class MarkService {
             },
             where: {
               id: Equal(mark.getMarkCategoryId),
-              status: StatusColumnEnum.ACTIVE,
             },
           })
         ).title ?? '';

@@ -1,4 +1,3 @@
-import { DefaultColumnType } from 'src/types/default-column.type';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { UserEntity } from '../../user/entities/user.entity';
 import { MARK_CATEGORY_TITLE_LENGTH } from '../../mark-category/constants/mark-category.constant';
@@ -7,9 +6,10 @@ import {
   StatusOrCheckColumnLengthEnum,
 } from 'src/constants/enum';
 import { MarkEntity } from './mark.entity';
+import { CommonEntity } from 'src/entities/common/common.entity';
 
 @Entity('MarkCategory')
-export class MarkCategoryEntity extends DefaultColumnType {
+export class MarkCategoryEntity extends CommonEntity {
   @Column('int')
   userId: number;
 
