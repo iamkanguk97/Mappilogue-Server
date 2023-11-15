@@ -122,7 +122,7 @@ export class MarkCategoryService {
 
       await queryRunner.commitTransaction();
     } catch (err) {
-      Logger.error(`[removeMarkCategory] ${err}`);
+      this.logger.error(`[removeMarkCategory - transaction error] ${err}`);
       await queryRunner.rollbackTransaction();
       throw err;
     } finally {

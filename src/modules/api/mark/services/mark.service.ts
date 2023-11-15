@@ -168,7 +168,6 @@ export class MarkService {
     return await this.markRepository.findOne({
       where: {
         id: markId,
-        status: StatusColumnEnum.ACTIVE,
       },
     });
   }
