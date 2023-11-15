@@ -23,6 +23,10 @@ import { UserAlarmSettingDto } from '../../user/dtos/user-alarm-setting.dto';
 import { PutUserAlarmSettingRequestDto } from '../dtos/put-user-alarm-setting-request.dto';
 import { Public } from 'src/modules/core/auth/decorators/auth.decorator';
 import { TERMS_OF_SERVICE_URL } from 'src/constants/constant';
+import {
+  PATCH_USER_PROFILE_IMAGE_KEY,
+  PATCH_USER_PROFILE_IMAGE_LIMIT,
+} from '../constants/user-profile.constant';
 
 @Controller('users/profiles')
 export class UserProfileController {
@@ -47,7 +51,11 @@ export class UserProfileController {
   }
 
   @UseInterceptors(
-    FilesInterceptor('image', 1, CreateProfileImageMulterOption()),
+    FilesInterceptor(
+      PATCH_USER_PROFILE_IMAGE_KEY,
+      PATCH_USER_PROFILE_IMAGE_LIMIT,
+      CreateProfileImageMulterOption(),
+    ),
   )
   @Patch('images')
   @HttpCode(HttpStatus.OK)

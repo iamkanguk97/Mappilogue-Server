@@ -1,11 +1,12 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserEntity } from '../entities/user.entity';
-import * as _ from 'lodash';
-import { StatusColumnEnum } from 'src/constants/enum';
 import { JwtHelper } from 'src/modules/core/auth/helpers/jwt.helper';
 import { CustomCacheService } from 'src/modules/core/custom-cache/services/custom-cache.service';
 import { CustomJwtPayload } from 'src/modules/core/auth/types';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
+import { isDefined } from 'src/helpers/common.helper';
+
+import * as _ from 'lodash';
 
 @Injectable()
 export class UserHelper {
@@ -13,10 +14,6 @@ export class UserHelper {
     private readonly jwtHelper: JwtHelper,
     private readonly customCacheService: CustomCacheService,
   ) {}
-
-  isUserValidWithModel(user?: UserEntity | undefined): boolean {
-    return !_.isNil(user) && user.status !== StatusColumnEnum.DELETED;
-  }
 
   /**
    * @title refresh-token이 redis에 저장되어있는 refresh-token과  동일한지 확인
@@ -48,8 +45,8 @@ export class UserHelper {
     user?: UserEntity | undefined,
   ): Promise<boolean> {
     return (
+      isDefined(user) &&
       this.jwtHelper.isRefreshTokenPayloadValid(refreshPayload) &&
-      this.isUserValidWithModel(user) &&
       (await this.isRefreshTokenIsEqualWithRedis(user.id, refreshToken))
     );
   }

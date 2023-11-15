@@ -1,4 +1,3 @@
-import { DefaultColumnType } from 'src/types/default-column.type';
 import { Column, Entity, OneToMany, OneToOne } from 'typeorm';
 import { UserGenderEnum, UserSnsTypeEnum } from '../constants/user.enum';
 import { UserAlarmSettingEntity } from './user-alarm-setting.entity';
@@ -15,9 +14,10 @@ import {
 import { ScheduleEntity } from '../../schedule/entities/schedule.entity';
 import { MarkCategoryEntity } from '../../mark/entities/mark-category.entity';
 import { MarkEntity } from '../../mark/entities/mark.entity';
+import { CommonEntity } from 'src/entities/common/common.entity';
 
 @Entity('User')
-export class UserEntity extends DefaultColumnType {
+export class UserEntity extends CommonEntity {
   @Column('varchar', { length: USER_NICKNAME_LENGTH })
   nickname: string;
 
