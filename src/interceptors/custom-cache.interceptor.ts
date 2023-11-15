@@ -23,7 +23,9 @@ export class CustomCacheInterceptor extends CacheInterceptor {
   private readonly CACHE_EVICT_METHODS = ['POST', 'PATCH', 'PUT', 'DELETE'];
 
   // 캐시를 하지 않을 API 경로 저장
-  private readonly CACHE_EVICT_PATHS = [];
+  private readonly CACHE_EVICT_PATHS = [
+    '/api/v1/users/profiles/terms-of-services',
+  ];
 
   constructor(
     @Inject(CACHE_MANAGER) protected readonly cacheManager: Cache,
@@ -37,6 +39,12 @@ export class CustomCacheInterceptor extends CacheInterceptor {
     context: ExecutionContext,
     next: CallHandler<any>,
   ): Promise<Observable<any>> {
+    const request = context.switchToHttp().getRequest<Request>();
+
+    if (this.CACHE_EVICT_PATHS.includes(request.url)) {
+      return next.handle();
+    }
+
     const key = this.trackBy(context);
     const ttl =
       this.reflector.get(CACHE_TTL_METADATA, context.getHandler()) ??
@@ -46,7 +54,6 @@ export class CustomCacheInterceptor extends CacheInterceptor {
     //   return next.handle();
     // }
 
-    const request = context.switchToHttp().getRequest<Request>();
     const userId = request['user']?.id;
     const keyPrefix = `[userId_${userId}]`;
     const method = request.method;
