@@ -152,7 +152,7 @@ export class MarkService {
   }
 
   async removeMarkByCategoryId(markCategoryId: number): Promise<void> {
-    await this.markRepository.delete({ markCategoryId });
+    await this.markRepository.softDelete({ markCategoryId });
   }
 
   async modifyMarkCategoryIdToNullInMark(
@@ -168,7 +168,6 @@ export class MarkService {
     return await this.markRepository.findOne({
       where: {
         id: markId,
-        status: StatusColumnEnum.ACTIVE,
       },
     });
   }

@@ -1,11 +1,11 @@
-import { DefaultColumnType } from 'src/types/default-column.type';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { UserEntity } from '../../user/entities/user.entity';
 import { MarkCategoryEntity } from './mark-category.entity';
 import { MarkTitleLengthEnum } from '../constants/mark.enum';
+import { CommonEntity } from 'src/entities/common/common.entity';
 
 @Entity('Mark')
-export class MarkEntity extends DefaultColumnType {
+export class MarkEntity extends CommonEntity {
   @Column('int')
   userId: number;
 

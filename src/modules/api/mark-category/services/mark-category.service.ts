@@ -104,17 +104,12 @@ export class MarkCategoryService {
     markCategoryId: number,
     option: DeleteMarkCategoryOptionEnum,
   ): Promise<void> {
-    /**
-     * 10월 29일 - 기능 추가
-     * => 카테고리 삭제시 카테고리만 삭제 또는 기록까지 삭제 옵션 추가
-     */
-
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
-      await this.markCategoryRepository.delete({
+      await this.markCategoryRepository.softDelete({
         userId,
         id: markCategoryId,
       });
@@ -122,7 +117,7 @@ export class MarkCategoryService {
 
       await queryRunner.commitTransaction();
     } catch (err) {
-      Logger.error(`[removeMarkCategory] ${err}`);
+      this.logger.error(`[removeMarkCategory - transaction error] ${err}`);
       await queryRunner.rollbackTransaction();
       throw err;
     } finally {

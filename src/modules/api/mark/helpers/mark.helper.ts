@@ -1,7 +1,7 @@
 import { isDefined } from 'src/helpers/common.helper';
 import { Injectable } from '@nestjs/common';
 import { MarkEntity } from '../entities/mark.entity';
-import { CheckColumnEnum, StatusColumnEnum } from 'src/constants/enum';
+import { CheckColumnEnum } from 'src/constants/enum';
 import { ScheduleService } from '../../schedule/services/schedule.service';
 import { MarkMetadataDto } from '../dtos/mark-metadata.dto';
 import { MarkMetadataEntity } from '../entities/mark-metadata.entity';
@@ -24,9 +24,7 @@ export class MarkHelper {
    * @returns
    */
   isMarkExist(markStatus?: MarkEntity | undefined): boolean {
-    return (
-      isDefined(markStatus) && markStatus.status !== StatusColumnEnum.DELETED
-    );
+    return isDefined(markStatus);
   }
 
   /**

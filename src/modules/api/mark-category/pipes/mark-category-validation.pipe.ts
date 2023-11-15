@@ -1,4 +1,3 @@
-import { MarkCategoryHelper } from './../helpers/mark-category.helper';
 import {
   BadRequestException,
   Inject,
@@ -16,7 +15,6 @@ export class MarkCategoryValidationPipe implements PipeTransform {
   constructor(
     @Inject(REQUEST) private readonly request: Request,
     private readonly markCategoryService: MarkCategoryService,
-    private readonly markCategoryHelper: MarkCategoryHelper,
   ) {}
 
   async transform<T extends { markCategoryId: number }>(value: T): Promise<T> {
