@@ -103,7 +103,7 @@ export class CustomCacheInterceptor extends CacheInterceptor {
     }
 
     const request = context.getArgByIndex(0);
-    const userId = request['user'].id;
+    const userId = request['user']?.id;
     const keyPrefix = `[userId_${userId}]`;
 
     // if (!this.isRequestCacheable(context)) {

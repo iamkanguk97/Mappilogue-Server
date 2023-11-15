@@ -19,14 +19,8 @@ export class MarkCategoryRepository extends Repository<MarkCategoryEntity> {
         'MC.isMarkedInMap AS isMarkedInMap',
         'COUNT(M.id) AS markCount',
       ])
-      .leftJoin(
-        MarkEntity,
-        'M',
-        'MC.id = M.markCategoryId and M.status = :status',
-        { status: StatusColumnEnum.ACTIVE },
-      )
+      .leftJoin(MarkEntity, 'M', 'MC.id = M.markCategoryId')
       .where('MC.userId = :userId', { userId })
-      .andWhere('MC.status = :status', { status: StatusColumnEnum.ACTIVE })
       .groupBy('MC.id')
       .orderBy('MC.sequence')
       .getRawMany();

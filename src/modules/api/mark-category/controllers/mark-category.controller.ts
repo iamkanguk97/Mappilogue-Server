@@ -24,7 +24,9 @@ import { GetMarkCategoriesResponseDto } from '../dtos/get-mark-categories-respon
 import { MarkCategoryValidationPipe } from '../pipes/mark-category-validation.pipe';
 import { CacheTTL } from '@nestjs/cache-manager';
 import { CACHE_COMMON_TTL } from 'src/constants/constant';
+import { DomainNameEnum } from 'src/constants/enum';
 
+// @Controller(DomainNameEnum.MARK_CATEGORY)
 @Controller('marks/categories')
 export class MarkCategoryController {
   constructor(private readonly markCategoryService: MarkCategoryService) {}
@@ -74,14 +76,5 @@ export class MarkCategoryController {
       param.markCategoryId,
       query.option,
     );
-  }
-
-  @Put()
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async putMarkCategory(
-    @UserId() userId: number,
-    @Body() body: PutMarkCategoryRequestDto,
-  ): Promise<void> {
-    await this.markCategoryService.modifyMarkCategory(userId, body.categories);
   }
 }

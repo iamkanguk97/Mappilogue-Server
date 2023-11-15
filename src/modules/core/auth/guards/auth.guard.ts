@@ -22,6 +22,8 @@ import { isDefined } from 'src/helpers/common.helper';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
+  private readonly logger = new Logger(AuthGuard.name);
+
   constructor(
     private readonly reflector: Reflector,
     private readonly jwtService: JwtService,
@@ -70,7 +72,7 @@ export class AuthGuard implements CanActivate {
 
       return true;
     } catch (err) {
-      Logger.error(`[AuthGuard] ${err}`);
+      this.logger.error(`[AuthGuard] ${err}`);
       if (!err.status) {
         throw new UnauthorizedException(UserExceptionCode.InvalidAccessToken);
       }

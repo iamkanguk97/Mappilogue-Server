@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { MarkCategoryDto } from '../dtos/mark-category.dto';
+import { MarkCategoryRequestDto } from '../dtos/mark-category-request.dto';
 
 @Injectable()
 export class MarkCategoryHelper {
@@ -12,7 +13,7 @@ export class MarkCategoryHelper {
    */
   isMarkCategoryEqualWithRequestById(
     beforeUpdateDto: MarkCategoryDto[],
-    updateDto: MarkCategoryDto[],
+    updateDto: MarkCategoryRequestDto[],
   ): boolean {
     const beforeUpdateIdArr = beforeUpdateDto.map((item) => item.id).sort();
     const updateIdArr = updateDto.map((item) => item.id).sort();

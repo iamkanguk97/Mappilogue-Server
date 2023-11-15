@@ -12,6 +12,7 @@ import { DeleteMarkCategoryOptionEnum } from '../constants/mark-category.enum';
 import { MarkService } from '../../mark/services/mark.service';
 import { MarkRepository } from '../../mark/repositories/mark.repository';
 import { isDefined } from 'src/helpers/common.helper';
+import { MarkCategoryRequestDto } from '../dtos/mark-category-request.dto';
 
 @Injectable()
 export class MarkCategoryService {
@@ -140,7 +141,7 @@ export class MarkCategoryService {
 
   async modifyMarkCategory(
     userId: number,
-    categories: MarkCategoryDto[],
+    categories: MarkCategoryRequestDto[],
   ): Promise<void> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();

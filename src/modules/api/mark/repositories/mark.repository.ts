@@ -8,7 +8,6 @@ export class MarkRepository extends Repository<MarkEntity> {
   async selectMarkExceptCategoryCount(userId: number): Promise<number> {
     const result = await this.createQueryBuilder()
       .select('COUNT(*) AS markCount')
-      .where('status = :status', { status: StatusColumnEnum.ACTIVE })
       .andWhere('userId = :userId', { userId })
       .andWhere('markCategoryId IS NULL')
       .getRawOne();

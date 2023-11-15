@@ -17,4 +17,5 @@ export enum DomainNameEnum {
   USER = 'users',
   USER_PROFILE = 'users/profiles',
   MARK = 'marks',
+  MARK_CATEGORY = 'marks/categories',
 }
