@@ -14,6 +14,7 @@ import { UserAlarmSettingRepository } from '../../user/repositories/user-alarm-s
 import { UserAlarmSettingDto } from '../../user/dtos/user-alarm-setting.dto';
 import { PutUserAlarmSettingRequestDto } from '../dtos/put-user-alarm-setting-request.dto';
 import { isDefined } from 'src/helpers/common.helper';
+import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 
 @Injectable()
 export class UserProfileService {
@@ -72,21 +73,17 @@ export class UserProfileService {
     );
   }
 
-  /**
-   * - 사용자 알림은 회원가입 할 때 생성되고, 삭제되면 삭제된다.
-   * - 회원탈퇴시 User 테이블에도 softDelete, 연결된 테이블에서도 softDelete
-   * @param userId
-   * @returns
-   */
   async findUserAlarmSettingById(userId: number): Promise<UserAlarmSettingDto> {
-    const result = await this.userAlarmSettingRepository.findOneOrFail({
+    const result = await this.userAlarmSettingRepository.findOne({
       where: {
         userId,
       },
     });
 
     if (!isDefined(result)) {
-      throw new BadRequestException('조회 결과가 없습니다.');
+      throw new BadRequestException(
+        UserExceptionCode.GetUserAlarmSettingNotExist,
+      );
     }
 
     return UserAlarmSettingDto.of(result);

@@ -211,8 +211,14 @@ export class UserService {
       );
       user.email = decryptEmail(user.email);
 
+      const deleteUser = await this.userRepository.findOne({
+        where: { id: user.id },
+        relations: ['userAlarmSetting'],
+      });
+
       await this.customCacheService.delValue(refreshTokenRedisKey);
-      await this.userRepository.delete({ id: user.id });
+      // await this.userRepository.softDelete({ id: user.id });
+      await this.userRepository.softRemove(deleteUser);
       await this.userWithdrawReasonRepository.save(body.toEntity(user));
 
       if (user.profileImageKey !== '') {

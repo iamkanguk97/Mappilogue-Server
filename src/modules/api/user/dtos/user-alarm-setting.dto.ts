@@ -24,7 +24,7 @@ export class UserAlarmSettingDto {
   }
 
   static of(
-    userAlarmSettingEntity?: UserAlarmSettingEntity | undefined,
+    userAlarmSettingEntity: UserAlarmSettingEntity,
   ): UserAlarmSettingDto {
     return new UserAlarmSettingDto(
       userAlarmSettingEntity.userId,
