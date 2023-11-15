@@ -21,7 +21,7 @@ export class MarkCategoryEntity extends DefaultColumnType {
 
   @Column('varchar', {
     length: StatusOrCheckColumnLengthEnum.STATUS,
-    default: CheckColumnEnum.INACTIVE,
+    default: CheckColumnEnum.ACTIVE,
   })
   isMarkedInMap: CheckColumnEnum;
 
