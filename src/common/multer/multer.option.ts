@@ -1,10 +1,15 @@
-import { IMAGE_MIME_TYPES, MEDIA_MIME_TYPES } from 'src/constants/constant';
+import {
+  IMAGE_MIME_TYPES,
+  MEDIA_MIME_TYPES,
+  S3_BASE_IMAGE_DIRECTORY,
+} from 'src/constants/constant';
 import { BadRequestException } from '@nestjs/common';
 import * as _ from 'lodash';
 import multer from 'multer';
 import { ImageBuilderTypeEnum, MulterBuilder } from './multer.builder';
 import { UserExceptionCode } from '../exception-code/user.exception-code';
 import { Request } from 'express';
+import { DomainNameEnum } from 'src/constants/enum';
 
 export enum FileTypeEnum {
   IMAGE = 'IMAGE',
@@ -36,8 +41,8 @@ export const CreateProfileImageMulterOption = (): multer.Options => {
     fileFilter: fileFilter(FileTypeEnum.IMAGE),
     storage: new MulterBuilder(ImageBuilderTypeEnum.UPLOAD)
       .allowImageMimeTypes()
-      .setResource('image')
-      .setPath('user')
+      .setResource(S3_BASE_IMAGE_DIRECTORY)
+      .setPath(DomainNameEnum.USER)
       .build(),
     limits: { fileSize: 1024 * 1024 * 20 },
   };

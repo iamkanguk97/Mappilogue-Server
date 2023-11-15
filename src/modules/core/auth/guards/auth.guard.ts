@@ -18,6 +18,7 @@ import { ENVIRONMENT_KEY } from '../../custom-config/constants/custom-config.con
 import { UserService } from 'src/modules/api/user/services/user.service';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 import { CustomJwtPayload } from '../types';
+import { isDefined } from 'src/helpers/common.helper';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -54,7 +55,7 @@ export class AuthGuard implements CanActivate {
       })) as CustomJwtPayload;
 
       const findUser = await this.userService.findOneById(payload.userId);
-      if (!this.userHelper.isUserValidWithModel(findUser)) {
+      if (!isDefined(findUser)) {
         throw new ForbiddenException(UserExceptionCode.NotExistUser);
       }
 

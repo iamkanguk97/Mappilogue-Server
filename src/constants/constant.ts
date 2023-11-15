@@ -11,3 +11,5 @@ export const MEDIA_MIME_TYPES = ['video/mp4'];
 
 export const CACHE_PERSISTANT_TTL = 0;
 export const CACHE_COMMON_TTL = 1209600;
+
+export const S3_BASE_IMAGE_DIRECTORY = 'image';

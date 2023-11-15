@@ -61,7 +61,6 @@ export class UserProfileService {
     } catch (err) {
       this.logger.error(`[modifyUserProfileImage - transaction error] ${err}`);
       await queryRunner.rollbackTransaction();
-      Logger.error(`[modifyUserProfileImage] ${err}`);
       throw err;
     } finally {
       await queryRunner.release();

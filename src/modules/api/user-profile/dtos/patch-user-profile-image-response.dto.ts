@@ -1,10 +1,12 @@
+import { Exclude, Expose } from 'class-transformer';
+
 export class PatchUserProfileImageResponseDto {
-  private readonly userId: number;
-  private readonly profileImageUrl: string;
+  @Exclude() private readonly _userId: number;
+  @Exclude() private readonly _profileImageUrl: string;
 
   private constructor(userId: number, profileImageUrl: string) {
-    this.userId = userId;
-    this.profileImageUrl = profileImageUrl;
+    this._userId = userId;
+    this._profileImageUrl = profileImageUrl;
   }
 
   static from(
@@ -12,5 +14,15 @@ export class PatchUserProfileImageResponseDto {
     profileImageUrl: string,
   ): PatchUserProfileImageResponseDto {
     return new PatchUserProfileImageResponseDto(userId, profileImageUrl);
+  }
+
+  @Expose()
+  get userId(): number {
+    return this._userId;
+  }
+
+  @Expose()
+  get profileImageUrl(): string {
+    return this._profileImageUrl;
   }
 }
