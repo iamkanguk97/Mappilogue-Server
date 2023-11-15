@@ -1,9 +1,5 @@
 import { S3Client } from '@aws-sdk/client-s3';
 import { ConfigService } from '@nestjs/config';
-import * as AWS from 'aws-sdk';
-import * as multerS3 from 'multer-s3';
-import * as _ from 'lodash';
-import multer from 'multer';
 import { IMAGE_MIME_TYPES, MEDIA_MIME_TYPES } from 'src/constants/constant';
 import { ENVIRONMENT_KEY } from 'src/modules/core/custom-config/constants/custom-config.constant';
 import { Request } from 'express';
@@ -11,6 +7,10 @@ import { CustomConfigService } from 'src/modules/core/custom-config/services';
 import { config } from 'dotenv';
 import { v4 as uuidv4 } from 'uuid';
 import { isDefined } from 'src/helpers/common.helper';
+
+import multer from 'multer';
+import * as AWS from 'aws-sdk';
+import * as multerS3 from 'multer-s3';
 
 config();
 const customConfigService = new CustomConfigService(new ConfigService());
@@ -113,9 +113,9 @@ export class MulterBuilder {
         const userId = req['user'].id;
         const splitedFileNames = file.originalname.split('.');
         const extension = splitedFileNames.at(splitedFileNames.length - 1);
-        const filename = !_.isNil(this.path)
+        const filename = isDefined(this.path)
           ? `${this.path}/user${userId}:${new Date().getTime()}.${extension}`
-          : `user${this._userId}:${new Date().getTime()}.${extension}`;
+          : `user${userId}:${new Date().getTime()}.${extension}`;
 
         return callback(null, encodeURI(`${this.resource}/${filename}`));
       },

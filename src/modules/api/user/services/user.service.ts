@@ -148,14 +148,16 @@ export class UserService {
     }
   }
 
-  async findOneById(
-    userId?: number | undefined,
-  ): Promise<UserEntity | undefined> {
-    return await this.userRepository.selectUserById(userId);
+  async findOneById(userId: number): Promise<UserEntity> {
+    return await this.userRepository.findOne({
+      where: { id: userId },
+    });
   }
 
-  async findOneBySnsId(socialId: string): Promise<UserEntity | undefined> {
-    return await this.userRepository.selectUserBySnsId(socialId);
+  async findOneBySnsId(socialId: string): Promise<UserEntity> {
+    return await this.userRepository.findOne({
+      where: { snsId: socialId },
+    });
   }
 
   async createUser(

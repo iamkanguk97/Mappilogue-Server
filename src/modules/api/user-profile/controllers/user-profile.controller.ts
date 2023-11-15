@@ -27,8 +27,9 @@ import {
   PATCH_USER_PROFILE_IMAGE_KEY,
   PATCH_USER_PROFILE_IMAGE_LIMIT,
 } from '../constants/user-profile.constant';
+import { DomainNameEnum } from 'src/constants/enum';
 
-@Controller('users/profiles')
+@Controller(DomainNameEnum.USER_PROFILE)
 export class UserProfileController {
   constructor(private readonly userProfileService: UserProfileService) {}
 
