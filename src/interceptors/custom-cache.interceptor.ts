@@ -25,6 +25,7 @@ export class CustomCacheInterceptor extends CacheInterceptor {
   // 캐시를 하지 않을 API 경로 저장
   private readonly CACHE_EVICT_PATHS = [
     '/api/v1/users/profiles/terms-of-services',
+    '/api/v1/users/profiles',
   ];
 
   constructor(
