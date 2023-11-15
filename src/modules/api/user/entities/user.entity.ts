@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, OneToOne } from 'typeorm';
+import { Column, Entity, OneToMany, OneToOne, Unique } from 'typeorm';
 import { UserGenderEnum, UserSnsTypeEnum } from '../constants/user.enum';
 import { UserAlarmSettingEntity } from './user-alarm-setting.entity';
 import {
@@ -17,11 +17,12 @@ import { MarkEntity } from '../../mark/entities/mark.entity';
 import { CommonEntity } from 'src/entities/common/common.entity';
 
 @Entity('User')
+@Unique(['email', 'profileImageKey', 'snsId'])
 export class UserEntity extends CommonEntity {
   @Column('varchar', { length: USER_NICKNAME_LENGTH })
   nickname: string;
 
-  @Column('varchar', { length: USER_EMAIL_LENGTH, unique: true })
+  @Column('varchar', { length: USER_EMAIL_LENGTH })
   email: string;
 
   @Column('text')
@@ -33,7 +34,7 @@ export class UserEntity extends CommonEntity {
   })
   profileImageKey?: string | undefined;
 
-  @Column('varchar', { length: USER_GENDER_LENGTH, nullable: true })
+  @Column('varchar', { nullable: true, length: USER_GENDER_LENGTH })
   gender?: UserGenderEnum | undefined;
 
   @Column('varchar', { nullable: true, length: USER_AGE_LENGTH })
@@ -47,7 +48,6 @@ export class UserEntity extends CommonEntity {
 
   @Column('varchar', {
     length: USER_SNS_ID_LENGTH,
-    unique: true,
   })
   snsId: string;
 
