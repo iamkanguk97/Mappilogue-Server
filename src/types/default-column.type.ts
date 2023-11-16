@@ -10,6 +10,11 @@ import {
   StatusOrCheckColumnLengthEnum,
 } from 'src/constants/enum';
 
+/**
+ * @deprecated 2023-11-16 Deprecated 처리
+ * - soft delete로 바꾸면서 status value 필요x
+ * - CommonEntity로 대체
+ */
 export class DefaultColumnType {
   @PrimaryGeneratedColumn('increment', { type: 'int' })
   id: number;

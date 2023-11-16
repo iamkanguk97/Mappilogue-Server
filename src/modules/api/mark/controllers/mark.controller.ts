@@ -7,7 +7,6 @@ import {
   HttpStatus,
   Param,
   Post,
-  Put,
   Query,
   UploadedFiles,
   UseInterceptors,
@@ -61,11 +60,11 @@ export class MarkController {
     return ResponseEntity.OK_WITH(HttpStatus.OK, result);
   }
 
-  @Put('/:markId')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async putMark() {
-    return;
-  }
+  // @Put('/:markId')
+  // @HttpCode(HttpStatus.NO_CONTENT)
+  // async putMark() {
+  //   return;
+  // }
 
   @Get()
   @HttpCode(HttpStatus.OK)

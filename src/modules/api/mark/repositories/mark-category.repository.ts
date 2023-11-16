@@ -1,7 +1,6 @@
 import { CustomRepository } from 'src/modules/core/custom-repository/decorators';
 import { MarkCategoryEntity } from '../entities/mark-category.entity';
 import { Repository } from 'typeorm';
-import { StatusColumnEnum } from 'src/constants/enum';
 import { MARK_CATEGORY_EMPTY_SEQUENCE } from '../../mark-category/constants/mark-category.constant';
 import { MarkEntity } from '../entities/mark.entity';
 import { TMarkCategoryByUserId } from '../../mark-category/types';
