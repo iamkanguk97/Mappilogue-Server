@@ -12,7 +12,7 @@ import { UserHelper } from '../helpers/user.helper';
 import { CustomCacheService } from 'src/modules/core/custom-cache/services/custom-cache.service';
 import { TokenRefreshResponseDto } from '../dtos/token-refresh-response.dto';
 import { LoginOrSignUpResponseDto } from '../dtos/login-or-sign-up-response.dto';
-import { GetHomeOptionEnum, LoginOrSignUpEnum } from '../constants/user.enum';
+import { LoginOrSignUpEnum } from '../constants/user.enum';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 import { DecodedUserToken, ProcessedSocialKakaoInfo } from '../types';
 import { PostUserWithdrawRequestDto } from '../dtos/post-user-withdraw-request.dto';
@@ -25,11 +25,13 @@ import {
 import { LoginOrSignUpRequestDto } from '../dtos/login-or-sign-up-request.dto';
 import { UserAlarmSettingRepository } from '../repositories/user-alarm-setting.repository';
 import { UserAlarmSettingEntity } from '../entities/user-alarm-setting.entity';
-import { DataSource } from 'typeorm';
+import { DataSource, Equal } from 'typeorm';
 import { UserAlarmHistoryRepository } from '../repositories/user-alarm-history.repository';
 
 @Injectable()
 export class UserService {
+  private readonly logger = new Logger(UserService.name);
+
   constructor(
     private readonly dataSource: DataSource,
     private readonly userRepository: UserRepository,
@@ -71,7 +73,7 @@ export class UserService {
         newTokens,
       );
     } catch (err) {
-      Logger.error(`[createSignUp - transaction error] ${err}`);
+      this.logger.error(`[createSignUp - transaction error] ${err}`);
       await queryRunner.rollbackTransaction();
       throw err;
     } finally {
@@ -102,7 +104,7 @@ export class UserService {
         tokens,
       );
     } catch (err) {
-      Logger.error(`[login - transaction error] ${err}`);
+      this.logger.error(`[login - transaction error] ${err}`);
       await queryRunner.rollbackTransaction();
       throw err;
     } finally {
@@ -140,24 +142,12 @@ export class UserService {
       await queryRunner.commitTransaction();
       return TokenRefreshResponseDto.from(userId, result);
     } catch (err) {
-      Logger.error(`[createTokenRefresh] ${err}`);
+      this.logger.error(`[createTokenRefresh - transaction error] ${err}`);
       await queryRunner.rollbackTransaction();
       throw err;
     } finally {
       await queryRunner.release();
     }
-  }
-
-  async findOneById(userId: number): Promise<UserEntity> {
-    return await this.userRepository.findOne({
-      where: { id: userId },
-    });
-  }
-
-  async findOneBySnsId(socialId: string): Promise<UserEntity> {
-    return await this.userRepository.findOne({
-      where: { snsId: socialId },
-    });
   }
 
   async createUser(
@@ -168,13 +158,6 @@ export class UserService {
       ...socialUserInfo,
       fcmToken,
     });
-  }
-
-  async modifyById(
-    userId: number,
-    properties: Partial<UserEntity>,
-  ): Promise<void> {
-    return await this.userRepository.updateById(userId, properties);
   }
 
   async logout(userId: number): Promise<void> {
@@ -191,7 +174,7 @@ export class UserService {
 
       await queryRunner.commitTransaction();
     } catch (err) {
-      Logger.error(`[logout] ${err}`);
+      this.logger.error(`[logout - transaction error] ${err}`);
       await queryRunner.rollbackTransaction();
       throw err;
     } finally {
@@ -213,14 +196,23 @@ export class UserService {
       );
       user.email = decryptEmail(user.email);
 
-      const deleteUser = await this.userRepository.findOne({
+      /**
+       * 사용자가 삭제되면서 deletedAt이 추가되어야 할 것들
+       * - userAlarmSetting
+       * - userAlarmHistory
+       * - schedule: schedule이 사라지면 그 schedule에 해당하는 애들도 삭제해야 하는데?
+       * - mark: mark도 마찬가지....!
+       */
+      const deleteTargetUser = await this.userRepository.findOne({
         where: { id: user.id },
-        relations: ['userAlarmSetting'],
+        relations: ['userAlarmSetting', 'markCategories'],
       });
+
+      console.log(deleteTargetUser);
 
       await this.customCacheService.delValue(refreshTokenRedisKey);
       // await this.userRepository.softDelete({ id: user.id });
-      await this.userRepository.softRemove(deleteUser);
+      await this.userRepository.softRemove(deleteTargetUser);
       await this.userWithdrawReasonRepository.save(body.toEntity(user));
 
       if (user.profileImageKey !== '') {
@@ -233,7 +225,7 @@ export class UserService {
 
       await queryRunner.commitTransaction();
     } catch (err) {
-      Logger.error(`[createWithdraw] ${err}`);
+      this.logger.error(`[createWithdraw - transaction error] ${err}`);
       await queryRunner.rollbackTransaction();
       throw err;
     } finally {
@@ -253,11 +245,22 @@ export class UserService {
     return result.map((r) => r.alarmDate);
   }
 
-  async findHome(userId: number, option: GetHomeOptionEnum) {
-    console.log(userId, option);
+  async findOneById(userId?: number | undefined): Promise<UserEntity> {
+    return await this.userRepository.findOne({
+      where: { id: Equal(userId) },
+    });
+  }
 
-    // 마크한 기록
-    // 오늘의 일정 OR 다가오는 일정
-    // 알림 여부
+  async findOneBySnsId(socialId: string): Promise<UserEntity> {
+    return await this.userRepository.findOne({
+      where: { snsId: socialId },
+    });
+  }
+
+  async modifyById(
+    userId: number,
+    properties: Partial<UserEntity>,
+  ): Promise<void> {
+    return await this.userRepository.updateById(userId, properties);
   }
 }
