@@ -16,6 +16,7 @@ export enum StatusOrCheckColumnLengthEnum {
 export enum DomainNameEnum {
   USER = 'users',
   USER_PROFILE = 'users/profiles',
+  USER_HOME = 'users/homes',
   MARK = 'marks',
   MARK_CATEGORY = 'marks/categories',
 }

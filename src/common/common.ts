@@ -14,7 +14,14 @@ export function generateBearerHeader(bearerToken: string): AxiosRequestConfig {
   };
 }
 
-export function setValidatorContext(errorMessage) {
+/**
+ * @title Class-Validator에서 context를 지정할 때 사용하는 함수
+ * @param errorMessage
+ * @returns
+ */
+export function setValidatorContext(errorMessage: ExceptionCodeType): {
+  context: ExceptionCodeType;
+} {
   return {
     context: {
       ...errorMessage,
@@ -22,6 +29,12 @@ export function setValidatorContext(errorMessage) {
   };
 }
 
+/**
+ * @title Exception Code 생성하는 함수
+ * @param code
+ * @param message
+ * @returns
+ */
 export function setExceptionCode(
   code: string,
   message: string,

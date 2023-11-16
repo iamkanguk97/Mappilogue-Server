@@ -5,6 +5,7 @@ import { UserModule } from './user/user.module';
 import { ScheduleModule } from './schedule/schedule.module';
 import { MarkCategoryModule } from './mark-category/mark-category.module';
 import { MarkModule } from './mark/mark.module';
+import { UserHomeModule } from './user-home/user-home.module';
 
 @Global()
 @Module({
@@ -12,6 +13,7 @@ import { MarkModule } from './mark/mark.module';
     ColorModule,
     UserModule,
     UserProfileModule,
+    UserHomeModule,
     ScheduleModule,
     MarkModule,
     MarkCategoryModule,
@@ -20,6 +22,7 @@ import { MarkModule } from './mark/mark.module';
     ColorModule,
     UserModule,
     UserProfileModule,
+    UserHomeModule,
     ScheduleModule,
     MarkModule,
     MarkCategoryModule,

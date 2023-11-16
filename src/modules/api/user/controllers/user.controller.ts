@@ -9,12 +9,12 @@ import { LoginOrSignUpResponseDto } from '../dtos/login-or-sign-up-response.dto'
 import { UserSocialFactory } from '../factories/user-social.factory';
 import { Public } from 'src/modules/core/auth/decorators/auth.decorator';
 import { UserId } from '../decorators/user-id.decorator';
-import { TERMS_OF_SERVICE_URL } from 'src/constants/constant';
 import { User } from '../decorators/user.decorator';
 import { DecodedUserToken } from '../types';
 import { PostUserWithdrawRequestDto } from '../dtos/post-user-withdraw-request.dto';
+import { DomainNameEnum } from 'src/constants/enum';
 
-@Controller('users')
+@Controller(DomainNameEnum.USER)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -77,10 +77,4 @@ export class UserController {
   //   const result = await this.userService.findHome(userId, query.option);
   //   return ResponseEntity.OK_WITH(HttpStatus.OK, result);
   // }
-
-  termsOfServiceUrl(): ResponseEntity<{ link: string }> {
-    return ResponseEntity.OK_WITH(HttpStatus.OK, {
-      link: TERMS_OF_SERVICE_URL,
-    });
-  }
 }
