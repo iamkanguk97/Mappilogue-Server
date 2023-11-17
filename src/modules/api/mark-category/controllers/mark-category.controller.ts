@@ -54,7 +54,7 @@ export class MarkCategoryController {
     return ResponseEntity.OK_WITH(HttpStatus.CREATED, result);
   }
 
-  @Patch('titles')
+  @Patch()
   @HttpCode(HttpStatus.NO_CONTENT)
   async patchMarkCategoryTitle(
     @UserId() userId: number,

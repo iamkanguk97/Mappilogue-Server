@@ -14,8 +14,8 @@ export class LoginOrSignUpResponseDto {
   ) {
     this.loginUserId = loginUserId;
     this.type = type;
-    this.accessToken = tokenDto.getAccessToken;
-    this.refreshToken = tokenDto.getRefreshToken;
+    this.accessToken = tokenDto.accessToken;
+    this.refreshToken = tokenDto.refreshToken;
   }
 
   static from(
