@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -10,6 +11,7 @@ import {
   Post,
   Put,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import { MarkCategoryService } from '../services/mark-category.service';
 import { UserId } from '../../user/decorators/user-id.decorator';
@@ -33,6 +35,7 @@ export class MarkCategoryController {
   @CacheTTL(CACHE_COMMON_TTL)
   @Get()
   @HttpCode(HttpStatus.OK)
+  @UseInterceptors(ClassSerializerInterceptor)
   async getMarkCategories(
     @UserId() userId: number,
   ): Promise<ResponseEntity<GetMarkCategoriesResponseDto>> {
@@ -42,6 +45,7 @@ export class MarkCategoryController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @UseInterceptors(ClassSerializerInterceptor)
   async postMarkCategory(
     @UserId() userId: number,
     @Body() body: PostMarkCategoryRequestDto,

@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Get,
   HttpCode,
@@ -35,6 +36,7 @@ export class UserProfileController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
+  @UseInterceptors(ClassSerializerInterceptor)
   getUserProfile(
     @User() user: DecodedUserToken,
   ): ResponseEntity<DecodedUserToken> {
@@ -57,6 +59,7 @@ export class UserProfileController {
       PATCH_USER_PROFILE_IMAGE_LIMIT,
       CreateProfileImageMulterOption(),
     ),
+    ClassSerializerInterceptor,
   )
   @Patch('images')
   @HttpCode(HttpStatus.OK)
@@ -73,6 +76,7 @@ export class UserProfileController {
 
   @Get('alarm-settings')
   @HttpCode(HttpStatus.OK)
+  @UseInterceptors(ClassSerializerInterceptor)
   async getUserAlarmSetting(
     @UserId() userId: number,
   ): Promise<ResponseEntity<UserAlarmSettingDto>> {
@@ -94,6 +98,7 @@ export class UserProfileController {
   @Public()
   @Get('terms-of-services')
   @HttpCode(HttpStatus.OK)
+  @UseInterceptors(ClassSerializerInterceptor)
   termsOfServiceUrl(): ResponseEntity<{ link: string }> {
     return ResponseEntity.OK_WITH(HttpStatus.OK, {
       link: TERMS_OF_SERVICE_URL,

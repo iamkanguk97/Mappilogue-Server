@@ -1,6 +1,7 @@
 import { GetScheduleOnSpecificDateRequestDto } from './../dtos/get-schedule-on-specific-date-request.dto';
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -10,6 +11,7 @@ import {
   Post,
   Put,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UserId } from '../../user/decorators/user-id.decorator';
 import { PostScheduleRequestDto } from '../dtos/post-schedule-request.dto';
@@ -31,6 +33,7 @@ export class ScheduleController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @UseInterceptors(ClassSerializerInterceptor)
   async postSchedule(
     @UserId() userId: number,
     @Body() body: PostScheduleRequestDto,
@@ -49,6 +52,7 @@ export class ScheduleController {
 
   @Get('detail-by-date')
   @HttpCode(HttpStatus.OK)
+  @UseInterceptors(ClassSerializerInterceptor)
   async getSchedulesOnSpecificDate(
     @UserId() userId: number,
     @Query() query: GetScheduleOnSpecificDateRequestDto,
@@ -62,6 +66,7 @@ export class ScheduleController {
 
   @Get('detail-by-id')
   @HttpCode(HttpStatus.OK)
+  @UseInterceptors(ClassSerializerInterceptor)
   async getScheduleDetailById(
     @Query(ScheduleValidationPipe) schedule: ScheduleDto,
   ): Promise<ResponseEntity<GetScheduleDetailByIdResponseDto>> {
@@ -73,6 +78,7 @@ export class ScheduleController {
 
   @Get('calenders')
   @HttpCode(HttpStatus.OK)
+  @UseInterceptors(ClassSerializerInterceptor)
   async getSchedulesInCalender(
     @UserId() userId: number,
     @Query() query: GetSchedulesInCalenderRequestDto,
@@ -95,6 +101,7 @@ export class ScheduleController {
 
   @Get('/:scheduleId/areas')
   @HttpCode(HttpStatus.OK)
+  @UseInterceptors(ClassSerializerInterceptor)
   async getScheduleAreasById(
     @Param(ScheduleValidationPipe) schedule: ScheduleDto,
   ): Promise<ResponseEntity<GetScheduleAreasByIdResponseDto>> {

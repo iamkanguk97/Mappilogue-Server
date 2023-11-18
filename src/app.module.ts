@@ -13,10 +13,10 @@ import { AuthGuard } from './modules/core/auth/guards/auth.guard';
       provide: APP_GUARD,
       useClass: AuthGuard,
     },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: CustomCacheInterceptor,
-    },
+    // {
+    //   provide: APP_INTERCEPTOR,
+    //   useClass: CustomCacheInterceptor,
+    // },
   ],
 })
 export class AppModule implements NestModule {

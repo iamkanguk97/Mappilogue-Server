@@ -24,8 +24,8 @@ export class CustomCacheInterceptor extends CacheInterceptor {
 
   // 캐시를 하지 않을 API 경로 저장
   private readonly CACHE_EVICT_PATHS = [
-    '/api/v1/users/profiles/terms-of-services',
     '/api/v1/users/profiles',
+    '/api/v1/users/profiles/terms-of-services',
   ];
 
   constructor(
@@ -61,6 +61,8 @@ export class CustomCacheInterceptor extends CacheInterceptor {
 
     // GET 요청 이외의 다른 요청인 경우에는 캐시 제거
     if (this.CACHE_EVICT_METHODS.includes(method)) {
+      console.log(method);
+      console.log(request.url);
       const cacheKey = key.includes('[userId_')
         ? `${keyPrefix}${request.url}`
         : key;
@@ -87,6 +89,8 @@ export class CustomCacheInterceptor extends CacheInterceptor {
   }
 
   protected trackBy(context: ExecutionContext): string {
+    console.log(context);
+    console.log(context.switchToHttp().getRequest());
     /**
      * @comment cacheMetadata: Controller @CacheKey()로 등록한 key임.
      */
