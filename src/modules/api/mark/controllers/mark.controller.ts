@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -32,6 +33,7 @@ export class MarkController {
   @UseInterceptors(
     FilesInterceptor('image', 10, CreateMarkImageMulterOption()),
     FormDataJsonInterceptor,
+    ClassSerializerInterceptor,
   )
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -55,6 +57,7 @@ export class MarkController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
+  @UseInterceptors(ClassSerializerInterceptor)
   async getMarkDetailById(@Query(MarkValidationPipe) mark: MarkDto) {
     const result = await this.markService.findMarkOnSpecificId(mark);
     return ResponseEntity.OK_WITH(HttpStatus.OK, result);
@@ -68,6 +71,7 @@ export class MarkController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
+  @UseInterceptors(ClassSerializerInterceptor)
   async getMarkListByCategoryId(
     @UserId() userId: number,
     @Query(MarkCategoryValidationPipe) query: any,
