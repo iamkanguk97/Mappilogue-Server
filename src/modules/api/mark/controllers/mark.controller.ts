@@ -25,15 +25,16 @@ import { ResponseEntity } from 'src/entities/common/response.entity';
 import { PostMarkResponseDto } from '../dtos/post-mark-response.dto';
 import { MarkDto } from '../dtos/mark.dto';
 import { MarkCategoryValidationPipe } from '../../mark-category/pipes/mark-category-validation.pipe';
+import { DomainNameEnum } from 'src/constants/enum';
 
-@Controller('marks')
+@Controller(DomainNameEnum.MARK)
+@UseInterceptors(ClassSerializerInterceptor)
 export class MarkController {
   constructor(private readonly markService: MarkService) {}
 
   @UseInterceptors(
     FilesInterceptor('image', 10, CreateMarkImageMulterOption()),
     FormDataJsonInterceptor,
-    ClassSerializerInterceptor,
   )
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -57,7 +58,6 @@ export class MarkController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  @UseInterceptors(ClassSerializerInterceptor)
   async getMarkDetailById(@Query(MarkValidationPipe) mark: MarkDto) {
     const result = await this.markService.findMarkOnSpecificId(mark);
     return ResponseEntity.OK_WITH(HttpStatus.OK, result);
@@ -71,7 +71,6 @@ export class MarkController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  @UseInterceptors(ClassSerializerInterceptor)
   async getMarkListByCategoryId(
     @UserId() userId: number,
     @Query(MarkCategoryValidationPipe) query: any,

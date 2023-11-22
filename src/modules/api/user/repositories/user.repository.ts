@@ -1,4 +1,4 @@
-import { CustomRepository } from 'src/modules/core/custom-repository/decorators';
+import { CustomRepository } from 'src/modules/core/custom-repository/decorators/custom-repository.decorator';
 import { UserEntity } from '../entities/user.entity';
 import { Repository } from 'typeorm';
 import { ProcessedSocialKakaoInfo } from '../types';

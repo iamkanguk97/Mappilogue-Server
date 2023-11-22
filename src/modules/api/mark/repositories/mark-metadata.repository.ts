@@ -1,4 +1,4 @@
-import { CustomRepository } from 'src/modules/core/custom-repository/decorators';
+import { CustomRepository } from 'src/modules/core/custom-repository/decorators/custom-repository.decorator';
 import { MarkMetadataEntity } from '../entities/mark-metadata.entity';
 import { Repository } from 'typeorm';
 import { MarkEntity } from '../entities/mark.entity';

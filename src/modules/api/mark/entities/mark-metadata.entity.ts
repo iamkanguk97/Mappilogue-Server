@@ -3,11 +3,13 @@ import {
   StatusOrCheckColumnLengthEnum,
 } from 'src/constants/enum';
 import { DefaultColumnType } from 'src/types/default-column.type';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { MARK_IMAGE_KEY_LENGTH } from '../constants/mark.constant';
+import { CommonEntity } from 'src/entities/common/common.entity';
+import { MarkEntity } from './mark.entity';
 
 @Entity('MarkMetadata')
-export class MarkMetadataEntity extends DefaultColumnType {
+export class MarkMetadataEntity extends CommonEntity {
   @Column('int')
   markId: number;
 
@@ -22,6 +24,13 @@ export class MarkMetadataEntity extends DefaultColumnType {
 
   @Column('varchar', { length: StatusOrCheckColumnLengthEnum.CHECK })
   isMainImage: CheckColumnEnum;
+
+  @ManyToOne(() => MarkEntity, (mark) => mark.markMetadata, {
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'markId', referencedColumnName: 'id' })
+  marks: MarkEntity;
 
   static from(
     markId: number,

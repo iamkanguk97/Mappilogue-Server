@@ -13,8 +13,9 @@ import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
 import { COLOR_LIST_CACHE_KEY } from '../constants/color.constant';
 import { Public } from 'src/modules/core/auth/decorators/auth.decorator';
 import { CACHE_PERSISTANT_TTL } from 'src/constants/constant';
+import { DomainNameEnum } from 'src/constants/enum';
 
-@Controller('colors')
+@Controller(DomainNameEnum.COLOR)
 export class ColorController {
   constructor(private readonly colorService: ColorService) {}
 

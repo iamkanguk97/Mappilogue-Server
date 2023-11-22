@@ -1,4 +1,4 @@
-import { CustomRepository } from 'src/modules/core/custom-repository/decorators';
+import { CustomRepository } from 'src/modules/core/custom-repository/decorators/custom-repository.decorator';
 import { MarkLocationEntity } from '../entities/mark-location.entity';
 import { Repository } from 'typeorm';
 

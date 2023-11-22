@@ -1,7 +1,6 @@
-import { CustomRepository } from 'src/modules/core/custom-repository/decorators';
+import { CustomRepository } from 'src/modules/core/custom-repository/decorators/custom-repository.decorator';
 import { MarkEntity } from '../entities/mark.entity';
 import { Repository } from 'typeorm';
-import { StatusColumnEnum } from 'src/constants/enum';
 
 @CustomRepository(MarkEntity)
 export class MarkRepository extends Repository<MarkEntity> {

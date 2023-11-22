@@ -1,5 +1,5 @@
 import { DynamicModule, Provider } from '@nestjs/common';
-import { TYPEORM_EX_CUSTOM_REPOSITORY } from './constants';
+import { TYPEORM_EX_CUSTOM_REPOSITORY } from './constants/custom-repository.constant';
 import { getDataSourceToken } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 

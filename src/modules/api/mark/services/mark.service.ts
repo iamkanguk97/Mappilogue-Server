@@ -82,7 +82,6 @@ export class MarkService {
       const markLocation = await this.markLocationRepository.findOne({
         where: {
           markId: mark.getId,
-          status: StatusColumnEnum.ACTIVE,
         },
       });
 
@@ -148,7 +147,20 @@ export class MarkService {
   }
 
   async removeMark(userId: number, markId: number): Promise<void> {
-    await this.markRepository.delete({ userId, id: markId });
+    // Mark가 사라지면? MarkLocation, MarkMetadata soft delete
+    // await this.markRepository.delete({ userId, id: markId });
+    const deletedMarkData = await this.markRepository.find({
+      where: {
+        userId,
+        id: markId,
+      },
+      relations: {
+        markLocation: true,
+        markMetadata: true,
+      },
+    });
+
+    await this.markRepository.softRemove(deletedMarkData);
   }
 
   async removeMarkByCategoryId(markCategoryId: number): Promise<void> {

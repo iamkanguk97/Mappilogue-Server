@@ -1,4 +1,4 @@
-import { CustomRepository } from 'src/modules/core/custom-repository/decorators';
+import { CustomRepository } from 'src/modules/core/custom-repository/decorators/custom-repository.decorator';
 import { MarkCategoryEntity } from '../entities/mark-category.entity';
 import { Repository } from 'typeorm';
 import { MARK_CATEGORY_EMPTY_SEQUENCE } from '../../mark-category/constants/mark-category.constant';

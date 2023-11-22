@@ -1,4 +1,4 @@
-import { CustomRepository } from 'src/modules/core/custom-repository/decorators';
+import { CustomRepository } from 'src/modules/core/custom-repository/decorators/custom-repository.decorator';
 import { UserAlarmHistoryEntity } from '../entities/user-alarm-history.entity';
 import { Repository } from 'typeorm';
 import { StatusColumnEnum } from 'src/constants/enum';

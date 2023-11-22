@@ -1,4 +1,4 @@
-import { CustomRepository } from 'src/modules/core/custom-repository/decorators';
+import { CustomRepository } from 'src/modules/core/custom-repository/decorators/custom-repository.decorator';
 import { ScheduleAreaEntity } from '../entities/schedule-area.entity';
 import { Repository } from 'typeorm';
 import { ScheduleEntity } from '../entities/schedule.entity';

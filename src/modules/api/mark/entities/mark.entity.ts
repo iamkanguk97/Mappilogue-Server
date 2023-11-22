@@ -1,8 +1,17 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 import { UserEntity } from '../../user/entities/user.entity';
 import { MarkCategoryEntity } from './mark-category.entity';
 import { MarkTitleLengthEnum } from '../constants/mark.enum';
 import { CommonEntity } from 'src/entities/common/common.entity';
+import { MarkLocationEntity } from './mark-location.entity';
+import { MarkMetadataEntity } from './mark-metadata.entity';
 
 @Entity('Mark')
 export class MarkEntity extends CommonEntity {
@@ -36,6 +45,18 @@ export class MarkEntity extends CommonEntity {
   })
   @JoinColumn({ name: 'markCategoryId', referencedColumnName: 'id' })
   markCategory: MarkCategoryEntity;
+
+  @OneToOne(() => MarkLocationEntity, (markLocation) => markLocation.marks, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn({ name: 'markId', referencedColumnName: 'id' })
+  markLocation: MarkLocationEntity;
+
+  @OneToMany(() => MarkMetadataEntity, (markMetadata) => markMetadata.marks, {
+    cascade: true,
+  })
+  markMetadata: MarkMetadataEntity[];
 
   static from(
     userId: number,

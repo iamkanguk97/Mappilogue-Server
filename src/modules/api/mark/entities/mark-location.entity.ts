@@ -1,14 +1,16 @@
 import { DefaultColumnType } from 'src/types/default-column.type';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToOne } from 'typeorm';
 import {
   MarkLocationLatitudeLengthEnum,
   MarkLocationLongitudeLengthEnum,
   MarkLocationNameLengthEnum,
   MarkLocationStreetAddressLengthEnum,
 } from '../constants/mark.enum';
+import { MarkEntity } from './mark.entity';
+import { CommonEntity } from 'src/entities/common/common.entity';
 
 @Entity('MarkLocation')
-export class MarkLocationEntity extends DefaultColumnType {
+export class MarkLocationEntity extends CommonEntity {
   @Column('int')
   markId: number;
 
@@ -35,6 +37,9 @@ export class MarkLocationEntity extends DefaultColumnType {
     length: MarkLocationLongitudeLengthEnum.MAX,
   })
   longitude?: string | undefined;
+
+  @OneToOne(() => MarkEntity, (mark) => mark.markLocation)
+  marks: MarkEntity;
 
   static from(
     markId: number,

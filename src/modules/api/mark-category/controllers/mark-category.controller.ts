@@ -1,3 +1,4 @@
+import { CustomCacheService } from './../../../core/custom-cache/services/custom-cache.service';
 import {
   Body,
   ClassSerializerInterceptor,
@@ -24,18 +25,18 @@ import { PutMarkCategoryRequestDto } from '../dtos/put-mark-category-request.dto
 import { DeleteMarkCategoryOptionRequestDto } from '../dtos/delete-mark-category-option-request.dto';
 import { GetMarkCategoriesResponseDto } from '../dtos/get-mark-categories-response.dto';
 import { MarkCategoryValidationPipe } from '../pipes/mark-category-validation.pipe';
-import { CacheTTL } from '@nestjs/cache-manager';
-import { CACHE_COMMON_TTL } from 'src/constants/constant';
 import { DomainNameEnum } from 'src/constants/enum';
 
 @Controller(DomainNameEnum.MARK_CATEGORY)
+@UseInterceptors(ClassSerializerInterceptor)
 export class MarkCategoryController {
-  constructor(private readonly markCategoryService: MarkCategoryService) {}
+  constructor(
+    private readonly customCacheService: CustomCacheService,
+    private readonly markCategoryService: MarkCategoryService,
+  ) {}
 
-  @CacheTTL(CACHE_COMMON_TTL)
   @Get()
   @HttpCode(HttpStatus.OK)
-  @UseInterceptors(ClassSerializerInterceptor)
   async getMarkCategories(
     @UserId() userId: number,
   ): Promise<ResponseEntity<GetMarkCategoriesResponseDto>> {
@@ -45,7 +46,6 @@ export class MarkCategoryController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @UseInterceptors(ClassSerializerInterceptor)
   async postMarkCategory(
     @UserId() userId: number,
     @Body() body: PostMarkCategoryRequestDto,
