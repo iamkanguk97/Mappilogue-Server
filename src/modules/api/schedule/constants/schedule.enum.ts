@@ -1,5 +1,5 @@
 export enum ScheduleTitleLengthEnum {
-  MIN = 1,
+  MIN = 0,
   MAX = 50,
 }
 

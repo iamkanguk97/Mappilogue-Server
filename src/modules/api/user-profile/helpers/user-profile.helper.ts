@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UserAlarmSettingDto } from '../../user/dtos/user-alarm-setting.dto';
-import * as _ from 'lodash';
 import { CheckColumnEnum } from 'src/constants/enum';
+import { isDefined } from 'src/helpers/common.helper';
 
 @Injectable()
 export class UserProfileHelper {
@@ -12,7 +12,7 @@ export class UserProfileHelper {
    */
   checkCanSendScheduleAlarm(userAlarmSettings: UserAlarmSettingDto): boolean {
     return (
-      !_.isNil(userAlarmSettings) &&
+      isDefined(userAlarmSettings) &&
       userAlarmSettings.isTotalAlarm === CheckColumnEnum.ACTIVE &&
       userAlarmSettings.isScheduleReminderAlarm === CheckColumnEnum.ACTIVE
     );

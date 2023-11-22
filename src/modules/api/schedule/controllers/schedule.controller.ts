@@ -26,14 +26,15 @@ import { GetScheduleDetailByIdResponseDto } from '../dtos/get-schedule-detail-by
 import { PutScheduleRequestDto } from '../dtos/put-schedule-request.dto';
 import { GetSchedulesInCalenderResponseDto } from '../dtos/get-schedules-in-calender-response.dto';
 import { GetScheduleAreasByIdResponseDto } from '../dtos/get-schedule-areas-by-id-response.dto';
+import { DomainNameEnum } from 'src/constants/enum';
 
-@Controller('schedules')
+@Controller(DomainNameEnum.SCHEDULE)
+@UseInterceptors(ClassSerializerInterceptor)
 export class ScheduleController {
   constructor(private readonly scheduleService: ScheduleService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @UseInterceptors(ClassSerializerInterceptor)
   async postSchedule(
     @UserId() userId: number,
     @Body() body: PostScheduleRequestDto,
@@ -52,7 +53,6 @@ export class ScheduleController {
 
   @Get('detail-by-date')
   @HttpCode(HttpStatus.OK)
-  @UseInterceptors(ClassSerializerInterceptor)
   async getSchedulesOnSpecificDate(
     @UserId() userId: number,
     @Query() query: GetScheduleOnSpecificDateRequestDto,
@@ -66,7 +66,6 @@ export class ScheduleController {
 
   @Get('detail-by-id')
   @HttpCode(HttpStatus.OK)
-  @UseInterceptors(ClassSerializerInterceptor)
   async getScheduleDetailById(
     @Query(ScheduleValidationPipe) schedule: ScheduleDto,
   ): Promise<ResponseEntity<GetScheduleDetailByIdResponseDto>> {
@@ -78,7 +77,6 @@ export class ScheduleController {
 
   @Get('calenders')
   @HttpCode(HttpStatus.OK)
-  @UseInterceptors(ClassSerializerInterceptor)
   async getSchedulesInCalender(
     @UserId() userId: number,
     @Query() query: GetSchedulesInCalenderRequestDto,
@@ -101,7 +99,6 @@ export class ScheduleController {
 
   @Get('/:scheduleId/areas')
   @HttpCode(HttpStatus.OK)
-  @UseInterceptors(ClassSerializerInterceptor)
   async getScheduleAreasById(
     @Param(ScheduleValidationPipe) schedule: ScheduleDto,
   ): Promise<ResponseEntity<GetScheduleAreasByIdResponseDto>> {

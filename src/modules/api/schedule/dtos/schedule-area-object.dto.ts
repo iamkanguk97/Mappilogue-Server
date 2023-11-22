@@ -1,6 +1,5 @@
 import { Type } from 'class-transformer';
 import {
-  ArrayNotEmpty,
   ArrayUnique,
   IsArray,
   IsNotEmpty,
@@ -25,7 +24,7 @@ export class ScheduleAreaObjectDto {
   @ValidateNested({ each: true })
   @Type(() => ScheduleAreaDto)
   @ArrayUnique(setValidatorContext(CommonExceptionCode.ArrayUnique))
-  @ArrayNotEmpty(setValidatorContext(CommonExceptionCode.ArrayNotEmpty))
+  // @ArrayNotEmpty(setValidatorContext(CommonExceptionCode.ArrayNotEmpty))
   @IsArray(setValidatorContext(CommonExceptionCode.MustArrayType))
   @IsNotEmpty(setValidatorContext(ScheduleExceptionCode.ScheduleAreaValueEmpty))
   value: ScheduleAreaDto[];

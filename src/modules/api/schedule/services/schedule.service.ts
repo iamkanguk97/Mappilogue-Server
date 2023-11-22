@@ -1,5 +1,5 @@
 import { GetScheduleDetailByIdResponseDto } from './../dtos/get-schedule-detail-by-id-response.dto';
-import { setCheckColumnByValue } from 'src/helpers/common.helper';
+import { isEmptyArray } from 'src/helpers/common.helper';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { PostScheduleRequestDto } from '../dtos/post-schedule-request.dto';
 import { DataSource } from 'typeorm';
@@ -12,7 +12,6 @@ import { ScheduleExceptionCode } from 'src/common/exception-code/schedule.except
 import { CheckColumnEnum, StatusColumnEnum } from 'src/constants/enum';
 import { UserProfileService } from '../../user-profile/services/user-profile.service';
 import { UserService } from '../../user/services/user.service';
-import { UserProfileHelper } from '../../user-profile/helpers/user-profile.helper';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 import { NotificationService } from 'src/modules/core/notification/services/notification.service';
 import { UserHelper } from '../../user/helpers/user.helper';
@@ -31,6 +30,7 @@ import { GetSchedulesInCalenderResponseDto } from '../dtos/get-schedules-in-cale
 import { GetSchedulesInCalenderRequestDto } from '../dtos/get-schedules-in-calender-request.dto';
 import { GetScheduleAreasByIdResponseDto } from '../dtos/get-schedule-areas-by-id-response.dto';
 import { ScheduleDto } from '../dtos/schedule.dto';
+import { UserProfileHelper } from '../../user-profile/helpers/user-profile.helper';
 
 @Injectable()
 export class ScheduleService {
@@ -44,9 +44,9 @@ export class ScheduleService {
     private readonly userService: UserService,
     private readonly userProfileService: UserProfileService,
     private readonly notificationService: NotificationService,
-    private readonly userProfileHelper: UserProfileHelper,
     private readonly scheduleHelper: ScheduleHelper,
     private readonly userHelper: UserHelper,
+    private readonly userProfileHelper: UserProfileHelper,
   ) {}
 
   async createSchedule(
@@ -160,11 +160,9 @@ export class ScheduleService {
     newScheduleId: number,
     body: PostScheduleRequestDto,
   ): Promise<void> {
-    const areaData = body.area ?? [];
-
     try {
       await Promise.all(
-        areaData.map(async (area) => {
+        body.area.map(async (area) => {
           if (
             !checkBetweenDatesWithNoMoment(
               body.startDate,
@@ -206,7 +204,7 @@ export class ScheduleService {
     newScheduleId: number,
     body: PostScheduleRequestDto,
   ): Promise<void> {
-    if (setCheckColumnByValue(body.alarmOptions) === CheckColumnEnum.ACTIVE) {
+    if (!isEmptyArray(body.alarmOptions)) {
       const queryRunner = this.dataSource.createQueryRunner();
       await queryRunner.connect();
       await queryRunner.startTransaction();

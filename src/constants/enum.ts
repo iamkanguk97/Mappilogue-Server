@@ -20,4 +20,5 @@ export enum DomainNameEnum {
   USER_HOME = 'users/homes',
   MARK = 'marks',
   MARK_CATEGORY = 'marks/categories',
+  SCHEDULE = 'schedules',
 }

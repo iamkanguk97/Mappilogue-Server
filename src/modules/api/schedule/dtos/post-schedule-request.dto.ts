@@ -1,7 +1,6 @@
 import { SCHEDULE_ALARM_MAX_COUNT } from './../constants/schedule.constant';
 import {
   ArrayMaxSize,
-  ArrayNotEmpty,
   ArrayUnique,
   IsArray,
   IsNotEmpty,
@@ -69,7 +68,7 @@ export class PostScheduleRequestDto {
     setValidatorContext(ScheduleExceptionCode.ScheduleAlarmMaxFive),
   )
   @ArrayUnique(setValidatorContext(CommonExceptionCode.ArrayUnique))
-  @ArrayNotEmpty(setValidatorContext(CommonExceptionCode.ArrayNotEmpty))
+  // @ArrayNotEmpty(setValidatorContext(CommonExceptionCode.ArrayNotEmpty))
   @IsArray(setValidatorContext(CommonExceptionCode.MustArrayType))
   @IsOptional()
   alarmOptions?: string[] | undefined;
@@ -77,7 +76,7 @@ export class PostScheduleRequestDto {
   @ValidateNested({ each: true })
   @Type(() => ScheduleAreaObjectDto)
   @ArrayUnique(setValidatorContext(CommonExceptionCode.ArrayUnique))
-  @ArrayNotEmpty(setValidatorContext(CommonExceptionCode.ArrayNotEmpty))
+  // @ArrayNotEmpty(setValidatorContext(CommonExceptionCode.ArrayNotEmpty))
   @IsArray(setValidatorContext(CommonExceptionCode.MustArrayType))
   @IsOptional()
   area?: ScheduleAreaObjectDto[] | undefined;

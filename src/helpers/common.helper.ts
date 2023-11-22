@@ -24,5 +24,5 @@ export function isDefined<T>(value: T | undefined | null): boolean {
  * @returns
  */
 export function setCheckColumnByValue<T>(value: T): CheckColumnEnum {
-  return isDefined(value) ? CheckColumnEnum.INACTIVE : CheckColumnEnum.ACTIVE;
+  return isDefined(value) ? CheckColumnEnum.ACTIVE : CheckColumnEnum.INACTIVE;
 }
