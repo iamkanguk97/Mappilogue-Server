@@ -58,6 +58,10 @@ export class UserProfileService {
       await imageDeleteBuilder.delete(user.profileImageKey);
 
       await queryRunner.commitTransaction();
+      return PatchUserProfileImageResponseDto.from(
+        user.id,
+        updateProfileImageParam.profileImageUrl,
+      );
     } catch (err) {
       this.logger.error(`[modifyUserProfileImage - transaction error] ${err}`);
       await queryRunner.rollbackTransaction();
@@ -65,11 +69,6 @@ export class UserProfileService {
     } finally {
       await queryRunner.release();
     }
-
-    return PatchUserProfileImageResponseDto.from(
-      user.id,
-      updateProfileImageParam.profileImageUrl,
-    );
   }
 
   async findUserAlarmSettingById(userId: number): Promise<UserAlarmSettingDto> {

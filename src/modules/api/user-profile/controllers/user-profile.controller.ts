@@ -31,12 +31,16 @@ import {
 import { DomainNameEnum } from 'src/constants/enum';
 
 @Controller(DomainNameEnum.USER_PROFILE)
+@UseInterceptors(ClassSerializerInterceptor)
 export class UserProfileController {
   constructor(private readonly userProfileService: UserProfileService) {}
 
+  /**
+   * @summary 사용자 프로필 조회 API
+   * @author Jason
+   */
   @Get()
   @HttpCode(HttpStatus.OK)
-  @UseInterceptors(ClassSerializerInterceptor)
   getUserProfile(
     @User() user: DecodedUserToken,
   ): ResponseEntity<DecodedUserToken> {
@@ -44,6 +48,10 @@ export class UserProfileController {
     return ResponseEntity.OK_WITH(HttpStatus.OK, user);
   }
 
+  /**
+   * @summary 닉네임 수정 API
+   * @author Jason
+   */
   @Patch('nicknames')
   @HttpCode(HttpStatus.NO_CONTENT)
   async patchUserNickname(
@@ -53,13 +61,16 @@ export class UserProfileController {
     await this.userProfileService.modifyUserNickname(userId, body);
   }
 
+  /**
+   * @summary 프로필 이미지 수정 API
+   * @author Jason
+   */
   @UseInterceptors(
     FilesInterceptor(
       PATCH_USER_PROFILE_IMAGE_KEY,
       PATCH_USER_PROFILE_IMAGE_LIMIT,
       CreateProfileImageMulterOption(),
     ),
-    ClassSerializerInterceptor,
   )
   @Patch('images')
   @HttpCode(HttpStatus.OK)
@@ -74,9 +85,12 @@ export class UserProfileController {
     return ResponseEntity.OK_WITH(HttpStatus.OK, result);
   }
 
+  /**
+   * @summary 사용자 알림 설정 조회 API
+   * @author Jason
+   */
   @Get('alarm-settings')
   @HttpCode(HttpStatus.OK)
-  @UseInterceptors(ClassSerializerInterceptor)
   async getUserAlarmSetting(
     @UserId() userId: number,
   ): Promise<ResponseEntity<UserAlarmSettingDto>> {
@@ -86,6 +100,10 @@ export class UserProfileController {
     return ResponseEntity.OK_WITH(HttpStatus.OK, result);
   }
 
+  /**
+   * @summary 사용자 알림 설정 수정 API
+   * @author Jason
+   */
   @Put('alarm-settings')
   @HttpCode(HttpStatus.NO_CONTENT)
   async putUserAlarmSetting(
@@ -95,10 +113,13 @@ export class UserProfileController {
     await this.userProfileService.modifyUserAlarmSetting(userId, body);
   }
 
+  /**
+   * @summary 이용약관 조회 API
+   * @author Jason
+   */
   @Public()
   @Get('terms-of-services')
   @HttpCode(HttpStatus.OK)
-  @UseInterceptors(ClassSerializerInterceptor)
   termsOfServiceUrl(): ResponseEntity<{ link: string }> {
     return ResponseEntity.OK_WITH(HttpStatus.OK, {
       link: TERMS_OF_SERVICE_URL,
