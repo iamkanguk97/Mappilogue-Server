@@ -48,7 +48,6 @@ export class MarkCategoryService {
         markExceptCategoryCount + markHaveCategoryCount;
 
       await queryRunner.commitTransaction();
-
       return GetMarkCategoriesResponseDto.from(
         totalCategoryMarkCount,
         result.map((r) => MarkCategoryDto.of(r)),
@@ -66,12 +65,13 @@ export class MarkCategoryService {
     userId: number,
     title: string,
   ): Promise<PostMarkCategoryResponseDto> {
+    let newMarkCategoryId: number;
+    let newMarkCategorySequenceNo: number;
+
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
-    let newMarkCategoryId: number;
-    let newMarkCategorySequenceNo: number;
     try {
       const lastCategorySequenceNo =
         await this.markCategoryRepository.selectLastMarkCategorySequenceNo(
@@ -178,7 +178,7 @@ export class MarkCategoryService {
 
       await queryRunner.commitTransaction();
     } catch (err) {
-      Logger.error(`[modifyMarkCategory] ${err}`);
+      this.logger.error(`[modifyMarkCategory - transaction error] ${err}`);
       await queryRunner.rollbackTransaction();
       throw err;
     } finally {
@@ -186,23 +186,20 @@ export class MarkCategoryService {
     }
   }
 
-  async findOneById(markCategoryId: number): Promise<MarkCategoryEntity> {
-    return await this.markCategoryRepository.findOne({
-      where: {
-        id: markCategoryId,
-      },
-    });
-  }
-
   async updateMarkStatusInMarkDelete(
     option: DeleteMarkCategoryOptionEnum,
     markCategoryId: number,
   ): Promise<void> {
-    if (option === DeleteMarkCategoryOptionEnum.ALL) {
-      await this.markService.removeMarkByCategoryId(markCategoryId);
-      return;
+    switch (option) {
+      case DeleteMarkCategoryOptionEnum.ALL:
+        await this.markService.removeMarkByCategoryId(markCategoryId);
+        return;
+      case DeleteMarkCategoryOptionEnum.ONLY:
+        await this.markService.modifyMarkCategoryIdToNullInMark(markCategoryId);
+        return;
+      default:
+        return;
     }
-    await this.markService.modifyMarkCategoryIdToNullInMark(markCategoryId);
   }
 
   async checkMarkCategoryStatus(
@@ -222,5 +219,13 @@ export class MarkCategoryService {
         MarkCategoryExceptionCode.MarkCategoryNotMine,
       );
     }
+  }
+
+  async findOneById(markCategoryId: number): Promise<MarkCategoryEntity> {
+    return await this.markCategoryRepository.findOne({
+      where: {
+        id: markCategoryId,
+      },
+    });
   }
 }

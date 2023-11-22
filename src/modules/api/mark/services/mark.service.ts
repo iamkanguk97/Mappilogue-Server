@@ -2,7 +2,6 @@ import { DataSource, Equal } from 'typeorm';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { MarkRepository } from '../repositories/mark.repository';
 import { MarkEntity } from '../entities/mark.entity';
-import { StatusColumnEnum } from 'src/constants/enum';
 import { MarkHelper } from '../helpers/mark.helper';
 import { PostMarkRequestDto } from '../dtos/post-mark-request.dto';
 import { MarkMetadataRepository } from '../repositories/mark-metadata.repository';

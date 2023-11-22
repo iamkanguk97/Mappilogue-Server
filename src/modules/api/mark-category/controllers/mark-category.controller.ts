@@ -1,4 +1,3 @@
-import { CustomCacheService } from './../../../core/custom-cache/services/custom-cache.service';
 import {
   Body,
   ClassSerializerInterceptor,
@@ -30,11 +29,12 @@ import { DomainNameEnum } from 'src/constants/enum';
 @Controller(DomainNameEnum.MARK_CATEGORY)
 @UseInterceptors(ClassSerializerInterceptor)
 export class MarkCategoryController {
-  constructor(
-    private readonly customCacheService: CustomCacheService,
-    private readonly markCategoryService: MarkCategoryService,
-  ) {}
+  constructor(private readonly markCategoryService: MarkCategoryService) {}
 
+  /**
+   * @summary 기록 카테고리 조회 API
+   * @author Jason
+   */
   @Get()
   @HttpCode(HttpStatus.OK)
   async getMarkCategories(
@@ -44,6 +44,10 @@ export class MarkCategoryController {
     return ResponseEntity.OK_WITH(HttpStatus.OK, result);
   }
 
+  /**
+   * @summary 기록 카테고리 생성 API
+   * @author Jason
+   */
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async postMarkCategory(
@@ -58,6 +62,10 @@ export class MarkCategoryController {
     return ResponseEntity.OK_WITH(HttpStatus.CREATED, result);
   }
 
+  /**
+   * @summary 기록 카테고리 이름 수정 API
+   * @author Jason
+   */
   @Patch()
   @HttpCode(HttpStatus.NO_CONTENT)
   async patchMarkCategoryTitle(
@@ -67,6 +75,10 @@ export class MarkCategoryController {
     await this.markCategoryService.modifyMarkCategoryTitle(userId, body);
   }
 
+  /**
+   * @summary 기록 카테고리 삭제 API
+   * @author Jason
+   */
   @Delete('/:markCategoryId')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteMarkCategory(
@@ -81,6 +93,10 @@ export class MarkCategoryController {
     );
   }
 
+  /**
+   * @summary 기록 카테고리 순서 수정 API
+   * @author Jason
+   */
   @Put()
   @HttpCode(HttpStatus.NO_CONTENT)
   async putMarkCategories(

@@ -9,6 +9,7 @@ export class MarkRepository extends Repository<MarkEntity> {
       .select('COUNT(*) AS markCount')
       .andWhere('userId = :userId', { userId })
       .andWhere('markCategoryId IS NULL')
+      .andWhere('deletedAt IS NULL')
       .getRawOne();
     return parseInt(result.markCount);
   }

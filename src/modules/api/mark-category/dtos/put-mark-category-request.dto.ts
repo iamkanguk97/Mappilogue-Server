@@ -1,5 +1,4 @@
 import {
-  ArrayNotEmpty,
   ArrayUnique,
   IsArray,
   IsNotEmpty,
@@ -15,7 +14,7 @@ export class PutMarkCategoryRequestDto {
   @ValidateNested({ each: true })
   @Type(() => MarkCategoryRequestDto)
   @ArrayUnique(setValidatorContext(CommonExceptionCode.ArrayUnique))
-  @ArrayNotEmpty(setValidatorContext(CommonExceptionCode.ArrayNotEmpty))
+  // @ArrayNotEmpty(setValidatorContext(CommonExceptionCode.ArrayNotEmpty))
   @IsArray(setValidatorContext(CommonExceptionCode.MustArrayType))
   @IsNotEmpty(
     setValidatorContext(MarkCategoryExceptionCode.PutMarkCategoriesEmpty),

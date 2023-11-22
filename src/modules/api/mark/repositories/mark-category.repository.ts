@@ -18,8 +18,13 @@ export class MarkCategoryRepository extends Repository<MarkCategoryEntity> {
         'MC.isMarkedInMap AS isMarkedInMap',
         'COUNT(M.id) AS markCount',
       ])
-      .leftJoin(MarkEntity, 'M', 'MC.id = M.markCategoryId')
+      .leftJoin(
+        MarkEntity,
+        'M',
+        'MC.id = M.markCategoryId AND M.deletedAt IS NULL',
+      )
       .where('MC.userId = :userId', { userId })
+      .andWhere('MC.deletedAt IS NULL')
       .groupBy('MC.id')
       .orderBy('MC.sequence')
       .getRawMany();
@@ -29,6 +34,7 @@ export class MarkCategoryRepository extends Repository<MarkCategoryEntity> {
     const result = await this.createQueryBuilder()
       .select('sequence')
       .where('userId = :userId', { userId })
+      .andWhere('deletedAt IS NULL')
       .orderBy('sequence', 'DESC')
       .limit(1)
       .getRawOne();
