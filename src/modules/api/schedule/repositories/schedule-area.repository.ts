@@ -24,8 +24,6 @@ export class ScheduleAreaRepository extends Repository<ScheduleAreaEntity> {
       ])
       .innerJoin(ScheduleEntity, 'S', 'S.id = SA.scheduleId')
       .where('SA.scheduleId = :scheduleId', { scheduleId })
-      .andWhere('SA.status = :status', { status: StatusColumnEnum.ACTIVE })
-      .andWhere('S.status = :status', { status: StatusColumnEnum.ACTIVE })
       .orderBy('SA.date')
       .addOrderBy('SA.sequence')
       .getRawMany();

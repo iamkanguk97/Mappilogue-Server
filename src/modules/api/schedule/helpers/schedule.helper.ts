@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ScheduleEntity } from '../entities/schedule.entity';
-import { CheckColumnEnum, StatusColumnEnum } from 'src/constants/enum';
+import { CheckColumnEnum } from 'src/constants/enum';
 import { SCHEDULE_DEFAULT_TITLE } from '../constants/schedule.constant';
 import {
   IProcessedScheduleAreasById,
@@ -32,10 +32,7 @@ export class ScheduleHelper {
    * @returns
    */
   isScheduleExist(scheduleStatus?: ScheduleEntity | undefined): boolean {
-    return (
-      isDefined(scheduleStatus) &&
-      scheduleStatus.status !== StatusColumnEnum.DELETED
-    );
+    return isDefined(scheduleStatus);
   }
 
   /**
@@ -46,10 +43,7 @@ export class ScheduleHelper {
   isScheduleAreaExist(
     scheduleAreaStatus?: ScheduleAreaEntity | undefined,
   ): boolean {
-    return (
-      isDefined(scheduleAreaStatus) &&
-      scheduleAreaStatus.status !== StatusColumnEnum.DELETED
-    );
+    return isDefined(scheduleAreaStatus);
   }
 
   /**

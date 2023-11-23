@@ -1,16 +1,17 @@
+import { Exclude, Expose } from 'class-transformer';
 import { CheckColumnEnum } from 'src/constants/enum';
 import { ScheduleEntity } from '../entities/schedule.entity';
 
 export class ScheduleDto {
-  private readonly id: number;
-  private readonly userId: number;
-  private readonly colorId: number;
-  private readonly title?: string | undefined;
-  private readonly isAlarm: CheckColumnEnum;
+  @Exclude() private readonly _id: number;
+  @Exclude() private readonly _userId: number;
+  @Exclude() private readonly _colorId: number;
+  @Exclude() private readonly _title?: string | undefined;
+  @Exclude() private readonly _isAlarm: CheckColumnEnum;
 
-  private startDate: string;
-  private endDate: string;
-  private colorCode?: string | undefined;
+  @Exclude() private _startDate: string;
+  @Exclude() private _endDate: string;
+  @Exclude() private _colorCode?: string | undefined;
 
   private constructor(
     id: number,
@@ -21,13 +22,13 @@ export class ScheduleDto {
     isAlarm: CheckColumnEnum,
     title?: string | undefined,
   ) {
-    this.id = id;
-    this.userId = userId;
-    this.colorId = colorId;
-    this.startDate = startDate;
-    this.endDate = endDate;
-    this.isAlarm = isAlarm;
-    this.title = title;
+    this._id = id;
+    this._userId = userId;
+    this._colorId = colorId;
+    this._startDate = startDate;
+    this._endDate = endDate;
+    this._isAlarm = isAlarm;
+    this._title = title;
   }
 
   static of(scheduleEntity: ScheduleEntity): ScheduleDto {
@@ -42,49 +43,50 @@ export class ScheduleDto {
     );
   }
 
+  @Expose()
   get getId(): number {
-    return this.id;
+    return this._id;
   }
 
+  @Expose()
   get getUserId(): number {
-    return this.userId;
+    return this._userId;
   }
 
+  @Expose()
   get getStartDate(): string {
-    return this.startDate;
+    return this._startDate;
   }
 
+  @Expose()
   get getEndDate(): string {
-    return this.endDate;
+    return this._endDate;
   }
 
+  @Expose()
   get getColorId(): number {
-    return this.colorId;
+    return this._colorId;
   }
 
+  @Expose()
   get getColorCode(): string | undefined {
-    return this.colorCode;
+    return this._colorCode;
   }
 
+  @Expose()
   get getIsAlarm(): CheckColumnEnum {
-    return this.isAlarm;
+    return this._isAlarm;
   }
 
-  set setStartDate(newStartDate: string) {
-    this.startDate = newStartDate;
+  set setStartDate(startDate: string) {
+    this._startDate = startDate;
   }
 
-  set setEndDate(newEndDate: string) {
-    this.endDate = newEndDate;
+  set setEndDate(endDate: string) {
+    this._endDate = endDate;
   }
 
-  set setColorCode(newColorCode: string) {
-    this.colorCode = newColorCode;
-  }
-  set _startDate(newStartDate: string) {
-    this.startDate = newStartDate;
-  }
-  set _endDate(newEndDate: string) {
-    this.endDate = newEndDate;
+  set setColorCode(colorCode: string) {
+    this._colorCode = colorCode;
   }
 }

@@ -14,7 +14,6 @@ export class UserAlarmHistoryRepository extends Repository<UserAlarmHistoryEntit
       .select('DATE_FORMAT(A.alarmDate, "%c월 %e일 %l:%i %p")', 'alarmDate')
       .where('A.scheduleId = :scheduleId', { scheduleId })
       .andWhere('A.userId = :userId', { userId })
-      .andWhere('A.status = :status', { status: StatusColumnEnum.ACTIVE })
       .andWhere('A.type = :type', {
         type: NotificationTypeEnum.SCHEDULE_REMINDER,
       })

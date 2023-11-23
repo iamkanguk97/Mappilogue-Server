@@ -43,6 +43,10 @@ export class ScheduleController {
     return ResponseEntity.OK_WITH(HttpStatus.CREATED, result);
   }
 
+  /**
+   * @summary 일정 삭제하기 API
+   * @author Jason
+   */
   @Delete('/:scheduleId')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteSchedule(
@@ -75,6 +79,10 @@ export class ScheduleController {
     return ResponseEntity.OK_WITH(HttpStatus.OK, result);
   }
 
+  /**
+   * @summary 캘린더 조회 API
+   * @author Jason
+   */
   @Get('calenders')
   @HttpCode(HttpStatus.OK)
   async getSchedulesInCalender(

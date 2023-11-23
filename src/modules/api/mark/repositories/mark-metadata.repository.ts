@@ -19,8 +19,6 @@ export class MarkMetadataRepository extends Repository<MarkMetadataEntity> {
       ])
       .innerJoin(MarkEntity, 'M', 'M.id = MMD.markId')
       .where('MMD.markId = :markId', { markId })
-      .andWhere('MMD.status = :status', { status: StatusColumnEnum.ACTIVE })
-      .andWhere('M.status = :status', { status: StatusColumnEnum.ACTIVE })
       .orderBy('MMD.id')
       .getRawMany();
   }

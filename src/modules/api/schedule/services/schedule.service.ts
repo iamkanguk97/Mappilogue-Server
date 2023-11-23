@@ -9,7 +9,6 @@ import {
   getKoreanDateFormatByMultiple,
 } from 'src/helpers/date.helper';
 import { ScheduleExceptionCode } from 'src/common/exception-code/schedule.exception-code';
-import { CheckColumnEnum, StatusColumnEnum } from 'src/constants/enum';
 import { UserProfileService } from '../../user-profile/services/user-profile.service';
 import { UserService } from '../../user/services/user.service';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
@@ -77,10 +76,17 @@ export class ScheduleService {
   }
 
   async removeSchedule(schedule: ScheduleDto): Promise<void> {
-    await this.scheduleRepository.delete({
-      userId: schedule.getUserId,
-      id: schedule.getId,
+    const deletedScheduleData = await this.scheduleRepository.find({
+      where: {
+        userId: schedule.getUserId,
+        id: schedule.getId,
+      },
+      relations: {
+        scheduleAreas: true,
+      },
     });
+
+    await this.scheduleRepository.softRemove(deletedScheduleData);
   }
 
   async findScheduleOnSpecificId(
@@ -141,8 +147,8 @@ export class ScheduleService {
       console.log(userId);
       console.log(schedule);
 
-      schedule._startDate = '';
-      schedule._endDate = '';
+      schedule.setStartDate = '';
+      schedule.setEndDate = '';
 
       console.log(schedule);
 
@@ -301,7 +307,6 @@ export class ScheduleService {
     return this.scheduleRepository.findOne({
       where: {
         id: scheduleId,
-        status: StatusColumnEnum.ACTIVE,
       },
     });
   }
@@ -312,7 +317,6 @@ export class ScheduleService {
     return this.scheduleAreaRepository.findOne({
       where: {
         id: scheduleAreaId,
-        status: StatusColumnEnum.ACTIVE,
       },
     });
   }
@@ -404,7 +408,6 @@ export class ScheduleService {
     try {
       await this.scheduleAreaRepository.delete({
         scheduleId,
-        status: StatusColumnEnum.ACTIVE,
       });
       await this.createScheduleArea(scheduleId, body);
 

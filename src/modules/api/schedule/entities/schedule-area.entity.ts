@@ -1,4 +1,3 @@
-import { DefaultColumnType } from 'src/types/default-column.type';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { ScheduleEntity } from './schedule.entity';
 import {
@@ -9,9 +8,10 @@ import {
   ScheduleAreaTimeLengthEnum,
 } from '../constants/schedule.enum';
 import { SCHEDULE_AREA_DATE_LENGTH } from '../constants/schedule.constant';
+import { CommonEntity } from 'src/entities/common/common.entity';
 
 @Entity('ScheduleArea')
-export class ScheduleAreaEntity extends DefaultColumnType {
+export class ScheduleAreaEntity extends CommonEntity {
   @Column('int')
   scheduleId: number;
 
@@ -48,7 +48,7 @@ export class ScheduleAreaEntity extends DefaultColumnType {
   @Column('int')
   sequence!: number;
 
-  @ManyToOne(() => ScheduleEntity, (schedule) => schedule.scheduleArea, {
+  @ManyToOne(() => ScheduleEntity, (schedule) => schedule.scheduleAreas, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })

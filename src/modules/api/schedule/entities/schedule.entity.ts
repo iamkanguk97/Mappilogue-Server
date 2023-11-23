@@ -2,7 +2,6 @@ import {
   CheckColumnEnum,
   StatusOrCheckColumnLengthEnum,
 } from 'src/constants/enum';
-import { DefaultColumnType } from 'src/types/default-column.type';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { UserEntity } from '../../user/entities/user.entity';
 import {
@@ -12,9 +11,10 @@ import {
 import { ColorEntity } from '../../color/entities/color.entity';
 import { setCheckColumnByValue } from 'src/helpers/common.helper';
 import { ScheduleAreaEntity } from './schedule-area.entity';
+import { CommonEntity } from 'src/entities/common/common.entity';
 
 @Entity('Schedule')
-export class ScheduleEntity extends DefaultColumnType {
+export class ScheduleEntity extends CommonEntity {
   @Column('int')
   userId: number;
 
@@ -53,12 +53,12 @@ export class ScheduleEntity extends DefaultColumnType {
 
   @OneToMany(
     () => ScheduleAreaEntity,
-    (scheduleArea) => scheduleArea.scheduleId,
+    (scheduleArea) => scheduleArea.schedule,
     {
       cascade: true,
     },
   )
-  scheduleArea: ScheduleAreaEntity[];
+  scheduleAreas: ScheduleAreaEntity[];
 
   static from(
     userId: number,

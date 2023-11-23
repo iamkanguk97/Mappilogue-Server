@@ -28,9 +28,8 @@ export class ScheduleRepository extends Repository<ScheduleEntity> {
       .leftJoin(ScheduleAreaEntity, 'SA', 'SA.scheduleId = S.id')
       .where('S.userId = :userId', { userId })
       .andWhere(':date BETWEEN S.startDate AND S.endDate', { date })
-      .andWhere('S.status = :status', { status: StatusColumnEnum.ACTIVE })
       .andWhere(
-        'IF(SA.sequence IS NOT NULL, SA.status = :status AND SA.sequence = 1, true)',
+        'IF(SA.sequence IS NOT NULL, SA.deletedAt IS NULL AND SA.sequence = 1, true)',
         {
           status: StatusColumnEnum.ACTIVE,
         },
@@ -59,7 +58,7 @@ export class ScheduleRepository extends Repository<ScheduleEntity> {
       .where('S.userId = :userId', { userId })
       .andWhere(`S.startDate <= "${year}-${month}-${getLastDate(year, month)}"`)
       .andWhere(`S.endDate >= "${year}-${month}-01"`)
-      .andWhere('S.status = :status', { status: 'ACTIVE' })
+      .andWhere('S.deletedAt IS NULL')
       .orderBy('S.startDate')
       .addOrderBy('S.createdAt')
       .getRawMany();

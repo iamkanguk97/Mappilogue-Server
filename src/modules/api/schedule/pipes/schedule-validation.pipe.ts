@@ -7,10 +7,10 @@ import {
 } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
-import * as _ from 'lodash';
 import { ScheduleService } from '../services/schedule.service';
 import { ScheduleDto } from '../dtos/schedule.dto';
 import { ScheduleExceptionCode } from 'src/common/exception-code/schedule.exception-code';
+import { isDefined } from 'src/helpers/common.helper';
 
 @Injectable()
 export class ScheduleValidationPipe implements PipeTransform {
@@ -28,16 +28,11 @@ export class ScheduleValidationPipe implements PipeTransform {
       const scheduleId = value?.scheduleId;
       const userId = this.request['user'].id;
 
-      if (_.isNil(scheduleId)) {
+      if (!isDefined(scheduleId)) {
         throw new BadRequestException(ScheduleExceptionCode.ScheduleIdEmpty);
       }
 
-      const result = await this.scheduleService.checkScheduleStatus(
-        userId,
-        scheduleId,
-      );
-
-      return result;
+      return await this.scheduleService.checkScheduleStatus(userId, scheduleId);
     } catch (err) {
       this.logger.error(`[ScheduleValidationPipe] ${err}`);
       throw err;
