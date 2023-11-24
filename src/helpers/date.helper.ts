@@ -52,3 +52,62 @@ export const getKoreanDateFormatByMultiple = (
 ): string => {
   return `${year}년 ${month}월 ${day}일`;
 };
+
+/**
+ * @summary 이번달의 첫째 날 요일을 구하는 함수
+ * @author Jason
+ *
+ * @param year
+ * @param month
+ *
+ * @description 일요일은 0이고, 이후 1씩 증가한다. 따라서 토요일은 6
+ */
+export const getFirstDayOfWeek = (year: number, month: number): number => {
+  const currentDate = moment({ year, month: month - 1 });
+  const firstDayOfMonth = moment(currentDate).startOf('month');
+  return firstDayOfMonth.day();
+};
+
+/**
+ * @summary 특정 년월의 주말 리스트를 가져오는 함수 (캘린더의 주말리스트)
+ * @author Jason
+ *
+ * @param year
+ * @param month
+ */
+export const getWeekendsByYearAndMonth = (
+  year: number,
+  month: number,
+): string[][] => {
+  const dateFormat = 'YYYY-MM-DD';
+  const momentCondition = { year, month: month - 1 };
+
+  const firstDayOfWeek = getFirstDayOfWeek(year, month);
+
+  const firstSunday = moment(momentCondition).subtract(firstDayOfWeek, 'day');
+  const firstSaturday = moment(momentCondition).add(6 - firstDayOfWeek, 'day');
+
+  const result = [
+    [firstSunday.format(dateFormat), firstSaturday.format(dateFormat)],
+  ];
+
+  for (let i = 0; i < 4; i++) {
+    result.push([
+      firstSunday.add(7, 'day').format(dateFormat),
+      firstSaturday.add(7, 'day').format(dateFormat),
+    ]);
+  }
+
+  // 여기서 사용한 firstSunday와 firstSaturday는 위에서 이미 더해져서 옴.
+  if (
+    firstSunday.month() + 1 === month &&
+    firstSaturday.month() + 1 === month
+  ) {
+    result.push([
+      firstSunday.add(7, 'day').format(dateFormat),
+      firstSaturday.add(7, 'day').format(dateFormat),
+    ]);
+  }
+
+  return result;
+};

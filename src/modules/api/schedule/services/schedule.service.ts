@@ -7,6 +7,7 @@ import { ScheduleRepository } from '../repositories/schedule.repository';
 import {
   checkBetweenDatesWithNoMoment,
   getKoreanDateFormatByMultiple,
+  getWeekendsByYearAndMonth,
 } from 'src/helpers/date.helper';
 import { ScheduleExceptionCode } from 'src/common/exception-code/schedule.exception-code';
 import { UserProfileService } from '../../user-profile/services/user-profile.service';
@@ -129,10 +130,15 @@ export class ScheduleService {
     userId: number,
     query: GetSchedulesInCalenderRequestDto,
   ): Promise<GetSchedulesInCalenderResponseDto> {
+    const weekendsList = getWeekendsByYearAndMonth(query.year, query.month);
+
+    const calenderStartDay = weekendsList[0][0];
+    const calenderEndDay = weekendsList[weekendsList.length - 1][1];
+
     const result = await this.scheduleRepository.selectSchedulesInCalender(
       userId,
-      query.year,
-      query.month,
+      calenderStartDay,
+      calenderEndDay,
     );
 
     return GetSchedulesInCalenderResponseDto.of(result);
