@@ -105,6 +105,10 @@ export class ScheduleController {
     await this.scheduleService.modifySchedule(schedule, body);
   }
 
+  /**
+   * @summary 특정 일정의 장소 조회하기 API
+   * @author Jason
+   */
   @Get('/:scheduleId/areas')
   @HttpCode(HttpStatus.OK)
   async getScheduleAreasById(

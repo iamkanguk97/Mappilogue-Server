@@ -1,3 +1,5 @@
+import { CheckColumnEnum } from 'src/constants/enum';
+
 export interface ISchedulesInCalendar {
   scheduleId: number;
   userId: number;
@@ -46,6 +48,7 @@ export interface IScheduleAreasById {
   longitude: string;
   time: string;
   sequence: number;
+  isRepLocation: CheckColumnEnum;
 }
 
 export interface IProcessedScheduleAreasById {

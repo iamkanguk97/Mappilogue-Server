@@ -2,8 +2,9 @@ import { CustomRepository } from 'src/modules/core/custom-repository/decorators/
 import { ScheduleAreaEntity } from '../entities/schedule-area.entity';
 import { Repository } from 'typeorm';
 import { ScheduleEntity } from '../entities/schedule.entity';
-import { StatusColumnEnum } from 'src/constants/enum';
 import { IScheduleAreasById } from '../types';
+import { MarkLocationEntity } from '../../mark/entities/mark-location.entity';
+import { CheckColumnEnum } from 'src/constants/enum';
 
 @CustomRepository(ScheduleAreaEntity)
 export class ScheduleAreaRepository extends Repository<ScheduleAreaEntity> {
@@ -21,9 +22,14 @@ export class ScheduleAreaRepository extends Repository<ScheduleAreaEntity> {
         'IFNULL(SA.longitude, "") AS longitude',
         'IFNULL(SA.time, "") AS time',
         'SA.sequence AS sequence',
+        `IF(ML.scheduleAreaId IS NULL, "${CheckColumnEnum.INACTIVE}", "${CheckColumnEnum.ACTIVE}") AS isRepLocation`,
       ])
       .innerJoin(ScheduleEntity, 'S', 'S.id = SA.scheduleId')
+      .leftJoin(MarkLocationEntity, 'ML', 'SA.id = ML.scheduleAreaId')
       .where('SA.scheduleId = :scheduleId', { scheduleId })
+      .andWhere('SA.deletedAt IS NULL')
+      .andWhere('S.deletedAt IS NULL')
+      .andWhere('ML.deletedAt IS NULL')
       .orderBy('SA.date')
       .addOrderBy('SA.sequence')
       .getRawMany();
