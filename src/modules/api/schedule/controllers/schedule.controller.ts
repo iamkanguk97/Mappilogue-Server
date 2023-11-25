@@ -55,6 +55,10 @@ export class ScheduleController {
     await this.scheduleService.removeSchedule(schedule);
   }
 
+  /**
+   * @summary 특정 날짜의 일정 조회하기 API
+   * @author Jason
+   */
   @Get('detail-by-date')
   @HttpCode(HttpStatus.OK)
   async getSchedulesOnSpecificDate(

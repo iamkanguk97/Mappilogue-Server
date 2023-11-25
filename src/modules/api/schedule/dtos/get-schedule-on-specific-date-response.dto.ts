@@ -1,18 +1,22 @@
+import { Exclude, Expose } from 'class-transformer';
 import { ISchedulesOnSpecificDate } from '../types';
 
 export class GetScheduleOnSpecificDateResponseDto {
-  private readonly solarDate: string;
-  private readonly lunarDate: string;
-  private readonly schedulesOnSpecificDate: ISchedulesOnSpecificDate[];
+  @Exclude()
+  private readonly _solarDate: string;
+  @Exclude()
+  private readonly _lunarDate: string;
+  @Exclude()
+  private readonly _schedulesOnSpecificDate: ISchedulesOnSpecificDate[];
 
   private constructor(
     solarDate: string,
     lunarDate: string,
     schedulesOnSpecificDate: ISchedulesOnSpecificDate[],
   ) {
-    this.solarDate = solarDate;
-    this.lunarDate = lunarDate;
-    this.schedulesOnSpecificDate = schedulesOnSpecificDate;
+    this._solarDate = solarDate;
+    this._lunarDate = lunarDate;
+    this._schedulesOnSpecificDate = schedulesOnSpecificDate;
   }
 
   static from(
@@ -25,5 +29,20 @@ export class GetScheduleOnSpecificDateResponseDto {
       lunarDate,
       schedulesOnSpecificDate,
     );
+  }
+
+  @Expose()
+  get solarDate(): string {
+    return this._solarDate;
+  }
+
+  @Expose()
+  get lunarDate(): string {
+    return this._lunarDate;
+  }
+
+  @Expose()
+  get schedulesOnSpecificDate(): ISchedulesOnSpecificDate[] {
+    return this._schedulesOnSpecificDate;
   }
 }
