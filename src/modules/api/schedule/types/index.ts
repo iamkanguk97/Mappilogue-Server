@@ -1,4 +1,4 @@
-export interface ISchedulesInCalender {
+export interface ISchedulesInCalendar {
   scheduleId: number;
   userId: number;
   colorId: number;
@@ -31,7 +31,7 @@ export interface ISolarToLunarResult {
 }
 
 export interface ISchedulesOnSpecificDate
-  extends Omit<ISchedulesInCalender, 'userId'> {
+  extends Omit<ISchedulesInCalendar, 'userId'> {
   areaName: string;
   areaTime: string;
 }

@@ -2,7 +2,7 @@ import { CustomRepository } from 'src/modules/core/custom-repository/decorators/
 import { ScheduleEntity } from '../entities/schedule.entity';
 import { Repository } from 'typeorm';
 import { ColorEntity } from '../../color/entities/color.entity';
-import { ISchedulesInCalender, ISchedulesOnSpecificDate } from '../types';
+import { ISchedulesInCalendar, ISchedulesOnSpecificDate } from '../types';
 import { ScheduleAreaEntity } from '../entities/schedule-area.entity';
 import { StatusColumnEnum } from 'src/constants/enum';
 
@@ -38,11 +38,11 @@ export class ScheduleRepository extends Repository<ScheduleEntity> {
       .getRawMany();
   }
 
-  async selectSchedulesInCalender(
+  async selectSchedulesInCalendar(
     userId: number,
-    calenderStartDay: string,
-    calenderEndDay: string,
-  ): Promise<ISchedulesInCalender[]> {
+    calendarStartDay: string,
+    calendarEndDay: string,
+  ): Promise<ISchedulesInCalendar[]> {
     return await this.createQueryBuilder('S')
       .select([
         'S.id AS scheduleId',
@@ -55,8 +55,8 @@ export class ScheduleRepository extends Repository<ScheduleEntity> {
       ])
       .innerJoin(ColorEntity, 'C', 'S.colorId = C.id')
       .where('S.userId = :userId', { userId })
-      .andWhere(`S.startDate <= :endDay`, { endDay: calenderEndDay })
-      .andWhere(`S.endDate >= :startDay`, { startDay: calenderStartDay })
+      .andWhere(`S.startDate <= :endDay`, { endDay: calendarEndDay })
+      .andWhere(`S.endDate >= :startDay`, { startDay: calendarStartDay })
       .andWhere('S.deletedAt IS NULL')
       .orderBy('S.startDate')
       .addOrderBy('S.createdAt')

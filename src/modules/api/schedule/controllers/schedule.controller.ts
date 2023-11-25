@@ -20,13 +20,13 @@ import { ResponseEntity } from 'src/entities/common/response.entity';
 import { ScheduleValidationPipe } from '../pipes/schedule-validation.pipe';
 import { ScheduleDto } from '../dtos/schedule.dto';
 import { PostScheduleResponseDto } from '../dtos/post-schedule-response.dto';
-import { GetSchedulesInCalenderRequestDto } from '../dtos/get-schedules-in-calender-request.dto';
 import { GetScheduleOnSpecificDateResponseDto } from '../dtos/get-schedule-on-specific-date-response.dto';
 import { GetScheduleDetailByIdResponseDto } from '../dtos/get-schedule-detail-by-id-response.dto';
 import { PutScheduleRequestDto } from '../dtos/put-schedule-request.dto';
-import { GetSchedulesInCalenderResponseDto } from '../dtos/get-schedules-in-calender-response.dto';
 import { GetScheduleAreasByIdResponseDto } from '../dtos/get-schedule-areas-by-id-response.dto';
 import { DomainNameEnum } from 'src/constants/enum';
+import { GetSchedulesInCalendarRequestDto } from '../dtos/get-schedules-in-calendar-request.dto';
+import { GetSchedulesInCalendarResponseDto } from '../dtos/get-schedules-in-calendar-response.dto';
 
 @Controller(DomainNameEnum.SCHEDULE)
 @UseInterceptors(ClassSerializerInterceptor)
@@ -83,13 +83,13 @@ export class ScheduleController {
    * @summary 캘린더 조회 API
    * @author Jason
    */
-  @Get('calenders')
+  @Get('calendars')
   @HttpCode(HttpStatus.OK)
-  async getSchedulesInCalender(
+  async getSchedulesInCalendar(
     @UserId() userId: number,
-    @Query() query: GetSchedulesInCalenderRequestDto,
-  ): Promise<ResponseEntity<GetSchedulesInCalenderResponseDto>> {
-    const result = await this.scheduleService.findSchedulesInCalender(
+    @Query() query: GetSchedulesInCalendarRequestDto,
+  ): Promise<ResponseEntity<GetSchedulesInCalendarResponseDto>> {
+    const result = await this.scheduleService.findSchedulesInCalendar(
       userId,
       query,
     );

@@ -26,11 +26,11 @@ import { solar2lunar } from 'solarlunar';
 import { GetScheduleOnSpecificDateResponseDto } from '../dtos/get-schedule-on-specific-date-response.dto';
 import { ScheduleAreaRepository } from '../repositories/schedule-area.repository';
 import { PutScheduleRequestDto } from '../dtos/put-schedule-request.dto';
-import { GetSchedulesInCalenderResponseDto } from '../dtos/get-schedules-in-calender-response.dto';
-import { GetSchedulesInCalenderRequestDto } from '../dtos/get-schedules-in-calender-request.dto';
 import { GetScheduleAreasByIdResponseDto } from '../dtos/get-schedule-areas-by-id-response.dto';
 import { ScheduleDto } from '../dtos/schedule.dto';
 import { UserProfileHelper } from '../../user-profile/helpers/user-profile.helper';
+import { GetSchedulesInCalendarRequestDto } from '../dtos/get-schedules-in-calendar-request.dto';
+import { GetSchedulesInCalendarResponseDto } from '../dtos/get-schedules-in-calendar-response.dto';
 
 @Injectable()
 export class ScheduleService {
@@ -126,22 +126,22 @@ export class ScheduleService {
     }
   }
 
-  async findSchedulesInCalender(
+  async findSchedulesInCalendar(
     userId: number,
-    query: GetSchedulesInCalenderRequestDto,
-  ): Promise<GetSchedulesInCalenderResponseDto> {
+    query: GetSchedulesInCalendarRequestDto,
+  ): Promise<GetSchedulesInCalendarResponseDto> {
     const weekendsList = getWeekendsByYearAndMonth(query.year, query.month);
 
-    const calenderStartDay = weekendsList[0][0];
-    const calenderEndDay = weekendsList[weekendsList.length - 1][1];
+    const calendarStartDay = weekendsList[0][0];
+    const calendarEndDay = weekendsList[weekendsList.length - 1][1];
 
-    const result = await this.scheduleRepository.selectSchedulesInCalender(
+    const result = await this.scheduleRepository.selectSchedulesInCalendar(
       userId,
-      calenderStartDay,
-      calenderEndDay,
+      calendarStartDay,
+      calendarEndDay,
     );
 
-    return GetSchedulesInCalenderResponseDto.of(result);
+    return GetSchedulesInCalendarResponseDto.of(result);
   }
 
   async findScheduleDetailById(userId: number, schedule: ScheduleDto) {

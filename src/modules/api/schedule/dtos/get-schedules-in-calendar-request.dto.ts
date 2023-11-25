@@ -4,18 +4,18 @@ import { setValidatorContext } from 'src/common/common';
 import { CommonExceptionCode } from 'src/common/exception-code/common.exception-code';
 import { ScheduleExceptionCode } from 'src/common/exception-code/schedule.exception-code';
 
-export class GetSchedulesInCalenderRequestDto {
+export class GetSchedulesInCalendarRequestDto {
   @IsNumber({}, setValidatorContext(CommonExceptionCode.MustNumberType))
   @Type(() => Number)
   @IsNotEmpty(
-    setValidatorContext(ScheduleExceptionCode.CalenderSearchYearEmpty),
+    setValidatorContext(ScheduleExceptionCode.CalendarSearchYearEmpty),
   )
   year: number;
 
   @IsNumber({}, setValidatorContext(CommonExceptionCode.MustNumberType))
   @Type(() => Number)
   @IsNotEmpty(
-    setValidatorContext(ScheduleExceptionCode.CalenderSearchMonthEmpty),
+    setValidatorContext(ScheduleExceptionCode.CalendarSearchMonthEmpty),
   )
   month: number;
 }

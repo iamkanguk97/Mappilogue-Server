@@ -92,11 +92,11 @@ export const ScheduleExceptionCode = {
     '2025',
     '일정 장소의 시간은 최대 10자까지 입력 가능합니다.',
   ),
-  CalenderSearchYearEmpty: setExceptionCode(
+  CalendarSearchYearEmpty: setExceptionCode(
     '2026',
     '캘린더를 조회할 년도를 입력해주세요.',
   ),
-  CalenderSearchMonthEmpty: setExceptionCode(
+  CalendarSearchMonthEmpty: setExceptionCode(
     '2027',
     '캘린더를 조회할 월을 입력해주세요.',
   ),
