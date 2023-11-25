@@ -4,7 +4,7 @@ export enum ScheduleTitleLengthEnum {
 }
 
 export enum ScheduleAreaStreetAddressLengthEnum {
-  MIN = 1,
+  MIN = 0,
   MAX = 100,
 }
 
@@ -14,12 +14,12 @@ export enum ScheduleAreaNameLengthEnum {
 }
 
 export enum ScheduleAreaLatitudeLengthEnum {
-  MIN = 1,
+  MIN = 0,
   MAX = 100,
 }
 
 export enum ScheduleAreaLongitudeLengthEnum {
-  MIN = 1,
+  MIN = 0,
   MAX = 100,
 }
 

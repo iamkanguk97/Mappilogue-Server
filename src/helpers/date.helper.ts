@@ -22,12 +22,13 @@ export const getLastDate = (year: number, month: number): number => {
 };
 
 /**
- * @title 두 날짜 사이의 날짜가 맞는지 확인하는 함수
+ * @summary 두 날짜 사이의 날짜가 맞는지 확인하는 함수
  * @description startDate와 endDate는 yyyy-mm-dd 형태로 들어와야 한다.
+ * @author Jason
+ *
  * @param startDate
  * @param endDate
  * @param targetDate
- * @returns
  */
 export const checkBetweenDatesWithNoMoment = (
   startDate: string,

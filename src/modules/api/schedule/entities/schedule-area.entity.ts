@@ -59,10 +59,10 @@ export class ScheduleAreaEntity extends CommonEntity {
     scheduleId: number,
     name: string,
     date: string,
-    streetAddress: string,
-    latitude: string,
-    longitude: string,
     sequence: number,
+    streetAddress?: string | undefined,
+    latitude?: string | undefined,
+    longitude?: string | undefined,
     time?: string | undefined,
   ) {
     const scheduleArea = new ScheduleAreaEntity();
@@ -70,10 +70,10 @@ export class ScheduleAreaEntity extends CommonEntity {
     scheduleArea.scheduleId = scheduleId;
     scheduleArea.name = name;
     scheduleArea.date = date;
+    scheduleArea.sequence = sequence;
     scheduleArea.streetAddress = streetAddress;
     scheduleArea.latitude = latitude;
     scheduleArea.longitude = longitude;
-    scheduleArea.sequence = sequence;
     scheduleArea.time = time;
 
     return scheduleArea;

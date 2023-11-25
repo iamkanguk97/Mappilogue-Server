@@ -21,7 +21,7 @@ import { ColorExceptionCode } from 'src/common/exception-code/color.exception-co
 import { IsValidDateWithHyphen } from 'src/decorators/valid-date-with-hyphen.decorator';
 import { REGEX_ALARM_OPTION } from 'src/common/regex';
 import { Type } from 'class-transformer';
-import { ScheduleAreaObjectDto } from './schedule-area-object.dto';
+import { ScheduleAreaDto } from './schedule-area-object.dto';
 import { ScheduleEntity } from '../entities/schedule.entity';
 
 export class PostScheduleRequestDto {
@@ -74,12 +74,12 @@ export class PostScheduleRequestDto {
   alarmOptions?: string[] | undefined;
 
   @ValidateNested({ each: true })
-  @Type(() => ScheduleAreaObjectDto)
+  @Type(() => ScheduleAreaDto)
   @ArrayUnique(setValidatorContext(CommonExceptionCode.ArrayUnique))
   // @ArrayNotEmpty(setValidatorContext(CommonExceptionCode.ArrayNotEmpty))
   @IsArray(setValidatorContext(CommonExceptionCode.MustArrayType))
   @IsOptional()
-  area?: ScheduleAreaObjectDto[] | undefined;
+  area?: ScheduleAreaDto[] | undefined;
 
   toScheduleEntity(userId: number): ScheduleEntity {
     return ScheduleEntity.from(

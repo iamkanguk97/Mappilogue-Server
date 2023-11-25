@@ -63,7 +63,7 @@ export class ScheduleService {
       );
 
       await this.createScheduleArea(newScheduleId, body);
-      await this.createScheduleAlarms(userId, newScheduleId, body);
+      // await this.createScheduleAlarms(userId, newScheduleId, body);
 
       await queryRunner.commitTransaction();
       return PostScheduleResponseDto.of(newScheduleId);
@@ -169,9 +169,11 @@ export class ScheduleService {
     newScheduleId: number,
     body: PostScheduleRequestDto,
   ): Promise<void> {
+    const areaList = body.area ?? [];
+
     try {
       await Promise.all(
-        body.area.map(async (area) => {
+        areaList.map(async (area) => {
           if (
             !checkBetweenDatesWithNoMoment(
               body.startDate,
@@ -190,10 +192,10 @@ export class ScheduleService {
                 newScheduleId,
                 areaValue.name,
                 area.date,
+                idx + 1,
                 areaValue.streetAddress,
                 areaValue.latitude,
                 areaValue.longitude,
-                idx + 1,
                 areaValue.time,
               );
             },
