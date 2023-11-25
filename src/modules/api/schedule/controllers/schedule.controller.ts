@@ -33,6 +33,10 @@ import { GetSchedulesInCalendarResponseDto } from '../dtos/get-schedules-in-cale
 export class ScheduleController {
   constructor(private readonly scheduleService: ScheduleService) {}
 
+  /**
+   * @summary 일정 생성하기 API
+   * @author Jason
+   */
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async postSchedule(
@@ -72,6 +76,10 @@ export class ScheduleController {
     return ResponseEntity.OK_WITH(HttpStatus.OK, result);
   }
 
+  /**
+   * @summary 특정 일정 조회하기 API
+   * @author Jason
+   */
   @Get('detail-by-id')
   @HttpCode(HttpStatus.OK)
   async getScheduleDetailById(
@@ -119,7 +127,7 @@ export class ScheduleController {
     @Param(ScheduleValidationPipe) schedule: ScheduleDto,
   ): Promise<ResponseEntity<GetScheduleAreasByIdResponseDto>> {
     const result = await this.scheduleService.findScheduleAreasById(
-      schedule.getId,
+      schedule.id,
     );
     return ResponseEntity.OK_WITH(HttpStatus.OK, result);
   }

@@ -44,38 +44,43 @@ export class ScheduleDto {
   }
 
   @Expose()
-  get getId(): number {
+  get id(): number {
     return this._id;
   }
 
   @Expose()
-  get getUserId(): number {
+  get userId(): number {
     return this._userId;
   }
 
   @Expose()
-  get getStartDate(): string {
+  get startDate(): string {
     return this._startDate;
   }
 
   @Expose()
-  get getEndDate(): string {
+  get endDate(): string {
     return this._endDate;
   }
 
   @Expose()
-  get getColorId(): number {
+  get colorId(): number {
     return this._colorId;
   }
 
   @Expose()
-  get getColorCode(): string | undefined {
+  get colorCode(): string | undefined {
     return this._colorCode;
   }
 
   @Expose()
-  get getIsAlarm(): CheckColumnEnum {
+  get isAlarm(): CheckColumnEnum {
     return this._isAlarm;
+  }
+
+  @Expose()
+  get title(): string {
+    return this._title;
   }
 
   set setStartDate(startDate: string) {

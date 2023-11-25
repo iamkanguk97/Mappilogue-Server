@@ -1,8 +1,9 @@
 import { CustomRepository } from 'src/modules/core/custom-repository/decorators/custom-repository.decorator';
 import { UserAlarmHistoryEntity } from '../entities/user-alarm-history.entity';
 import { Repository } from 'typeorm';
-import { StatusColumnEnum } from 'src/constants/enum';
 import { NotificationTypeEnum } from 'src/modules/core/notification/constants/notification.enum';
+import { UserEntity } from '../entities/user.entity';
+import { ScheduleEntity } from '../../schedule/entities/schedule.entity';
 
 @CustomRepository(UserAlarmHistoryEntity)
 export class UserAlarmHistoryRepository extends Repository<UserAlarmHistoryEntity> {
@@ -10,14 +11,33 @@ export class UserAlarmHistoryRepository extends Repository<UserAlarmHistoryEntit
     userId: number,
     scheduleId: number,
   ): Promise<UserAlarmHistoryEntity[]> {
-    return await this.createQueryBuilder('A')
-      .select('DATE_FORMAT(A.alarmDate, "%c월 %e일 %l:%i %p")', 'alarmDate')
-      .where('A.scheduleId = :scheduleId', { scheduleId })
-      .andWhere('A.userId = :userId', { userId })
-      .andWhere('A.type = :type', {
+    return await this.createQueryBuilder('UAH')
+      .select('DATE_FORMAT(UAH.alarmDate, "%c월 %e일 %l:%i %p")', 'alarmDate')
+      .innerJoin(
+        (subQuery) =>
+          subQuery
+            .select('id')
+            .from(UserEntity, 'U')
+            .where('U.id = :userId', { userId })
+            .andWhere('U.deletedAt IS NULL'),
+        'U',
+        'U.id = UAH.userId',
+      )
+      .innerJoin(
+        (subQuery) =>
+          subQuery
+            .select('id')
+            .from(ScheduleEntity, 'S')
+            .where('S.id = :scheduleId', { scheduleId })
+            .andWhere('S.deletedAt IS NULL'),
+        'S',
+        'S.id = UAH.scheduleId',
+      )
+      .where('UAH.type = :type', {
         type: NotificationTypeEnum.SCHEDULE_REMINDER,
       })
-      .orderBy('A.alarmDate')
+      .andWhere('UAH.deletedAt IS NULL')
+      .orderBy('UAH.alarmDate')
       .getRawMany();
   }
 }

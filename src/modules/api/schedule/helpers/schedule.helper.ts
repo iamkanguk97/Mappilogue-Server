@@ -84,27 +84,45 @@ export class ScheduleHelper {
     );
   }
 
-  async setScheduleOnDetailById(schedule: ScheduleDto): Promise<ScheduleDto> {
-    schedule.setStartDate = getKoreanDateFormatBySingle(schedule.getStartDate);
-    schedule.setEndDate = getKoreanDateFormatBySingle(schedule.getEndDate);
+  /**
+   * @summary 일정을 조회할 때 시작/종료 날짜와 colorCode 설정해주는 함수
+   * @author Jason
+   *
+   * @param schedule
+   */
+  async setScheduleOnDetail(schedule: ScheduleDto): Promise<ScheduleDto> {
+    schedule.setStartDate = getKoreanDateFormatBySingle(schedule.startDate);
+    schedule.setEndDate = getKoreanDateFormatBySingle(schedule.endDate);
     schedule.setColorCode = (
-      await this.colorService.findOneById(schedule.getColorId)
+      await this.colorService.findOneById(schedule.colorId)
     ).code;
 
     return schedule;
   }
 
-  async setScheduleAlarmsOnDetailById(
+  /**
+   * @summary 일정 조회할 때 형식 맞춰서 가져와주는 함수
+   * @author Jason
+   *
+   * @param schedule
+   */
+  async setScheduleAlarmsOnDetail(
     schedule: ScheduleDto,
   ): Promise<Array<string | undefined>> {
-    return schedule.getIsAlarm === CheckColumnEnum.ACTIVE
+    return schedule.isAlarm === CheckColumnEnum.ACTIVE
       ? await this.userService.findUserScheduleAlarms(
-          schedule.getUserId,
-          schedule.getId,
+          schedule.userId,
+          schedule.id,
         )
       : [];
   }
 
+  /**
+   * @summary 일정 조회할 때 각 날짜별 일정 장소 Format 맞춰주는 함수
+   * @author Jason
+   *
+   * @param scheduleAreas
+   */
   preprocessScheduleAreaOnDetailById(
     scheduleAreas: IScheduleAreasById[],
   ): IProcessedScheduleAreasById[] {

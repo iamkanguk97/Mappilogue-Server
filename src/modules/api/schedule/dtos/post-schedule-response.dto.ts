@@ -1,11 +1,18 @@
+import { Exclude, Expose } from 'class-transformer';
+
 export class PostScheduleResponseDto {
-  private readonly newScheduleId: number;
+  @Exclude() private readonly _newScheduleId: number;
 
   private constructor(newScheduleId: number) {
-    this.newScheduleId = newScheduleId;
+    this._newScheduleId = newScheduleId;
   }
 
   static of(newScheduleId: number): PostScheduleResponseDto {
     return new PostScheduleResponseDto(newScheduleId);
+  }
+
+  @Expose()
+  get newScheduleId(): number {
+    return this._newScheduleId;
   }
 }

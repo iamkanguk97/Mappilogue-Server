@@ -79,8 +79,8 @@ export class ScheduleService {
   async removeSchedule(schedule: ScheduleDto): Promise<void> {
     const deletedScheduleData = await this.scheduleRepository.find({
       where: {
-        userId: schedule.getUserId,
-        id: schedule.getId,
+        userId: schedule.userId,
+        id: schedule.id,
       },
       relations: {
         scheduleAreas: true,
@@ -98,16 +98,13 @@ export class ScheduleService {
     await queryRunner.startTransaction();
 
     try {
-      const scheduleBaseInfo =
-        await this.scheduleHelper.setScheduleOnDetailById(schedule);
-
+      const scheduleBaseInfo = await this.scheduleHelper.setScheduleOnDetail(
+        schedule,
+      );
       const scheduleAlarmInfo =
-        await this.scheduleHelper.setScheduleAlarmsOnDetailById(schedule);
-
+        await this.scheduleHelper.setScheduleAlarmsOnDetail(schedule);
       const scheduleAreaInfo =
-        await this.scheduleAreaRepository.selectScheduleAreasById(
-          schedule.getId,
-        );
+        await this.scheduleAreaRepository.selectScheduleAreasById(schedule.id);
 
       await queryRunner.commitTransaction();
       return GetScheduleDetailByIdResponseDto.from(
@@ -344,10 +341,10 @@ export class ScheduleService {
 
     try {
       await this.modifyById(
-        schedule.getId,
-        body.toScheduleEntity(schedule.getUserId),
+        schedule.id,
+        body.toScheduleEntity(schedule.userId),
       );
-      await this.modifyScheduleArea(schedule.getId, body);
+      await this.modifyScheduleArea(schedule.id, body);
       await this.modifyScheduleAlarms(); // TODO: 일정 수정 시 알림 적용해야함
 
       await queryRunner.commitTransaction();
