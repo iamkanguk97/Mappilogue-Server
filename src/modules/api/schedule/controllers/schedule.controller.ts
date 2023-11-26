@@ -108,6 +108,10 @@ export class ScheduleController {
     return ResponseEntity.OK_WITH(HttpStatus.OK, result);
   }
 
+  /**
+   * @summary 일정 수정하기 API
+   * @author Jason
+   */
   @Put('/:scheduleId')
   @HttpCode(HttpStatus.NO_CONTENT)
   async putSchedule(

@@ -4,7 +4,6 @@ import { Repository } from 'typeorm';
 import { ColorEntity } from '../../color/entities/color.entity';
 import { ISchedulesInCalendar, ISchedulesOnSpecificDate } from '../types';
 import { ScheduleAreaEntity } from '../entities/schedule-area.entity';
-import { StatusColumnEnum } from 'src/constants/enum';
 
 @CustomRepository(ScheduleEntity)
 export class ScheduleRepository extends Repository<ScheduleEntity> {
@@ -67,7 +66,7 @@ export class ScheduleRepository extends Repository<ScheduleEntity> {
       .update(ScheduleEntity)
       .set(properties)
       .where('id = :id', { id: scheduleId })
-      .andWhere('status = :status', { status: StatusColumnEnum.ACTIVE })
+      .andWhere('deletedAt IS NULL')
       .execute();
   }
 }

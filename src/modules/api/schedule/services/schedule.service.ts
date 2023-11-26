@@ -1,5 +1,5 @@
 import { GetScheduleDetailByIdResponseDto } from './../dtos/get-schedule-detail-by-id-response.dto';
-import { isEmptyArray } from 'src/helpers/common.helper';
+import { isDefined, isEmptyArray } from 'src/helpers/common.helper';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { PostScheduleRequestDto } from '../dtos/post-schedule-request.dto';
 import { DataSource } from 'typeorm';
@@ -12,7 +12,6 @@ import {
 import { ScheduleExceptionCode } from 'src/common/exception-code/schedule.exception-code';
 import { UserProfileService } from '../../user-profile/services/user-profile.service';
 import { UserService } from '../../user/services/user.service';
-import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 import { NotificationService } from 'src/modules/core/notification/services/notification.service';
 import { UserHelper } from '../../user/helpers/user.helper';
 import { UserAlarmHistoryRepository } from '../../user/repositories/user-alarm-history.repository';
@@ -63,7 +62,7 @@ export class ScheduleService {
       );
 
       await this.createScheduleArea(newScheduleId, body);
-      // await this.createScheduleAlarms(userId, newScheduleId, body);
+      await this.createScheduleAlarms(userId, newScheduleId, body);
 
       await queryRunner.commitTransaction();
       return PostScheduleResponseDto.of(newScheduleId);
@@ -215,7 +214,9 @@ export class ScheduleService {
     newScheduleId: number,
     body: PostScheduleRequestDto,
   ): Promise<void> {
-    if (!isEmptyArray(body.alarmOptions)) {
+    const alarmOptions = body.alarmOptions;
+
+    if (isDefined(alarmOptions) && !isEmptyArray(alarmOptions)) {
       const queryRunner = this.dataSource.createQueryRunner();
       await queryRunner.connect();
       await queryRunner.startTransaction();
@@ -224,13 +225,13 @@ export class ScheduleService {
         const userAlarmSettings =
           await this.userProfileService.findUserAlarmSettingById(userId);
 
-        if (
-          !this.userProfileHelper.checkCanSendScheduleAlarm(userAlarmSettings)
-        ) {
-          throw new BadRequestException(
-            UserExceptionCode.RequireAlarmAcceptInSchedule,
-          );
-        }
+        // if (
+        //   !this.userProfileHelper.checkCanSendScheduleAlarm(userAlarmSettings)
+        // ) {
+        //   throw new BadRequestException(
+        //     UserExceptionCode.RequireAlarmAcceptInSchedule,
+        //   );
+        // }
 
         const userStatus = await this.userService.findOneById(userId);
         const fcmToken = userStatus.fcmToken;
