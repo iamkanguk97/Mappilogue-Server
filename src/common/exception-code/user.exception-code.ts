@@ -83,4 +83,5 @@ export const UserExceptionCode = {
     '1025',
     '사용자 알림 설정 조회 결과가 없습니다.',
   ),
+  FcmTokenExpired: setExceptionCode('1026', '만료된 FCM Token 입니다.'),
 };

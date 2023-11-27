@@ -5,10 +5,11 @@ import {
   Logger,
 } from '@nestjs/common';
 import { CronJob } from 'cron';
-import * as firebase from 'firebase-admin';
 import { InternalServerExceptionCode } from 'src/common/exception-code/internal-server.exception-code';
 import { CheckColumnEnum } from 'src/constants/enum';
 import { setFirebaseCredential } from 'src/helpers/firebase.helper';
+
+import * as firebase from 'firebase-admin';
 
 firebase.initializeApp({
   credential: firebase.credential.cert(setFirebaseCredential(__dirname)),
@@ -21,17 +22,6 @@ export class NotificationService {
   constructor(
     private readonly userAlarmHistoryRepository: UserAlarmHistoryRepository,
   ) {}
-
-  async isFcmTokenValid(fcmToken: string) {
-    try {
-      const decodedFcmToken = await firebase.auth().verifyIdToken(fcmToken);
-      console.log(decodedFcmToken);
-      return true;
-    } catch (err) {
-      console.log(err);
-      return false;
-    }
-  }
 
   async sendPushMessage(
     title: string,

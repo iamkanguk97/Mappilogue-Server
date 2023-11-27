@@ -235,11 +235,14 @@ export class ScheduleService {
 
         const userStatus = await this.userService.findOneById(userId);
         const fcmToken = userStatus.fcmToken;
-        const isFcmTokenActive = await this.userHelper.isUserFcmTokenValid(
+        const isFcmTokenValid = await this.userHelper.isUserFcmTokenValid(
           fcmToken,
         );
 
-        if (isFcmTokenActive) {
+        if (
+          isFcmTokenValid &&
+          this.userProfileHelper.checkCanSendScheduleAlarm(userAlarmSettings)
+        ) {
           const notificationMessage =
             this.scheduleHelper.generateScheduleNotificationMessage(
               body.startDate,
@@ -248,7 +251,7 @@ export class ScheduleService {
 
           try {
             await Promise.all(
-              body.alarmOptions.map(async (alarmOption) => {
+              alarmOptions.map(async (alarmOption) => {
                 const { id } = await this.userAlarmHistoryRepository.save(
                   UserAlarmHistoryEntity.from(
                     userId,
@@ -270,7 +273,9 @@ export class ScheduleService {
               }),
             );
           } catch (err) {
-            this.logger.error(`[createScheduleAlarms] ${err}`);
+            this.logger.error(
+              `[createScheduleAlarms - notification part] ${err}`,
+            );
           }
         }
 
@@ -412,7 +417,7 @@ export class ScheduleService {
     await queryRunner.startTransaction();
 
     try {
-      await this.scheduleAreaRepository.delete({
+      await this.scheduleAreaRepository.softDelete({
         scheduleId,
       });
       await this.createScheduleArea(scheduleId, body);
