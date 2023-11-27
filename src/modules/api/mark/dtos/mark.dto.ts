@@ -1,13 +1,14 @@
+import { Exclude } from 'class-transformer';
 import { MarkEntity } from 'src/modules/api/mark/entities/mark.entity';
 
 export class MarkDto {
-  private readonly id: number;
-  private readonly userId: number;
-  private readonly colorId: number;
-  private readonly title: string;
-  private readonly markCategoryId?: number | undefined;
-  private readonly scheduleId?: number | undefined;
-  private readonly content?: string | undefined;
+  @Exclude() private readonly _id: number;
+  @Exclude() private readonly _userId: number;
+  @Exclude() private readonly _colorId: number;
+  @Exclude() private readonly _title: string;
+  @Exclude() private readonly _markCategoryId?: number | undefined;
+  @Exclude() private readonly _scheduleId?: number | undefined;
+  @Exclude() private readonly _content?: string | undefined;
 
   private constructor(
     id: number,
@@ -18,13 +19,13 @@ export class MarkDto {
     scheduleId?: number | undefined,
     content?: string | undefined,
   ) {
-    this.id = id;
-    this.userId = userId;
-    this.colorId = colorId;
-    this.title = title;
-    this.markCategoryId = markCategoryId;
-    this.scheduleId = scheduleId;
-    this.content = content;
+    this._id = id;
+    this._userId = userId;
+    this._colorId = colorId;
+    this._title = title;
+    this._markCategoryId = markCategoryId;
+    this._scheduleId = scheduleId;
+    this._content = content;
   }
 
   static of(markEntity: MarkEntity): MarkDto {
@@ -39,15 +40,15 @@ export class MarkDto {
     );
   }
 
-  get getId(): number {
-    return this.id;
+  get id(): number {
+    return this._id;
   }
 
-  get getMarkCategoryId(): number | undefined {
-    return this.markCategoryId;
+  get markCategoryId(): number | undefined {
+    return this._markCategoryId;
   }
 
-  get getContent(): string | undefined {
-    return this.content ?? '';
+  get content(): string | undefined {
+    return this._content ?? '';
   }
 }

@@ -1,4 +1,3 @@
-import { DefaultColumnType } from 'src/types/default-column.type';
 import { Column, Entity, OneToOne } from 'typeorm';
 import {
   MarkLocationLatitudeLengthEnum,

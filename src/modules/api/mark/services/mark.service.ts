@@ -73,29 +73,27 @@ export class MarkService {
               title: true,
             },
             where: {
-              id: Equal(mark.getMarkCategoryId),
+              id: Equal(mark.markCategoryId),
             },
           })
         ).title ?? '';
 
       const markLocation = await this.markLocationRepository.findOne({
         where: {
-          markId: mark.getId,
+          markId: mark.id,
         },
       });
 
       const param = {
-        markCategoryId: mark.getMarkCategoryId,
+        markCategoryId: mark.markCategoryId,
         markCategoryName,
         markLocation: MarkLocationDto.of(markLocation),
-        content: mark.getContent,
+        content: mark.content,
       };
 
       // metadata 부분 조회하기
       const markMetadatas =
-        await this.markMetadataRepository.selectMarkMetadatasByMarkId(
-          mark.getId,
-        );
+        await this.markMetadataRepository.selectMarkMetadatasByMarkId(mark.id);
 
       await queryRunner.commitTransaction();
       return GetMarkDetailByIdResponseDto.from(param, markMetadatas);
@@ -146,8 +144,6 @@ export class MarkService {
   }
 
   async removeMark(userId: number, markId: number): Promise<void> {
-    // Mark가 사라지면? MarkLocation, MarkMetadata soft delete
-    // await this.markRepository.delete({ userId, id: markId });
     const deletedMarkData = await this.markRepository.find({
       where: {
         userId,

@@ -47,13 +47,17 @@ export class MarkController {
     return ResponseEntity.OK_WITH(HttpStatus.CREATED, result);
   }
 
+  /**
+   * @summary 기록 삭제하기 API
+   * @author Jason
+   */
   @Delete('/:markId')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteMark(
     @UserId() userId: number,
-    @Param(MarkValidationPipe) param: DeleteMarkRequestDto,
+    @Param(MarkValidationPipe) mark: MarkDto,
   ): Promise<void> {
-    await this.markService.removeMark(userId, param.markId);
+    await this.markService.removeMark(userId, mark.id);
   }
 
   @Get()
