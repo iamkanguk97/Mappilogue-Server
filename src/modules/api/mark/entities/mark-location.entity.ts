@@ -1,4 +1,4 @@
-import { Column, Entity, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import {
   MarkLocationLatitudeLengthEnum,
   MarkLocationLongitudeLengthEnum,
@@ -37,8 +37,12 @@ export class MarkLocationEntity extends CommonEntity {
   })
   longitude?: string | undefined;
 
-  @OneToOne(() => MarkEntity, (mark) => mark.markLocation, { cascade: true })
-  marks: MarkEntity;
+  @OneToOne(() => MarkEntity, (mark) => mark.markLocation, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn({ name: 'markId', referencedColumnName: 'id' })
+  mark: MarkEntity;
 
   static from(
     markId: number,

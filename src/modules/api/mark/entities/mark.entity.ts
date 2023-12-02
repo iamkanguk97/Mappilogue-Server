@@ -46,11 +46,9 @@ export class MarkEntity extends CommonEntity {
   @JoinColumn({ name: 'markCategoryId', referencedColumnName: 'id' })
   markCategory: MarkCategoryEntity;
 
-  @OneToOne(() => MarkLocationEntity, (markLocation) => markLocation.marks, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
+  @OneToOne(() => MarkLocationEntity, (markLocation) => markLocation.mark, {
+    cascade: true,
   })
-  @JoinColumn({ name: 'markId', referencedColumnName: 'id' })
   markLocation: MarkLocationEntity;
 
   @OneToMany(() => MarkMetadataEntity, (markMetadata) => markMetadata.marks, {

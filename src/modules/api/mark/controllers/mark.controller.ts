@@ -14,7 +14,6 @@ import {
 } from '@nestjs/common';
 import { MarkService } from '../services/mark.service';
 import { UserId } from '../../user/decorators/user-id.decorator';
-import { DeleteMarkRequestDto } from '../dtos/delete-mark-request.dto';
 import { MarkValidationPipe } from '../pipes/mark-validation.pipe';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { CreateMarkImageMulterOption } from 'src/common/multer/multer.option';
