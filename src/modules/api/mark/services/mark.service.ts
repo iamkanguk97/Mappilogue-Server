@@ -15,6 +15,7 @@ import { GetMarkDetailByIdResponseDto } from '../dtos/get-mark-detail-by-id-resp
 import { MarkCategoryRepository } from '../repositories/mark-category.repository';
 import { MarkLocationDto } from '../dtos/mark-location.dto';
 import { MarkMetadataDto } from '../dtos/mark-metadata.dto';
+import { MarkLocationEntity } from '../entities/mark-location.entity';
 
 @Injectable()
 export class MarkService {
@@ -69,27 +70,24 @@ export class MarkService {
     await queryRunner.startTransaction();
 
     try {
-      const markCategoryName =
-        (
-          await this.markCategoryRepository.findOne({
-            select: {
-              title: true,
-            },
-            where: {
-              id: Equal(mark.markCategoryId),
-            },
-          })
-        ).title ?? '';
+      // const markCategoryName =
+      //   (
+      //     await this.markCategoryRepository.findOne({
+      //       select: {
+      //         title: true,
+      //       },
+      //       where: {
+      //         id: Equal(mark.markCategoryId),
+      //       },
+      //     })
+      //   ).title ?? '';
 
-      const markLocation = await this.markLocationRepository.findOne({
-        where: {
-          markId: mark.id,
-        },
-      });
+      const markLocation = await this.setMarkLocationOnDetail(mark.id);
 
       const param = {
         markCategoryId: mark.markCategoryId,
-        markCategoryName,
+        // markCategoryName,
+        markCategoryName: '',
         markLocation: MarkLocationDto.of(markLocation),
         content: mark.content,
       };
@@ -181,10 +179,25 @@ export class MarkService {
     });
   }
 
+  /**
+   * @summary MarkId로 MarkLocation 조회
+   * @author Jason
+   *
+   * @param { number } markId
+   * @returns { MarkLocationEntity }
+   */
+  async findMarkLocationByMarkId(markId: number): Promise<MarkLocationEntity> {
+    return await this.markLocationRepository.findOne({
+      where: {
+        markId,
+      },
+    });
+  }
+
   async checkMarkStatus(userId: number, markId: number): Promise<MarkDto> {
     const markStatus = await this.findOneById(markId);
 
-    if (!this.markHelper.isMarkExist(markStatus)) {
+    if (!isDefined(markStatus)) {
       throw new BadRequestException(MarkExceptionCode.MarkNotExist);
     }
     if (markStatus.userId !== userId) {
@@ -192,5 +205,30 @@ export class MarkService {
     }
 
     return MarkDto.of(markStatus);
+  }
+
+  /**
+   * @summary 기록 조회하기 API - MarkLocation 설정하기
+   * @description scheduleAreaId가 null이면 MarkLocation에서 select, 아니면 join 후 select
+   * @author Jason
+   * @param { number } markId
+   * @returns { MarkLocationEntity }
+   */
+  async setMarkLocationOnDetail(markId: number): Promise<MarkLocationEntity> {
+    const markLocationStatus = await this.findMarkLocationByMarkId(markId);
+
+    if (isDefined(markLocationStatus.scheduleAreaId)) {
+      return await this.markLocationRepository.selectMarkLocationWithScheduleArea(
+        markId,
+      );
+    }
+    return MarkLocationEntity.from(
+      markId,
+      markLocationStatus.scheduleAreaId,
+      markLocationStatus.name ?? '',
+      markLocationStatus.streetAddress ?? '',
+      markLocationStatus.latitude ?? '',
+      markLocationStatus.longitude ?? '',
+    );
   }
 }

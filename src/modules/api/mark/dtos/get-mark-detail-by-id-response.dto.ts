@@ -1,12 +1,13 @@
+import { Exclude, Expose } from 'class-transformer';
 import { MarkMetadataEntity } from '../entities/mark-metadata.entity';
 
 export class GetMarkDetailByIdResponseDto {
-  private readonly markBaseInfo: any;
-  private readonly markMetadata: MarkMetadataEntity[];
+  @Exclude() private readonly _markBaseInfo: any;
+  @Exclude() private readonly _markMetadata: MarkMetadataEntity[];
 
-  constructor(markBaseInfo: any, markMetadata: MarkMetadataEntity[]) {
-    this.markBaseInfo = markBaseInfo;
-    this.markMetadata = markMetadata;
+  private constructor(markBaseInfo: any, markMetadata: MarkMetadataEntity[]) {
+    this._markBaseInfo = markBaseInfo;
+    this._markMetadata = markMetadata;
   }
 
   static from(
@@ -14,5 +15,15 @@ export class GetMarkDetailByIdResponseDto {
     markMetadata: MarkMetadataEntity[],
   ): GetMarkDetailByIdResponseDto {
     return new GetMarkDetailByIdResponseDto(markBaseInfo, markMetadata);
+  }
+
+  @Expose()
+  get markBaseInfo() {
+    return this._markBaseInfo;
+  }
+
+  @Expose()
+  get markMetadata() {
+    return this._markMetadata;
   }
 }

@@ -29,6 +29,7 @@ import {
   POST_MARK_IMAGE_KEY,
   POST_MARK_IMAGE_LIMIT,
 } from '../constants/mark.constant';
+import { GetMarkDetailByIdResponseDto } from '../dtos/get-mark-detail-by-id-response.dto';
 
 @Controller(DomainNameEnum.MARK)
 @UseInterceptors(ClassSerializerInterceptor)
@@ -71,9 +72,16 @@ export class MarkController {
     await this.markService.removeMark(userId, mark.id);
   }
 
+  /**
+   * @summary 특정 기록 조회하기 API
+   * @author Jason
+   * @returns { ResponseEntity<GetMarkDetailByIdResponseDto> }
+   */
   @Get()
   @HttpCode(HttpStatus.OK)
-  async getMarkDetailById(@Query(MarkValidationPipe) mark: MarkDto) {
+  async getMarkDetailById(
+    @Query(MarkValidationPipe) mark: MarkDto,
+  ): Promise<ResponseEntity<GetMarkDetailByIdResponseDto>> {
     const result = await this.markService.findMarkOnSpecificId(mark);
     return ResponseEntity.OK_WITH(HttpStatus.OK, result);
   }

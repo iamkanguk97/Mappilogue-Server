@@ -2,10 +2,15 @@ import { CustomRepository } from 'src/modules/core/custom-repository/decorators/
 import { MarkMetadataEntity } from '../entities/mark-metadata.entity';
 import { Repository } from 'typeorm';
 import { MarkEntity } from '../entities/mark.entity';
-import { StatusColumnEnum } from 'src/constants/enum';
 
 @CustomRepository(MarkMetadataEntity)
 export class MarkMetadataRepository extends Repository<MarkMetadataEntity> {
+  /**
+   * @summary MarkId로 MarkMetadata 조회하는 함수
+   * @author Jason
+   * @param { number } markId
+   * @returns { MarkMetadataEntity[] }
+   */
   async selectMarkMetadatasByMarkId(
     markId: number,
   ): Promise<MarkMetadataEntity[]> {
@@ -14,12 +19,14 @@ export class MarkMetadataRepository extends Repository<MarkMetadataEntity> {
         'MMD.id AS markMetadataId',
         'MMD.markId AS markId',
         'markImageUrl',
-        'IFNULL(caption, "") AS caption',
+        'IFNULL(MMD.caption, "") AS caption',
         'isMainImage',
       ])
       .innerJoin(MarkEntity, 'M', 'M.id = MMD.markId')
       .where('MMD.markId = :markId', { markId })
-      .orderBy('MMD.id')
+      .andWhere('MMD.deletedAt IS NULL')
+      .andWhere('M.deletedAt IS NULL')
+      .orderBy('MMD.createdAt')
       .getRawMany();
   }
 }
