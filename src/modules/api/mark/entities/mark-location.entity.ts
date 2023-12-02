@@ -37,7 +37,7 @@ export class MarkLocationEntity extends CommonEntity {
   })
   longitude?: string | undefined;
 
-  @OneToOne(() => MarkEntity, (mark) => mark.markLocation)
+  @OneToOne(() => MarkEntity, (mark) => mark.markLocation, { cascade: true })
   marks: MarkEntity;
 
   static from(

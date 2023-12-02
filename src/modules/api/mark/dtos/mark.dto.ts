@@ -1,4 +1,4 @@
-import { Exclude } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
 import { MarkEntity } from 'src/modules/api/mark/entities/mark.entity';
 
 export class MarkDto {
@@ -40,14 +40,37 @@ export class MarkDto {
     );
   }
 
+  @Expose()
   get id(): number {
     return this._id;
   }
 
+  @Expose()
+  get userId(): number {
+    return this._userId;
+  }
+
+  @Expose()
+  get colorId(): number {
+    return this._colorId;
+  }
+
+  @Expose()
+  get title(): string {
+    return this._title;
+  }
+
+  @Expose()
   get markCategoryId(): number | undefined {
     return this._markCategoryId;
   }
 
+  @Expose()
+  get scheduleId(): number {
+    return this._scheduleId;
+  }
+
+  @Expose()
   get content(): string | undefined {
     return this._content ?? '';
   }
