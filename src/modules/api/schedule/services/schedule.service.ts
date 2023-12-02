@@ -380,7 +380,7 @@ export class ScheduleService {
   ): Promise<ScheduleDto> {
     const scheduleStatus = await this.findScheduleById(scheduleId);
 
-    if (!this.scheduleHelper.isScheduleExist(scheduleStatus)) {
+    if (!isDefined(scheduleStatus)) {
       throw new BadRequestException(ScheduleExceptionCode.ScheduleNotExist);
     }
     if (scheduleStatus.userId !== userId) {
@@ -396,7 +396,7 @@ export class ScheduleService {
   ): Promise<void> {
     const scheduleAreaStatus = await this.findScheduleAreaById(scheduleAreaId);
 
-    if (!this.scheduleHelper.isScheduleAreaExist(scheduleAreaStatus)) {
+    if (!isDefined(scheduleAreaStatus)) {
       throw new BadRequestException(ScheduleExceptionCode.ScheduleAreaNotExist);
     }
     if (scheduleAreaStatus.scheduleId !== scheduleId) {
@@ -404,8 +404,6 @@ export class ScheduleService {
         ScheduleExceptionCode.ScheduleAreaNotMathWithSchedule,
       );
     }
-
-    return;
   }
 
   async modifyScheduleArea(

@@ -53,8 +53,8 @@ export const CreateMarkImageMulterOption = (): multer.Options => {
     fileFilter: fileFilter(FileTypeEnum.IMAGE),
     storage: new MulterBuilder(ImageBuilderTypeEnum.UPLOAD)
       .allowImageMimeTypes()
-      .setResource('image')
-      .setPath('mark')
+      .setResource(S3_BASE_IMAGE_DIRECTORY)
+      .setPath(DomainNameEnum.MARK)
       .markImageBuild(),
     limits: { fileSize: 1024 * 1024 * 20 },
   };

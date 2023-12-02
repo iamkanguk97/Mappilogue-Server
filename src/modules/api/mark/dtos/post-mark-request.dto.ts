@@ -5,6 +5,7 @@ import {
   IsOptional,
   IsString,
   Length,
+  ValidateIf,
   ValidateNested,
 } from 'class-validator';
 import { setValidatorContext } from 'src/common/common';
@@ -19,6 +20,7 @@ import { Type } from 'class-transformer';
 import { MarkEntity } from '../entities/mark.entity';
 import { MarkMainLocationDto } from './mark-main-location.dto';
 import { MarkLocationEntity } from '../entities/mark-location.entity';
+import { isEmptyObject } from 'src/helpers/common.helper';
 
 export class PostMarkRequestDto {
   @IsNumber({}, setValidatorContext(CommonExceptionCode.MustNumberType))
@@ -57,6 +59,7 @@ export class PostMarkRequestDto {
 
   @ValidateNested({ each: true })
   @Type(() => MarkMainLocationDto)
+  @ValidateIf((obj, value) => !isEmptyObject(value))
   @IsOptional()
   mainLocation?: MarkMainLocationDto | undefined;
 

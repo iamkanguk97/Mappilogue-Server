@@ -9,16 +9,16 @@ export enum MarkLocationNameLengthEnum {
 }
 
 export enum MarkLocationStreetAddressLengthEnum {
-  MIN = 1,
+  MIN = 0,
   MAX = 100,
 }
 
 export enum MarkLocationLatitudeLengthEnum {
-  MIN = 1,
+  MIN = 0,
   MAX = 100,
 }
 
 export enum MarkLocationLongitudeLengthEnum {
-  MIN = 1,
+  MIN = 0,
   MAX = 100,
 }

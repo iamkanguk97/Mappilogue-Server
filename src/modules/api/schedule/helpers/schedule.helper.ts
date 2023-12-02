@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { ScheduleEntity } from '../entities/schedule.entity';
 import { CheckColumnEnum } from 'src/constants/enum';
 import { SCHEDULE_DEFAULT_TITLE } from '../constants/schedule.constant';
 import {
@@ -14,8 +13,6 @@ import {
 } from 'src/helpers/date.helper';
 import { ColorService } from '../../color/services/color.service';
 import { UserService } from '../../user/services/user.service';
-import { ScheduleAreaEntity } from '../entities/schedule-area.entity';
-import { isDefined } from 'src/helpers/common.helper';
 
 import * as moment from 'moment';
 
@@ -25,26 +22,6 @@ export class ScheduleHelper {
     private readonly colorService: ColorService,
     private readonly userService: UserService,
   ) {}
-
-  /**
-   * @title check schedule is exist or not
-   * @param scheduleStatus
-   * @returns
-   */
-  isScheduleExist(scheduleStatus?: ScheduleEntity | undefined): boolean {
-    return isDefined(scheduleStatus);
-  }
-
-  /**
-   * @title check schedule-area is exist or not
-   * @param scheduleAreaStatus
-   * @returns
-   */
-  isScheduleAreaExist(
-    scheduleAreaStatus?: ScheduleAreaEntity | undefined,
-  ): boolean {
-    return isDefined(scheduleAreaStatus);
-  }
 
   /**
    * @title 일정 알림 메세지 제공하는 함수

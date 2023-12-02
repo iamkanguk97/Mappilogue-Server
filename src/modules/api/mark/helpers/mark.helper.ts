@@ -28,32 +28,37 @@ export class MarkHelper {
   }
 
   /**
-   * @title 업로드된 이미지와 MarkMetadata와 Mapping
-   * @param markId
-   * @param files
-   * @param metadata
-   * @returns
+   * @summary 업로드된 이미지와 MarkMetadata와 Mapping
+   * @author Jason
+   *
+   * @param { number } markId
+   * @param { Express.MulterS3.File[] } files
+   * @param { MarkMetadataDto[] } metadatas
+   *
+   * @returns { MarkMetadataEntity[] }
    */
   mappingMarkMetadataWithImages(
     markId: number,
     files: Express.MulterS3.File[],
-    metadata?: MarkMetadataDto[] | undefined,
+    metadatas: MarkMetadataDto[],
   ): MarkMetadataEntity[] {
-    return metadata.map((md, idx) =>
+    return metadatas.map((metadata, idx) =>
       MarkMetadataEntity.from(
         markId,
         files[idx].location,
-        md.isMainImage,
+        metadata.isMainImage,
         files[idx].key,
-        md.caption,
+        metadata.caption,
       ),
     );
   }
 
   /**
-   * @title 기록 관련 API 진행 시 에러 발생한 경우 Multer로 선 업로드된 사진 Delete
-   * @param userId
-   * @param markImages
+   * @summary 기록 관련 API 진행 시 에러 발생한 경우 Multer로 선 업로드된 사진 Delete
+   * @author Jason
+   *
+   * @param { number } userId
+   * @param { Express.Multer.File[] } markImages
    */
   async deleteUploadedMarkImageWhenError(
     userId: number,
@@ -69,15 +74,16 @@ export class MarkHelper {
     for (const idx in markImages) {
       await imageDeleteBuilder.delete(markImages[idx].key);
     }
-
-    return;
   }
 
   /**
-   * @title MarkLocation을 insert할 Parameter를 만들어주는 함수
-   * @param markId
-   * @param body
-   * @returns
+   * @summary MarkLocation을 insert할 Parameter를 만들어주는 함수
+   * @author Jason
+   *
+   * @param { number } markId
+   * @param { PostMarkRequestDto } body
+   *
+   * @return { MarkLocationEntity }
    */
   setCreateMarkLocationParam(
     markId: number,

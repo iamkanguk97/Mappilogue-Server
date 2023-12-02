@@ -3,7 +3,6 @@ import { setValidatorContext } from 'src/common/common';
 import { CommonExceptionCode } from 'src/common/exception-code/common.exception-code';
 import { MarkExceptionCode } from 'src/common/exception-code/mark.exception-code';
 import { CheckColumnEnum } from 'src/constants/enum';
-import { MarkMetadataEntity } from '../entities/mark-metadata.entity';
 
 export class MarkMetadataDto {
   @IsEnum(
@@ -18,8 +17,4 @@ export class MarkMetadataDto {
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsOptional()
   caption?: string | undefined;
-
-  // static of(markMetadata: MarkMetadataEntity) {
-  //   return new
-  // }
 }

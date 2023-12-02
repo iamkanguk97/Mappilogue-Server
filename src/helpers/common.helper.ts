@@ -10,6 +10,16 @@ export function isEmptyArray<T>(arr: Array<T>): boolean {
 }
 
 /**
+ * @summary 빈 객체인지 확인하는 함수
+ * @author Jason
+ *
+ * @param { object } obj
+ */
+export function isEmptyObject<T>(obj: T): boolean {
+  return Object.entries(obj).length === 0;
+}
+
+/**
  * @title null 또는 undefined인지 확인하는 함수
  * @param value
  * @returns

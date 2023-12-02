@@ -2,7 +2,6 @@ import {
   CheckColumnEnum,
   StatusOrCheckColumnLengthEnum,
 } from 'src/constants/enum';
-import { DefaultColumnType } from 'src/types/default-column.type';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { MARK_IMAGE_KEY_LENGTH } from '../constants/mark.constant';
 import { CommonEntity } from 'src/entities/common/common.entity';

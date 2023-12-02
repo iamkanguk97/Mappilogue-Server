@@ -12,7 +12,7 @@ import { Request } from 'express';
 import { MarkCategoryService } from '../../mark-category/services/mark-category.service';
 import { MarkExceptionCode } from 'src/common/exception-code/mark.exception-code';
 import { MarkHelper } from '../helpers/mark.helper';
-import { isDefined } from 'src/helpers/common.helper';
+import { isDefined, isEmptyObject } from 'src/helpers/common.helper';
 
 @Injectable()
 export class PostMarkValidationPipe implements PipeTransform {
@@ -30,14 +30,14 @@ export class PostMarkValidationPipe implements PipeTransform {
     const markImages = this.request['files'];
     const markMetadata = value.markMetadata ?? [];
 
-    let isScheduleIdExist = false;
+    let isScheduleIdExistInParameter = false;
 
     try {
       /**
        * @Validate RequestDTO에 scheduleId가 있으면 => 유효성 검사 필요
        */
       if (isDefined(value.scheduleId)) {
-        isScheduleIdExist = true;
+        isScheduleIdExistInParameter = true;
         await this.scheduleService.checkScheduleStatus(
           userId,
           value.scheduleId,
@@ -59,12 +59,15 @@ export class PostMarkValidationPipe implements PipeTransform {
        * - scheduleId가 필수로 있어야 한다.
        * - 위에가 확인되면 mainScheduleAreaId에 대해 유효성 검사.
        */
-      if (isDefined(value.mainScheduleAreaId) && !isScheduleIdExist) {
+      if (
+        isDefined(value.mainScheduleAreaId) &&
+        !isScheduleIdExistInParameter
+      ) {
         throw new BadRequestException(
           MarkExceptionCode.MustScheduleIdExistWhenScheduleAreaIdExist,
         );
       }
-      if (isDefined(value.mainScheduleAreaId) && isScheduleIdExist) {
+      if (isDefined(value.mainScheduleAreaId) && isScheduleIdExistInParameter) {
         await this.scheduleService.checkScheduleAreaStatus(
           value.mainScheduleAreaId,
           value.scheduleId,
@@ -85,7 +88,11 @@ export class PostMarkValidationPipe implements PipeTransform {
        * - content는 없어야 한다. (content는 이미지를 안올린 경우의 내용임)
        * - isMainImage는 무조건 1개여야 한다.
        */
-      if (isDefined(value.markMetadata) && isDefined(value.content)) {
+      if (
+        isDefined(value.markMetadata) &&
+        isDefined(value.content) &&
+        value.content.length !== 0
+      ) {
         throw new BadRequestException(
           MarkExceptionCode.MarkContentNotExistWhenMetadatIsExist,
         );
@@ -99,7 +106,8 @@ export class PostMarkValidationPipe implements PipeTransform {
        */
       if (
         isDefined(value.mainScheduleAreaId) &&
-        isDefined(value.mainLocation)
+        isDefined(value.mainLocation) &&
+        !isEmptyObject(value.mainLocation)
       ) {
         throw new BadRequestException(
           MarkExceptionCode.MainScheduleAreaIdAndMainLocationBothInclude,

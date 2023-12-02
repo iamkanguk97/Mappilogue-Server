@@ -25,14 +25,26 @@ import { PostMarkResponseDto } from '../dtos/post-mark-response.dto';
 import { MarkDto } from '../dtos/mark.dto';
 import { MarkCategoryValidationPipe } from '../../mark-category/pipes/mark-category-validation.pipe';
 import { DomainNameEnum } from 'src/constants/enum';
+import {
+  POST_MARK_IMAGE_KEY,
+  POST_MARK_IMAGE_LIMIT,
+} from '../constants/mark.constant';
 
 @Controller(DomainNameEnum.MARK)
 @UseInterceptors(ClassSerializerInterceptor)
 export class MarkController {
   constructor(private readonly markService: MarkService) {}
 
+  /**
+   * @summary 기록 생성하기 API
+   * @author Jason
+   */
   @UseInterceptors(
-    FilesInterceptor('image', 10, CreateMarkImageMulterOption()),
+    FilesInterceptor(
+      POST_MARK_IMAGE_KEY,
+      POST_MARK_IMAGE_LIMIT,
+      CreateMarkImageMulterOption(),
+    ),
     FormDataJsonInterceptor,
   )
   @Post()

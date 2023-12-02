@@ -47,18 +47,17 @@ export class MarkMainLocationDto {
   @IsOptional()
   longitude?: string | undefined;
 
-  toMarkLocationEntity(markId: number): MarkLocationEntity {
+  toMarkLocationEntity(
+    markId: number,
+    scheduleAreaId?: number | undefined,
+  ): MarkLocationEntity {
     return MarkLocationEntity.from(
       markId,
-      undefined,
+      scheduleAreaId,
+      this.longitude,
       this.name,
       this.streetAddress,
       this.latitude,
-      this.longitude,
     );
-  }
-
-  static of(markLocation: MarkLocationEntity) {
-    return;
   }
 }

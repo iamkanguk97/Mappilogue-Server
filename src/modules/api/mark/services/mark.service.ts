@@ -14,6 +14,7 @@ import { MarkDto } from '../dtos/mark.dto';
 import { GetMarkDetailByIdResponseDto } from '../dtos/get-mark-detail-by-id-response.dto';
 import { MarkCategoryRepository } from '../repositories/mark-category.repository';
 import { MarkLocationDto } from '../dtos/mark-location.dto';
+import { MarkMetadataDto } from '../dtos/mark-metadata.dto';
 
 @Injectable()
 export class MarkService {
@@ -38,12 +39,14 @@ export class MarkService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
+    const markMetadata = body.markMetadata ?? [];
+
     try {
       const { id: markId } = await this.markRepository.save(
         body.toMarkEntity(userId),
       );
       await this.modifyScheduleColorByCreateMark(body);
-      await this.createMarkMetadata(markId, files, body);
+      await this.createMarkMetadata(markId, files, markMetadata);
       await this.createMarkMainLocation(markId, body);
 
       await queryRunner.commitTransaction();
@@ -114,9 +117,8 @@ export class MarkService {
   async createMarkMetadata(
     markId: number,
     files: Express.MulterS3.File[],
-    body: PostMarkRequestDto,
+    metadata: MarkMetadataDto[],
   ): Promise<void> {
-    const metadata = body.markMetadata ?? [];
     await this.markMetadataRepository.save(
       this.markHelper.mappingMarkMetadataWithImages(markId, files, metadata),
     );
