@@ -1,3 +1,4 @@
+import { MARK_CATEGORY_TOTAL_NAME } from './../../mark-category/constants/mark-category.constant';
 import { DataSource, Equal } from 'typeorm';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { MarkRepository } from '../repositories/mark.repository';
@@ -70,25 +71,30 @@ export class MarkService {
     await queryRunner.startTransaction();
 
     try {
-      // const markCategoryName =
-      //   (
-      //     await this.markCategoryRepository.findOne({
-      //       select: {
-      //         title: true,
-      //       },
-      //       where: {
-      //         id: Equal(mark.markCategoryId),
-      //       },
-      //     })
-      //   ).title ?? '';
+      const markCategoryResponseParam = {
+        id: mark.markCategoryId,
+        title:
+          (
+            await this.markCategoryRepository.findOne({
+              select: {
+                title: true,
+              },
+              where: {
+                id: Equal(mark.markCategoryId),
+              },
+            })
+          )?.title ?? MARK_CATEGORY_TOTAL_NAME,
+      };
 
-      const markLocation = await this.setMarkLocationOnDetail(mark.id);
+      const markMainLocationResponseParam = await this.setMarkLocationOnDetail(
+        mark.id,
+      );
 
       const param = {
         markCategoryId: mark.markCategoryId,
         // markCategoryName,
         markCategoryName: '',
-        markLocation: MarkLocationDto.of(markLocation),
+        markLocation: MarkLocationDto.of(markMainLocationResponseParam),
         content: mark.content,
       };
 
@@ -97,7 +103,14 @@ export class MarkService {
         await this.markMetadataRepository.selectMarkMetadatasByMarkId(mark.id);
 
       await queryRunner.commitTransaction();
-      return GetMarkDetailByIdResponseDto.from(param, markMetadatas);
+      return GetMarkDetailByIdResponseDto.from(
+        mark.id,
+        markCategoryResponseParam,
+        markMainLocationResponseParam,
+        { createdAt: 'asdf', areaDate: '' },
+        '',
+        markMetadatas,
+      );
     } catch (err) {
       this.logger.error(`[findMarkOnSpecificId - transaction error] ${err}`);
       await queryRunner.rollbackTransaction();
