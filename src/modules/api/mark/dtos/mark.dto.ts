@@ -1,5 +1,6 @@
 import { Exclude, Expose } from 'class-transformer';
 import { MarkEntity } from 'src/modules/api/mark/entities/mark.entity';
+import * as moment from 'moment';
 
 export class MarkDto {
   @Exclude() private readonly _id: number;
@@ -9,6 +10,7 @@ export class MarkDto {
   @Exclude() private readonly _markCategoryId?: number | undefined;
   @Exclude() private readonly _scheduleId?: number | undefined;
   @Exclude() private readonly _content?: string | undefined;
+  @Exclude() private readonly _createdAt?: Date;
 
   private constructor(
     id: number,
@@ -18,6 +20,7 @@ export class MarkDto {
     markCategoryId?: number | undefined,
     scheduleId?: number | undefined,
     content?: string | undefined,
+    createdAt?: Date,
   ) {
     this._id = id;
     this._userId = userId;
@@ -26,6 +29,7 @@ export class MarkDto {
     this._markCategoryId = markCategoryId;
     this._scheduleId = scheduleId;
     this._content = content;
+    this._createdAt = createdAt;
   }
 
   static of(markEntity: MarkEntity): MarkDto {
@@ -37,6 +41,7 @@ export class MarkDto {
       markEntity.markCategoryId,
       markEntity.scheduleId,
       markEntity.content,
+      markEntity.createdAt,
     );
   }
 
@@ -73,5 +78,9 @@ export class MarkDto {
   @Expose()
   get content(): string | undefined {
     return this._content ?? '';
+  }
+
+  get createdAt(): string {
+    return moment(this._createdAt).format('Y년 M월 D일');
   }
 }

@@ -14,9 +14,10 @@ import { MarkExceptionCode } from 'src/common/exception-code/mark.exception-code
 import { MarkDto } from '../dtos/mark.dto';
 import { GetMarkDetailByIdResponseDto } from '../dtos/get-mark-detail-by-id-response.dto';
 import { MarkCategoryRepository } from '../repositories/mark-category.repository';
-import { MarkLocationDto } from '../dtos/mark-location.dto';
 import { MarkMetadataDto } from '../dtos/mark-metadata.dto';
 import { MarkLocationEntity } from '../entities/mark-location.entity';
+import { MarkLocationDto } from '../dtos/mark-location.dto';
+import { MarkMetadataV2Dto } from '../dtos/mark-metadata-v2.dto';
 
 @Injectable()
 export class MarkService {
@@ -86,30 +87,32 @@ export class MarkService {
           )?.title ?? MARK_CATEGORY_TOTAL_NAME,
       };
 
-      const markMainLocationResponseParam = await this.setMarkLocationOnDetail(
-        mark.id,
+      const markMainLocationResponseParam = MarkLocationDto.of(
+        await this.setMarkLocationOnDetail(mark.id),
       );
-
-      const param = {
-        markCategoryId: mark.markCategoryId,
-        // markCategoryName,
-        markCategoryName: '',
-        markLocation: MarkLocationDto.of(markMainLocationResponseParam),
-        content: mark.content,
-      };
 
       // metadata 부분 조회하기
       const markMetadatas =
         await this.markMetadataRepository.selectMarkMetadatasByMarkId(mark.id);
+      const markMetadataParam = markMetadatas.map((metadata) =>
+        MarkMetadataV2Dto.of(metadata),
+      );
+
+      // markDate: 연결된 scheduleId가 있는 경우 그 scheduleId의 첫 area의 date?
+      // markDate: 연결된 scheduleId가 없는 경우 mark의 createdAt
+      const markDateParam = {
+        createdAt: mark.createdAt,
+        areaDate: '',
+      };
 
       await queryRunner.commitTransaction();
       return GetMarkDetailByIdResponseDto.from(
         mark.id,
+        mark.content,
         markCategoryResponseParam,
         markMainLocationResponseParam,
-        { createdAt: 'asdf', areaDate: '' },
-        '',
-        markMetadatas,
+        markDateParam,
+        markMetadataParam,
       );
     } catch (err) {
       this.logger.error(`[findMarkOnSpecificId - transaction error] ${err}`);
@@ -195,7 +198,6 @@ export class MarkService {
   /**
    * @summary MarkId로 MarkLocation 조회
    * @author Jason
-   *
    * @param { number } markId
    * @returns { MarkLocationEntity }
    */

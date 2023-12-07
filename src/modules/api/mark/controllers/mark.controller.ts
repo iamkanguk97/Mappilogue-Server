@@ -74,7 +74,7 @@ export class MarkController {
 
   /**
    * @summary 특정 기록 조회하기 API
-   * @author Jason
+   * @author  Jason
    * @returns { ResponseEntity<GetMarkDetailByIdResponseDto> }
    */
   @Get()

@@ -16,7 +16,7 @@ export class MarkMetadataRepository extends Repository<MarkMetadataEntity> {
   ): Promise<MarkMetadataEntity[]> {
     return await this.createQueryBuilder('MMD')
       .select([
-        'MMD.id AS markMetadataId',
+        'MMD.id AS id',
         'MMD.markId AS markId',
         'markImageUrl',
         'IFNULL(MMD.caption, "") AS caption',
