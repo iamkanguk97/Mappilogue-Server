@@ -202,6 +202,12 @@ export class MarkCategoryService {
     }
   }
 
+  /**
+   * @summary 기록 카테고리 상태 확인 함수
+   * @author  Jason
+   * @param   { number } userId
+   * @param   { number } markCategoryId
+   */
   async checkMarkCategoryStatus(
     userId: number,
     markCategoryId: number,
@@ -221,6 +227,12 @@ export class MarkCategoryService {
     }
   }
 
+  /**
+   * @summary id로
+   * @author  Jason
+   * @param markCategoryId
+   * @returns
+   */
   async findOneById(markCategoryId: number): Promise<MarkCategoryEntity> {
     return await this.markCategoryRepository.findOne({
       where: {

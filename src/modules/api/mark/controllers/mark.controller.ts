@@ -38,6 +38,7 @@ export class MarkController {
 
   /**
    * @summary 기록 생성하기 API
+   * @url /api/v1/marks
    * @author Jason
    */
   @UseInterceptors(

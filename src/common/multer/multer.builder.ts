@@ -20,14 +20,18 @@ export enum ImageBuilderTypeEnum {
   DELETE = 'DELETE',
 }
 
+/**
+ * @summary 파일 처리 Builder
+ * @author  Jason
+ */
 export class MulterBuilder {
   private readonly bucketName: string;
-  private readonly allowedMimeTypes: Array<string> = [];
   private readonly _userId: number;
 
   private resource = '';
   private path = '';
   private s3: S3Client | AWS.S3;
+  private allowedMimeTypes: Array<string> = [];
 
   constructor(type: ImageBuilderTypeEnum, userId?: number | undefined) {
     this.s3 = this.setS3(type);
@@ -37,26 +41,47 @@ export class MulterBuilder {
     );
   }
 
+  /**
+   * @summary Image Mime Type으로 설정하는 함수
+   */
   allowImageMimeTypes(): this {
     this.allowedMimeTypes.push(...IMAGE_MIME_TYPES);
     return this;
   }
 
+  /**
+   * @summary Media Mime Type으로 설정하는 함수
+   */
   allowMediaMimeTypes(): this {
     this.allowedMimeTypes.push(...MEDIA_MIME_TYPES);
     return this;
   }
 
+  /**
+   * @summary     Resource를 설정하는 함수
+   * @description Resource는 S3의 Main Directory
+   * @param       { string } keyword
+   */
   setResource(keyword: string): this {
     this.resource = keyword;
     return this;
   }
 
+  /**
+   * @summary     Path를 설정하는 함수
+   * @description Path는 위의 Resource의 하위 Directory
+   * @param       { string } path
+   */
   setPath(path: string): this {
     this.path = path;
     return this;
   }
 
+  /**
+   * @summary Upload Builder 또는 Delete Builder를 설정하는 함수
+   * @param   { ImageBuilderTypeEnum } type
+   * @returns { S3Client | AWS.S3 }
+   */
   setS3(type: ImageBuilderTypeEnum): S3Client | AWS.S3 {
     switch (type) {
       case ImageBuilderTypeEnum.UPLOAD:
@@ -66,6 +91,10 @@ export class MulterBuilder {
     }
   }
 
+  /**
+   * @summary Upload Builder로 설정하는 함수
+   * @returns { S3Client }
+   */
   setS3WithUpload(): S3Client {
     this.s3 = new S3Client({
       region: customConfigService.get<string>(
@@ -84,6 +113,10 @@ export class MulterBuilder {
     return this.s3;
   }
 
+  /**
+   * @summary Delete Builder로 설정하는 함수
+   * @returns { AWS.S3 }
+   */
   setS3WithDelete(): AWS.S3 {
     this.s3 = new AWS.S3({
       accessKeyId: customConfigService.get<string>(
@@ -100,6 +133,10 @@ export class MulterBuilder {
     return this.s3;
   }
 
+  /**
+   * @summary 파일 Build 함수
+   * @returns { multer.StorageEngine }
+   */
   build(): multer.StorageEngine {
     return multerS3({
       s3: this.s3 as S3Client,
@@ -122,6 +159,10 @@ export class MulterBuilder {
     });
   }
 
+  /**
+   * @summary 기록 이미지 Build 함수
+   * @returns { multer.StorageEngine }
+   */
   markImageBuild(): multer.StorageEngine {
     return multerS3({
       s3: this.s3 as S3Client,
@@ -143,8 +184,12 @@ export class MulterBuilder {
     });
   }
 
+  /**
+   * @summary 파일 삭제 함수
+   * @param   { string } imageKey
+   */
   async delete(imageKey: string): Promise<void> {
-    if (imageKey !== '') {
+    if (isDefined(imageKey) && imageKey !== '') {
       const awsS3 = this.s3 as AWS.S3;
       await awsS3
         .deleteObject({

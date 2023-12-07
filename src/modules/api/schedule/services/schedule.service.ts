@@ -374,6 +374,13 @@ export class ScheduleService {
     return GetScheduleAreasByIdResponseDto.of(result);
   }
 
+  /**
+   * @summary 일정 상태 확인 함수
+   * @author  Jason
+   * @param   { number } userId
+   * @param   { number } scheduleId
+   * @returns { Promise<ScheduleDto> }
+   */
   async checkScheduleStatus(
     userId: number,
     scheduleId: number,
