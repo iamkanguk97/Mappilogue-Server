@@ -10,19 +10,36 @@ export class LoggerMiddleware implements NestMiddleware {
     const userAgent = req.get('user-agent') || '';
     const startTime = new Date().getTime();
 
-    this.logger.log(`${method} ${originalUrl} - ${userAgent} ${ip}`);
+    this.logger.debug(
+      `[API Request Info] ${method} ${originalUrl} - ${userAgent} ${ip}`,
+    );
 
     res.on('finish', () => {
       const { statusCode } = res;
       const contentLength = res.get('content-length');
       const endTime = new Date().getTime();
 
-      this.logger.log(
-        `${method} ${originalUrl} ${statusCode} ${contentLength} - ${userAgent} ${ip}`,
-      );
-      this.logger.log(`API RUNNING TIME: ${endTime - startTime}ms`);
+      const logFormat = `${method} ${originalUrl} ${statusCode} ${contentLength} - ${userAgent} ${ip}`;
+
+      this.setLogCreateMethodByStatusCode(statusCode, logFormat);
+      this.logger.debug(`API RUNNING TIME: ${endTime - startTime}ms`);
     });
 
     next();
+  }
+
+  /**
+   * @summary statusCode가 400번대 이상인 경우에는 Error, 아니면 Debug 결정해주는 함수
+   * @author  Jason
+   *
+   * @param   { number } statusCode
+   * @param   { string } format
+   */
+  setLogCreateMethodByStatusCode(statusCode: number, format: string): void {
+    if (statusCode / 100 >= 4) {
+      this.logger.error(format);
+      return;
+    }
+    this.logger.debug(format);
   }
 }
