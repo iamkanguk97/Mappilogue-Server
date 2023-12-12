@@ -1,32 +1,46 @@
 import { InternalServerExceptionCode } from './../common/exception-code/internal-server.exception-code';
 import { ExceptionJson } from 'src/types/type';
-import { getKoreaTime } from './date.helper';
 import { ApiNotFoundExceptionCode } from 'src/common/exception-code/api-not-found.exception-code';
+import { ExceptionResponseDto } from 'src/common/dtos/exception-response.dto';
 
 export class ExceptionResponseHelper {
+  /**
+   * @summary 예외 Response 뼈대 만들어주는 함수
+   * @author  Jason
+   *
+   * @param   { number } statusCode
+   * @param   { string } path
+   *
+   * @returns { ExceptionResponseDto }
+   */
   generateBasicExceptionResponse(
     statusCode: number,
     path: string,
-  ): ExceptionJson {
-    return {
-      isSuccess: false,
-      statusCode,
-      errorCode: '',
-      target: '',
-      message: '',
-      errorStack: '',
-      timestamp: getKoreaTime(),
-      path,
-    };
+  ): ExceptionResponseDto {
+    return ExceptionResponseDto.from(statusCode, path);
   }
 
-  setNotFoundException(exceptionResponse: ExceptionJson): void {
+  /**
+   * @summary NotFoundException Property를 ExceptionResponseDto에 적용시켜주는 함수
+   * @author  Jason
+   * @param   { ExceptionResponseDto } exceptionResponse
+   */
+  setNotFoundException(exceptionResponse: ExceptionResponseDto): void {
     exceptionResponse.errorCode = ApiNotFoundExceptionCode.code;
     exceptionResponse.message = ApiNotFoundExceptionCode.message;
   }
 
+  /**
+   * @summary BadRequestException Property를 ExceptionResponseDto에 적용시켜주는 함수
+   * @author  Jason
+   *
+   * @param   { ExceptionResponseDto } exceptionResponse
+   * @param   { string } errorCode
+   * @param   { string } message
+   * @param   { string | undefined } target
+   */
   setBadRequestException(
-    exceptionResponse: ExceptionJson,
+    exceptionResponse: ExceptionResponseDto,
     errorCode: string,
     message: string,
     target?: string | undefined,
@@ -36,8 +50,15 @@ export class ExceptionResponseHelper {
     exceptionResponse.target = target ?? '';
   }
 
+  /**
+   * @summary InternalServerException - NodeJS 레벨의 Property를 ExceptionResponseDto에 적용하는 함수
+   * @author  Jason
+   *
+   * @param   { ExceptionResponseDto } exceptionResponse
+   * @param   { string | undefined } errorStack
+   */
   setNodeInternalServerException(
-    exceptionResponse: ExceptionJson,
+    exceptionResponse: ExceptionResponseDto,
     errorStack?: string | undefined,
   ): void {
     exceptionResponse.errorCode =
@@ -47,8 +68,17 @@ export class ExceptionResponseHelper {
     exceptionResponse.errorStack = errorStack ?? '';
   }
 
+  /**
+   * @summary InternalServerException Property를 ExceptionResponseDto에 적용하는 함수
+   * @author  Jason
+   *
+   * @param   { ExceptionResponseDto } exceptionResponse
+   * @param   { string } errorCode
+   * @param   { string } message
+   * @param   { string | undefined } errorStack
+   */
   setInternalServerException(
-    exceptionResponse: ExceptionJson,
+    exceptionResponse: ExceptionResponseDto,
     errorCode: string,
     message: string,
     errorStack?: string | undefined,

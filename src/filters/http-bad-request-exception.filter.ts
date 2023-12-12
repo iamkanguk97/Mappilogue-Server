@@ -11,6 +11,10 @@ import { Request, Response } from 'express';
 import { isEmptyArray } from 'src/helpers/common.helper';
 import { ExceptionResponseHelper } from 'src/helpers/exception-response.helper';
 
+/**
+ * @summary 400번 Bad Request Exception Filter
+ * @author  Jason
+ */
 @Catch(BadRequestException)
 export class HttpBadRequestExceptionFilter
   extends ExceptionResponseHelper
@@ -20,8 +24,8 @@ export class HttpBadRequestExceptionFilter
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
-    const exceptionResponse = exception.getResponse();
     const statusCode = HttpStatus.BAD_REQUEST;
+    const exceptionResponse = exception.getResponse();
 
     const exceptionJson = this.generateBasicExceptionResponse(
       statusCode,

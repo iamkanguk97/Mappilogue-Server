@@ -8,6 +8,10 @@ import {
 import { Request, Response } from 'express';
 import { ExceptionResponseHelper } from 'src/helpers/exception-response.helper';
 
+/**
+ * @summary 404 Not Found Exception Filter
+ * @author  Jason
+ */
 @Catch(NotFoundException)
 export class HttpNotFoundExceptionFilter
   extends ExceptionResponseHelper
@@ -24,8 +28,8 @@ export class HttpNotFoundExceptionFilter
         statusCode,
         request.url,
       );
-      this.setNotFoundException(exceptionJson);
 
+      this.setNotFoundException(exceptionJson);
       response.status(statusCode).json(exceptionJson);
     }
   }

@@ -46,8 +46,9 @@ export class PostMarkRequestDto {
     setValidatorContext(MarkExceptionCode.MarkTitleLengthError),
   )
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
-  @IsNotEmpty(setValidatorContext(MarkExceptionCode.MarkTitleEmpty))
-  title: string;
+  @IsOptional()
+  // @IsNotEmpty(setValidatorContext(MarkExceptionCode.MarkTitleEmpty))
+  title?: string | undefined;
 
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsOptional()

@@ -7,37 +7,49 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Request, Response } from 'express';
+import { ExceptionCodeDto } from 'src/common/dtos/exception-code.dto';
 import { ExceptionResponseHelper } from 'src/helpers/exception-response.helper';
 import { CustomConfigService } from 'src/modules/core/custom-config/services';
 
+/**
+ * @summary 500 InternalServerErrorException Filter
+ * @author  Jason
+ */
 @Catch(InternalServerErrorException)
 export class HttpInternalServerErrorExceptionFilter
   extends ExceptionResponseHelper
   implements ExceptionFilter<InternalServerErrorException>
 {
+  private readonly customConfigService = new CustomConfigService(
+    new ConfigService(),
+  );
+
   catch(exception: InternalServerErrorException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const request = ctx.getRequest<Request>();
     const response = ctx.getResponse<Response>();
-    const exceptionResponse = exception.getResponse();
+    const exceptionResponse = exception.getResponse() as ExceptionCodeDto & {
+      err: {
+        name: string;
+        stack: string;
+      };
+    };
     const statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
-
-    const customConfigService = new CustomConfigService(new ConfigService());
 
     if (exception instanceof InternalServerErrorException) {
       const exceptionJson = this.generateBasicExceptionResponse(
         statusCode,
         request.url,
       );
+
       this.setInternalServerException(
         exceptionJson,
-        exceptionResponse['code'],
-        exceptionResponse['message'],
-        customConfigService.isProduction() === true
+        exceptionResponse.code,
+        exceptionResponse.message,
+        this.customConfigService.isProduction() === true
           ? ''
-          : exceptionResponse['err']?.stack,
+          : exceptionResponse.err?.stack, // production일 때는 errorStack을 보여주지 않음.
       );
-
       response.status(statusCode).json(exceptionJson);
     }
   }
