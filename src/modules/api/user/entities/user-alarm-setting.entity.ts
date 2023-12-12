@@ -4,7 +4,7 @@ import {
 } from 'src/constants/enum';
 import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import { UserEntity } from './user.entity';
-import { CommonEntity } from 'src/entities/common/common.entity';
+import { CommonEntity } from 'src/common/entities/common.entity';
 
 @Entity('UserAlarmSetting')
 export class UserAlarmSettingEntity extends CommonEntity {

@@ -11,7 +11,7 @@ import {
 import { ColorEntity } from '../../color/entities/color.entity';
 import { setCheckColumnByValue } from 'src/helpers/common.helper';
 import { ScheduleAreaEntity } from './schedule-area.entity';
-import { CommonEntity } from 'src/entities/common/common.entity';
+import { CommonEntity } from 'src/common/entities/common.entity';
 
 @Entity('Schedule')
 export class ScheduleEntity extends CommonEntity {

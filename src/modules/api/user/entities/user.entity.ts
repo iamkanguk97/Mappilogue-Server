@@ -14,7 +14,7 @@ import {
 import { ScheduleEntity } from '../../schedule/entities/schedule.entity';
 import { MarkCategoryEntity } from '../../mark/entities/mark-category.entity';
 import { MarkEntity } from '../../mark/entities/mark.entity';
-import { CommonEntity } from 'src/entities/common/common.entity';
+import { CommonEntity } from 'src/common/entities/common.entity';
 
 @Entity('User')
 @Unique(['email', 'profileImageKey', 'snsId'])

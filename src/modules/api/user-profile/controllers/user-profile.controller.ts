@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { User } from '../../user/decorators/user.decorator';
 import { DecodedUserToken } from '../../user/types';
-import { ResponseEntity } from 'src/entities/common/response.entity';
+import { ResponseEntity } from 'src/common/entities/response.entity';
 import { decryptEmail } from 'src/helpers/crypt.helper';
 import { UserId } from '../../user/decorators/user-id.decorator';
 import { PatchUserNicknameRequestDto } from '../dtos/patch-user-nickname-request.dto';

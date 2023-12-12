@@ -8,7 +8,7 @@ import {
   ScheduleAreaTimeLengthEnum,
 } from '../constants/schedule.enum';
 import { SCHEDULE_AREA_DATE_LENGTH } from '../constants/schedule.constant';
-import { CommonEntity } from 'src/entities/common/common.entity';
+import { CommonEntity } from 'src/common/entities/common.entity';
 
 @Entity('ScheduleArea')
 export class ScheduleAreaEntity extends CommonEntity {

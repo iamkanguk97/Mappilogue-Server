@@ -6,7 +6,7 @@ import {
   StatusOrCheckColumnLengthEnum,
 } from 'src/constants/enum';
 import { MarkEntity } from './mark.entity';
-import { CommonEntity } from 'src/entities/common/common.entity';
+import { CommonEntity } from 'src/common/entities/common.entity';
 
 @Entity('MarkCategory')
 export class MarkCategoryEntity extends CommonEntity {

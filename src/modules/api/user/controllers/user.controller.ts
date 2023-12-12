@@ -8,7 +8,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { LoginOrSignUpRequestDto } from '../dtos/login-or-sign-up-request.dto';
-import { ResponseEntity } from 'src/entities/common/response.entity';
+import { ResponseEntity } from 'src/common/entities/response.entity';
 import { UserService } from '../services/user.service';
 import { TokenRefreshRequestDto } from '../dtos/token-refresh-request.dto';
 import * as _ from 'lodash';

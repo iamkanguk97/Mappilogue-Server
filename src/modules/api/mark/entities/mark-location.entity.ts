@@ -6,7 +6,7 @@ import {
   MarkLocationStreetAddressLengthEnum,
 } from '../constants/mark.enum';
 import { MarkEntity } from './mark.entity';
-import { CommonEntity } from 'src/entities/common/common.entity';
+import { CommonEntity } from 'src/common/entities/common.entity';
 
 @Entity('MarkLocation')
 export class MarkLocationEntity extends CommonEntity {

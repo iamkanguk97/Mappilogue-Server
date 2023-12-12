@@ -1,7 +1,7 @@
 import { Column, Entity, OneToMany } from 'typeorm';
 import { ColorCodeLength, ColorNameLength } from '../constants/color.enum';
 import { ScheduleEntity } from '../../schedule/entities/schedule.entity';
-import { CommonEntity } from 'src/entities/common/common.entity';
+import { CommonEntity } from 'src/common/entities/common.entity';
 
 @Entity('Color')
 export class ColorEntity extends CommonEntity {
