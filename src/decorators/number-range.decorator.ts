@@ -6,6 +6,11 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator';
 
+/**
+ * @summary 두 Number 사이의 숫자인지 확인하는 Custom Decorator
+ * @author  Jason
+ * @example @IsNumberRange(1, 10)
+ */
 @ValidatorConstraint({ name: 'IsNumberRange', async: false })
 export class IsNumberRangeConstraint implements ValidatorConstraintInterface {
   validate(value: number, args: ValidationArguments): boolean {

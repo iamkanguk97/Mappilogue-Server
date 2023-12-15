@@ -3,6 +3,7 @@ import {
   Catch,
   ExceptionFilter,
   HttpStatus,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
@@ -17,6 +18,8 @@ export class HttpNotFoundExceptionFilter
   extends ExceptionResponseHelper
   implements ExceptionFilter<NotFoundException>
 {
+  private readonly logger = new Logger(HttpNotFoundExceptionFilter.name);
+
   catch(exception: NotFoundException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
@@ -30,6 +33,9 @@ export class HttpNotFoundExceptionFilter
       );
 
       this.setNotFoundException(exceptionJson);
+      this.logger.error(
+        `[HttpNotFoundExceptionFilter - ${statusCode}] ${exceptionJson.errorCode}:${exceptionJson.message}`,
+      );
       response.status(statusCode).json(exceptionJson);
     }
   }

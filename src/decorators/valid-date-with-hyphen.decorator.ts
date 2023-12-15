@@ -8,6 +8,11 @@ import {
 import { REGEX_DATE } from 'src/common/regex';
 import { getLastDate } from 'src/helpers/date.helper';
 
+/**
+ * @summary YYYY-MM-DD 형식의 날짜 유효성 및 형태 확인
+ * @author  Jason
+ * @example @IsValidDateWithHyphen()
+ */
 @ValidatorConstraint({ name: 'IsValidDateWithHyphen', async: false })
 export class IsValidDateWithHyphenConstraint
   implements ValidatorConstraintInterface

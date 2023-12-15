@@ -1,12 +1,14 @@
 import { ConfigService } from '@nestjs/config';
 import { CustomConfigService } from 'src/modules/core/custom-config/services';
-import * as crypto from 'crypto';
 import { ENVIRONMENT_KEY } from 'src/modules/core/custom-config/constants/custom-config.constant';
 
+import * as crypto from 'crypto';
+
 /**
- * @title 이메일 암호화 함수
- * @param email
- * @returns encryptedEmail
+ * @summary 이메일 암호화 함수
+ * @author  Jason
+ * @param   { string } email
+ * @returns { string } 암호화 된 이메일
  */
 export function encryptEmail(email: string): string {
   const customConfigService = new CustomConfigService(new ConfigService());
@@ -31,9 +33,10 @@ export function encryptEmail(email: string): string {
 }
 
 /**
- * @title 이메일 복호화 함수
- * @param encryptEmail
- * @returns email
+ * @summary 이메일 복호화 함수
+ * @author  Jason
+ * @param   { string } encryptedEmail
+ * @returns { string } 복호화 된 이메일
  */
 export function decryptEmail(encryptedEmail: string): string {
   const customConfigService = new CustomConfigService(new ConfigService());

@@ -3,6 +3,7 @@ import {
   Catch,
   ExceptionFilter,
   HttpStatus,
+  Logger,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Request, Response } from 'express';
@@ -18,6 +19,9 @@ export class HttpNodeInternalServerErrorExceptionFilter
   extends ExceptionResponseHelper
   implements ExceptionFilter
 {
+  private readonly logger = new Logger(
+    HttpNodeInternalServerErrorExceptionFilter.name,
+  );
   private readonly customConfigService = new CustomConfigService(
     new ConfigService(),
   );
