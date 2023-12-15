@@ -41,6 +41,9 @@ export class HttpNodeInternalServerErrorExceptionFilter
       exceptionJson,
       this.customConfigService.isProduction() === true ? '' : exception.stack, // Production일 때는 ErrorStack이 보이지 않도록 함.
     );
+    this.logger.error(
+      `[HttpNodeInternalServerErrorExceptionFilter - ${statusCode}] ${exceptionJson.errorCode}:${exceptionJson.message}`,
+    );
     response.status(statusCode).json(exceptionJson);
   }
 }

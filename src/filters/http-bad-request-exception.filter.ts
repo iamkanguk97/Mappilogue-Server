@@ -15,6 +15,8 @@ import { ExceptionResponseDto } from 'src/common/dtos/exception-response.dto';
 import { ExceptionCodeDto } from 'src/common/dtos/exception-code.dto';
 
 type TExceptionResponse = ExceptionCodeDto | ValidationError;
+type TBadRequestException = ExceptionCodeDto & { target?: string | undefined };
+type TValidationErrorContext = { [errorKey: string]: ExceptionCodeDto };
 
 /**
  * @summary 400번 Bad Request Exception Filter
@@ -60,7 +62,6 @@ export class HttpBadRequestExceptionFilter
     // Class-Validator를 통해 나온 에러 객체
     if (exceptionResponse instanceof ValidationError) {
       const validationResult = this.getExceptionObj(exceptionResponse); // 첫 에러 가져오기
-      console.log(validationResult);
       this.setBadRequestException(
         exceptionJson,
         validationResult.code,
@@ -80,35 +81,46 @@ export class HttpBadRequestExceptionFilter
    * @summary Exception을 뱉어줄 메서드
    * @author  Jason
    * @param   { ValidationError } validationError
-   * @returns
+   * @returns { TBadRequestException }
    */
-  getExceptionObj(validationError: ValidationError) {
+  getExceptionObj(validationError: ValidationError): TBadRequestException {
     console.log(validationError);
     const errorChildren = validationError.children;
 
     // Error Children이 없을 시 ==> 바로 반환해주면 됨
     if (isEmptyArray(errorChildren)) {
       const target = validationError.property;
-      const errorContext = validationError.contexts;
-      const key = errorContext ? Object.keys(errorContext)[0] : undefined;
-      return { ...errorContext?.[key], target };
+      const errorContext = validationError.contexts as TValidationErrorContext;
+
+      const key = errorContext ? Object.keys(errorContext)[0] : '';
+      return {
+        ...errorContext?.[key],
+        target,
+      } as TBadRequestException;
     }
     return this.getExceptionInChildren(errorChildren);
   }
 
-  getExceptionInChildren(errorChildren: ValidationError[]) {
+  /**
+   * @summary Children에서 Exception 추출해주는 함수
+   * @author  Jason
+   * @param   { ValidationError[] } errorChildren
+   * @returns { TBadRequestException }
+   */
+  getExceptionInChildren(
+    errorChildren: ValidationError[],
+  ): TBadRequestException {
     const firstChildren = errorChildren[0];
     const target = firstChildren.property;
 
     if (firstChildren.contexts) {
       const firstContexts = firstChildren.contexts;
-      const key = Object.keys(firstContexts)[0];
+      const key = firstContexts ? Object.keys(firstContexts)[0] : '';
       const errorValue = firstContexts[key];
-      return { ...errorValue, target };
-    } else {
-      return !firstChildren.children.length
-        ? { ...InternalServerExceptionCode.ContextNotSetting, target }
-        : this.getExceptionInChildren(firstChildren.children);
+      return { ...errorValue, target } as TBadRequestException;
     }
+    return !firstChildren.children.length
+      ? { ...InternalServerExceptionCode.ContextNotSetting, target }
+      : this.getExceptionInChildren(firstChildren.children);
   }
 }
