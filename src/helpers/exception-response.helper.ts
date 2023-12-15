@@ -1,5 +1,4 @@
 import { InternalServerExceptionCode } from './../common/exception-code/internal-server.exception-code';
-import { ExceptionJson } from 'src/types/type';
 import { ApiNotFoundExceptionCode } from 'src/common/exception-code/api-not-found.exception-code';
 import { ExceptionResponseDto } from 'src/common/dtos/exception-response.dto';
 
@@ -88,8 +87,16 @@ export class ExceptionResponseHelper {
     exceptionResponse.errorStack = errorStack ?? '';
   }
 
+  /**
+   * @summary errorCode와 message setting 함수
+   * @author  Jason
+   *
+   * @param   { ExceptionResponseDto } exceptionResponse
+   * @param   { string } errorCode
+   * @param   { string } message
+   */
   setBasicException(
-    exceptionResponse: ExceptionJson,
+    exceptionResponse: ExceptionResponseDto,
     errorCode: string,
     message: string,
   ): void {

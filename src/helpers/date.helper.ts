@@ -17,6 +17,8 @@ export const getKoreaTime = (): string => {
  *
  * @param   { number } year
  * @param   { number } month
+ *
+ * @returns { number }
  */
 export const getLastDate = (year: number, month: number): number => {
   return moment({ year, month: month - 1 })
@@ -32,6 +34,8 @@ export const getLastDate = (year: number, month: number): number => {
  * @param startDate
  * @param endDate
  * @param targetDate
+ *
+ * @returns { boolean }
  */
 export const checkBetweenDatesWithNoMoment = (
   startDate: string,
@@ -44,11 +48,26 @@ export const checkBetweenDatesWithNoMoment = (
   );
 };
 
+/**
+ * @summary YYYY-MM-DD 형태의 날짜를 년월일로 바꿔주는 함수
+ * @author  Jason
+ * @param   { string } date
+ * @returns { string } Y년 M월 D일
+ */
 export const getKoreanDateFormatBySingle = (date: string): string => {
   const [year, month, day] = date.split('-').map(Number);
   return `${year}년 ${month}월 ${day}일`;
 };
 
+/**
+ * @summary year, month, day를 받아서 년월일로 바꿔주는 함수
+ * @author  Jason
+ * @param   { number } year
+ * @param   { number } month
+ * @param   { number } day
+ *
+ * @returns { string } Y년 M월 D일
+ */
 export const getKoreanDateFormatByMultiple = (
   year: number,
   month: number,
@@ -58,13 +77,14 @@ export const getKoreanDateFormatByMultiple = (
 };
 
 /**
- * @summary 이번달의 첫째 날 요일을 구하는 함수
- * @author Jason
- *
- * @param year
- * @param month
- *
+ * @summary     이번달의 첫째 날 요일을 구하는 함수
  * @description 일요일은 0이고, 이후 1씩 증가한다. 따라서 토요일은 6
+ * @author      Jason
+ *
+ * @param       { number } year
+ * @param       { number } month
+ *
+ * @returns     { number }
  */
 export const getFirstDayOfWeek = (year: number, month: number): number => {
   const currentDate = moment({ year, month: month - 1 });
@@ -74,10 +94,12 @@ export const getFirstDayOfWeek = (year: number, month: number): number => {
 
 /**
  * @summary 특정 년월의 주말 리스트를 가져오는 함수 (캘린더의 주말리스트)
- * @author Jason
+ * @author  Jason
  *
- * @param year
- * @param month
+ * @param   { number } year
+ * @param   { number } month
+ *
+ * @returns { string[][] }
  */
 export const getWeekendsByYearAndMonth = (
   year: number,

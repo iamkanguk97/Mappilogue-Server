@@ -1,9 +1,10 @@
 import * as path from 'path';
 
 /**
- * @title firebase-admin.json 경로 설정해주는 함수
- * @param dirname
- * @returns
+ * @summary firebase-admin.json 경로 설정해주는 함수
+ * @author  Jason
+ * @param   { string } dirname
+ * @returns { string }
  */
 export function setFirebaseCredential(dirname: string): string {
   switch (process.env.TEMP) {
