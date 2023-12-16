@@ -242,10 +242,11 @@ export class MarkCategoryService {
   }
 
   /**
-   * @summary 기록 카테고리 상태 확인 함수
+   * @summary Check Mark Category Status
    * @author  Jason
    * @param   { number } userId
    * @param   { number } markCategoryId
+   * @returns
    */
   async checkMarkCategoryStatus(
     userId: number,
@@ -253,12 +254,14 @@ export class MarkCategoryService {
   ): Promise<void> {
     const markCategoryStatus = await this.findOneById(markCategoryId);
 
+    // 삭제된 기록 카테고리인지 확인
     if (!isDefined(markCategoryStatus)) {
       throw new BadRequestException(
         MarkCategoryExceptionCode.MarkCategoryNotExist,
       );
     }
 
+    // 본인의 기록 카테고리인지 확인
     if (markCategoryStatus.userId !== userId) {
       throw new BadRequestException(
         MarkCategoryExceptionCode.MarkCategoryNotMine,

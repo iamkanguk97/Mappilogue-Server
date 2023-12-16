@@ -1,11 +1,6 @@
 import { MARK_CATEGORY_TOTAL_NAME } from '../constants/mark-category.constant';
 import { DataSource, Equal } from 'typeorm';
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { MarkRepository } from '../repositories/mark.repository';
 import { MarkEntity } from '../entities/mark.entity';
 import { MarkHelper } from '../helpers/mark.helper';
@@ -164,6 +159,12 @@ export class MarkService {
     }
   }
 
+  /**
+   * @summary 기록 삭제 API Service
+   * @author  Jason
+   * @param   { number } userId
+   * @param   { number } markId
+   */
   async removeMark(userId: number, markId: number): Promise<void> {
     const deletedMarkData = await this.markRepository.find({
       where: {
@@ -175,7 +176,6 @@ export class MarkService {
         markMetadata: true,
       },
     });
-
     await this.markRepository.softRemove(deletedMarkData);
   }
 

@@ -62,7 +62,8 @@ export class MarkController {
 
   /**
    * @summary 기록 삭제하기 API
-   * @author Jason
+   * @author  Jason
+   * @url     [DELETE] /api/v1/marks/{markId}
    */
   @Delete('/:markId')
   @HttpCode(HttpStatus.NO_CONTENT)

@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Inject,
   Injectable,
+  Logger,
   PipeTransform,
 } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
@@ -12,33 +13,33 @@ import { isDefined } from 'src/helpers/common.helper';
 
 @Injectable()
 export class MarkCategoryValidationPipe implements PipeTransform {
+  private readonly logger = new Logger(MarkCategoryValidationPipe.name);
+
   constructor(
     @Inject(REQUEST) private readonly request: Request,
     private readonly markCategoryService: MarkCategoryService,
   ) {}
 
   async transform<T extends { markCategoryId: number }>(value: T): Promise<T> {
-    const userId = this.request['user'].id;
-    const markCategoryId = value.markCategoryId;
+    try {
+      const userId = this.request['user'].id;
+      const markCategoryId = value.markCategoryId;
 
-    const markCategoryStatus = await this.markCategoryService.findOneById(
-      markCategoryId,
-    );
+      if (!isDefined(markCategoryId)) {
+        throw new BadRequestException(
+          MarkCategoryExceptionCode.MarkCategoryIdEmpty,
+        );
+      }
 
-    // 삭제된 기록 카테고리인지 확인
-    if (!isDefined(markCategoryStatus)) {
-      throw new BadRequestException(
-        MarkCategoryExceptionCode.MarkCategoryNotExist,
+      await this.markCategoryService.checkMarkCategoryStatus(
+        userId,
+        markCategoryId,
       );
-    }
 
-    // 본인의 기록 카테고리인지 확인
-    if (markCategoryStatus.userId !== userId) {
-      throw new BadRequestException(
-        MarkCategoryExceptionCode.MarkCategoryNotMine,
-      );
+      return value;
+    } catch (err) {
+      this.logger.error(`[MarkCategoryValidationPipe] ${err}`);
+      throw err;
     }
-
-    return value;
   }
 }
