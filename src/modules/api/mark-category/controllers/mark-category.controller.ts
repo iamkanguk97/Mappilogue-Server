@@ -16,13 +16,13 @@ import {
 import { MarkCategoryService } from '../services/mark-category.service';
 import { UserId } from '../../user/decorators/user-id.decorator';
 import { ResponseEntity } from 'src/common/entities/response.entity';
-import { PostMarkCategoryRequestDto } from '../dtos/post-mark-category-request.dto';
-import { PostMarkCategoryResponseDto } from '../dtos/post-mark-category-response.dto';
-import { PatchMarkCategoryTitleRequestDto } from '../dtos/patch-mark-category-title-request.dto';
-import { DeleteMarkCategoryRequestDto } from '../dtos/delete-mark-category-request.dto';
-import { PutMarkCategoryRequestDto } from '../dtos/put-mark-category-request.dto';
-import { DeleteMarkCategoryOptionRequestDto } from '../dtos/delete-mark-category-option-request.dto';
-import { GetMarkCategoriesResponseDto } from '../dtos/get-mark-categories-response.dto';
+import { PostMarkCategoryRequestDto } from '../dtos/request/post-mark-category-request.dto';
+import { PostMarkCategoryResponseDto } from '../dtos/response/post-mark-category-response.dto';
+import { PatchMarkCategoryTitleRequestDto } from '../dtos/request/patch-mark-category-title-request.dto';
+import { DeleteMarkCategoryRequestDto } from '../dtos/request/delete-mark-category-request.dto';
+import { PutMarkCategoryRequestDto } from '../dtos/request/put-mark-category-request.dto';
+import { DeleteMarkCategoryOptionRequestDto } from '../dtos/request/delete-mark-category-option-request.dto';
+import { GetMarkCategoriesResponseDto } from '../dtos/response/get-mark-categories-response.dto';
 import { MarkCategoryValidationPipe } from '../pipes/mark-category-validation.pipe';
 import { DomainNameEnum } from 'src/constants/enum';
 
@@ -33,7 +33,9 @@ export class MarkCategoryController {
 
   /**
    * @summary 기록 카테고리 조회 API
-   * @author Jason
+   * @author  Jason
+   * @url     [GET] /api/v1/marks/categories
+   * @returns { Promise<ResponseEntity<GetMarkCategoriesResponseDto>> }
    */
   @Get()
   @HttpCode(HttpStatus.OK)
@@ -46,7 +48,9 @@ export class MarkCategoryController {
 
   /**
    * @summary 기록 카테고리 생성 API
-   * @author Jason
+   * @author  Jason
+   * @url     [POST] /api/v1/marks/categories
+   * @returns { Promise<ResponseEntity<PostMarkCategoryResponseDto>>}
    */
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -64,7 +68,8 @@ export class MarkCategoryController {
 
   /**
    * @summary 기록 카테고리 이름 수정 API
-   * @author Jason
+   * @author  Jason
+   * @url     [PATCH] /api/v1/marks/categories
    */
   @Patch()
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -77,7 +82,8 @@ export class MarkCategoryController {
 
   /**
    * @summary 기록 카테고리 삭제 API
-   * @author Jason
+   * @author  Jason
+   * @url     [DELETE] /api/v1/marks/categories/{markCategoryId}?option=
    */
   @Delete('/:markCategoryId')
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -95,7 +101,8 @@ export class MarkCategoryController {
 
   /**
    * @summary 기록 카테고리 순서 수정 API
-   * @author Jason
+   * @author  Jason
+   * @url     [PUT] /api/v1/marks/categories
    */
   @Put()
   @HttpCode(HttpStatus.NO_CONTENT)

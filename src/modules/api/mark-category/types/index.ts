@@ -1,5 +1,5 @@
 import { MarkCategoryEntity } from '../../mark/entities/mark-category.entity';
 
-export type TMarkCategoryByUserId = MarkCategoryEntity & {
+export type TMarkCategoryWithMarkCount = MarkCategoryEntity & {
   markCount: number;
 };

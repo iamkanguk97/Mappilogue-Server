@@ -84,7 +84,6 @@ export class HttpBadRequestExceptionFilter
    * @returns { TBadRequestException }
    */
   getExceptionObj(validationError: ValidationError): TBadRequestException {
-    console.log(validationError);
     const errorChildren = validationError.children;
 
     // Error Children이 없을 시 ==> 바로 반환해주면 됨

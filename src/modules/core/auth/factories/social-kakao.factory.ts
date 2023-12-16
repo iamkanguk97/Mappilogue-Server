@@ -97,7 +97,7 @@ export class SocialKakaoFactory implements SocialFactoryInterface {
       snsType: this.snsType,
       nickname:
         kakaoProfile.nickname ??
-        `${USER_DEFAULT_NICKNAME_PREFIX}-${uuidv4.substr(0, 10)}`,
+        `${USER_DEFAULT_NICKNAME_PREFIX}-${uuidv4().substr(0, 10)}`,
       email: kakaoAccount.email,
       profileImageUrl: kakaoProfile.is_default_image
         ? USER_DEFAULT_PROFILE_IMAGE

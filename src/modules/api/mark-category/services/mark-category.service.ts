@@ -1,10 +1,10 @@
-import { GetMarkCategoriesResponseDto } from '../dtos/get-mark-categories-response.dto';
+import { GetMarkCategoriesResponseDto } from '../dtos/response/get-mark-categories-response.dto';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { MarkCategoryRepository } from '../../mark/repositories/mark-category.repository';
 import { DataSource } from 'typeorm';
 import { MarkCategoryEntity } from '../../mark/entities/mark-category.entity';
-import { PostMarkCategoryResponseDto } from '../dtos/post-mark-category-response.dto';
-import { PatchMarkCategoryTitleRequestDto } from '../dtos/patch-mark-category-title-request.dto';
+import { PostMarkCategoryResponseDto } from '../dtos/response/post-mark-category-response.dto';
+import { PatchMarkCategoryTitleRequestDto } from '../dtos/request/patch-mark-category-title-request.dto';
 import { MarkCategoryDto } from '../dtos/mark-category.dto';
 import { MarkCategoryHelper } from '../helpers/mark-category.helper';
 import { MarkCategoryExceptionCode } from 'src/common/exception-code/mark-category.exception-code';
@@ -12,7 +12,7 @@ import { DeleteMarkCategoryOptionEnum } from '../constants/mark-category.enum';
 import { MarkService } from '../../mark/services/mark.service';
 import { MarkRepository } from '../../mark/repositories/mark.repository';
 import { isDefined } from 'src/helpers/common.helper';
-import { MarkCategoryRequestDto } from '../dtos/mark-category-request.dto';
+import { PutMarkCategoryObject } from '../dtos/request/put-mark-category-request.dto';
 
 @Injectable()
 export class MarkCategoryService {
@@ -26,6 +26,12 @@ export class MarkCategoryService {
     private readonly markCategoryHelper: MarkCategoryHelper,
   ) {}
 
+  /**
+   * @summary 기록 카테고리 조회 API Service
+   * @author  Jason
+   * @param   { number } userId
+   * @returns { Promise<GetMarkCategoriesResponseDto> }
+   */
   async findMarkCategories(
     userId: number,
   ): Promise<GetMarkCategoriesResponseDto> {
@@ -38,11 +44,11 @@ export class MarkCategoryService {
         await this.markCategoryRepository.selectMarkCategoriesByUserId(userId);
 
       const markExceptCategoryCount =
-        await this.markRepository.selectMarkExceptCategoryCount(userId);
+        await this.markRepository.selectMarkExceptCategoryCount(userId); // 카테고리 없는 기록 개수
       const markHaveCategoryCount = result.reduce(
         (acc, obj) => acc + Number(obj.markCount),
         0,
-      );
+      ); // 카테고리 있는 기록 개수: result에서 MarkCount를 더해주면 됨
 
       const totalCategoryMarkCount =
         markExceptCategoryCount + markHaveCategoryCount;
@@ -61,6 +67,13 @@ export class MarkCategoryService {
     }
   }
 
+  /**
+   * @summary 기록 카테고리 생성하기 API Service
+   * @author  Jason
+   * @param   { number } userId
+   * @param   { string } title
+   * @returns { Promise<PostMarkCategoryResponseDto> }
+   */
   async createMarkCategory(
     userId: number,
     title: string,
@@ -100,6 +113,13 @@ export class MarkCategoryService {
     }
   }
 
+  /**
+   * @summary 기록 카테고리 삭제 API Service
+   * @author  Jason
+   * @param   { number } userId
+   * @param   { number } markCategoryId
+   * @param   { DeleteMarkCategoryOptionEnum } option
+   */
   async removeMarkCategory(
     userId: number,
     markCategoryId: number,
@@ -110,11 +130,10 @@ export class MarkCategoryService {
     await queryRunner.startTransaction();
 
     try {
-      await this.markCategoryRepository.softDelete({
-        userId,
-        id: markCategoryId,
-      });
-      await this.updateMarkStatusInMarkDelete(option, markCategoryId);
+      await Promise.all([
+        this.markCategoryRepository.softDelete({ userId, id: markCategoryId }),
+        this.updateMarkStatusInMarkDelete(option, markCategoryId),
+      ]);
 
       await queryRunner.commitTransaction();
     } catch (err) {
@@ -126,6 +145,12 @@ export class MarkCategoryService {
     }
   }
 
+  /**
+   * @summary 기록 카테고리 이름 수정 API Service
+   * @author  Jason
+   * @param   { number } userId
+   * @param   { PatchMarkCategoryTitleRequestDto } body
+   */
   async modifyMarkCategoryTitle(
     userId: number,
     body: PatchMarkCategoryTitleRequestDto,
@@ -139,9 +164,15 @@ export class MarkCategoryService {
     );
   }
 
+  /**
+   * @summary 기록 카테고리 수정 API Service
+   * @author  Jason
+   * @param   { number } userId
+   * @param   { PutMarkCategoryObject[] } categories
+   */
   async modifyMarkCategory(
     userId: number,
-    categories: MarkCategoryRequestDto[],
+    categories: PutMarkCategoryObject[],
   ): Promise<void> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -186,6 +217,12 @@ export class MarkCategoryService {
     }
   }
 
+  /**
+   * @summary option에 따라 Mark 삭제 여부 판단
+   * @author  Jason
+   * @param   { DeleteMarkCategoryOptionEnum } option
+   * @param   { number } markCategoryId
+   */
   async updateMarkStatusInMarkDelete(
     option: DeleteMarkCategoryOptionEnum,
     markCategoryId: number,
@@ -198,7 +235,9 @@ export class MarkCategoryService {
         await this.markService.modifyMarkCategoryIdToNullInMark(markCategoryId);
         return;
       default:
-        return;
+        throw new BadRequestException(
+          MarkCategoryExceptionCode.DeleteMarkCategoryOptionErrorType,
+        );
     }
   }
 
@@ -228,10 +267,10 @@ export class MarkCategoryService {
   }
 
   /**
-   * @summary id로
+   * @summary findOneById Method
    * @author  Jason
-   * @param markCategoryId
-   * @returns
+   * @param   { number } markCategoryId
+   * @returns { Promise<MarkCategoryEntity> }
    */
   async findOneById(markCategoryId: number): Promise<MarkCategoryEntity> {
     return await this.markCategoryRepository.findOne({

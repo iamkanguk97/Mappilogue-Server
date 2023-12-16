@@ -1,6 +1,11 @@
 import { MARK_CATEGORY_TOTAL_NAME } from './../../mark-category/constants/mark-category.constant';
 import { DataSource, Equal } from 'typeorm';
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { MarkRepository } from '../repositories/mark.repository';
 import { MarkEntity } from '../entities/mark.entity';
 import { MarkHelper } from '../helpers/mark.helper';
@@ -174,10 +179,20 @@ export class MarkService {
     await this.markRepository.softRemove(deletedMarkData);
   }
 
+  /**
+   * @summary 기록 카테고리 아이디로 기록 삭제하기
+   * @author  Jason
+   * @param   { number } markCategoryId
+   */
   async removeMarkByCategoryId(markCategoryId: number): Promise<void> {
     await this.markRepository.softDelete({ markCategoryId });
   }
 
+  /**
+   * @summary 기록에서 기록 카테고리를 NULL 처리함 (전체 카테고리로)
+   * @author  Jason
+   * @param   { number } markCategoryId
+   */
   async modifyMarkCategoryIdToNullInMark(
     markCategoryId: number,
   ): Promise<void> {

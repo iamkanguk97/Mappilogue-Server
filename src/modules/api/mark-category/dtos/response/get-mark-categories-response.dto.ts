@@ -1,5 +1,5 @@
 import { Exclude, Expose } from 'class-transformer';
-import { MarkCategoryDto } from './mark-category.dto';
+import { MarkCategoryDto } from '../mark-category.dto';
 
 export class GetMarkCategoriesResponseDto {
   @Exclude() private readonly _totalCategoryMarkCount: number;

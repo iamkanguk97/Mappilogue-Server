@@ -1,52 +1,29 @@
-import { IsEnum, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
-import { setValidatorContext } from 'src/common/common';
-import { CommonExceptionCode } from 'src/common/exception-code/common.exception-code';
-import { MarkCategoryExceptionCode } from 'src/common/exception-code/mark-category.exception-code';
 import { CheckColumnEnum } from 'src/constants/enum';
-import { TMarkCategoryByUserId } from '../types';
+import { TMarkCategoryWithMarkCount } from '../types';
+import { Exclude, Expose } from 'class-transformer';
 
 export class MarkCategoryDto {
-  /**
-   * @comment 마크 카테고리 수정을 위해 Class-Validator decorator 적용
-   */
+  @Exclude() private readonly _id: number;
+  @Exclude() private readonly _title: string;
+  @Exclude() private readonly _sequence: number;
+  @Exclude() private readonly _isMarkedInMap: CheckColumnEnum;
+  @Exclude() private readonly _markCount?: number | undefined;
 
-  @IsNumber({}, setValidatorContext(CommonExceptionCode.MustNumberType))
-  @IsNotEmpty(
-    setValidatorContext(MarkCategoryExceptionCode.MarkCategoryIdEmpty),
-  )
-  id: number;
-
-  @IsOptional()
-  title: string;
-
-  @IsOptional()
-  sequence: number;
-
-  @IsEnum(
-    CheckColumnEnum,
-    setValidatorContext(CommonExceptionCode.MustCheckColumnType),
-  )
-  @IsNotEmpty(setValidatorContext(MarkCategoryExceptionCode.IsMarkedInMapEmpty))
-  isMarkedInMap: CheckColumnEnum;
-
-  @IsOptional()
-  markCount: number;
-
-  private constructor(
+  constructor(
     id: number,
     title: string,
     sequence: number,
     isMarkedInMap: CheckColumnEnum,
-    markCount: number,
+    markCount?: number | undefined,
   ) {
-    this.id = id;
-    this.title = title;
-    this.sequence = sequence;
-    this.isMarkedInMap = isMarkedInMap;
-    this.markCount = markCount;
+    this._id = id;
+    this._title = title;
+    this._sequence = sequence;
+    this._isMarkedInMap = isMarkedInMap;
+    this._markCount = markCount;
   }
 
-  static of(markCategory: TMarkCategoryByUserId): MarkCategoryDto {
+  static of(markCategory: TMarkCategoryWithMarkCount): MarkCategoryDto {
     return new MarkCategoryDto(
       markCategory.id,
       markCategory.title,
@@ -54,5 +31,30 @@ export class MarkCategoryDto {
       markCategory.isMarkedInMap,
       Number(markCategory.markCount),
     );
+  }
+
+  @Expose()
+  get id(): number {
+    return this._id;
+  }
+
+  @Expose()
+  get title(): string {
+    return this._title;
+  }
+
+  @Expose()
+  get sequence(): number {
+    return this._sequence;
+  }
+
+  @Expose()
+  get isMarkedInMap(): CheckColumnEnum {
+    return this._isMarkedInMap;
+  }
+
+  @Expose()
+  get markCount(): number {
+    return this._markCount;
   }
 }

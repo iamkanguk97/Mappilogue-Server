@@ -25,12 +25,14 @@ export class MarkCategoryValidationPipe implements PipeTransform {
       markCategoryId,
     );
 
+    // 삭제된 기록 카테고리인지 확인
     if (!isDefined(markCategoryStatus)) {
       throw new BadRequestException(
         MarkCategoryExceptionCode.MarkCategoryNotExist,
       );
     }
 
+    // 본인의 기록 카테고리인지 확인
     if (markCategoryStatus.userId !== userId) {
       throw new BadRequestException(
         MarkCategoryExceptionCode.MarkCategoryNotMine,

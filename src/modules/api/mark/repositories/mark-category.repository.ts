@@ -3,14 +3,20 @@ import { MarkCategoryEntity } from '../entities/mark-category.entity';
 import { Repository } from 'typeorm';
 import { MARK_CATEGORY_EMPTY_SEQUENCE } from '../../mark-category/constants/mark-category.constant';
 import { MarkEntity } from '../entities/mark.entity';
-import { TMarkCategoryByUserId } from '../../mark-category/types';
 import { isDefined } from 'src/helpers/common.helper';
+import { TMarkCategoryWithMarkCount } from '../../mark-category/types';
 
 @CustomRepository(MarkCategoryEntity)
 export class MarkCategoryRepository extends Repository<MarkCategoryEntity> {
+  /**
+   * @summary 사용자의 기록 카테고리 리스트 조회
+   * @author  Jason
+   * @param   { number } userId
+   * @returns { Promise<TMarkCategoryWithMarkCount[]> }
+   */
   async selectMarkCategoriesByUserId(
     userId: number,
-  ): Promise<TMarkCategoryByUserId[]> {
+  ): Promise<TMarkCategoryWithMarkCount[]> {
     return await this.createQueryBuilder('MC')
       .select([
         'MC.id AS id',
@@ -30,6 +36,12 @@ export class MarkCategoryRepository extends Repository<MarkCategoryEntity> {
       .getRawMany();
   }
 
+  /**
+   * @summary 마지막 기록 카테고리 순서 번호를 가져옴
+   * @author  Jason
+   * @param   { number } userId
+   * @returns { Promise<number> }
+   */
   async selectLastMarkCategorySequenceNo(userId: number): Promise<number> {
     const result = await this.createQueryBuilder()
       .select('sequence')
