@@ -9,7 +9,7 @@ import { PostMarkRequestDto } from '../dtos/post-mark-request.dto';
 import { ScheduleService } from '../../schedule/services/schedule.service';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
-import { MarkCategoryService } from '../../mark-category/services/mark-category.service';
+import { MarkCategoryService } from '../services/mark-category.service';
 import { MarkExceptionCode } from 'src/common/exception-code/mark.exception-code';
 import { MarkHelper } from '../helpers/mark.helper';
 import { isDefined, isEmptyObject } from 'src/helpers/common.helper';

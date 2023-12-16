@@ -23,7 +23,7 @@ import { PostMarkValidationPipe } from '../pipes/post-mark-validation.pipe';
 import { ResponseEntity } from 'src/common/entities/response.entity';
 import { PostMarkResponseDto } from '../dtos/post-mark-response.dto';
 import { MarkDto } from '../dtos/mark.dto';
-import { MarkCategoryValidationPipe } from '../../mark-category/pipes/mark-category-validation.pipe';
+import { MarkCategoryValidationPipe } from '../pipes/mark-category-validation.pipe';
 import { DomainNameEnum } from 'src/constants/enum';
 import {
   POST_MARK_IMAGE_KEY,

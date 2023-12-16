@@ -1,10 +1,10 @@
 import { CustomRepository } from 'src/modules/core/custom-repository/decorators/custom-repository.decorator';
 import { MarkCategoryEntity } from '../entities/mark-category.entity';
 import { Repository } from 'typeorm';
-import { MARK_CATEGORY_EMPTY_SEQUENCE } from '../../mark-category/constants/mark-category.constant';
+import { MARK_CATEGORY_EMPTY_SEQUENCE } from '../constants/mark-category.constant';
 import { MarkEntity } from '../entities/mark.entity';
 import { isDefined } from 'src/helpers/common.helper';
-import { TMarkCategoryWithMarkCount } from '../../mark-category/types';
+import { TMarkCategoryWithMarkCount } from '../types';
 
 @CustomRepository(MarkCategoryEntity)
 export class MarkCategoryRepository extends Repository<MarkCategoryEntity> {

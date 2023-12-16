@@ -1,5 +1,5 @@
 import { Exclude, Expose } from 'class-transformer';
-import { MarkCategoryDto } from '../../mark-category/dtos/mark-category.dto';
+import { MarkCategoryDto } from './mark-category.dto';
 import { MarkLocationDto } from './mark-location.dto';
 import { MarkMetadataV2Dto } from './mark-metadata-v2.dto';
 

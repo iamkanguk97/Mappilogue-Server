@@ -4,7 +4,7 @@ import { CommonExceptionCode } from 'src/common/exception-code/common.exception-
 import { MarkCategoryExceptionCode } from 'src/common/exception-code/mark-category.exception-code';
 import { MarkCategoryTitleLengthEnum } from '../../constants/mark-category.enum';
 import { PickType } from '@nestjs/mapped-types';
-import { MarkCategoryEntity } from '../../../mark/entities/mark-category.entity';
+import { MarkCategoryEntity } from '../../entities/mark-category.entity';
 
 export class PostMarkCategoryRequestDto extends PickType(MarkCategoryEntity, [
   'title',

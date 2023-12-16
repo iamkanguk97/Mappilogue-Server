@@ -1,4 +1,4 @@
-import { MARK_CATEGORY_TOTAL_NAME } from './../../mark-category/constants/mark-category.constant';
+import { MARK_CATEGORY_TOTAL_NAME } from '../constants/mark-category.constant';
 import { DataSource, Equal } from 'typeorm';
 import {
   BadRequestException,

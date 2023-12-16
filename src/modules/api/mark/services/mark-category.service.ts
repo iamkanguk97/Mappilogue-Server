@@ -1,16 +1,16 @@
 import { GetMarkCategoriesResponseDto } from '../dtos/response/get-mark-categories-response.dto';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { MarkCategoryRepository } from '../../mark/repositories/mark-category.repository';
+import { MarkCategoryRepository } from '../repositories/mark-category.repository';
 import { DataSource } from 'typeorm';
-import { MarkCategoryEntity } from '../../mark/entities/mark-category.entity';
+import { MarkCategoryEntity } from '../entities/mark-category.entity';
 import { PostMarkCategoryResponseDto } from '../dtos/response/post-mark-category-response.dto';
 import { PatchMarkCategoryTitleRequestDto } from '../dtos/request/patch-mark-category-title-request.dto';
 import { MarkCategoryDto } from '../dtos/mark-category.dto';
 import { MarkCategoryHelper } from '../helpers/mark-category.helper';
 import { MarkCategoryExceptionCode } from 'src/common/exception-code/mark-category.exception-code';
 import { DeleteMarkCategoryOptionEnum } from '../constants/mark-category.enum';
-import { MarkService } from '../../mark/services/mark.service';
-import { MarkRepository } from '../../mark/repositories/mark.repository';
+import { MarkService } from './mark.service';
+import { MarkRepository } from '../repositories/mark.repository';
 import { isDefined } from 'src/helpers/common.helper';
 import { PutMarkCategoryObject } from '../dtos/request/put-mark-category-request.dto';
 
