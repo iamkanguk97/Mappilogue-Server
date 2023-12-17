@@ -85,7 +85,7 @@ export class MarkController {
   @HttpCode(HttpStatus.OK)
   async getMarkDetailById(
     @Query(MarkValidationPipe) mark: MarkDto,
-  ): Promise<ResponseEntity<GetMarkDetailByIdResponseDto>> {
+  ): Promise<ResponseEntity<any>> {
     const result = await this.markService.findMarkOnSpecificId(mark);
     return ResponseEntity.OK_WITH(HttpStatus.OK, result);
   }

@@ -16,8 +16,8 @@ export class MarkLocationEntity extends CommonEntity {
   @Column('int', { nullable: true })
   scheduleAreaId?: number | undefined;
 
-  @Column('varchar', { length: MarkLocationNameLengthEnum.MAX })
-  name: string;
+  @Column('varchar', { nullable: true, length: MarkLocationNameLengthEnum.MAX })
+  name?: string | undefined;
 
   @Column('varchar', {
     nullable: true,

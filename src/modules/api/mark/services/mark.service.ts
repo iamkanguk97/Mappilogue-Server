@@ -1,3 +1,4 @@
+import { PickType } from '@nestjs/mapped-types';
 import { MARK_CATEGORY_TOTAL_NAME } from '../constants/mark-category.constant';
 import { DataSource, Equal } from 'typeorm';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
@@ -20,6 +21,7 @@ import {
   PostMarkMetadataObject,
   PostMarkRequestDto,
 } from '../dtos/request/post-mark-request.dto';
+import { MarkCategoryDto } from '../dtos/mark-category.dto';
 
 @Injectable()
 export class MarkService {
@@ -79,56 +81,47 @@ export class MarkService {
     }
   }
 
-  async findMarkOnSpecificId(
-    mark: MarkDto,
-  ): Promise<GetMarkDetailByIdResponseDto> {
+  /**
+   * @summary 특정 기록 조회하기 API Service
+   * @author  Jason
+   * @param   { MarkDto } mark
+   * @returns { Promise<GetMarkDetailByIdResponseDto> }
+   */
+  async findMarkOnSpecificId(mark: MarkDto): Promise<any> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
-      const markCategoryResponseParam = {
-        id: mark.markCategoryId,
-        title:
-          (
-            await this.markCategoryRepository.findOne({
-              select: {
-                title: true,
-              },
-              where: {
-                id: Equal(mark.markCategoryId),
-              },
-            })
-          )?.title ?? MARK_CATEGORY_TOTAL_NAME,
-      };
+      const markCategoryResponse = await this.setMarkCategoryOnDetail(mark);
+      const markLocationResponse = await this.setMarkLocationOnDetail(mark.id);
 
-      const markMainLocationResponseParam = MarkLocationDto.of(
-        await this.setMarkLocationOnDetail(mark.id),
-      );
-
-      // metadata 부분 조회하기
-      const markMetadatas =
-        await this.markMetadataRepository.selectMarkMetadatasByMarkId(mark.id);
-      const markMetadataParam = markMetadatas.map((metadata) =>
-        MarkMetadataV2Dto.of(metadata),
-      );
-
-      // markDate: 연결된 scheduleId가 있는 경우 그 scheduleId의 첫 area의 date?
-      // markDate: 연결된 scheduleId가 없는 경우 mark의 createdAt
-      const markDateParam = {
-        createdAt: mark.createdAt,
-        areaDate: '',
-      };
-
-      await queryRunner.commitTransaction();
-      return GetMarkDetailByIdResponseDto.from(
-        mark.id,
-        mark.content,
-        markCategoryResponseParam,
-        markMainLocationResponseParam,
-        markDateParam,
-        markMetadataParam,
-      );
+      console.log(markCategoryResponse);
+      console.log(markLocationResponse);
+      // const markMainLocationResponseParam = MarkLocationDto.of(
+      //   await this.setMarkLocationOnDetail(mark.id),
+      // );
+      // // metadata 부분 조회하기
+      // const markMetadatas =
+      //   await this.markMetadataRepository.selectMarkMetadatasByMarkId(mark.id);
+      // const markMetadataParam = markMetadatas.map((metadata) =>
+      //   MarkMetadataV2Dto.of(metadata),
+      // );
+      // // markDate: 연결된 scheduleId가 있는 경우 그 scheduleId의 첫 area의 date?
+      // // markDate: 연결된 scheduleId가 없는 경우 mark의 createdAt
+      // const markDateParam = {
+      //   createdAt: mark.createdAt,
+      //   areaDate: '',
+      // };
+      // await queryRunner.commitTransaction();
+      // return GetMarkDetailByIdResponseDto.from(
+      //   mark.id,
+      //   mark.content,
+      //   markCategoryResponseParam,
+      //   markMainLocationResponseParam,
+      //   markDateParam,
+      //   markMetadataParam,
+      // );
     } catch (err) {
       this.logger.error(`[findMarkOnSpecificId - transaction error] ${err}`);
       await queryRunner.rollbackTransaction();
@@ -244,20 +237,6 @@ export class MarkService {
     });
   }
 
-  /**
-   * @summary MarkId로 MarkLocation 조회
-   * @author Jason
-   * @param { number } markId
-   * @returns { MarkLocationEntity }
-   */
-  async findMarkLocationByMarkId(markId: number): Promise<MarkLocationEntity> {
-    return await this.markLocationRepository.findOne({
-      where: {
-        markId,
-      },
-    });
-  }
-
   async checkMarkStatus(userId: number, markId: number): Promise<MarkDto> {
     const markStatus = await this.findOneById(markId);
 
@@ -279,7 +258,12 @@ export class MarkService {
    * @returns { MarkLocationEntity }
    */
   async setMarkLocationOnDetail(markId: number): Promise<MarkLocationEntity> {
-    const markLocationStatus = await this.findMarkLocationByMarkId(markId);
+    const markLocationStatus = await this.markLocationRepository.findOne({
+      where: {
+        markId,
+      },
+    });
+    console.log(markLocationStatus);
 
     if (isDefined(markLocationStatus.scheduleAreaId)) {
       return await this.markLocationRepository.selectMarkLocationWithScheduleArea(
@@ -294,5 +278,31 @@ export class MarkService {
       markLocationStatus.latitude ?? '',
       markLocationStatus.longitude ?? '',
     );
+  }
+
+  /**
+   * @summary 특정 기록 조회 API Service -> Category 부분 조회하는 함수
+   * @author  Jason
+   * @param   { MarkDto } mark
+   */
+  async setMarkCategoryOnDetail(
+    mark: MarkDto,
+  ): Promise<Partial<MarkCategoryDto>> {
+    const markCategoryId = mark.markCategoryId;
+    const title = !isDefined(markCategoryId)
+      ? MARK_CATEGORY_TOTAL_NAME
+      : await this.markCategoryRepository.findOne({
+          select: {
+            title: true,
+          },
+          where: {
+            id: markCategoryId,
+          },
+        });
+
+    return {
+      id: markCategoryId,
+      title,
+    } as Partial<MarkCategoryDto>;
   }
 }
