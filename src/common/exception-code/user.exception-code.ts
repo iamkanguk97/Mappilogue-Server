@@ -36,9 +36,9 @@ export const UserExceptionCode = {
     '1011',
     '닉네임 형식이 올바르지 않습니다.',
   ),
-  ProfileImageFileFormatError: setExceptionCode(
+  ImageFileFormatError: setExceptionCode(
     '1012',
-    '변경하실 프로필 이미지 파일 형식이 올바르지 않습니다.',
+    '이미지 파일 형식이 올바르지 않습니다.',
   ),
   IsTotalAlarmEmpty: setExceptionCode('1013', '전체 알림 여부를 입력해주세요.'),
   IsNoticeAlarmEmpty: setExceptionCode(

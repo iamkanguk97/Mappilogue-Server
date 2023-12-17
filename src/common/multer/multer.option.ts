@@ -31,7 +31,7 @@ export const fileFilter =
 
     if (!isDefined(mimeTypes)) {
       cb(
-        new BadRequestException(UserExceptionCode.ProfileImageFileFormatError),
+        new BadRequestException(UserExceptionCode.ImageFileFormatError),
         false,
       );
     }
