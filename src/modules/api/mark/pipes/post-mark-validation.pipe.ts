@@ -5,7 +5,7 @@ import {
   Logger,
   PipeTransform,
 } from '@nestjs/common';
-import { PostMarkRequestDto } from '../dtos/post-mark-request.dto';
+import { PostMarkRequestDto } from '../dtos/request/post-mark-request.dto';
 import { ScheduleService } from '../../schedule/services/schedule.service';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
@@ -30,7 +30,7 @@ export class PostMarkValidationPipe implements PipeTransform {
     const markImages = this.request['files'];
     const markMetadata = value.markMetadata ?? [];
 
-    let isScheduleIdExistInParameter = false;
+    let isScheduleIdExistInParameter = false; // RequestDTO에 scheduleId가 있는지 판단하는 변수
 
     try {
       /**
@@ -55,9 +55,34 @@ export class PostMarkValidationPipe implements PipeTransform {
       }
 
       /**
+       * @TODO 기획 확인하기!!
+       * @Validate mainScheduleAreaId와 mainLocation이 둘다 없으면 안된다?
+       */
+      if (
+        !isDefined(value.mainScheduleAreaId) &&
+        (!isDefined(value.mainLocation) || isEmptyObject(value.mainLocation))
+      ) {
+        throw new BadRequestException(
+          MarkExceptionCode.MainScheduleAreaIdAndMainLocationBothNotInclude,
+        );
+      }
+
+      /**
+       * @Validate RequestDTO에 mainScheduleAreaId와 mainLocation이 같이 있으면 안된다.
+       */
+      if (
+        isDefined(value.mainScheduleAreaId) &&
+        isDefined(value.mainLocation) &&
+        !isEmptyObject(value.mainLocation)
+      ) {
+        throw new BadRequestException(
+          MarkExceptionCode.MainScheduleAreaIdAndMainLocationBothInclude,
+        );
+      }
+
+      /**
        * @Validate RequestDTO에 mainScheduleAreaId가 있으면?
        * - scheduleId가 필수로 있어야 한다.
-       * - 위에가 확인되면 mainScheduleAreaId에 대해 유효성 검사.
        */
       if (
         isDefined(value.mainScheduleAreaId) &&
@@ -67,6 +92,11 @@ export class PostMarkValidationPipe implements PipeTransform {
           MarkExceptionCode.MustScheduleIdExistWhenScheduleAreaIdExist,
         );
       }
+
+      /**
+       * @Validate RequestDTO에 mainScheduleAreaId가 있으면?
+       * - 위에가 확인되면 mainScheduleAreaId에 대해 유효성 검사.
+       */
       if (isDefined(value.mainScheduleAreaId) && isScheduleIdExistInParameter) {
         await this.scheduleService.checkScheduleAreaStatus(
           value.mainScheduleAreaId,
@@ -86,10 +116,10 @@ export class PostMarkValidationPipe implements PipeTransform {
       /**
        * @Validate RequestDTO에 markMetadata가 있는 경우?
        * - content는 없어야 한다. (content는 이미지를 안올린 경우의 내용임)
-       * - isMainImage는 무조건 1개여야 한다.
        */
       if (
-        isDefined(value.markMetadata) &&
+        isDefined(markMetadata) &&
+        markMetadata.length !== 0 &&
         isDefined(value.content) &&
         value.content.length !== 0
       ) {
@@ -97,20 +127,24 @@ export class PostMarkValidationPipe implements PipeTransform {
           MarkExceptionCode.MarkContentNotExistWhenMetadatIsExist,
         );
       }
-      if (!this.markHelper.checkMarkMainImageCanUpload(value.markMetadata)) {
+
+      /**
+       * @Validate RequestDTO에 markMetadata가 있는 경우?
+       * - isMainImage는 무조건 1개여야 한다.
+       */
+      if (!this.markHelper.checkMarkMainImageCanUpload(markMetadata)) {
         throw new BadRequestException(MarkExceptionCode.MarkMainImageMustOne);
       }
 
       /**
-       * @Validate RequestDTO에 mainScheduleAreaId와 mainLocation이 같이 있으면 안된다.
+       * @Validate content와 markMetadata가 모두 없는지 확인
        */
       if (
-        isDefined(value.mainScheduleAreaId) &&
-        isDefined(value.mainLocation) &&
-        !isEmptyObject(value.mainLocation)
+        (!isDefined(value.content) || !value.content.length) &&
+        !markMetadata.length
       ) {
         throw new BadRequestException(
-          MarkExceptionCode.MainScheduleAreaIdAndMainLocationBothInclude,
+          MarkExceptionCode.MarkContentAndMetadataEmpty,
         );
       }
 

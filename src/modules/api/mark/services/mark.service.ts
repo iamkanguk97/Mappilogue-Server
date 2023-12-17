@@ -4,20 +4,22 @@ import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { MarkRepository } from '../repositories/mark.repository';
 import { MarkEntity } from '../entities/mark.entity';
 import { MarkHelper } from '../helpers/mark.helper';
-import { PostMarkRequestDto } from '../dtos/post-mark-request.dto';
 import { MarkMetadataRepository } from '../repositories/mark-metadata.repository';
 import { ScheduleService } from '../../schedule/services/schedule.service';
-import { PostMarkResponseDto } from '../dtos/post-mark-response.dto';
+import { PostMarkResponseDto } from '../dtos/response/post-mark-response.dto';
 import { MarkLocationRepository } from '../repositories/mark-location.repository';
 import { isDefined } from 'src/helpers/common.helper';
 import { MarkExceptionCode } from 'src/common/exception-code/mark.exception-code';
 import { MarkDto } from '../dtos/mark.dto';
 import { GetMarkDetailByIdResponseDto } from '../dtos/get-mark-detail-by-id-response.dto';
 import { MarkCategoryRepository } from '../repositories/mark-category.repository';
-import { MarkMetadataDto } from '../dtos/mark-metadata.dto';
 import { MarkLocationEntity } from '../entities/mark-location.entity';
 import { MarkLocationDto } from '../dtos/mark-location.dto';
 import { MarkMetadataV2Dto } from '../dtos/mark-metadata-v2.dto';
+import {
+  PostMarkMetadataObject,
+  PostMarkRequestDto,
+} from '../dtos/request/post-mark-request.dto';
 
 @Injectable()
 export class MarkService {
@@ -33,6 +35,16 @@ export class MarkService {
     private readonly markHelper: MarkHelper,
   ) {}
 
+  /**
+   * @summary 기록 생성하기 API Service
+   * @author  Jason
+   *
+   * @param   { number } userId
+   * @param   { Express.MulterS3.File[] } files
+   * @param   { PostMarkRequestDto } body
+   *
+   * @returns { Promise<PostMarkResponseDto> }
+   */
   async createMark(
     userId: number,
     files: Express.MulterS3.File[],
@@ -48,9 +60,12 @@ export class MarkService {
       const { id: markId } = await this.markRepository.save(
         body.toMarkEntity(userId),
       );
-      await this.modifyScheduleColorByCreateMark(body);
-      await this.createMarkMetadata(markId, files, markMetadata);
-      await this.createMarkMainLocation(markId, body);
+
+      await Promise.all([
+        this.modifyScheduleColorByCreateMark(body),
+        this.createMarkMetadata(markId, files, markMetadata),
+        this.createMarkMainLocation(markId, body),
+      ]);
 
       await queryRunner.commitTransaction();
       return PostMarkResponseDto.of(markId);
@@ -128,16 +143,30 @@ export class MarkService {
     return;
   }
 
+  /**
+   * @summary 기록 Metadata Insert하는 함수
+   * @author  Jason
+   *
+   * @param   { number } markId
+   * @param   { Express.MulterS3.File[] } files
+   * @param   { PostMarkMetadataObject[] } metadata
+   */
   async createMarkMetadata(
     markId: number,
     files: Express.MulterS3.File[],
-    metadata: MarkMetadataDto[],
+    metadata: PostMarkMetadataObject[],
   ): Promise<void> {
     await this.markMetadataRepository.save(
       this.markHelper.mappingMarkMetadataWithImages(markId, files, metadata),
     );
   }
 
+  /**
+   * @summary 기록 대표위치 저장하는 함수
+   * @author  Jason
+   * @param   { number } markId
+   * @param   { PostMarkRequestDto } body
+   */
   async createMarkMainLocation(
     markId: number,
     body: PostMarkRequestDto,
@@ -149,6 +178,11 @@ export class MarkService {
     }
   }
 
+  /**
+   * @summary 기록 생성 시 일정 색깔 연동 후 변경하는 함수
+   * @author  Jason
+   * @param   { PostMarkRequestDto } body
+   */
   async modifyScheduleColorByCreateMark(
     body: PostMarkRequestDto,
   ): Promise<void> {

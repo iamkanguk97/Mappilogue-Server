@@ -9,7 +9,7 @@ export class MarkCategoryDto {
   @Exclude() private readonly _isMarkedInMap: CheckColumnEnum;
   @Exclude() private readonly _markCount?: number | undefined;
 
-  constructor(
+  private constructor(
     id: number,
     title: string,
     sequence: number,

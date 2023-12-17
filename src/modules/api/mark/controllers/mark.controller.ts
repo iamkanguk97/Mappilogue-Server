@@ -18,10 +18,10 @@ import { MarkValidationPipe } from '../pipes/mark-validation.pipe';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { CreateMarkImageMulterOption } from 'src/common/multer/multer.option';
 import { FormDataJsonInterceptor } from 'src/interceptors/form-data-json.interceptor';
-import { PostMarkRequestDto } from '../dtos/post-mark-request.dto';
+import { PostMarkRequestDto } from '../dtos/request/post-mark-request.dto';
 import { PostMarkValidationPipe } from '../pipes/post-mark-validation.pipe';
 import { ResponseEntity } from 'src/common/entities/response.entity';
-import { PostMarkResponseDto } from '../dtos/post-mark-response.dto';
+import { PostMarkResponseDto } from '../dtos/response/post-mark-response.dto';
 import { MarkDto } from '../dtos/mark.dto';
 import { MarkCategoryValidationPipe } from '../pipes/mark-category-validation.pipe';
 import { DomainNameEnum } from 'src/constants/enum';
@@ -38,8 +38,9 @@ export class MarkController {
 
   /**
    * @summary 기록 생성하기 API
-   * @url /api/v1/marks
-   * @author Jason
+   * @author  Jason
+   * @url     /api/v1/marks
+   * @returns { Promise<ResponseEntity<PostMarkResponseDto>> }
    */
   @UseInterceptors(
     FilesInterceptor(
@@ -77,6 +78,7 @@ export class MarkController {
   /**
    * @summary 특정 기록 조회하기 API
    * @author  Jason
+   * @url     [GET] /api/v1/marks?markId=
    * @returns { ResponseEntity<GetMarkDetailByIdResponseDto> }
    */
   @Get()

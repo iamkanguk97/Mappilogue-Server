@@ -1,16 +1,18 @@
 import { isDefined } from 'src/helpers/common.helper';
 import { Injectable } from '@nestjs/common';
-import { MarkEntity } from '../entities/mark.entity';
 import { CheckColumnEnum } from 'src/constants/enum';
 import { ScheduleService } from '../../schedule/services/schedule.service';
-import { MarkMetadataDto } from '../dtos/mark-metadata.dto';
 import { MarkMetadataEntity } from '../entities/mark-metadata.entity';
 import {
   ImageBuilderTypeEnum,
   MulterBuilder,
 } from 'src/common/multer/multer.builder';
-import { PostMarkRequestDto } from '../dtos/post-mark-request.dto';
+import {
+  PostMarkMetadataObject,
+  PostMarkRequestDto,
+} from '../dtos/request/post-mark-request.dto';
 import { MarkLocationEntity } from '../entities/mark-location.entity';
+import { TMarkImages } from '../types';
 
 @Injectable()
 export class MarkHelper {
@@ -19,28 +21,19 @@ export class MarkHelper {
   ) {}
 
   /**
-   * @title 해당 기록이 존재하는지 확인
-   * @param markStatus
-   * @returns
-   */
-  isMarkExist(markStatus?: MarkEntity | undefined): boolean {
-    return isDefined(markStatus);
-  }
-
-  /**
    * @summary 업로드된 이미지와 MarkMetadata와 Mapping
    * @author Jason
    *
    * @param { number } markId
    * @param { Express.MulterS3.File[] } files
-   * @param { MarkMetadataDto[] } metadatas
+   * @param { PostMarkMetadataObject[] } metadatas
    *
    * @returns { MarkMetadataEntity[] }
    */
   mappingMarkMetadataWithImages(
     markId: number,
     files: Express.MulterS3.File[],
-    metadatas: MarkMetadataDto[],
+    metadatas: PostMarkMetadataObject[],
   ): MarkMetadataEntity[] {
     return metadatas.map((metadata, idx) =>
       MarkMetadataEntity.from(
@@ -62,9 +55,7 @@ export class MarkHelper {
    */
   async deleteUploadedMarkImageWhenError(
     userId: number,
-    markImages:
-      | { [fieldname: string]: Express.Multer.File[] }
-      | Express.Multer.File[],
+    markImages: TMarkImages,
   ): Promise<void> {
     const imageDeleteBuilder = new MulterBuilder(
       ImageBuilderTypeEnum.DELETE,
@@ -90,17 +81,21 @@ export class MarkHelper {
     body: PostMarkRequestDto,
   ): MarkLocationEntity {
     if (isDefined(body.mainScheduleAreaId)) {
-      return body.toMarkLocationEntity(markId, body.mainScheduleAreaId);
+      return body.toMarkLocationEntityWithScheduleAreaId(
+        markId,
+        body.mainScheduleAreaId,
+      );
     }
-    return body.mainLocation.toMarkLocationEntity(markId);
+    return body.mainLocation.toMarkLocationEntityWithLocationInfo(markId);
   }
 
   /**
-   * @title markMetadata의 배열에서 isMainImage가 ACTIVE인 값 개수 파악하는 함수
-   * @param metadata
-   * @returns
+   * @summary markMetadata의 배열에서 isMainImage가 ACTIVE인 값 개수 파악하는 함수
+   * @author  Jason
+   * @param   { PostMarkMetadataObject[] } metadata
+   * @returns { number}
    */
-  getMarkMainImageStatusCount(metadata: MarkMetadataDto[]): number {
+  getMarkMainImageStatusCount(metadata: PostMarkMetadataObject[]): number {
     return metadata.reduce(
       (acc, obj) =>
         obj.isMainImage === CheckColumnEnum.ACTIVE ? acc + 1 : acc,
@@ -109,11 +104,16 @@ export class MarkHelper {
   }
 
   /**
-   * @title 대표 이미지 업로드 가능한지 확인하는 함수
-   * @param metadata
-   * @returns
+   * @summary 대표 이미지가 1개인지 확인하는 함수
+   * @author  Jason
+   * @param   { PostMarkMetadataObject[] } metadata
+   * @returns { boolean }
    */
-  checkMarkMainImageCanUpload(metadata: MarkMetadataDto[]): boolean {
+  checkMarkMainImageCanUpload(metadata: PostMarkMetadataObject[]): boolean {
+    // MarkMetadata가 없으면 이미지가 없는거임 --> 대표 이미지 설정할 필요 없음
+    if (!metadata.length) {
+      return true;
+    }
     const isMainImageCount = this.getMarkMainImageStatusCount(metadata);
     return isMainImageCount === 1;
   }

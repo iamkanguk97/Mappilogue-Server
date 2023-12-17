@@ -57,4 +57,12 @@ export const MarkExceptionCode = {
     '5017',
     'mainScheduleAreaId가 있으면 scheduleId를 필수로 입력해주셔야 합니다.',
   ),
+  MarkContentAndMetadataEmpty: setExceptionCode(
+    '5018',
+    '기록의 내용이 입력된 것이 없습니다. 내용 또는 사진을 입력해주세요.',
+  ),
+  MainScheduleAreaIdAndMainLocationBothNotInclude: setExceptionCode(
+    '5019',
+    'mainScheduleAreaId와 mainLocation 둘 중 하나의 값은 입력하셔야 합니다.',
+  ),
 };

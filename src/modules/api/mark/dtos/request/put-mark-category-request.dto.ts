@@ -11,10 +11,10 @@ import { Type } from 'class-transformer';
 import { setValidatorContext } from 'src/common/common';
 import { MarkCategoryExceptionCode } from 'src/common/exception-code/mark-category.exception-code';
 import { CommonExceptionCode } from 'src/common/exception-code/common.exception-code';
-import { MarkCategoryDto } from '../mark-category.dto';
 import { CheckColumnEnum } from 'src/constants/enum';
+import { MarkCategoryEntity } from '../../entities/mark-category.entity';
 
-export class PutMarkCategoryObject extends PickType(MarkCategoryDto, [
+export class PutMarkCategoryObject extends PickType(MarkCategoryEntity, [
   'id',
   'isMarkedInMap',
 ] as const) {
