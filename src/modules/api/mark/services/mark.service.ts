@@ -130,6 +130,14 @@ export class MarkService {
     await this.markRepository.softRemove(deletedMarkData);
   }
 
+  /**
+   * @summary 기록 수정하기 API Service
+   * @author  Jason
+   */
+  async modifyMark() {
+    return;
+  }
+
   async findMarkListByCategoryId(userId: number, markCategoryId: number) {
     // markCategoryId가 -1이면 전체 카테고리, 아니면 특정 카테고리
     return;

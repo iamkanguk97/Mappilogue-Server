@@ -8,6 +8,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Put,
   Query,
   UploadedFiles,
   UseInterceptors,
@@ -90,11 +91,16 @@ export class MarkController {
     return ResponseEntity.OK_WITH(HttpStatus.OK, result);
   }
 
-  // @Put('/:markId')
-  // @HttpCode(HttpStatus.NO_CONTENT)
-  // async putMark() {
-  //   return;
-  // }
+  /**
+   * @summary 기록 수정하기 API
+   * @author  Jason
+   * @url     [PUT] /api/v1/marks/{markId}
+   */
+  @Put('/:markId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async putMark(): Promise<void> {
+    await this.markService.modifyMark();
+  }
 
   @Get()
   @HttpCode(HttpStatus.OK)
