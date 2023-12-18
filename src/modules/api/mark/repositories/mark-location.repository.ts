@@ -17,6 +17,7 @@ export class MarkLocationRepository extends Repository<MarkLocationEntity> {
   ): Promise<MarkLocationEntity> {
     return await this.createQueryBuilder('ML')
       .select('ML.scheduleAreaId', 'scheduleAreaId')
+      .addSelect('ML.markId', 'markId')
       .addSelect('IFNULL(SA.name, "")', 'name')
       .addSelect('IFNULL(SA.streetAddress, "")', 'streetAddress')
       .addSelect('IFNULL(SA.latitude, "")', 'latitude')

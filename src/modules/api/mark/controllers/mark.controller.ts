@@ -29,7 +29,7 @@ import {
   POST_MARK_IMAGE_KEY,
   POST_MARK_IMAGE_LIMIT,
 } from '../constants/mark.constant';
-import { GetMarkDetailByIdResponseDto } from '../dtos/get-mark-detail-by-id-response.dto';
+import { GetMarkDetailByIdResponseDto } from '../dtos/response/get-mark-detail-by-id-response.dto';
 
 @Controller(DomainNameEnum.MARK)
 @UseInterceptors(ClassSerializerInterceptor)
@@ -85,7 +85,7 @@ export class MarkController {
   @HttpCode(HttpStatus.OK)
   async getMarkDetailById(
     @Query(MarkValidationPipe) mark: MarkDto,
-  ): Promise<ResponseEntity<any>> {
+  ): Promise<ResponseEntity<GetMarkDetailByIdResponseDto>> {
     const result = await this.markService.findMarkOnSpecificId(mark);
     return ResponseEntity.OK_WITH(HttpStatus.OK, result);
   }

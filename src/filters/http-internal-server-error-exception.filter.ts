@@ -55,7 +55,7 @@ export class HttpInternalServerErrorExceptionFilter
           : exceptionResponse.err?.stack, // production일 때는 errorStack을 보여주지 않음.
       );
       this.logger.error(
-        `[HttpBadRequestExceptionFilter - ${statusCode}] ${exceptionJson.errorCode}:${exceptionJson.message}`,
+        `[HttpInternalServerErrorExceptionFilter - ${statusCode}] ${exceptionJson.errorCode}:${exceptionJson.message}`,
       );
       response.status(statusCode).json(exceptionJson);
     }

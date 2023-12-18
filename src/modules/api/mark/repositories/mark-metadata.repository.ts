@@ -7,8 +7,8 @@ import { MarkEntity } from '../entities/mark.entity';
 export class MarkMetadataRepository extends Repository<MarkMetadataEntity> {
   /**
    * @summary MarkId로 MarkMetadata 조회하는 함수
-   * @author Jason
-   * @param { number } markId
+   * @author  Jason
+   * @param   { number } markId
    * @returns { MarkMetadataEntity[] }
    */
   async selectMarkMetadatasByMarkId(
@@ -17,7 +17,8 @@ export class MarkMetadataRepository extends Repository<MarkMetadataEntity> {
     return await this.createQueryBuilder('MMD')
       .select([
         'MMD.id AS id',
-        'MMD.markId AS markId',
+        'markId',
+        'markImageKey',
         'markImageUrl',
         'IFNULL(MMD.caption, "") AS caption',
         'isMainImage',

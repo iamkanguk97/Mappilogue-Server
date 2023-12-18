@@ -1,26 +1,23 @@
 import { Exclude, Expose } from 'class-transformer';
-import { MarkCategoryDto } from './mark-category.dto';
-import { MarkLocationDto } from './mark-location.dto';
-import { MarkMetadataV2Dto } from './mark-metadata-v2.dto';
+import { MarkCategoryDto } from '../mark-category.dto';
+import { MarkLocationDto } from '../mark-location.dto';
+import { MarkMetadataDto } from '../mark-metadata.dto';
 
 export class GetMarkDetailByIdResponseDto {
   @Exclude() private readonly _id: number;
   @Exclude() private readonly _content: string;
   @Exclude() private readonly _markCategory: Partial<MarkCategoryDto>;
   @Exclude() private readonly _markMainLocation: MarkLocationDto;
-  @Exclude() private readonly _markDate: {
-    createdAt: string;
-    areaDate: string;
-  };
-  @Exclude() private readonly _markMetadata: MarkMetadataV2Dto[];
+  @Exclude() private readonly _markDate: string;
+  @Exclude() private readonly _markMetadata: MarkMetadataDto[];
 
   private constructor(
     id: number,
     content: string,
     markCategory: Partial<MarkCategoryDto>,
     markMainLocation: MarkLocationDto,
-    markDate: { createdAt: string; areaDate: string },
-    markMetadata: MarkMetadataV2Dto[],
+    markDate: string,
+    markMetadata: MarkMetadataDto[],
   ) {
     this._id = id;
     this._content = content;
@@ -35,8 +32,8 @@ export class GetMarkDetailByIdResponseDto {
     content: string,
     markCategory: Partial<MarkCategoryDto>,
     markMainLocation: MarkLocationDto,
-    markDate: { createdAt: string; areaDate: string },
-    markMetadata: MarkMetadataV2Dto[],
+    markDate: string,
+    markMetadata: MarkMetadataDto[],
   ): GetMarkDetailByIdResponseDto {
     return new GetMarkDetailByIdResponseDto(
       id,
@@ -69,12 +66,12 @@ export class GetMarkDetailByIdResponseDto {
   }
 
   @Expose()
-  get markDate() {
+  get markDate(): string {
     return this._markDate;
   }
 
   @Expose()
-  get markMetadata(): MarkMetadataV2Dto[] {
+  get markMetadata(): MarkMetadataDto[] {
     return this._markMetadata;
   }
 }
