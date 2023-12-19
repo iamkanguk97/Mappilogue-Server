@@ -20,6 +20,10 @@ import {
 } from '../dtos/request/post-mark-request.dto';
 import { MarkCategoryDto } from '../dtos/mark-category.dto';
 import { MarkMetadataDto } from '../dtos/mark-metadata.dto';
+import { GetMarkListByCategoryRequestDto } from '../dtos/request/get-mark-list-by-category-request.dto';
+import { PageOptionsDto } from 'src/common/dtos/pagination/page-options.dto';
+import { GetMarkListByCategoryResponseDto } from '../dtos/response/get-mark-list-by-category-response.dto';
+import { ResultWithPageDto } from 'src/common/dtos/pagination/result-with-page.dto';
 
 @Injectable()
 export class MarkService {
@@ -138,9 +142,32 @@ export class MarkService {
     return;
   }
 
-  async findMarkListByCategoryId(userId: number, markCategoryId: number) {
-    // markCategoryId가 -1이면 전체 카테고리, 아니면 특정 카테고리
-    return;
+  /**
+   * @summary 특정 카테고리의 기록 조회하기 API Service
+   * @author  Jason
+   * @param   { number } userId
+   * @param   { GetMarkListByCategoryRequestDto } query
+   */
+  async findMarkListByCategory(
+    userId: number,
+    query: GetMarkListByCategoryRequestDto,
+  ): Promise<any> {
+    const { markCategoryId, ..._pageInfo } = query;
+    const pageInfo = new PageOptionsDto(_pageInfo.page, _pageInfo.take);
+
+    console.log('hello');
+    console.log(pageInfo.skip);
+
+    const result = await this.markRepository.selectMarkListByCategory(
+      userId,
+      markCategoryId,
+      pageInfo,
+    );
+
+    return ResultWithPageDto.from(
+      GetMarkListByCategoryResponseDto.from(result.result),
+      result.meta,
+    );
   }
 
   /**
