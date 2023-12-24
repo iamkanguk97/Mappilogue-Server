@@ -257,6 +257,12 @@ export class UserService {
     });
   }
 
+  /**
+   * @summary update user by id
+   * @author  Jason
+   * @param   { number } userId
+   * @param   { Partial<UserEntity> } properties
+   */
   async modifyById(
     userId: number,
     properties: Partial<UserEntity>,

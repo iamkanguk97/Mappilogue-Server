@@ -10,9 +10,11 @@ import { ScheduleValidationPipe } from './pipes/schedule-validation.pipe';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ScheduleEntity } from './entities/schedule.entity';
 import { ScheduleAreaEntity } from './entities/schedule-area.entity';
+import { UserProfileModule } from '../user/modules/user-profile.module';
 
 @Module({
   imports: [
+    UserProfileModule,
     TypeOrmModule.forFeature([ScheduleEntity, ScheduleAreaEntity]),
     CustomRepositoryModule.forCustomRepository([
       ScheduleRepository,

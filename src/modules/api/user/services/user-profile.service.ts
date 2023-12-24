@@ -1,20 +1,21 @@
 import { DataSource } from 'typeorm';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { UserService } from '../../user/services/user.service';
-import { PatchUserNicknameRequestDto } from '../dtos/patch-user-nickname-request.dto';
-import { DecodedUserToken } from '../../user/types';
+import { UserService } from './user.service';
+import { PatchUserNicknameRequestDto } from '../dtos/request/patch-user-nickname-request.dto';
+import { DecodedUserToken } from '../types';
 import {
   ImageBuilderTypeEnum,
   MulterBuilder,
 } from 'src/common/multer/multer.builder';
-import { UserEntity } from '../../user/entities/user.entity';
-import { PatchUserProfileImageResponseDto } from '../dtos/patch-user-profile-image-response.dto';
-import { USER_DEFAULT_PROFILE_IMAGE } from '../../user/constants/user.constant';
-import { UserAlarmSettingRepository } from '../../user/repositories/user-alarm-setting.repository';
-import { UserAlarmSettingDto } from '../../user/dtos/user-alarm-setting.dto';
+import { UserEntity } from '../entities/user.entity';
+import { PatchUserProfileImageResponseDto } from '../dtos/response/patch-user-profile-image-response.dto';
+import { USER_DEFAULT_PROFILE_IMAGE } from '../constants/user.constant';
+import { UserAlarmSettingRepository } from '../repositories/user-alarm-setting.repository';
+import { UserAlarmSettingDto } from '../dtos/user-alarm-setting.dto';
 import { PutUserAlarmSettingRequestDto } from '../dtos/put-user-alarm-setting-request.dto';
 import { isDefined } from 'src/helpers/common.helper';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
+import { UserProfileHelper } from '../helpers/user-profile.helper';
 
 @Injectable()
 export class UserProfileService {
@@ -23,26 +24,41 @@ export class UserProfileService {
   constructor(
     private readonly dataSource: DataSource,
     private readonly userService: UserService,
+    private readonly userProfileHelper: UserProfileHelper,
     private readonly userAlarmSettingRepository: UserAlarmSettingRepository,
   ) {}
 
+  /**
+   * @summary 닉네임 수정 API Service
+   * @author  Jason
+   * @param   { number } userId
+   * @param   { PatchUserNicknameRequestDto } body
+   */
   async modifyUserNickname(
     userId: number,
     body: PatchUserNicknameRequestDto,
   ): Promise<void> {
-    await this.userService.modifyById(userId, { nickname: body.nickname });
+    await this.userService.modifyById(userId, body.toEntity(userId));
   }
 
+  /**
+   * @summary 프로필 이미지 수정 API Service
+   * @author  Jason
+   * @param   { DecodedUserToken } user
+   * @param   { Express.MulterS3.File[] | undefined } imageFiles
+   * @returns { Promise<PatchUserProfileImageResponseDto> }
+   */
   async modifyUserProfileImage(
     user: DecodedUserToken,
-    imageFiles: Express.MulterS3.File[],
+    imageFiles?: Express.MulterS3.File[] | undefined,
   ): Promise<PatchUserProfileImageResponseDto> {
+    console.log(user);
     const [profileImageFile] = imageFiles || [];
 
-    const updateProfileImageParam = {
-      profileImageUrl: profileImageFile?.location ?? USER_DEFAULT_PROFILE_IMAGE,
-      profileImageKey: profileImageFile?.key ?? null,
-    } as Partial<UserEntity>;
+    const updateProfileImageParam =
+      this.userProfileHelper.setUpdateProfileImageParam(profileImageFile);
+
+    console.log(updateProfileImageParam);
 
     const imageDeleteBuilder = new MulterBuilder(
       ImageBuilderTypeEnum.DELETE,
@@ -54,6 +70,11 @@ export class UserProfileService {
     await queryRunner.startTransaction();
 
     try {
+      // await Promise.all([
+      //   this.userService.modifyById(user.id, updateProfileImageParam),
+      //   imageDeleteBuilder.delete(user.profileImageKey),
+      // ]);
+
       await this.userService.modifyById(user.id, updateProfileImageParam);
       await imageDeleteBuilder.delete(user.profileImageKey);
 
@@ -63,6 +84,7 @@ export class UserProfileService {
         updateProfileImageParam.profileImageUrl,
       );
     } catch (err) {
+      console.log(err);
       this.logger.error(`[modifyUserProfileImage - transaction error] ${err}`);
       await queryRunner.rollbackTransaction();
       throw err;

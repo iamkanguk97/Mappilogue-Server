@@ -10,17 +10,17 @@ import {
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import { User } from '../../user/decorators/user.decorator';
-import { DecodedUserToken } from '../../user/types';
+import { User } from '../decorators/user.decorator';
+import { DecodedUserToken } from '../types';
 import { ResponseEntity } from 'src/common/entities/response.entity';
 import { decryptEmail } from 'src/helpers/crypt.helper';
-import { UserId } from '../../user/decorators/user-id.decorator';
-import { PatchUserNicknameRequestDto } from '../dtos/patch-user-nickname-request.dto';
+import { UserId } from '../decorators/user-id.decorator';
+import { PatchUserNicknameRequestDto } from '../dtos/request/patch-user-nickname-request.dto';
 import { UserProfileService } from '../services/user-profile.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { CreateProfileImageMulterOption } from 'src/common/multer/multer.option';
-import { PatchUserProfileImageResponseDto } from '../dtos/patch-user-profile-image-response.dto';
-import { UserAlarmSettingDto } from '../../user/dtos/user-alarm-setting.dto';
+import { PatchUserProfileImageResponseDto } from '../dtos/response/patch-user-profile-image-response.dto';
+import { UserAlarmSettingDto } from '../dtos/user-alarm-setting.dto';
 import { PutUserAlarmSettingRequestDto } from '../dtos/put-user-alarm-setting-request.dto';
 import { Public } from 'src/modules/core/auth/decorators/auth.decorator';
 import { TERMS_OF_SERVICE_URL } from 'src/constants/constant';
@@ -37,7 +37,9 @@ export class UserProfileController {
 
   /**
    * @summary 사용자 프로필 조회 API
-   * @author Jason
+   * @author  Jason
+   * @url     [GET] /api/v1/users/profiles
+   * @returns { ResponseEntity<DecodedUserToken> }
    */
   @Get()
   @HttpCode(HttpStatus.OK)
@@ -50,7 +52,8 @@ export class UserProfileController {
 
   /**
    * @summary 닉네임 수정 API
-   * @author Jason
+   * @author  Jason
+   * @url     [PATCH] /api/v1/users/profiles/nicknames
    */
   @Patch('nicknames')
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -63,7 +66,9 @@ export class UserProfileController {
 
   /**
    * @summary 프로필 이미지 수정 API
-   * @author Jason
+   * @author  Jason
+   * @url     [PATCH] /api/v1/users/profiles/images
+   * @returns { Promise<ResponseEntity<PatchUserProfileImageResponseDto>> }
    */
   @UseInterceptors(
     FilesInterceptor(

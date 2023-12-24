@@ -1,6 +1,6 @@
 import { IsEnum, IsNotEmpty } from 'class-validator';
 import { CheckColumnEnum } from 'src/constants/enum';
-import { UserAlarmSettingEntity } from '../../user/entities/user-alarm-setting.entity';
+import { UserAlarmSettingEntity } from '../entities/user-alarm-setting.entity';
 import { setValidatorContext } from 'src/common/common';
 import { CommonExceptionCode } from 'src/common/exception-code/common.exception-code';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';

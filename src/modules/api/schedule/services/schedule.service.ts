@@ -10,7 +10,7 @@ import {
   getWeekendsByYearAndMonth,
 } from 'src/helpers/date.helper';
 import { ScheduleExceptionCode } from 'src/common/exception-code/schedule.exception-code';
-import { UserProfileService } from '../../user-profile/services/user-profile.service';
+import { UserProfileService } from '../../user/services/user-profile.service';
 import { UserService } from '../../user/services/user.service';
 import { NotificationService } from 'src/modules/core/notification/services/notification.service';
 import { UserHelper } from '../../user/helpers/user.helper';
@@ -27,7 +27,7 @@ import { ScheduleAreaRepository } from '../repositories/schedule-area.repository
 import { PutScheduleRequestDto } from '../dtos/put-schedule-request.dto';
 import { GetScheduleAreasByIdResponseDto } from '../dtos/get-schedule-areas-by-id-response.dto';
 import { ScheduleDto } from '../dtos/schedule.dto';
-import { UserProfileHelper } from '../../user-profile/helpers/user-profile.helper';
+import { UserProfileHelper } from '../../user/helpers/user-profile.helper';
 import { GetSchedulesInCalendarRequestDto } from '../dtos/get-schedules-in-calendar-request.dto';
 import { GetSchedulesInCalendarResponseDto } from '../dtos/get-schedules-in-calendar-response.dto';
 
