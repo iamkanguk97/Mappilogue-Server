@@ -21,7 +21,7 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { CreateProfileImageMulterOption } from 'src/common/multer/multer.option';
 import { PatchUserProfileImageResponseDto } from '../dtos/response/patch-user-profile-image-response.dto';
 import { UserAlarmSettingDto } from '../dtos/user-alarm-setting.dto';
-import { PutUserAlarmSettingRequestDto } from '../dtos/put-user-alarm-setting-request.dto';
+import { PutUserAlarmSettingRequestDto } from '../dtos/request/put-user-alarm-setting-request.dto';
 import { Public } from 'src/modules/core/auth/decorators/auth.decorator';
 import { TERMS_OF_SERVICE_URL } from 'src/constants/constant';
 import {
@@ -92,7 +92,9 @@ export class UserProfileController {
 
   /**
    * @summary 사용자 알림 설정 조회 API
-   * @author Jason
+   * @author  Jason
+   * @url     [GET] /api/v1/users/profiles/alarm-settings
+   * @returns { Promise<ResponseEntity<UserAlarmSettingDto>> }
    */
   @Get('alarm-settings')
   @HttpCode(HttpStatus.OK)
@@ -107,7 +109,8 @@ export class UserProfileController {
 
   /**
    * @summary 사용자 알림 설정 수정 API
-   * @author Jason
+   * @author  Jason
+   * @url     [PUT] /api/v1/users/profiles/alarm-settings
    */
   @Put('alarm-settings')
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -120,7 +123,9 @@ export class UserProfileController {
 
   /**
    * @summary 이용약관 조회 API
-   * @author Jason
+   * @author  Jason
+   * @url     [GET] /api/v1/users/profiles/terms-of-services
+   * @returns { ResponseEntity<{ link: string }> }
    */
   @Public()
   @Get('terms-of-services')

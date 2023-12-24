@@ -15,15 +15,4 @@ export class UserRepository extends Repository<UserEntity> {
       .execute();
     return result.identifiers[0].id;
   }
-
-  async updateById(
-    userId: number,
-    properties: Partial<UserEntity>,
-  ): Promise<void> {
-    await this.createQueryBuilder('user')
-      .update(UserEntity)
-      .set(properties)
-      .where('id = :id', { id: userId })
-      .execute();
-  }
 }

@@ -7,12 +7,10 @@ import {
   ImageBuilderTypeEnum,
   MulterBuilder,
 } from 'src/common/multer/multer.builder';
-import { UserEntity } from '../entities/user.entity';
 import { PatchUserProfileImageResponseDto } from '../dtos/response/patch-user-profile-image-response.dto';
-import { USER_DEFAULT_PROFILE_IMAGE } from '../constants/user.constant';
 import { UserAlarmSettingRepository } from '../repositories/user-alarm-setting.repository';
 import { UserAlarmSettingDto } from '../dtos/user-alarm-setting.dto';
-import { PutUserAlarmSettingRequestDto } from '../dtos/put-user-alarm-setting-request.dto';
+import { PutUserAlarmSettingRequestDto } from '../dtos/request/put-user-alarm-setting-request.dto';
 import { isDefined } from 'src/helpers/common.helper';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 import { UserProfileHelper } from '../helpers/user-profile.helper';
@@ -52,13 +50,10 @@ export class UserProfileService {
     user: DecodedUserToken,
     imageFiles?: Express.MulterS3.File[] | undefined,
   ): Promise<PatchUserProfileImageResponseDto> {
-    console.log(user);
     const [profileImageFile] = imageFiles || [];
 
     const updateProfileImageParam =
       this.userProfileHelper.setUpdateProfileImageParam(profileImageFile);
-
-    console.log(updateProfileImageParam);
 
     const imageDeleteBuilder = new MulterBuilder(
       ImageBuilderTypeEnum.DELETE,
@@ -70,13 +65,8 @@ export class UserProfileService {
     await queryRunner.startTransaction();
 
     try {
-      // await Promise.all([
-      //   this.userService.modifyById(user.id, updateProfileImageParam),
-      //   imageDeleteBuilder.delete(user.profileImageKey),
-      // ]);
-
-      await this.userService.modifyById(user.id, updateProfileImageParam);
       await imageDeleteBuilder.delete(user.profileImageKey);
+      await this.userService.modifyById(user.id, updateProfileImageParam);
 
       await queryRunner.commitTransaction();
       return PatchUserProfileImageResponseDto.from(
@@ -84,7 +74,6 @@ export class UserProfileService {
         updateProfileImageParam.profileImageUrl,
       );
     } catch (err) {
-      console.log(err);
       this.logger.error(`[modifyUserProfileImage - transaction error] ${err}`);
       await queryRunner.rollbackTransaction();
       throw err;
@@ -93,6 +82,12 @@ export class UserProfileService {
     }
   }
 
+  /**
+   * @summary 사용자 알림 설정 조회 API Service
+   * @author  Jason
+   * @param   { number } userId
+   * @returns { Promise<UserAlarmSettingDto> }
+   */
   async findUserAlarmSettingById(userId: number): Promise<UserAlarmSettingDto> {
     const result = await this.userAlarmSettingRepository.findOne({
       where: {
@@ -109,6 +104,12 @@ export class UserProfileService {
     return UserAlarmSettingDto.of(result);
   }
 
+  /**
+   * @summary 사용자 알림 설정 수정 API Service
+   * @author  Jason
+   * @param   { number } userId
+   * @param   { PutUserAlarmSettingRequestDto } body
+   */
   async modifyUserAlarmSetting(
     userId: number,
     body: PutUserAlarmSettingRequestDto,

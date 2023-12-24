@@ -267,6 +267,6 @@ export class UserService {
     userId: number,
     properties: Partial<UserEntity>,
   ): Promise<void> {
-    return await this.userRepository.updateById(userId, properties);
+    await this.userRepository.update({ id: userId }, properties);
   }
 }
