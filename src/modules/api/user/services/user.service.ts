@@ -25,8 +25,9 @@ import {
 import { LoginOrSignUpRequestDto } from '../dtos/login-or-sign-up-request.dto';
 import { UserAlarmSettingRepository } from '../repositories/user-alarm-setting.repository';
 import { UserAlarmSettingEntity } from '../entities/user-alarm-setting.entity';
-import { DataSource, Equal } from 'typeorm';
+import { DataSource, Equal, QueryRunner } from 'typeorm';
 import { UserAlarmHistoryRepository } from '../repositories/user-alarm-history.repository';
+import { isDefined } from 'src/helpers/common.helper';
 
 @Injectable()
 export class UserService {
@@ -262,11 +263,17 @@ export class UserService {
    * @author  Jason
    * @param   { number } userId
    * @param   { Partial<UserEntity> } properties
+   * @param   { QueryRunner | undefined } queryRunner
    */
   async modifyById(
     userId: number,
     properties: Partial<UserEntity>,
+    queryRunner?: QueryRunner | undefined,
   ): Promise<void> {
+    if (isDefined(queryRunner)) {
+      await queryRunner.manager.update(UserEntity, { id: userId }, properties);
+      return;
+    }
     await this.userRepository.update({ id: userId }, properties);
   }
 }

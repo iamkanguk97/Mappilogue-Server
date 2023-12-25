@@ -65,8 +65,14 @@ export class UserProfileService {
     await queryRunner.startTransaction();
 
     try {
-      await imageDeleteBuilder.delete(user.profileImageKey);
-      await this.userService.modifyById(user.id, updateProfileImageParam);
+      await Promise.all([
+        this.userService.modifyById(
+          user.id,
+          updateProfileImageParam,
+          queryRunner,
+        ),
+        imageDeleteBuilder.delete(user.profileImageKey),
+      ]);
 
       await queryRunner.commitTransaction();
       return PatchUserProfileImageResponseDto.from(
