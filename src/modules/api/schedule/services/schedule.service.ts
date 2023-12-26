@@ -2,7 +2,7 @@ import { GetScheduleDetailByIdResponseDto } from './../dtos/get-schedule-detail-
 import { isDefined, isEmptyArray } from 'src/helpers/common.helper';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { PostScheduleRequestDto } from '../dtos/post-schedule-request.dto';
-import { DataSource } from 'typeorm';
+import { DataSource, QueryRunner } from 'typeorm';
 import { ScheduleRepository } from '../repositories/schedule.repository';
 import {
   checkBetweenDatesWithNoMoment,
@@ -335,8 +335,17 @@ export class ScheduleService {
   async modifyById(
     scheduleId: number,
     properties: Partial<ScheduleEntity>,
+    queryRunner?: QueryRunner | undefined,
   ): Promise<void> {
-    await this.scheduleRepository.updateById(scheduleId, properties);
+    if (isDefined(queryRunner)) {
+      await queryRunner.manager.update(
+        ScheduleEntity,
+        { id: scheduleId },
+        properties,
+      );
+      return;
+    }
+    await this.scheduleRepository.update({ id: scheduleId }, properties);
   }
 
   async modifySchedule(

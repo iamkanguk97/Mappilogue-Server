@@ -32,7 +32,11 @@ import {
 import { GetMarkDetailByIdResponseDto } from '../dtos/response/get-mark-detail-by-id-response.dto';
 import { GetMarkListByCategoryRequestDto } from '../dtos/request/get-mark-list-by-category-request.dto';
 import { GetMarkListByCategoryValidationPipe } from '../pipes/get-mark-list-by-category-validation.pipe';
+import { GetPagination } from 'src/decorators/get-paginate.decorator';
+import { PageOptionsDto } from 'src/common/dtos/pagination/page-options.dto';
 import { GetMarkListByCategoryResponseDto } from '../dtos/response/get-mark-list-by-category-response.dto';
+import { ResponseWithPageEntity } from 'src/common/entities/response-with-page.entity';
+import { PutMarkRequestDto } from '../dtos/request/put-mark-request.dto';
 
 @Controller(DomainNameEnum.MARK)
 @UseInterceptors(ClassSerializerInterceptor)
@@ -98,9 +102,22 @@ export class MarkController {
    * @author  Jason
    * @url     [PUT] /api/v1/marks/{markId}
    */
+  @UseInterceptors(
+    FilesInterceptor(
+      POST_MARK_IMAGE_KEY,
+      POST_MARK_IMAGE_LIMIT,
+      CreateMarkImageMulterOption(),
+    ),
+    FormDataJsonInterceptor,
+  )
   @Put('/:markId')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async putMark(): Promise<void> {
+  async putMark(
+    @Param(MarkValidationPipe) mark: MarkDto,
+    @Body(PostMarkValidationPipe) body: PutMarkRequestDto,
+  ): Promise<void> {
+    console.log(mark);
+    console.log(body);
     await this.markService.modifyMark();
   }
 
@@ -108,7 +125,7 @@ export class MarkController {
    * @summary 특정 카테고리의 기록 조회하기 API
    * @author  Jason
    * @url     [GET] /api/v1/marks?markCategoryId=
-   * @returns { Promise<ResponseEntity<GetMarkListByCategoryResponseDto>> }
+   * @returns { Promise<ResponseWithPageEntity<GetMarkListByCategoryResponseDto>> }
    */
   @Get()
   @HttpCode(HttpStatus.OK)
@@ -116,13 +133,14 @@ export class MarkController {
     @UserId() userId: number,
     @Query(GetMarkListByCategoryValidationPipe)
     query: GetMarkListByCategoryRequestDto,
-  ): Promise<ResponseEntity<GetMarkListByCategoryResponseDto>> {
-    const result = await this.markService.findMarkListByCategory(userId, query);
-    return ResponseEntity.OK_WITH_PAGINATION(
-      HttpStatus.OK,
-      result.result.markListByCategory,
-      result.meta,
+    @GetPagination() pageOptionsDto: PageOptionsDto,
+  ): Promise<ResponseWithPageEntity<GetMarkListByCategoryResponseDto>> {
+    const result = await this.markService.findMarkListByCategory(
+      userId,
+      query.markCategoryId,
+      pageOptionsDto,
     );
+    return ResponseWithPageEntity.OK_WITH_PAGINATION(HttpStatus.OK, result);
   }
 
   @Get()

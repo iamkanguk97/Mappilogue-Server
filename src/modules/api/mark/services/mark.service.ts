@@ -1,6 +1,11 @@
 import { MARK_CATEGORY_TOTAL_NAME } from '../constants/mark-category.constant';
-import { DataSource } from 'typeorm';
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { DataSource, QueryRunner } from 'typeorm';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { MarkRepository } from '../repositories/mark.repository';
 import { MarkEntity } from '../entities/mark.entity';
 import { MarkHelper } from '../helpers/mark.helper';
@@ -20,10 +25,10 @@ import {
 } from '../dtos/request/post-mark-request.dto';
 import { MarkCategoryDto } from '../dtos/mark-category.dto';
 import { MarkMetadataDto } from '../dtos/mark-metadata.dto';
-import { GetMarkListByCategoryRequestDto } from '../dtos/request/get-mark-list-by-category-request.dto';
-import { PageOptionsDto } from 'src/common/dtos/pagination/page-options.dto';
 import { GetMarkListByCategoryResponseDto } from '../dtos/response/get-mark-list-by-category-response.dto';
 import { ResultWithPageDto } from 'src/common/dtos/pagination/result-with-page.dto';
+import { PageOptionsDto } from 'src/common/dtos/pagination/page-options.dto';
+import { MarkMetadataEntity } from '../entities/mark-metadata.entity';
 
 @Injectable()
 export class MarkService {
@@ -61,14 +66,15 @@ export class MarkService {
     const markMetadata = body.markMetadata ?? [];
 
     try {
-      const { id: markId } = await this.markRepository.save(
+      const { id: markId } = await queryRunner.manager.save(
+        MarkEntity,
         body.toMarkEntity(userId),
       );
 
       await Promise.all([
-        this.modifyScheduleColorByCreateMark(body),
-        this.createMarkMetadata(markId, files, markMetadata),
-        this.createMarkMainLocation(markId, body),
+        this.modifyScheduleColorByCreateMark(queryRunner, body), // 기록 생성시 연관되어 있는 일정의 색깔을 변경함
+        this.createMarkMetadata(queryRunner, markId, files, markMetadata), // 기록 이미지 + 캡션 데이터 INSERT
+        this.createMarkMainLocation(queryRunner, markId, body), // 기록 대표 위치 INSERT
       ]);
 
       await queryRunner.commitTransaction();
@@ -145,23 +151,22 @@ export class MarkService {
   /**
    * @summary 특정 카테고리의 기록 조회하기 API Service
    * @author  Jason
+   *
    * @param   { number } userId
-   * @param   { GetMarkListByCategoryRequestDto } query
+   * @param   { number } markCategoryId
+   * @param   { PageOptionsDto } pageOptionsDto
+   *
+   * @returns { Promise<ResultWithPageDto<GetMarkListByCategoryResponseDto>> }
    */
   async findMarkListByCategory(
     userId: number,
-    query: GetMarkListByCategoryRequestDto,
-  ): Promise<any> {
-    const { markCategoryId, ..._pageInfo } = query;
-    const pageInfo = new PageOptionsDto(_pageInfo.page, _pageInfo.take);
-
-    console.log('hello');
-    console.log(pageInfo.skip);
-
+    markCategoryId: number,
+    pageOptionsDto: PageOptionsDto,
+  ): Promise<ResultWithPageDto<GetMarkListByCategoryResponseDto>> {
     const result = await this.markRepository.selectMarkListByCategory(
       userId,
       markCategoryId,
-      pageInfo,
+      pageOptionsDto,
     );
 
     return ResultWithPageDto.from(
@@ -174,16 +179,19 @@ export class MarkService {
    * @summary 기록 Metadata Insert하는 함수
    * @author  Jason
    *
+   * @param   { QueryRunner } queryRunner
    * @param   { number } markId
    * @param   { Express.MulterS3.File[] } files
    * @param   { PostMarkMetadataObject[] } metadata
    */
   async createMarkMetadata(
+    queryRunner: QueryRunner,
     markId: number,
     files: Express.MulterS3.File[],
     metadata: PostMarkMetadataObject[],
   ): Promise<void> {
-    await this.markMetadataRepository.save(
+    await queryRunner.manager.save(
+      MarkMetadataEntity,
       this.markHelper.mappingMarkMetadataWithImages(markId, files, metadata),
     );
   }
@@ -191,32 +199,45 @@ export class MarkService {
   /**
    * @summary 기록 대표위치 저장하는 함수
    * @author  Jason
+   *
+   * @param   { QueryRunner } queryRunner
    * @param   { number } markId
    * @param   { PostMarkRequestDto } body
    */
   async createMarkMainLocation(
+    queryRunner: QueryRunner,
     markId: number,
     body: PostMarkRequestDto,
   ): Promise<void> {
     if (isDefined(body.mainScheduleAreaId) || isDefined(body.mainLocation)) {
       const insertMarkLocationParam =
         this.markHelper.setCreateMarkLocationParam(markId, body);
-      await this.markLocationRepository.save(insertMarkLocationParam);
+
+      await queryRunner.manager.save(
+        MarkLocationRepository,
+        insertMarkLocationParam,
+      );
     }
   }
 
   /**
    * @summary 기록 생성 시 일정 색깔 연동 후 변경하는 함수
    * @author  Jason
+   * @param   { QueryRunner } queryRunner
    * @param   { PostMarkRequestDto } body
    */
   async modifyScheduleColorByCreateMark(
+    queryRunner: QueryRunner,
     body: PostMarkRequestDto,
   ): Promise<void> {
     if (isDefined(body.scheduleId)) {
-      await this.scheduleService.modifyById(body.scheduleId, {
-        colorId: body.colorId,
-      });
+      await this.scheduleService.modifyById(
+        body.scheduleId,
+        {
+          colorId: body.colorId,
+        },
+        queryRunner,
+      );
     }
   }
 
@@ -243,6 +264,12 @@ export class MarkService {
     );
   }
 
+  /**
+   * @summary Find one mark by markId
+   * @author  Jason
+   * @param   { number } markId
+   * @returns { Promise<MarkEntity> }
+   */
   async findOneById(markId: number): Promise<MarkEntity> {
     return await this.markRepository.findOne({
       where: {
@@ -251,6 +278,13 @@ export class MarkService {
     });
   }
 
+  /**
+   * @summary 기록 상태확인
+   * @author  Jason
+   * @param   { number } userId
+   * @param   { number } markId
+   * @returns { Promise<MarkDto> }
+   */
   async checkMarkStatus(userId: number, markId: number): Promise<MarkDto> {
     const markStatus = await this.findOneById(markId);
 

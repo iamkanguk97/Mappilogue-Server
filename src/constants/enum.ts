@@ -22,3 +22,8 @@ export enum DomainNameEnum {
   MARK_CATEGORY = 'marks/categories',
   SCHEDULE = 'schedules',
 }
+
+export enum DefaultPaginationEnum {
+  DEFAULT_PAGE_NO = 1,
+  DEFAULT_PAGE_SIZE = 10,
+}

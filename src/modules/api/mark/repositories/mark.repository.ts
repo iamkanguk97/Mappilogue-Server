@@ -49,11 +49,6 @@ export class MarkRepository extends Repository<MarkEntity> {
   ): Promise<ResultWithPageDto<IMarkListByCategory[]>> {
     const queryBuilder = this.createQueryBuilder('M');
 
-    console.log(pageOptionsDto);
-    console.log(pageOptionsDto.page);
-    console.log(pageOptionsDto.take);
-    console.log((pageOptionsDto.page - 1) * pageOptionsDto.take);
-
     const result: IMarkListByCategory[] = await queryBuilder
       .select('M.id', 'id')
       .addSelect('M.markCategoryId', 'markCategoryId')
@@ -111,12 +106,9 @@ export class MarkRepository extends Repository<MarkEntity> {
       .andWhere('ML.deletedAt IS NULL')
       .andWhere('MM.deletedAt IS NULL')
       .andWhere('SA.deletedAt IS NULL')
-      .orderBy(
-        'DATE_FORMAT(IF(ML.scheduleAreaId IS NULL, M.createdAt, SA.date), "%Y년 %m월 %d일")',
-        'DESC',
-      )
-      .offset((pageOptionsDto.page - 1) * pageOptionsDto.take)
-      .limit(pageOptionsDto.take)
+      .orderBy('IF(ML.scheduleAreaId IS NULL, M.createdAt, SA.date)', 'DESC')
+      .offset(pageOptionsDto.getOffset())
+      .limit(pageOptionsDto.getLimit())
       .getRawMany();
 
     const itemCount = await queryBuilder.getCount();

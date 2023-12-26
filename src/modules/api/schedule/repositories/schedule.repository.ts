@@ -57,16 +57,4 @@ export class ScheduleRepository extends Repository<ScheduleEntity> {
       .addOrderBy('S.createdAt')
       .getRawMany();
   }
-
-  async updateById(
-    scheduleId: number,
-    properties: Partial<ScheduleEntity>,
-  ): Promise<void> {
-    await this.createQueryBuilder()
-      .update(ScheduleEntity)
-      .set(properties)
-      .where('id = :id', { id: scheduleId })
-      .andWhere('deletedAt IS NULL')
-      .execute();
-  }
 }
