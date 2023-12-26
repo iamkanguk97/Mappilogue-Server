@@ -115,10 +115,9 @@ export class MarkController {
   async putMark(
     @Param(MarkValidationPipe) mark: MarkDto,
     @Body(PostMarkValidationPipe) body: PutMarkRequestDto,
+    @UploadedFiles() files: Express.MulterS3.File[],
   ): Promise<void> {
-    console.log(mark);
-    console.log(body);
-    await this.markService.modifyMark();
+    await this.markService.modifyMark(mark, body, files);
   }
 
   /**

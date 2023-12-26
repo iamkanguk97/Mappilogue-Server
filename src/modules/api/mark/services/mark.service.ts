@@ -1,11 +1,6 @@
 import { MARK_CATEGORY_TOTAL_NAME } from '../constants/mark-category.constant';
 import { DataSource, QueryRunner } from 'typeorm';
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { MarkRepository } from '../repositories/mark.repository';
 import { MarkEntity } from '../entities/mark.entity';
 import { MarkHelper } from '../helpers/mark.helper';
@@ -29,6 +24,11 @@ import { GetMarkListByCategoryResponseDto } from '../dtos/response/get-mark-list
 import { ResultWithPageDto } from 'src/common/dtos/pagination/result-with-page.dto';
 import { PageOptionsDto } from 'src/common/dtos/pagination/page-options.dto';
 import { MarkMetadataEntity } from '../entities/mark-metadata.entity';
+import { PutMarkRequestDto } from '../dtos/request/put-mark-request.dto';
+import {
+  ImageBuilderTypeEnum,
+  MulterBuilder,
+} from 'src/common/multer/multer.builder';
 
 @Injectable()
 export class MarkService {
@@ -143,9 +143,44 @@ export class MarkService {
   /**
    * @summary 기록 수정하기 API Service
    * @author  Jason
+   *
+   * @param   { MarkDto } mark
+   * @param   { PutMarkRequestDto } body
+   * @param   { Express.MulterS3.File[] } files
    */
-  async modifyMark() {
-    return;
+  async modifyMark(
+    mark: MarkDto,
+    body: PutMarkRequestDto,
+    files: Express.MulterS3.File[],
+  ): Promise<void> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      await Promise.all([
+        this.modifyMarkBaseInfo(queryRunner, mark, body),
+        this.modifyMarkMetadataInfo(
+          queryRunner,
+          mark,
+          files,
+          body.markMetadata,
+        ),
+        this.modifyMarkMainLocationInfo(queryRunner, mark, body),
+        this.modifyScheduleColorByCreateMark(queryRunner, body),
+      ]);
+
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      this.logger.error(`[modifyMark - transaction error] ${err}`);
+      await this.markHelper.deleteUploadedMarkImageWhenError(
+        mark.userId,
+        files,
+      );
+      await queryRunner.rollbackTransaction();
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   /**
@@ -265,20 +300,6 @@ export class MarkService {
   }
 
   /**
-   * @summary Find one mark by markId
-   * @author  Jason
-   * @param   { number } markId
-   * @returns { Promise<MarkEntity> }
-   */
-  async findOneById(markId: number): Promise<MarkEntity> {
-    return await this.markRepository.findOne({
-      where: {
-        id: markId,
-      },
-    });
-  }
-
-  /**
    * @summary 기록 상태확인
    * @author  Jason
    * @param   { number } userId
@@ -290,9 +311,6 @@ export class MarkService {
 
     if (!isDefined(markStatus)) {
       throw new BadRequestException(MarkExceptionCode.MarkNotExist);
-    }
-    if (markStatus.userId !== userId) {
-      throw new BadRequestException(MarkExceptionCode.MarkNotMine);
     }
 
     return MarkDto.of(markStatus);
@@ -377,5 +395,111 @@ export class MarkService {
       return '2023년 12월 19일'; // 곧 수정할거임!
     }
     return mark.createdAt;
+  }
+
+  /**
+   * @summary 기록 수정하기 API Service -> 기록 기본정보 수정
+   * @author  Jason
+   *
+   * @param   { QueryRunner } queryRunner
+   * @param   { MarkDto } mark
+   * @param   { PutMarkRequestDto } body
+   */
+  async modifyMarkBaseInfo(
+    queryRunner: QueryRunner,
+    mark: MarkDto,
+    body: PutMarkRequestDto,
+  ): Promise<void> {
+    await queryRunner.manager.update(
+      MarkEntity,
+      { id: mark.id },
+      body.toMarkEntity(mark.userId),
+    );
+  }
+
+  /**
+   * @summary 기록 수정하기 API Service -> 기록 Metadata 수정
+   * @author  Jason
+   *
+   * @param   { QueryRunner } queryRunner
+   * @param   { MarkDto } mark
+   * @param   { Express.MulterS3.File[] } files
+   * @param   { PostMarkMetadataObject[] } metadata
+   */
+  async modifyMarkMetadataInfo(
+    queryRunner: QueryRunner,
+    mark: MarkDto,
+    files: Express.MulterS3.File[],
+    metadata: PostMarkMetadataObject[],
+  ): Promise<void> {
+    const markId = mark.id;
+
+    // markImageKey를 가지고 필요없으니까 삭제 -> 기존에 저장되어 있는 것들을 조회해서 삭제한다.
+    const beforeMarkMetadatas = (
+      await this.markMetadataRepository.find({
+        select: {
+          markImageKey: true,
+        },
+        where: {
+          markId,
+        },
+      })
+    ).map((beforeMarkMetadata) => beforeMarkMetadata.markImageKey);
+
+    const imageDeleteBuilder = new MulterBuilder(
+      ImageBuilderTypeEnum.DELETE,
+      mark.userId,
+    );
+
+    for (const beforeMarkMetadata of beforeMarkMetadatas) {
+      await imageDeleteBuilder.delete(beforeMarkMetadata);
+    }
+
+    await Promise.all([
+      queryRunner.manager.delete(MarkMetadataEntity, { markId: mark.id }),
+      queryRunner.manager.save(
+        MarkMetadataEntity,
+        this.markHelper.mappingMarkMetadataWithImages(mark.id, files, metadata),
+      ),
+    ]);
+  }
+
+  /**
+   * @summary 기록 수정하기 API Service -> 기록 대표 위치 수정
+   * @author  Jason
+   *
+   * @param   { QueryRunner } queryRunner
+   * @param   { MarkDto } mark
+   * @param   { PutMarkRequestDto } body
+   */
+  async modifyMarkMainLocationInfo(
+    queryRunner: QueryRunner,
+    mark: MarkDto,
+    body: PutMarkRequestDto,
+  ): Promise<void> {
+    if (isDefined(body.mainScheduleAreaId) || isDefined(body.mainLocation)) {
+      const updateMarkLocationParam =
+        this.markHelper.setCreateMarkLocationParam(mark.id, body);
+
+      await queryRunner.manager.update(
+        MarkLocationRepository,
+        { markId: mark.id },
+        updateMarkLocationParam,
+      );
+    }
+  }
+
+  /**
+   * @summary Find one mark by markId
+   * @author  Jason
+   * @param   { number } markId
+   * @returns { Promise<MarkEntity> }
+   */
+  async findOneById(markId: number): Promise<MarkEntity> {
+    return await this.markRepository.findOne({
+      where: {
+        id: markId,
+      },
+    });
   }
 }

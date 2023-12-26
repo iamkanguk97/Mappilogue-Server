@@ -69,9 +69,9 @@ export class MarkEntity extends CommonEntity {
     mark.userId = userId;
     mark.title = title;
     mark.colorId = colorId;
-    mark.markCategoryId = markCategoryId;
-    mark.scheduleId = scheduleId;
-    mark.content = content;
+    mark.markCategoryId = markCategoryId ?? null;
+    mark.scheduleId = scheduleId ?? null;
+    mark.content = content ?? null;
 
     return mark;
   }

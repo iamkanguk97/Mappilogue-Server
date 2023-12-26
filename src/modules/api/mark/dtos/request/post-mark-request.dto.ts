@@ -82,7 +82,7 @@ export class PostMarkMainLocationObject extends PickType(MarkLocationEntity, [
   toMarkLocationEntityWithLocationInfo(markId: number): MarkLocationEntity {
     return MarkLocationEntity.from(
       markId,
-      undefined,
+      null,
       this.longitude,
       this.name,
       this.streetAddress,
@@ -155,7 +155,7 @@ export class PostMarkRequestDto {
   @Type(() => PostMarkMetadataObject)
   @IsArray(setValidatorContext(CommonExceptionCode.MustArrayType))
   @IsOptional()
-  markMetadata?: PostMarkMetadataObject[] | undefined;
+  markMetadata?: PostMarkMetadataObject[] | undefined = [];
 
   /**
    * @summary 기록 제목 결정하는 함수
