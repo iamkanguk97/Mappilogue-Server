@@ -10,7 +10,7 @@ import { isDefined } from './common.helper';
 export function setPageNo(pageNo?: number | undefined): number {
   return !isDefined(pageNo) || pageNo
     ? DefaultPaginationEnum.DEFAULT_PAGE_NO
-    : pageNo;
+    : Number(pageNo);
 }
 
 /**
@@ -22,5 +22,5 @@ export function setPageNo(pageNo?: number | undefined): number {
 export function setPageSize(pageSize?: number | undefined): number {
   return !isDefined(pageSize) || pageSize < 1
     ? DefaultPaginationEnum.DEFAULT_PAGE_SIZE
-    : pageSize;
+    : Number(pageSize);
 }
