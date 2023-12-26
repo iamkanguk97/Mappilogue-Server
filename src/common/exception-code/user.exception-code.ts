@@ -84,4 +84,12 @@ export const UserExceptionCode = {
     '사용자 알림 설정 조회 결과가 없습니다.',
   ),
   FcmTokenExpired: setExceptionCode('1026', '만료된 FCM Token 입니다.'),
+  GetHomeOptionEmpty: setExceptionCode(
+    '1027',
+    '홈화면 조회 옵션을 입력해주세요.',
+  ),
+  GetHomeOptionErrorType: setExceptionCode(
+    '1028',
+    '홈화면 조회 옵션은 today 또는 after로 입력해주세요.',
+  ),
 };

@@ -13,6 +13,7 @@ import { ResultWithPageDto } from 'src/common/dtos/pagination/result-with-page.d
 import { PageMetaDto } from 'src/common/dtos/pagination/page-meta.dto';
 import { PageOptionsDto } from 'src/common/dtos/pagination/page-options.dto';
 import { IMarkListByCategory } from '../types';
+import { USER_HOME_MARK_MAX_COUNT } from '../../user/constants/user-home.constant';
 
 @CustomRepository(MarkEntity)
 export class MarkRepository extends Repository<MarkEntity> {
@@ -117,5 +118,26 @@ export class MarkRepository extends Repository<MarkEntity> {
       result,
       new PageMetaDto({ pageOptionsDto, itemCount }),
     );
+  }
+
+  /**
+   * @summary 홈화면 내 기록 리스트 조회
+   * @author  Jason
+   * @param   { number } userId
+   * @returns
+   */
+  async selectMarkListInHome(userId: number): Promise<any[]> {
+    return await this.createQueryBuilder('M')
+      .select('M.id', 'id')
+      .addSelect('M.title', 'title')
+      .addSelect('M.colorId', 'colorId')
+      .addSelect('C.code', 'colorCode')
+      .innerJoin(ColorEntity, 'C', 'C.id = M.colorId')
+      .where('M.userId = :userId', { userId })
+      .andWhere('M.deletedAt IS NULL')
+      .andWhere('C.deletedAt IS NULL')
+      .orderBy('M.createdAt', 'DESC')
+      .limit(USER_HOME_MARK_MAX_COUNT)
+      .getRawMany();
   }
 }

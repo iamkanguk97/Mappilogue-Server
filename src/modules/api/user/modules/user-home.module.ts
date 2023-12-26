@@ -5,11 +5,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AnnouncementEntity } from '../entities/announcement.entity';
 import { CustomRepositoryModule } from 'src/modules/core/custom-repository/custom-repository.module';
 import { AnnouncementRepository } from '../repositories/announcement.repository';
+import { MarkRepository } from '../../mark/repositories/mark.repository';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([AnnouncementEntity]),
-    CustomRepositoryModule.forCustomRepository([AnnouncementRepository]),
+    CustomRepositoryModule.forCustomRepository([
+      AnnouncementRepository,
+      MarkRepository,
+    ]),
   ],
   controllers: [UserHomeController],
   providers: [UserHomeService],

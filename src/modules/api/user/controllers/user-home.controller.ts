@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Query,
   UseInterceptors,
 } from '@nestjs/common';
 import { DomainNameEnum } from 'src/constants/enum';
@@ -13,6 +14,9 @@ import { GetPagination } from 'src/decorators/get-paginate.decorator';
 import { PageOptionsDto } from 'src/common/dtos/pagination/page-options.dto';
 import { ResponseWithPageEntity } from 'src/common/entities/response-with-page.entity';
 import { AnnouncementEntity } from '../entities/announcement.entity';
+import { UserId } from '../decorators/user-id.decorator';
+import { GetHomeRequestDto } from '../dtos/request/get-home-request.dto';
+import { ResponseEntity } from 'src/common/entities/response.entity';
 
 @Controller(DomainNameEnum.USER_HOME)
 @UseInterceptors(ClassSerializerInterceptor)
@@ -22,7 +26,7 @@ export class UserHomeController {
   /**
    * @summary 공지사항 조회 API
    * @author  Jason
-   * @url     /api/v1/users/homes/announcements
+   * @url     /api/v1/users/homes/announcements?pageNo=&pageSize=
    * @returns { Promise<ResponseWithPageEntity<AnnouncementEntity[]>> }
    */
   @Public()
@@ -33,5 +37,21 @@ export class UserHomeController {
   ): Promise<ResponseWithPageEntity<AnnouncementEntity[]>> {
     const result = await this.userHomeService.findAnnouncements(pageOptionsDto);
     return ResponseWithPageEntity.OK_WITH_PAGINATION(HttpStatus.OK, result);
+  }
+
+  /**
+   * @summary 홈화면 조회 API
+   * @author  Jason
+   * @url     /api/v1/users/homes?option=
+   * @returns { Promise<ResponseEntity<GetHomeResponseDto>> }
+   */
+  @Get()
+  @HttpCode(HttpStatus.OK)
+  async getHomes(
+    @UserId() userId: number,
+    @Query() query: GetHomeRequestDto,
+  ): Promise<ResponseEntity<any>> {
+    const result = await this.userHomeService.findHomes(userId, query.option);
+    return ResponseEntity.OK_WITH(HttpStatus.OK, result);
   }
 }
