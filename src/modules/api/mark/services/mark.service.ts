@@ -29,7 +29,6 @@ import {
   ImageBuilderTypeEnum,
   MulterBuilder,
 } from 'src/common/multer/multer.builder';
-import { MarkCategoryHelper } from '../helpers/mark-category.helper';
 
 @Injectable()
 export class MarkService {
@@ -43,7 +42,6 @@ export class MarkService {
     private readonly markCategoryRepository: MarkCategoryRepository,
     private readonly scheduleService: ScheduleService,
     private readonly markHelper: MarkHelper,
-    private readonly markCategoryHelper: MarkCategoryHelper,
   ) {}
 
   /**
@@ -288,11 +286,14 @@ export class MarkService {
     queryRunner: QueryRunner,
     markCategoryId: number,
   ): Promise<void> {
-    await queryRunner.manager.softDelete(MarkEntity, { markCategoryId });
+    await queryRunner.manager.softDelete(
+      MarkEntity,
+      this.markHelper.setUpdateMarkCriteriaWithMarkCategory(markCategoryId),
+    );
   }
 
   /**
-   * @summary 기록에서 기록 카테고리를 NULL 처리함 (전체 카테고리로)
+   * @summary 기록 카테고리 삭제 API - 기록에서 기록 카테고리를 NULL 처리함 (전체 카테고리로)
    * @author  Jason
    * @param   { QueryRunner } queryRunner
    * @param   { number } markCategoryId
@@ -303,7 +304,7 @@ export class MarkService {
   ): Promise<void> {
     await queryRunner.manager.update(
       MarkEntity,
-      { markCategoryId },
+      this.markHelper.setUpdateMarkCriteriaWithMarkCategory(markCategoryId),
       { markCategoryId: () => 'NULL' },
     );
   }

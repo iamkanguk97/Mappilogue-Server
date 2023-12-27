@@ -13,6 +13,7 @@ import {
 } from '../dtos/request/post-mark-request.dto';
 import { MarkLocationEntity } from '../entities/mark-location.entity';
 import { TMarkImages } from '../types';
+import { MarkEntity } from '../entities/mark.entity';
 
 @Injectable()
 export class MarkHelper {
@@ -116,5 +117,17 @@ export class MarkHelper {
     }
     const isMainImageCount = this.getMarkMainImageStatusCount(metadata);
     return isMainImageCount === 1;
+  }
+
+  /**
+   * @summary 기록 수정 시 기록 카테고리 아이디를 통한 조건 생성 함수
+   * @author  Jason
+   * @param   { number } markCategoryId
+   * @returns { Pick<MarkEntity, 'markCategoryId'> }
+   */
+  setUpdateMarkCriteriaWithMarkCategory(
+    markCategoryId: number,
+  ): Pick<MarkEntity, 'markCategoryId'> {
+    return { markCategoryId };
   }
 }
