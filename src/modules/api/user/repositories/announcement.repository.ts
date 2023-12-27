@@ -18,10 +18,6 @@ export class AnnouncementRepository extends Repository<AnnouncementEntity> {
   ): Promise<ResultWithPageDto<AnnouncementEntity[]>> {
     const queryBuilder = this.createQueryBuilder('A');
 
-    console.log(pageOptionsDto);
-    console.log(pageOptionsDto.getOffset());
-    console.log(pageOptionsDto.getLimit());
-
     const result = await queryBuilder
       .select('A.id', 'id')
       .addSelect('A.title', 'title')
