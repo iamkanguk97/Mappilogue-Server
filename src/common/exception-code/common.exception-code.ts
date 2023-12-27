@@ -25,4 +25,12 @@ export const CommonExceptionCode = {
     '올바른 JSON 형식으로 입력해주시고 Multipart에서 이미지를 제외한 데이터는 항상 data라는 키로 JSON 형태로 보내주세요.',
   ),
   MustBooleanType: setExceptionCode('8012', 'Boolean 타입으로 입력해주세요.'),
+  PageNumberMustNumberType: setExceptionCode(
+    '8013',
+    '페이지 번호는 숫자로 입력해주세요.',
+  ),
+  PageSizeMustNumberType: setExceptionCode(
+    '8014',
+    '페이지 번호는 숫자로 입력해주세요.',
+  ),
 };

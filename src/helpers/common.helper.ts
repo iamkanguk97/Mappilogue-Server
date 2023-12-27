@@ -1,3 +1,4 @@
+import { isNaN } from 'lodash';
 import { CheckColumnEnum } from 'src/constants/enum';
 
 /**
@@ -38,4 +39,17 @@ export function isDefined<T>(value: T | undefined | null): boolean {
  */
 export function setCheckColumnByValue<T>(value: T): CheckColumnEnum {
   return isDefined(value) ? CheckColumnEnum.ACTIVE : CheckColumnEnum.INACTIVE;
+}
+
+/**
+ * @summary Numeric한 Value인지 확인 (매개변수는 무조건 문자열)
+ * @author  Jason
+ * @param   { string } value
+ * @returns { boolean }
+ */
+export function isNumeric(value: string): boolean {
+  if (typeof value !== 'string') {
+    return false;
+  }
+  return !isNaN(value) && !isNaN(parseFloat(value));
 }

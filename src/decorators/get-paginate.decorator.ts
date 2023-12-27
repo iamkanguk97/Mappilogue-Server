@@ -8,7 +8,7 @@ import { setPageNo, setPageSize } from 'src/helpers/paginate.helper';
  * @returns { PageOptionsDto }
  */
 export const GetPagination = createParamDecorator(
-  (_: unknown, ctx: ExecutionContext) => {
+  async (_: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
 
     const pageNo = setPageNo(request.query?.pageNo);

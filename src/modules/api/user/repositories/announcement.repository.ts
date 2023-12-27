@@ -16,17 +16,19 @@ export class AnnouncementRepository extends Repository<AnnouncementEntity> {
   async selectAnnouncements(
     pageOptionsDto: PageOptionsDto,
   ): Promise<ResultWithPageDto<AnnouncementEntity[]>> {
-    const queryBuilder = this.createQueryBuilder();
+    const queryBuilder = this.createQueryBuilder('A');
+
+    console.log(pageOptionsDto);
+    console.log(pageOptionsDto.getOffset());
+    console.log(pageOptionsDto.getLimit());
 
     const result = await queryBuilder
-      .select('id')
-      .addSelect('title')
-      .addSelect('content')
-      .addSelect(
-        'DATE_FORMAT(createdAt, "%Y년 %c월 %e일") AS announcementCreatedAt',
-      )
-      .where('deletedAt IS NULL')
-      .orderBy('createdAt', 'DESC')
+      .select('A.id', 'id')
+      .addSelect('A.title', 'title')
+      .addSelect('A.content', 'content')
+      .addSelect('DATE_FORMAT(A.createdAt, "%Y년 %c월 %e일") AS createdAt')
+      .where('A.deletedAt IS NULL')
+      .orderBy('A.createdAt', 'DESC')
       .offset(pageOptionsDto.getOffset())
       .limit(pageOptionsDto.getLimit())
       .getRawMany();
