@@ -6,6 +6,8 @@ import { AnnouncementEntity } from '../entities/announcement.entity';
 import { CustomRepositoryModule } from 'src/modules/core/custom-repository/custom-repository.module';
 import { AnnouncementRepository } from '../repositories/announcement.repository';
 import { MarkRepository } from '../../mark/repositories/mark.repository';
+import { ScheduleRepository } from '../../schedule/repositories/schedule.repository';
+import { ScheduleAreaRepository } from '../../schedule/repositories/schedule-area.repository';
 
 @Module({
   imports: [
@@ -13,6 +15,8 @@ import { MarkRepository } from '../../mark/repositories/mark.repository';
     CustomRepositoryModule.forCustomRepository([
       AnnouncementRepository,
       MarkRepository,
+      ScheduleRepository,
+      ScheduleAreaRepository,
     ]),
   ],
   controllers: [UserHomeController],

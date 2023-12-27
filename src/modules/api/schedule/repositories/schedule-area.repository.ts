@@ -34,4 +34,27 @@ export class ScheduleAreaRepository extends Repository<ScheduleAreaEntity> {
       .addOrderBy('SA.sequence')
       .getRawMany();
   }
+
+  /**
+   * @summary 홈화면 조회 -> 각 일정에 해당하는 장소 리스트 가져오기
+   * @author  Jason
+   * @param   { number } scheduleId
+   * @returns { Promise<ScheduleAreaEntity[]> }
+   */
+  async selectScheduleAreaListById(
+    scheduleId: number,
+  ): Promise<ScheduleAreaEntity[]> {
+    return await this.createQueryBuilder('SA')
+      .select('SA.id', 'id')
+      .addSelect('IFNULL(SA.name, "")', 'name')
+      .addSelect('IFNULL(SA.streetAddress, "")', 'streetAddress')
+      .addSelect('IFNULL(SA.latitude, "")', 'latitude')
+      .addSelect('IFNULL(SA.longitude, "")', 'longitude')
+      .addSelect('IFNULL(SA.time, "")', 'time')
+      .addSelect('SA.date', 'date')
+      .where('SA.scheduleId = :scheduleId', { scheduleId })
+      .andWhere('SA.date = DATE_FORMAT(NOW(), "%Y-%m-%d")')
+      .orderBy('SA.sequence', 'ASC')
+      .getRawMany();
+  }
 }

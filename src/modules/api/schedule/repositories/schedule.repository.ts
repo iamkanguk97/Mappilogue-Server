@@ -2,8 +2,14 @@ import { CustomRepository } from 'src/modules/core/custom-repository/decorators/
 import { ScheduleEntity } from '../entities/schedule.entity';
 import { Repository } from 'typeorm';
 import { ColorEntity } from '../../color/entities/color.entity';
-import { ISchedulesInCalendar, ISchedulesOnSpecificDate } from '../types';
+import {
+  IScheduleListInHomeOnToday,
+  ISchedulesInCalendar,
+  ISchedulesOnSpecificDate,
+} from '../types';
 import { ScheduleAreaEntity } from '../entities/schedule-area.entity';
+import { SCHEDULE_DEFAULT_TITLE } from '../constants/schedule.constant';
+import { ADDRGETNETWORKPARAMS } from 'dns';
 
 @CustomRepository(ScheduleEntity)
 export class ScheduleRepository extends Repository<ScheduleEntity> {
@@ -55,6 +61,33 @@ export class ScheduleRepository extends Repository<ScheduleEntity> {
       .andWhere('S.deletedAt IS NULL')
       .orderBy('S.startDate')
       .addOrderBy('S.createdAt')
+      .getRawMany();
+  }
+
+  /**
+   * @summary 홈화면 조회 -> 오늘의 일정 리스트 가져오기
+   * @author  Jason
+   * @param   { number } userId
+   * @returns { Promise<IScheduleListInHomeOnToday[]> }
+   */
+  async selectScheduleListInHomeOnToday(
+    userId: number,
+  ): Promise<IScheduleListInHomeOnToday[]> {
+    return await this.createQueryBuilder('S')
+      .select('S.id', 'id')
+      .addSelect(
+        `IF(S.title = "" OR ISNULL(S.title), "${SCHEDULE_DEFAULT_TITLE}", S.title)`,
+        'title',
+      )
+      .addSelect('S.colorId', 'colorId')
+      .addSelect('C.code', 'colorCode')
+      .innerJoin(ColorEntity, 'C', 'C.id = S.colorId')
+      .where('S.startDate <= DATE_FORMAT(NOW(), "%Y-%m-%d")')
+      .andWhere('S.endDate >= DATE_FORMAT(NOW(), "%Y-%m-%d")')
+      .andWhere('S.userId = :userId', { userId })
+      .andWhere('S.deletedAt IS NULL')
+      .andWhere('C.deletedAt IS NULL')
+      .orderBy('S.startDate')
       .getRawMany();
   }
 }
