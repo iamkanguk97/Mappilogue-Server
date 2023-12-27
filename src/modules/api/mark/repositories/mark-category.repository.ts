@@ -51,6 +51,8 @@ export class MarkCategoryRepository extends Repository<MarkCategoryEntity> {
       .limit(1)
       .getRawOne();
 
-    return !isDefined(result) ? MARK_CATEGORY_EMPTY_SEQUENCE : result.sequence;
+    return !isDefined(result)
+      ? MARK_CATEGORY_EMPTY_SEQUENCE
+      : Number(result.sequence);
   }
 }

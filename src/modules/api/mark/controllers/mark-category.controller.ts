@@ -60,9 +60,8 @@ export class MarkCategoryController {
   ): Promise<ResponseEntity<PostMarkCategoryResponseDto>> {
     const result = await this.markCategoryService.createMarkCategory(
       userId,
-      body.title,
+      body,
     );
-
     return ResponseEntity.OK_WITH(HttpStatus.CREATED, result);
   }
 

@@ -41,12 +41,14 @@ export class MarkCategoryEntity extends CommonEntity {
     userId: number,
     title: string,
     sequence: number,
+    isMarkedInMap?: CheckColumnEnum | undefined,
   ): MarkCategoryEntity {
     const markCategory = new MarkCategoryEntity();
 
     markCategory.userId = userId;
     markCategory.title = title;
     markCategory.sequence = sequence;
+    markCategory.isMarkedInMap = isMarkedInMap;
 
     return markCategory;
   }

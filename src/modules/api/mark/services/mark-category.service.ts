@@ -13,6 +13,7 @@ import { MarkService } from './mark.service';
 import { MarkRepository } from '../repositories/mark.repository';
 import { isDefined } from 'src/helpers/common.helper';
 import { PutMarkCategoryObject } from '../dtos/request/put-mark-category-request.dto';
+import { PostMarkCategoryRequestDto } from '../dtos/request/post-mark-category-request.dto';
 
 @Injectable()
 export class MarkCategoryService {
@@ -71,46 +72,28 @@ export class MarkCategoryService {
    * @summary 기록 카테고리 생성하기 API Service
    * @author  Jason
    * @param   { number } userId
-   * @param   { string } title
+   * @param   { PostMarkCategoryRequestDto } body
    * @returns { Promise<PostMarkCategoryResponseDto> }
    */
   async createMarkCategory(
     userId: number,
-    title: string,
+    body: PostMarkCategoryRequestDto,
   ): Promise<PostMarkCategoryResponseDto> {
-    let newMarkCategoryId: number;
-    let newMarkCategorySequenceNo: number;
-
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    try {
-      const lastCategorySequenceNo =
-        await this.markCategoryRepository.selectLastMarkCategorySequenceNo(
-          userId,
-        );
-      newMarkCategorySequenceNo = lastCategorySequenceNo + 1;
-
-      newMarkCategoryId = (
-        await this.markCategoryRepository.save(
-          MarkCategoryEntity.from(userId, title, newMarkCategorySequenceNo),
-        )
-      ).id;
-
-      await queryRunner.commitTransaction();
-      return PostMarkCategoryResponseDto.from(
-        newMarkCategoryId,
-        title,
-        newMarkCategorySequenceNo,
+    const lastCategorySequenceNo =
+      await this.markCategoryRepository.selectLastMarkCategorySequenceNo(
+        userId,
       );
-    } catch (err) {
-      this.logger.error(`[createMarkCategory - transaction error] ${err}`);
-      await queryRunner.rollbackTransaction();
-      throw err;
-    } finally {
-      await queryRunner.release();
-    }
+    const newMarkCategorySequenceNo = lastCategorySequenceNo + 1;
+
+    const { id: newMarkCategoryId } = await this.markCategoryRepository.save(
+      body.toEntity(userId, newMarkCategorySequenceNo),
+    );
+
+    return PostMarkCategoryResponseDto.from(
+      newMarkCategoryId,
+      body.title,
+      newMarkCategorySequenceNo,
+    );
   }
 
   /**

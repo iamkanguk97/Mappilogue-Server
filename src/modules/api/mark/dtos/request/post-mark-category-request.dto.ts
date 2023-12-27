@@ -19,4 +19,8 @@ export class PostMarkCategoryRequestDto extends PickType(MarkCategoryEntity, [
     setValidatorContext(MarkCategoryExceptionCode.MarkCategoryTitleEmpty),
   )
   title: string;
+
+  toEntity(userId: number, sequence: number): MarkCategoryEntity {
+    return MarkCategoryEntity.from(userId, this.title, sequence);
+  }
 }
