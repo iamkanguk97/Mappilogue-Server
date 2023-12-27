@@ -1,7 +1,7 @@
 import { GetMarkCategoriesResponseDto } from '../dtos/response/get-mark-categories-response.dto';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { MarkCategoryRepository } from '../repositories/mark-category.repository';
-import { DataSource } from 'typeorm';
+import { DataSource, QueryRunner } from 'typeorm';
 import { MarkCategoryEntity } from '../entities/mark-category.entity';
 import { PostMarkCategoryResponseDto } from '../dtos/response/post-mark-category-response.dto';
 import { PatchMarkCategoryTitleRequestDto } from '../dtos/request/patch-mark-category-title-request.dto';
@@ -114,8 +114,14 @@ export class MarkCategoryService {
 
     try {
       await Promise.all([
-        this.markCategoryRepository.softDelete({ userId, id: markCategoryId }),
-        this.updateMarkStatusInMarkDelete(option, markCategoryId),
+        queryRunner.manager.softDelete(
+          MarkCategoryEntity,
+          this.markCategoryHelper.setUpdateMarkCategoryCriteriaWithUserId(
+            markCategoryId,
+            userId,
+          ),
+        ),
+        this.updateMarkStatusInMarkDelete(queryRunner, option, markCategoryId),
       ]);
 
       await queryRunner.commitTransaction();
@@ -203,19 +209,27 @@ export class MarkCategoryService {
   /**
    * @summary option에 따라 Mark 삭제 여부 판단
    * @author  Jason
+   * @param   { QueryRunner } queryRunner
    * @param   { DeleteMarkCategoryOptionEnum } option
    * @param   { number } markCategoryId
    */
   async updateMarkStatusInMarkDelete(
+    queryRunner: QueryRunner,
     option: DeleteMarkCategoryOptionEnum,
     markCategoryId: number,
   ): Promise<void> {
     switch (option) {
       case DeleteMarkCategoryOptionEnum.ALL:
-        await this.markService.removeMarkByCategoryId(markCategoryId);
+        await this.markService.removeMarkByCategoryId(
+          queryRunner,
+          markCategoryId,
+        );
         return;
       case DeleteMarkCategoryOptionEnum.ONLY:
-        await this.markService.modifyMarkCategoryIdToNullInMark(markCategoryId);
+        await this.markService.modifyMarkCategoryIdToNullInMark(
+          queryRunner,
+          markCategoryId,
+        );
         return;
       default:
         throw new BadRequestException(

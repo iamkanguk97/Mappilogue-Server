@@ -82,9 +82,9 @@ export class MarkCategoryController {
   /**
    * @summary 기록 카테고리 삭제 API
    * @author  Jason
-   * @url     [DELETE] /api/v1/marks/categories/{markCategoryId}?option=
+   * @url     [DELETE] /api/v1/marks/categories/{id}?option=
    */
-  @Delete('/:markCategoryId')
+  @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteMarkCategory(
     @UserId() userId: number,
@@ -93,7 +93,7 @@ export class MarkCategoryController {
   ): Promise<void> {
     await this.markCategoryService.removeMarkCategory(
       userId,
-      param.markCategoryId,
+      param.id,
       query.option,
     );
   }

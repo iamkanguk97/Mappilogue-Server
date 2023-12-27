@@ -29,6 +29,7 @@ import {
   ImageBuilderTypeEnum,
   MulterBuilder,
 } from 'src/common/multer/multer.builder';
+import { MarkCategoryHelper } from '../helpers/mark-category.helper';
 
 @Injectable()
 export class MarkService {
@@ -42,6 +43,7 @@ export class MarkService {
     private readonly markCategoryRepository: MarkCategoryRepository,
     private readonly scheduleService: ScheduleService,
     private readonly markHelper: MarkHelper,
+    private readonly markCategoryHelper: MarkCategoryHelper,
   ) {}
 
   /**
@@ -277,23 +279,30 @@ export class MarkService {
   }
 
   /**
-   * @summary 기록 카테고리 아이디로 기록 삭제하기
+   * @summary 기록 카테고리 삭제하기 API -> 기록 카테고리 아이디로 기록 삭제하기
    * @author  Jason
+   * @param   { QueryRunner } queryRunner
    * @param   { number } markCategoryId
    */
-  async removeMarkByCategoryId(markCategoryId: number): Promise<void> {
-    await this.markRepository.softDelete({ markCategoryId });
+  async removeMarkByCategoryId(
+    queryRunner: QueryRunner,
+    markCategoryId: number,
+  ): Promise<void> {
+    await queryRunner.manager.softDelete(MarkEntity, { markCategoryId });
   }
 
   /**
    * @summary 기록에서 기록 카테고리를 NULL 처리함 (전체 카테고리로)
    * @author  Jason
+   * @param   { QueryRunner } queryRunner
    * @param   { number } markCategoryId
    */
   async modifyMarkCategoryIdToNullInMark(
+    queryRunner: QueryRunner,
     markCategoryId: number,
   ): Promise<void> {
-    await this.markRepository.update(
+    await queryRunner.manager.update(
+      MarkEntity,
       { markCategoryId },
       { markCategoryId: () => 'NULL' },
     );
