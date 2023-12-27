@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { MarkCategoryDto } from '../dtos/mark-category.dto';
 import { PutMarkCategoryObject } from '../dtos/request/put-mark-category-request.dto';
+import { MarkCategoryEntity } from '../entities/mark-category.entity';
 
 @Injectable()
 export class MarkCategoryHelper {
@@ -29,5 +30,19 @@ export class MarkCategoryHelper {
     }
 
     return true;
+  }
+
+  /**
+   * @summary 기록 카테고리 수정시 조건 생성 함수
+   * @author  Jason
+   * @param   { number } id    // 기록 카테고리 아이디
+   * @param   { number } userId   // 사용자 아이디
+   * @returns { Pick<MarkCategoryEntity, 'id' | 'userId'> }
+   */
+  setUpdateMarkCategoryCriteriaWithUserId(
+    id: number,
+    userId: number,
+  ): Pick<MarkCategoryEntity, 'id' | 'userId'> {
+    return { id, userId };
   }
 }

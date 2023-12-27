@@ -139,11 +139,11 @@ export class MarkCategoryService {
     body: PatchMarkCategoryTitleRequestDto,
   ): Promise<void> {
     await this.markCategoryRepository.update(
-      {
-        id: body.markCategoryId,
+      this.markCategoryHelper.setUpdateMarkCategoryCriteriaWithUserId(
+        body.id,
         userId,
-      },
-      { title: body.title },
+      ),
+      body.toEntity(),
     );
   }
 
@@ -229,7 +229,6 @@ export class MarkCategoryService {
    * @author  Jason
    * @param   { number } userId
    * @param   { number } markCategoryId
-   * @returns
    */
   async checkMarkCategoryStatus(
     userId: number,

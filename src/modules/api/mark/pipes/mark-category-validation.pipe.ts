@@ -20,10 +20,10 @@ export class MarkCategoryValidationPipe implements PipeTransform {
     private readonly markCategoryService: MarkCategoryService,
   ) {}
 
-  async transform<T extends { markCategoryId: number }>(value: T): Promise<T> {
+  async transform<T extends { id: number }>(value: T): Promise<T> {
     try {
       const userId = this.request['user'].id;
-      const markCategoryId = value.markCategoryId;
+      const markCategoryId = value.id;
 
       if (!isDefined(markCategoryId)) {
         throw new BadRequestException(
