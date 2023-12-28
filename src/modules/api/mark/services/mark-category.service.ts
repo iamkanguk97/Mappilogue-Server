@@ -36,36 +36,25 @@ export class MarkCategoryService {
   async findMarkCategories(
     userId: number,
   ): Promise<GetMarkCategoriesResponseDto> {
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+    const [markWithCategoryResult, markExceptCategoryCount] = await Promise.all(
+      [
+        this.markCategoryRepository.selectMarkCategoriesByUserId(userId),
+        this.markRepository.selectMarkExceptCategoryCount(userId),
+      ],
+    );
 
-    try {
-      const result =
-        await this.markCategoryRepository.selectMarkCategoriesByUserId(userId);
+    const markWithCategoryCount = markWithCategoryResult.reduce(
+      (acc, obj) => acc + Number(obj.markCount),
+      0,
+    ); // 카테고리 있는 기록 개수: result에서 MarkCount를 더해주면 됨
 
-      const markExceptCategoryCount =
-        await this.markRepository.selectMarkExceptCategoryCount(userId); // 카테고리 없는 기록 개수
-      const markHaveCategoryCount = result.reduce(
-        (acc, obj) => acc + Number(obj.markCount),
-        0,
-      ); // 카테고리 있는 기록 개수: result에서 MarkCount를 더해주면 됨
+    const totalCategoryMarkCount =
+      markExceptCategoryCount + markWithCategoryCount;
 
-      const totalCategoryMarkCount =
-        markExceptCategoryCount + markHaveCategoryCount;
-
-      await queryRunner.commitTransaction();
-      return GetMarkCategoriesResponseDto.from(
-        totalCategoryMarkCount,
-        result.map((r) => MarkCategoryDto.of(r)),
-      );
-    } catch (err) {
-      this.logger.error(`[findMarkCategories - transaction error] ${err}`);
-      await queryRunner.rollbackTransaction();
-      throw err;
-    } finally {
-      await queryRunner.release();
-    }
+    return GetMarkCategoriesResponseDto.from(
+      totalCategoryMarkCount,
+      markWithCategoryResult.map((result) => MarkCategoryDto.of(result)),
+    );
   }
 
   /**
