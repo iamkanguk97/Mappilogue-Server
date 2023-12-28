@@ -14,6 +14,7 @@ import { PutUserAlarmSettingRequestDto } from '../dtos/request/put-user-alarm-se
 import { isDefined } from 'src/helpers/common.helper';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 import { UserProfileHelper } from '../helpers/user-profile.helper';
+import { UserHelper } from '../helpers/user.helper';
 
 @Injectable()
 export class UserProfileService {
@@ -22,6 +23,7 @@ export class UserProfileService {
   constructor(
     private readonly dataSource: DataSource,
     private readonly userService: UserService,
+    private readonly userHelper: UserHelper,
     private readonly userProfileHelper: UserProfileHelper,
     private readonly userAlarmSettingRepository: UserAlarmSettingRepository,
   ) {}
@@ -74,13 +76,12 @@ export class UserProfileService {
         imageDeleteBuilder.delete(user.profileImageKey),
       ]);
 
-      await queryRunner.commitTransaction();
       return PatchUserProfileImageResponseDto.from(
         user.id,
         updateProfileImageParam.profileImageUrl,
       );
     } catch (err) {
-      this.logger.error(`[modifyUserProfileImage - transaction error] ${err}`);
+      this.logger.error(`[modifyUserProfileImage - transacton error] ${err}`);
       await queryRunner.rollbackTransaction();
       throw err;
     } finally {
@@ -96,9 +97,7 @@ export class UserProfileService {
    */
   async findUserAlarmSettingById(userId: number): Promise<UserAlarmSettingDto> {
     const result = await this.userAlarmSettingRepository.findOne({
-      where: {
-        userId,
-      },
+      where: this.userHelper.setUpdateUserCriteriaByUserId(userId),
     });
 
     if (!isDefined(result)) {
@@ -120,6 +119,9 @@ export class UserProfileService {
     userId: number,
     body: PutUserAlarmSettingRequestDto,
   ): Promise<void> {
-    await this.userAlarmSettingRepository.update({ userId }, body.toEntity());
+    await this.userAlarmSettingRepository.update(
+      this.userHelper.setUpdateUserCriteriaByUserId(userId),
+      body.toEntity(),
+    );
   }
 }

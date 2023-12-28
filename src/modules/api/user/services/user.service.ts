@@ -270,10 +270,12 @@ export class UserService {
     properties: Partial<UserEntity>,
     queryRunner?: QueryRunner | undefined,
   ): Promise<void> {
+    const criteria = this.userHelper.setUpdateUserCriteria(userId);
+
     if (isDefined(queryRunner)) {
-      await queryRunner.manager.update(UserEntity, { id: userId }, properties);
+      await queryRunner.manager.update(UserEntity, criteria, properties);
       return;
     }
-    await this.userRepository.update({ id: userId }, properties);
+    await this.userRepository.update(criteria, properties);
   }
 }

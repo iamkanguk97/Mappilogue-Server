@@ -5,9 +5,12 @@ import { CustomCacheService } from 'src/modules/core/custom-cache/services/custo
 import { CustomJwtPayload } from 'src/modules/core/auth/types';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 import { isDefined } from 'src/helpers/common.helper';
+import { NotificationErrorCodeEnum } from 'src/modules/core/notification/constants/notification.enum';
 
 import * as firebase from 'firebase-admin';
-import { NotificationErrorCodeEnum } from 'src/modules/core/notification/constants/notification.enum';
+import { UserAlarmSettingEntity } from '../entities/user-alarm-setting.entity';
+import { UserAlarmHistoryEntity } from '../entities/user-alarm-history.entity';
+import { UserWithdrawReasonEntity } from '../entities/user-withdraw-reason.entity';
 
 @Injectable()
 export class UserHelper {
@@ -90,5 +93,30 @@ export class UserHelper {
           throw err;
       }
     }
+  }
+
+  /**
+   * @summary 사용자 수정 조건 생성 함수
+   * @author  Jason
+   * @param   { number } id
+   * @returns { Pick<UserEntity, 'id'> }
+   */
+  setUpdateUserCriteria(id: number): Pick<UserEntity, 'id'> {
+    return { id };
+  }
+
+  /**
+   * @summary 사용자 연관 도메인 수정 조건 생성함수
+   * @author  Jason
+   * @param   { number } userId
+   * @returns { Pick<UserAlarmSettingEntity | UserAlarmHistoryEntity | UserWithdrawReasonEntity, 'userId'> }
+   */
+  setUpdateUserCriteriaByUserId(
+    userId: number,
+  ): Pick<
+    UserAlarmSettingEntity | UserAlarmHistoryEntity | UserWithdrawReasonEntity,
+    'userId'
+  > {
+    return { userId };
   }
 }
