@@ -38,7 +38,7 @@ export class UserProfileController {
   /**
    * @summary 사용자 프로필 조회 API
    * @author  Jason
-   * @url     [GET] /api/v1/users/profiles
+   * @url     [GET] /api/v1/user-profiles
    * @returns { ResponseEntity<DecodedUserToken> }
    */
   @Get()
@@ -53,7 +53,7 @@ export class UserProfileController {
   /**
    * @summary 닉네임 수정 API
    * @author  Jason
-   * @url     [PATCH] /api/v1/users/profiles/nicknames
+   * @url     [PATCH] /api/v1/user-profiles/nicknames
    */
   @Patch('nicknames')
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -67,7 +67,7 @@ export class UserProfileController {
   /**
    * @summary 프로필 이미지 수정 API
    * @author  Jason
-   * @url     [PATCH] /api/v1/users/profiles/images
+   * @url     [PATCH] /api/v1/user-profiles/images
    * @returns { Promise<ResponseEntity<PatchUserProfileImageResponseDto>> }
    */
   @UseInterceptors(
@@ -93,7 +93,7 @@ export class UserProfileController {
   /**
    * @summary 사용자 알림 설정 조회 API
    * @author  Jason
-   * @url     [GET] /api/v1/users/profiles/alarm-settings
+   * @url     [GET] /api/v1/user-profiles/alarm-settings
    * @returns { Promise<ResponseEntity<UserAlarmSettingDto>> }
    */
   @Get('alarm-settings')
@@ -110,7 +110,7 @@ export class UserProfileController {
   /**
    * @summary 사용자 알림 설정 수정 API
    * @author  Jason
-   * @url     [PUT] /api/v1/users/profiles/alarm-settings
+   * @url     [PUT] /api/v1/user-profiles/alarm-settings
    */
   @Put('alarm-settings')
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -124,7 +124,7 @@ export class UserProfileController {
   /**
    * @summary 이용약관 조회 API
    * @author  Jason
-   * @url     [GET] /api/v1/users/profiles/terms-of-services
+   * @url     [GET] /api/v1/user-profiles/terms-of-services
    * @returns { ResponseEntity<{ link: string }> }
    */
   @Public()
