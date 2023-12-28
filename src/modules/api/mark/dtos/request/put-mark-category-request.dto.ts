@@ -30,6 +30,16 @@ export class PutMarkCategoryObject extends PickType(MarkCategoryEntity, [
   )
   @IsNotEmpty(setValidatorContext(MarkCategoryExceptionCode.IsMarkedInMapEmpty))
   isMarkedInMap: CheckColumnEnum;
+
+  toEntity(sequence: number): MarkCategoryEntity {
+    const markCategory = new MarkCategoryEntity();
+
+    markCategory.id = this.id;
+    markCategory.isMarkedInMap = this.isMarkedInMap;
+    markCategory.sequence = sequence;
+
+    return markCategory;
+  }
 }
 
 export class PutMarkCategoryRequestDto {

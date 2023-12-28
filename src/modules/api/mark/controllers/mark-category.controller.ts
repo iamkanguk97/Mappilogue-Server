@@ -34,7 +34,7 @@ export class MarkCategoryController {
   /**
    * @summary 기록 카테고리 조회 API
    * @author  Jason
-   * @url     [GET] /api/v1/marks/categories
+   * @url     [GET] /api/v1/mark-categories
    * @returns { Promise<ResponseEntity<GetMarkCategoriesResponseDto>> }
    */
   @Get()
@@ -49,7 +49,7 @@ export class MarkCategoryController {
   /**
    * @summary 기록 카테고리 생성 API
    * @author  Jason
-   * @url     [POST] /api/v1/marks/categories
+   * @url     [POST] /api/v1/mark-categories
    * @returns { Promise<ResponseEntity<PostMarkCategoryResponseDto>>}
    */
   @Post()
@@ -68,7 +68,7 @@ export class MarkCategoryController {
   /**
    * @summary 기록 카테고리 이름 수정 API
    * @author  Jason
-   * @url     [PATCH] /api/v1/marks/categories
+   * @url     [PATCH] /api/v1/mark-categories
    */
   @Patch()
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -82,7 +82,7 @@ export class MarkCategoryController {
   /**
    * @summary 기록 카테고리 삭제 API
    * @author  Jason
-   * @url     [DELETE] /api/v1/marks/categories/{id}?option=
+   * @url     [DELETE] /api/v1/mark-categories/{id}?option=
    */
   @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -101,7 +101,7 @@ export class MarkCategoryController {
   /**
    * @summary 기록 카테고리 순서 수정 API
    * @author  Jason
-   * @url     [PUT] /api/v1/marks/categories
+   * @url     [PUT] /api/v1/mark-categories
    */
   @Put()
   @HttpCode(HttpStatus.NO_CONTENT)

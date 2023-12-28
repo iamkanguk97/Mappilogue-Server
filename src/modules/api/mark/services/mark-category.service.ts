@@ -152,47 +152,33 @@ export class MarkCategoryService {
     userId: number,
     categories: PutMarkCategoryObject[],
   ): Promise<void> {
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+    const markCategoriesBeforeUpdate =
+      await this.markCategoryRepository.selectMarkCategoriesByUserId(userId);
 
-    try {
-      const markCategoriesBeforeUpdate =
-        await this.markCategoryRepository.selectMarkCategoriesByUserId(userId);
-
-      const isEqualWithRequestData =
-        this.markCategoryHelper.isMarkCategoryEqualWithRequestById(
-          markCategoriesBeforeUpdate.map((r) => MarkCategoryDto.of(r)),
-          categories,
-        );
-
-      if (!isEqualWithRequestData) {
-        throw new BadRequestException(
-          MarkCategoryExceptionCode.MarkCategoryNotEqualWithModel,
-        );
-      }
-
-      await Promise.all(
-        categories.map(
-          async (category, idx) =>
-            await this.markCategoryRepository.update(
-              { id: category.id, userId },
-              {
-                sequence: idx + 1,
-                isMarkedInMap: category.isMarkedInMap,
-              },
-            ),
-        ),
+    const isEqualWithRequestData =
+      this.markCategoryHelper.isMarkCategoryEqualWithRequestById(
+        markCategoriesBeforeUpdate.map((r) => MarkCategoryDto.of(r)),
+        categories,
       );
 
-      await queryRunner.commitTransaction();
-    } catch (err) {
-      this.logger.error(`[modifyMarkCategory - transaction error] ${err}`);
-      await queryRunner.rollbackTransaction();
-      throw err;
-    } finally {
-      await queryRunner.release();
+    if (!isEqualWithRequestData) {
+      throw new BadRequestException(
+        MarkCategoryExceptionCode.MarkCategoryNotEqualWithModel,
+      );
     }
+
+    await Promise.all(
+      categories.map(
+        async (category, idx) =>
+          await this.markCategoryRepository.update(
+            this.markCategoryHelper.setUpdateMarkCategoryCriteriaWithUserId(
+              category.id,
+              userId,
+            ),
+            category.toEntity(idx + 1),
+          ),
+      ),
+    );
   }
 
   /**
