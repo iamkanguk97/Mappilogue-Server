@@ -22,10 +22,11 @@ export class UserHelper {
   ) {}
 
   /**
-   * @title refresh-token이 redis에 저장되어있는 refresh-token과  동일한지 확인
-   * @param userId
-   * @param refreshToken
-   * @returns
+   * @summary refresh-token이 redis에 저장되어있는 refresh-token과  동일한지 확인
+   * @author  Jason
+   * @param   { number } userId
+   * @param   { string } refreshToken
+   * @returns { Promise<boolean> }
    */
   async isRefreshTokenIsEqualWithRedis(
     userId: number,
@@ -39,11 +40,14 @@ export class UserHelper {
   }
 
   /**
-   * @title 전달받은 refresh-token이 유효한지 확인
-   * @param user
-   * @param refreshPayload
-   * @param refreshToken
-   * @returns
+   * @summary 전달받은 refresh-token이 유효한지 확인
+   * @author  Jason
+   *
+   * @param   { CustomJwtPayload } refreshPayload
+   * @param   { string } refreshToken
+   * @param   { UserEntity | undefined } user
+   *
+   * @returns { Promise<boolean> }
    */
   async isUserRefreshTokenValid(
     refreshPayload: CustomJwtPayload,

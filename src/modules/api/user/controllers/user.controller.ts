@@ -11,7 +11,6 @@ import { LoginOrSignUpRequestDto } from '../dtos/login-or-sign-up-request.dto';
 import { ResponseEntity } from 'src/common/entities/response.entity';
 import { UserService } from '../services/user.service';
 import { TokenRefreshRequestDto } from '../dtos/token-refresh-request.dto';
-import * as _ from 'lodash';
 import { TokenRefreshResponseDto } from '../dtos/token-refresh-response.dto';
 import { LoginOrSignUpResponseDto } from '../dtos/login-or-sign-up-response.dto';
 import { UserSocialFactory } from '../factories/user-social.factory';
@@ -22,7 +21,10 @@ import { DecodedUserToken } from '../types';
 import { PostUserWithdrawRequestDto } from '../dtos/post-user-withdraw-request.dto';
 import { DomainNameEnum } from 'src/constants/enum';
 
+import * as _ from 'lodash';
+
 @Controller(DomainNameEnum.USER)
+@UseInterceptors(ClassSerializerInterceptor)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -52,8 +54,13 @@ export class UserController {
     return ResponseEntity.OK_WITH(HttpStatus.CREATED, loginResult);
   }
 
+  /**
+   * @summary 토큰 재발급 API
+   * @author  Jason
+   * @url     /api/v1/users/token-refresh
+   * @returns { Promise<ResponseEntity<TokenRefreshResponseDto>> }
+   */
   @Public()
-  @UseInterceptors(ClassSerializerInterceptor)
   @Post('token-refresh')
   @HttpCode(HttpStatus.CREATED)
   async postTokenRefresh(
@@ -63,12 +70,22 @@ export class UserController {
     return ResponseEntity.OK_WITH(HttpStatus.CREATED, result);
   }
 
+  /**
+   * @summary 로그아웃 API
+   * @author  Jason
+   * @url     [POST] /api/v1/users/logout
+   */
   @Post('logout')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async logout(@UserId() userId: number): Promise<void> {
+  async postLogout(@UserId() userId: number): Promise<void> {
     await this.userService.logout(userId);
   }
 
+  /**
+   * @summary 회원탈퇴 API
+   * @author  Jason
+   * @url     [POST] /api/v1/users/withdrawal
+   */
   @Post('withdrawal')
   @HttpCode(HttpStatus.NO_CONTENT)
   async postWithdraw(

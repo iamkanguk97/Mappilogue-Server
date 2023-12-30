@@ -113,42 +113,35 @@ export class UserService {
     }
   }
 
+  /**
+   * @summary 토큰 재발급 API Service
+   * @author  Jason
+   * @param   { string } refreshToken
+   * @returns { Promise<TokenRefreshResponseDto> }
+   */
   async createTokenRefresh(
     refreshToken: string,
   ): Promise<TokenRefreshResponseDto> {
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+    const refreshPayload = this.jwtService.decode(
+      refreshToken,
+    ) as CustomJwtPayload;
+    const userId = refreshPayload?.userId;
 
-    try {
-      const refreshPayload = this.jwtService.decode(
+    const checkUserStatus = await this.findOneById(userId);
+
+    const isUserRefreshTokenValidResult =
+      await this.userHelper.isUserRefreshTokenValid(
+        refreshPayload,
         refreshToken,
-      ) as CustomJwtPayload;
-      const checkUserStatus = await this.findOneById(refreshPayload?.userId);
+        checkUserStatus,
+      );
 
-      const isUserRefreshTokenValidResult =
-        await this.userHelper.isUserRefreshTokenValid(
-          refreshPayload,
-          refreshToken,
-          checkUserStatus,
-        );
-
-      if (!isUserRefreshTokenValidResult) {
-        throw new UnauthorizedException(UserExceptionCode.InvalidRefreshToken);
-      }
-
-      const userId = refreshPayload.userId;
-      const result = await this.authService.setUserToken(userId);
-
-      await queryRunner.commitTransaction();
-      return TokenRefreshResponseDto.from(userId, result);
-    } catch (err) {
-      this.logger.error(`[createTokenRefresh - transaction error] ${err}`);
-      await queryRunner.rollbackTransaction();
-      throw err;
-    } finally {
-      await queryRunner.release();
+    if (!isUserRefreshTokenValidResult) {
+      throw new UnauthorizedException(UserExceptionCode.InvalidRefreshToken);
     }
+
+    const result = await this.authService.setUserToken(userId);
+    return TokenRefreshResponseDto.from(userId, result);
   }
 
   async createUser(
@@ -161,15 +154,19 @@ export class UserService {
     });
   }
 
+  /**
+   * @summary 로그아웃 API Service
+   * @author  Jason
+   * @param   { number } userId
+   */
   async logout(userId: number): Promise<void> {
+    const refreshTokenRedisKey = this.jwtHelper.getRefreshTokenRedisKey(userId);
+
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
-      const refreshTokenRedisKey =
-        this.jwtHelper.getRefreshTokenRedisKey(userId);
-
       await this.customCacheService.delValue(refreshTokenRedisKey);
       await this.modifyById(userId, { fcmToken: null });
 
@@ -246,15 +243,21 @@ export class UserService {
     return result.map((r) => r.alarmDate);
   }
 
-  async findOneById(userId?: number | undefined): Promise<UserEntity> {
-    return await this.userRepository.findOne({
-      where: { id: Equal(userId) },
-    });
-  }
-
   async findOneBySnsId(socialId: string): Promise<UserEntity> {
     return await this.userRepository.findOne({
       where: { snsId: socialId },
+    });
+  }
+
+  /**
+   * @summary find one user by id
+   * @author  Jason
+   * @param   { number | undefined } userId
+   * @returns { Promise<UserEntity> }
+   */
+  async findOneById(userId?: number | undefined): Promise<UserEntity> {
+    return await this.userRepository.findOne({
+      where: { id: Equal(userId) },
     });
   }
 

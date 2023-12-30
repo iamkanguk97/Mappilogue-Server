@@ -18,9 +18,10 @@ export class JwtHelper {
   ) {}
 
   /**
-   * @title Access-Token 생성하는 함수
-   * @param userId
-   * @returns
+   * @summary Access-Token 생성하는 함수
+   * @author  Jason
+   * @param   { number } userId
+   * @returns { string }
    */
   generateAccessToken(userId: number): string {
     return this.jwtService.sign(
@@ -36,9 +37,10 @@ export class JwtHelper {
   }
 
   /**
-   * @title Refresh-Token 생성함수
-   * @param userId
-   * @returns
+   * @summary Refresh-Token 생성함수
+   * @author  Jason
+   * @param   { number } userId
+   * @returns { string }
    */
   generateRefreshToken(userId: number): string {
     return this.jwtService.sign(
@@ -54,8 +56,9 @@ export class JwtHelper {
   }
 
   /**
-   * @title Access-Token 만료시간 가져오는 함수
-   * @returns
+   * @summary Access-Token 만료시간 가져오는 함수
+   * @author  Jason
+   * @returns { string }
    */
   getAccessTokenExpireTime(): string {
     return this.customConfigService.get<string>(ENVIRONMENT_KEY.NODE_ENV) ===
@@ -65,8 +68,9 @@ export class JwtHelper {
   }
 
   /**
-   * @title Refresh-Token 만료시간 가져오는 함수
-   * @returns
+   * @summary Refresh-Token 만료시간 가져오는 함수
+   * @author  Jason
+   * @returns { string }
    */
   getRefreshTokenExpireTime(): string {
     return this.customConfigService.get<string>(ENVIRONMENT_KEY.NODE_ENV) ===
@@ -76,9 +80,10 @@ export class JwtHelper {
   }
 
   /**
-   * @title Refresh-Token의 Payload가 유효한지 확인하는 함수
-   * @param refreshTokenPayload
-   * @returns
+   * @summary Refresh-Token의 Payload가 유효한지 확인하는 함수
+   * @author  Jason
+   * @param   { CustomJwtPayload | undefined } refreshTokenPayload
+   * @returns { boolean }
    */
   isRefreshTokenPayloadValid(
     refreshTokenPayload?: CustomJwtPayload | undefined,
@@ -90,18 +95,20 @@ export class JwtHelper {
   }
 
   /**
-   * @title Redis에 저장되어 있는 Refresh-Token Search 하는 Key 가져오는 함수
-   * @param userId
-   * @returns
+   * @summary Redis에 저장되어 있는 Refresh-Token Search 하는 Key 가져오는 함수
+   * @author  Jason
+   * @param   { number } userId
+   * @returns { string }
    */
   getRefreshTokenRedisKey(userId: number): string {
     return `refresh_userId_${userId}`;
   }
 
   /**
-   * @title Redis에 Refresh-Token 저장하는 함수
-   * @param userId
-   * @param refreshToken
+   * @summary Redis에 Refresh-Token 저장하는 함수
+   * @author  Jason
+   * @param   { number } userId
+   * @param   { string } refreshToken
    */
   async setRefreshTokenInRedis(
     userId: number,
