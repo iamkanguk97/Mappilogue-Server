@@ -57,7 +57,7 @@ export class UserController {
   /**
    * @summary 토큰 재발급 API
    * @author  Jason
-   * @url     /api/v1/users/token-refresh
+   * @url     [POST] /api/v1/users/token-refresh
    * @returns { Promise<ResponseEntity<TokenRefreshResponseDto>> }
    */
   @Public()

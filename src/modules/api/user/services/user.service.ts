@@ -167,8 +167,10 @@ export class UserService {
     await queryRunner.startTransaction();
 
     try {
-      await this.customCacheService.delValue(refreshTokenRedisKey);
-      await this.modifyById(userId, { fcmToken: null });
+      await Promise.all([
+        this.customCacheService.delValue(refreshTokenRedisKey),
+        this.modifyById(userId, { fcmToken: null }, queryRunner),
+      ]);
 
       await queryRunner.commitTransaction();
     } catch (err) {
@@ -180,6 +182,12 @@ export class UserService {
     }
   }
 
+  /**
+   * @summary 회원탈퇴 API Service
+   * @author  Jason
+   * @param   { DecodedUserToken } user
+   * @param   { PostUserWithdrawRequestDto } body
+   */
   async createWithdraw(
     user: DecodedUserToken,
     body: PostUserWithdrawRequestDto,
