@@ -76,6 +76,6 @@ export class UserEntity extends CommonEntity {
   })
   markCategories: MarkCategoryEntity[];
 
-  @OneToMany(() => MarkEntity, (marks) => marks.userId, { cascade: true })
+  @OneToMany(() => MarkEntity, (marks) => marks.user, { cascade: true })
   marks: MarkEntity[];
 }

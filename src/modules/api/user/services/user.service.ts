@@ -28,6 +28,7 @@ import { UserAlarmSettingEntity } from '../entities/user-alarm-setting.entity';
 import { DataSource, Equal, QueryRunner } from 'typeorm';
 import { UserAlarmHistoryRepository } from '../repositories/user-alarm-history.repository';
 import { isDefined } from 'src/helpers/common.helper';
+import { UserWithdrawReasonEntity } from '../entities/user-withdraw-reason.entity';
 
 @Injectable()
 export class UserService {
@@ -192,42 +193,35 @@ export class UserService {
     user: DecodedUserToken,
     body: PostUserWithdrawRequestDto,
   ): Promise<void> {
+    const refreshTokenRedisKey = this.jwtHelper.getRefreshTokenRedisKey(
+      user.id,
+    );
+    user.email = decryptEmail(user.email);
+
+    const deleteTarget = await this.userRepository.find({
+      where: { id: user.id },
+      relations: [
+        'userAlarmSetting',
+        'schedules',
+        'schedules.scheduleAreas',
+        'markCategories',
+        'marks',
+        'marks.markMetadata',
+        'marks.markLocation',
+      ],
+    });
+
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
-      const refreshTokenRedisKey = this.jwtHelper.getRefreshTokenRedisKey(
-        user.id,
-      );
-      user.email = decryptEmail(user.email);
-
-      /**
-       * 사용자가 삭제되면서 deletedAt이 추가되어야 할 것들
-       * - userAlarmSetting
-       * - userAlarmHistory
-       * - schedule: schedule이 사라지면 그 schedule에 해당하는 애들도 삭제해야 하는데?
-       * - mark: mark도 마찬가지....!
-       */
-      const deleteTargetUser = await this.userRepository.findOne({
-        where: { id: user.id },
-        relations: ['userAlarmSetting', 'markCategories'],
-      });
-
-      console.log(deleteTargetUser);
-
-      await this.customCacheService.delValue(refreshTokenRedisKey);
-      // await this.userRepository.softDelete({ id: user.id });
-      await this.userRepository.softRemove(deleteTargetUser);
-      await this.userWithdrawReasonRepository.save(body.toEntity(user));
-
-      if (user.profileImageKey !== '') {
-        const imageDeleteBuilder = new MulterBuilder(
-          ImageBuilderTypeEnum.DELETE,
-          user.id,
-        );
-        await imageDeleteBuilder.delete(user.profileImageKey);
-      }
+      await Promise.all([
+        queryRunner.manager.softRemove(UserEntity, deleteTarget),
+        queryRunner.manager.save(UserWithdrawReasonEntity, body.toEntity(user)),
+        this.customCacheService.delValue(refreshTokenRedisKey),
+        this.removeUserProfileImage(user),
+      ]);
 
       await queryRunner.commitTransaction();
     } catch (err) {
@@ -236,6 +230,23 @@ export class UserService {
       throw err;
     } finally {
       await queryRunner.release();
+    }
+  }
+
+  /**
+   * @summary 사용자 프로필 이미지 삭제하기
+   * @author  Jason
+   * @param   { DecodedUserToken } user
+   */
+  async removeUserProfileImage(user: DecodedUserToken): Promise<void> {
+    const userProfileKey = user?.profileImageKey;
+
+    if (isDefined(userProfileKey) && userProfileKey !== '') {
+      const imageDeleteBuilder = new MulterBuilder(
+        ImageBuilderTypeEnum.DELETE,
+        user.id,
+      );
+      await imageDeleteBuilder.delete(user.profileImageKey);
     }
   }
 
