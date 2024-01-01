@@ -77,25 +77,31 @@ export class UserHomeService {
   ): Promise<IScheduleListInHomeOnToday[]> {
     switch (option) {
       case GetHomeOptionEnum.TODAY:
-        const result =
-          await this.scheduleRepository.selectScheduleListInHomeOnToday(userId);
-
-        await Promise.all(
-          result.map(async (r) => {
-            const scheduleAreas =
-              await this.scheduleAreaRepository.selectScheduleAreaListById(
-                r.id,
-              );
-            r['areas'] = scheduleAreas;
-            return r;
-          }),
+        return this.processingScheduleListWithArea(
+          await this.scheduleRepository.selectScheduleListInHomeOnToday(userId),
         );
-
-        return result;
       case GetHomeOptionEnum.AFTER:
+        // result = await this.scheduleRepository.selectScheduleListInHomeOnAfter(
+        //   userId,
+        // );
+
+        // return result;
         return;
       default:
         throw new BadRequestException(UserExceptionCode.GetHomeOptionErrorType);
     }
+  }
+
+  async processingScheduleListWithArea(
+    result: IScheduleListInHomeOnToday[],
+  ): Promise<IScheduleListInHomeOnToday[]> {
+    return await Promise.all(
+      result.map(async (r) => {
+        const scheduleAreas =
+          await this.scheduleAreaRepository.selectScheduleAreaListById(r.id);
+        r.areas = scheduleAreas;
+        return r;
+      }),
+    );
   }
 }

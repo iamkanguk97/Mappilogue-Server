@@ -17,6 +17,7 @@ import { AnnouncementEntity } from '../entities/announcement.entity';
 import { UserId } from '../decorators/user-id.decorator';
 import { GetHomeRequestDto } from '../dtos/request/get-home-request.dto';
 import { ResponseEntity } from 'src/common/entities/response.entity';
+import { GetHomeResponseDto } from '../dtos/response/get-home-response.dto';
 
 @Controller(DomainNameEnum.USER_HOME)
 @UseInterceptors(ClassSerializerInterceptor)
@@ -50,7 +51,7 @@ export class UserHomeController {
   async getHomes(
     @UserId() userId: number,
     @Query() query: GetHomeRequestDto,
-  ): Promise<ResponseEntity<any>> {
+  ): Promise<ResponseEntity<GetHomeResponseDto>> {
     const result = await this.userHomeService.findHomes(userId, query.option);
     return ResponseEntity.OK_WITH(HttpStatus.OK, result);
   }

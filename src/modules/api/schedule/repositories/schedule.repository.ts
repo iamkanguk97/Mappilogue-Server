@@ -9,7 +9,6 @@ import {
 } from '../types';
 import { ScheduleAreaEntity } from '../entities/schedule-area.entity';
 import { SCHEDULE_DEFAULT_TITLE } from '../constants/schedule.constant';
-import { ADDRGETNETWORKPARAMS } from 'dns';
 
 @CustomRepository(ScheduleEntity)
 export class ScheduleRepository extends Repository<ScheduleEntity> {
@@ -89,5 +88,9 @@ export class ScheduleRepository extends Repository<ScheduleEntity> {
       .andWhere('C.deletedAt IS NULL')
       .orderBy('S.startDate')
       .getRawMany();
+  }
+
+  async selectScheduleListInHomeOnAfter(userId: number) {
+    return;
   }
 }

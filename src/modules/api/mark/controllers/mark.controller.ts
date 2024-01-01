@@ -142,9 +142,25 @@ export class MarkController {
     return ResponseWithPageEntity.OK_WITH_PAGINATION(HttpStatus.OK, result);
   }
 
-  @Get()
+  /**
+   * @summary 본인 위치에서 기록 리스트 조회하기 API
+   * @author  Jason
+   * @url     [GET] /api/v1/marks/positions?x=&y=
+   */
+  @Get('/positions')
   @HttpCode(HttpStatus.OK)
-  async getMarksInUserPosition(@UserId() userId: number) {
+  async getMarksInUserPosition() {
+    return;
+  }
+
+  /**
+   * @summary 기록 검색하기 API
+   * @author  Jason
+   * @url     [GET] /api/v1/marks/searches?keyword=&option=&pageNo=&pageSize=
+   */
+  @Get('/searches')
+  @HttpCode(HttpStatus.OK)
+  async getMarkSearchResult() {
     return;
   }
 }
