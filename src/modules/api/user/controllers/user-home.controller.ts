@@ -43,7 +43,7 @@ export class UserHomeController {
   /**
    * @summary 홈화면 조회 API
    * @author  Jason
-   * @url     /api/v1/users/homes?option=
+   * @url     [GET] /api/v1/users/homes?option=
    * @returns { Promise<ResponseEntity<GetHomeResponseDto>> }
    */
   @Get()
