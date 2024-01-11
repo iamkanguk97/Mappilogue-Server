@@ -30,7 +30,6 @@ export class UserController {
 
   @Public()
   @Post('social-login')
-  @UseInterceptors(ClassSerializerInterceptor)
   @HttpCode(HttpStatus.CREATED)
   async postLoginOrSignUp(
     @Body() body: LoginOrSignUpRequestDto,

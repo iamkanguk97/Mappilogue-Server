@@ -19,6 +19,12 @@ import { DomainNameEnum } from 'src/constants/enum';
 export class ColorController {
   constructor(private readonly colorService: ColorService) {}
 
+  /**
+   * @summary 색깔 리스트 조회하기 API
+   * @author  Jason
+   * @url     [GET] /api/v1/colors/
+   * @returns { Promise<ResponseEntity<ColorDto[]>> }
+   */
   @Public()
   @Get()
   @HttpCode(HttpStatus.OK)

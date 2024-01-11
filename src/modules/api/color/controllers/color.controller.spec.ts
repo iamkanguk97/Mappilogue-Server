@@ -29,10 +29,6 @@ describe('ColorController', () => {
     expect(colorService).toBeDefined();
   });
 
-  // describe('ColorController - getColorList', () => {
-  //   return;
-  // });
-
   afterAll(async () => {
     await module.close();
   });

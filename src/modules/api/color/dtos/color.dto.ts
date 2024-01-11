@@ -6,7 +6,7 @@ export class ColorDto {
   @Exclude() private readonly _name: string;
   @Exclude() private readonly _code: string;
 
-  constructor(id: number, name: string, code: string) {
+  private constructor(id: number, name: string, code: string) {
     this._id = id;
     this._name = name;
     this._code = code;

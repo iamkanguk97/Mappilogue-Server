@@ -1,25 +1,28 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ColorService } from './color.service';
 import { ColorRepository } from '../repositories/color.repository';
-import { CoreModule } from 'src/modules/core/core.module';
 import { CustomRepositoryModule } from 'src/modules/core/custom-repository/custom-repository.module';
-import { mockColorRepository } from '@test/mock/mock-color-repository';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ColorEntity } from '../entities/color.entity';
+import { DatabaseModule } from 'src/modules/core/database/database.module';
+import { ColorExceptionCode } from 'src/common/exception-code/color.exception-code';
+import { BadRequestException } from '@nestjs/common';
+import { ColorDto } from '../dtos/color.dto';
+import { plainToInstance } from 'class-transformer';
 
 describe('ColorService', () => {
   let colorService: ColorService;
   let colorRepository: ColorRepository;
   let module: TestingModule;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     module = await Test.createTestingModule({
       imports: [
-        CoreModule,
+        DatabaseModule,
+        TypeOrmModule.forFeature([ColorEntity]),
         CustomRepositoryModule.forCustomRepository([ColorRepository]),
       ],
-      providers: [
-        ColorService,
-        // { provide: ColorRepository, useValue: mockColorRepository },
-      ],
+      providers: [ColorService],
     }).compile();
 
     colorService = module.get<ColorService>(ColorService);
@@ -31,25 +34,25 @@ describe('ColorService', () => {
     expect(colorRepository).toBeDefined();
   });
 
-  // describe('ColorService - findColorList', () => {
-  //   it('asdf', async () => {
-  //     expect(colorRepository.find).toHaveBeenCalledTimes(1);
-  //   });
-  // });
+  describe('ColorService - findOneById', () => {
+    it('파라미터로 들어온 colorId가 1부터 15 사이의 숫자가 아니면 에러를 발생시키는가?', async () => {
+      await expect(colorService.findOneById(16)).rejects.toThrowError(
+        new BadRequestException(ColorExceptionCode.ColorIdRangeError),
+      );
+    });
 
-  // describe('ColorService - findOneById', () => {
-  //   it('aaa', async () => {
-  //     const mockColorEntity = new ColorEntity();
-  //     mockColorEntity.id = 1;
-  //     mockColorEntity.name = 'Red';
-  //     mockColorEntity.code = '#FFA1A1';
+    it('정상적인 colorId를 전달받았을 때 일치하는 색깔 데이터를 조회해야 합니다.', async () => {
+      const expectedColor = plainToInstance(ColorEntity, {
+        id: 1,
+        code: '#FFA1A1',
+        name: 'Red',
+      });
 
-  //     jest.spyOn(colorRepository, 'findOne').mockResolvedValue(mockColorEntity);
-
-  //     const result = await colorService.findOneById(1);
-  //     expect(result).toEqual(ColorDto.ofByValue(mockColorEntity));
-  //   });
-  // });
+      expect(await colorService.findOneById(1)).toEqual(
+        ColorDto.of(expectedColor),
+      );
+    });
+  });
 
   afterAll(async () => {
     await module.close();
