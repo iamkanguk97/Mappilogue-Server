@@ -6,6 +6,11 @@ import { CustomHttpModule } from './http/custom-http.module';
 import { CustomCacheModule } from './custom-cache/custom-cache.module';
 import { NotificationModule } from './notification/notification.module';
 
+/**
+ * @comment IF YOU ADD A NEW CORE MODULE, THEN IMPORT INTO THIS FILE!
+ * @author  Jason
+ */
+
 @Global()
 @Module({
   imports: [

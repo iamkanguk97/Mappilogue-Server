@@ -17,12 +17,12 @@ import {
  */
 export class DefaultColumnType {
   @PrimaryGeneratedColumn('increment', { type: 'int' })
-  id: number;
+  id!: number;
 
   @CreateDateColumn({
     type: 'timestamp',
   })
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn({
     nullable: true,
@@ -40,5 +40,5 @@ export class DefaultColumnType {
     default: StatusColumnEnum.ACTIVE,
     length: StatusOrCheckColumnLengthEnum.STATUS,
   })
-  status: StatusColumnEnum;
+  status!: StatusColumnEnum;
 }
