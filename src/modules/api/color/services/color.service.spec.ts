@@ -36,7 +36,19 @@ describe('ColorService', () => {
 
   describe('ColorService - findOneById', () => {
     it('파라미터로 들어온 colorId가 1부터 15 사이의 숫자가 아니면 에러를 발생시키는가?', async () => {
-      await expect(colorService.findOneById(16)).rejects.toThrowError(
+      const colorId = 16;
+
+      const colorRepositoryFindOneSpy = jest
+        .spyOn(colorRepository, 'findOne')
+        .mockResolvedValue(undefined);
+
+      expect(colorRepositoryFindOneSpy).toHaveBeenCalledWith({
+        where: {
+          id: colorId,
+        },
+      });
+
+      await expect(colorService.findOneById(colorId)).rejects.toThrowError(
         new BadRequestException(ColorExceptionCode.ColorIdRangeError),
       );
     });
@@ -52,6 +64,10 @@ describe('ColorService', () => {
         ColorDto.of(expectedColor),
       );
     });
+  });
+
+  describe('ColorService - findColorList', () => {
+    return;
   });
 
   afterAll(async () => {
