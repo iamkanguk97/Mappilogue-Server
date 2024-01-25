@@ -4,8 +4,8 @@ import { Column, Entity } from 'typeorm';
 @Entity('Announcement')
 export class AnnouncementEntity extends CommonEntity {
   @Column('varchar', { length: 100 })
-  title: string;
+  title!: string;
 
   @Column('text')
-  content: string;
+  content!: string;
 }

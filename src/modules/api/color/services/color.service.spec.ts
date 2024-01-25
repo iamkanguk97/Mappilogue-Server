@@ -40,7 +40,7 @@ describe('ColorService', () => {
 
       const colorRepositoryFindOneSpy = jest
         .spyOn(colorRepository, 'findOne')
-        .mockResolvedValue(undefined);
+        .mockResolvedValue(null);
 
       expect(colorRepositoryFindOneSpy).toHaveBeenCalledWith({
         where: {

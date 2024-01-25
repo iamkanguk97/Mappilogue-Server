@@ -34,7 +34,7 @@ export class IsValidDateWithHyphenConstraint
   }
 
   defaultMessage(args?: ValidationArguments): string {
-    return `The keys of date ${args.property} must be yyyy-mm-dd format && valid year,month and date`;
+    return `The keys of date ${args?.property} must be yyyy-mm-dd format && valid year,month and date`;
   }
 }
 

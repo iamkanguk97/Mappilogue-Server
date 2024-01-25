@@ -16,10 +16,10 @@ import { MarkMetadataEntity } from './mark-metadata.entity';
 @Entity('Mark')
 export class MarkEntity extends CommonEntity {
   @Column('int')
-  userId: number;
+  userId!: number;
 
   @Column('int')
-  colorId: number;
+  colorId!: number;
 
   @Column('int', { nullable: true })
   markCategoryId?: number | undefined;
@@ -28,7 +28,7 @@ export class MarkEntity extends CommonEntity {
   scheduleId?: number | undefined;
 
   @Column('varchar', { length: MarkTitleLengthEnum.MAX })
-  title: string;
+  title!: string;
 
   @Column('tinytext', { nullable: true })
   content?: string | undefined;
@@ -38,23 +38,23 @@ export class MarkEntity extends CommonEntity {
     onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
-  user: UserEntity;
+  user!: UserEntity;
 
   @ManyToOne(() => MarkCategoryEntity, (markCategory) => markCategory.marks, {
     createForeignKeyConstraints: false,
   })
   @JoinColumn({ name: 'markCategoryId', referencedColumnName: 'id' })
-  markCategory: MarkCategoryEntity;
+  markCategory!: MarkCategoryEntity;
 
   @OneToOne(() => MarkLocationEntity, (markLocation) => markLocation.mark, {
     cascade: true,
   })
-  markLocation: MarkLocationEntity;
+  markLocation!: MarkLocationEntity;
 
   @OneToMany(() => MarkMetadataEntity, (markMetadata) => markMetadata.marks, {
     cascade: true,
   })
-  markMetadata: MarkMetadataEntity[];
+  markMetadata!: MarkMetadataEntity[];
 
   static from(
     userId: number,

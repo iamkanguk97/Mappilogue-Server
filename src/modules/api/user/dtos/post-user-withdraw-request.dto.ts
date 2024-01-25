@@ -5,8 +5,12 @@ import { CommonExceptionCode } from 'src/common/exception-code/common.exception-
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 import { DecodedUserToken } from '../types';
 import { UserWithdrawReasonEntity } from '../entities/user-withdraw-reason.entity';
+import { PickType } from '@nestjs/mapped-types';
 
-export class PostUserWithdrawRequestDto {
+export class PostUserWithdrawRequestDto extends PickType(
+  UserWithdrawReasonEntity,
+  ['reason'],
+) {
   @Length(
     0,
     USER_WITHDRAW_REASON_LENGTH,
@@ -14,7 +18,7 @@ export class PostUserWithdrawRequestDto {
   )
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsOptional()
-  reason?: string | undefined;
+  reason?: string = '';
 
   toEntity(user: DecodedUserToken): UserWithdrawReasonEntity {
     return UserWithdrawReasonEntity.from(user.id, user.email, this.reason);

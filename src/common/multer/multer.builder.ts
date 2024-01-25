@@ -7,6 +7,7 @@ import { CustomConfigService } from 'src/modules/core/custom-config/services';
 import { config } from 'dotenv';
 import { v4 as uuidv4 } from 'uuid';
 import { isDefined } from 'src/helpers/common.helper';
+import { IRequestWithUserType } from 'src/types/request-with-user.type';
 
 import multer from 'multer';
 import * as AWS from 'aws-sdk';
@@ -26,16 +27,14 @@ export enum ImageBuilderTypeEnum {
  */
 export class MulterBuilder {
   private readonly bucketName: string;
-  private readonly _userId: number;
 
   private resource = '';
   private path = '';
   private s3: S3Client | AWS.S3;
   private allowedMimeTypes: Array<string> = [];
 
-  constructor(type: ImageBuilderTypeEnum, userId?: number | undefined) {
+  constructor(type: ImageBuilderTypeEnum) {
     this.s3 = this.setS3(type);
-    this._userId = userId;
     this.bucketName = customConfigService.get<string>(
       ENVIRONMENT_KEY.AWS_S3_BUCKET_NAME,
     );
@@ -143,11 +142,11 @@ export class MulterBuilder {
       bucket: this.bucketName,
       contentType: multerS3.AUTO_CONTENT_TYPE,
       key: (
-        req: Request,
+        req: IRequestWithUserType,
         file: Express.Multer.File,
         callback: (error: any, key?: string) => void,
       ) => {
-        const userId = req['user'].id;
+        const userId = req.user.id;
         const splitedFileNames = file.originalname.split('.');
         const extension = splitedFileNames.at(splitedFileNames.length - 1);
         const filename = isDefined(this.path)

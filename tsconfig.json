@@ -16,11 +16,12 @@
     "resolveJsonModule": true,
     "noFallthroughCasesInSwitch": true,
     "outDir": "./dist",
-    "baseUrl": "./",
-    "paths": {
-      // "@src/*": ["./src/*"],
-      "@test/*": ["./test/*"]
-    }
+    "baseUrl": "./"
+    // "paths": {
+    //   "@src/*": ["./src/*"],
+    //   "@common/*": ["./src/common/*"],
+    //   "@test/*": ["./test/*"]
+    // }
   },
   "include": ["src/**/*", "./test/**/*", "src/config/firebase-admin.json"]
 }

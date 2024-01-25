@@ -58,10 +58,7 @@ export class MarkHelper {
     userId: number,
     markImages: TMarkImages,
   ): Promise<void> {
-    const imageDeleteBuilder = new MulterBuilder(
-      ImageBuilderTypeEnum.DELETE,
-      userId,
-    );
+    const imageDeleteBuilder = new MulterBuilder(ImageBuilderTypeEnum.DELETE);
 
     for (const idx in markImages) {
       await imageDeleteBuilder.delete(markImages[idx].key);

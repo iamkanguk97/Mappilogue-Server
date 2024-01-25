@@ -6,13 +6,13 @@ import { CommonEntity } from 'src/common/entities/common.entity';
 @Entity('Color')
 export class ColorEntity extends CommonEntity {
   @Column('varchar', { length: ColorNameLength.MAX })
-  name: string;
+  name!: string;
 
   @Column('varchar', { length: ColorCodeLength.MAX })
-  code: string;
+  code!: string;
 
   @OneToMany(() => ScheduleEntity, (schedule) => schedule.color)
-  schedules: ScheduleEntity[];
+  schedules?: ScheduleEntity[];
 
   /** <10/30>
    * @deprecated Repository 적용으로 인한 deprecated

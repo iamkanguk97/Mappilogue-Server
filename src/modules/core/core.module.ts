@@ -5,6 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { CustomHttpModule } from './http/custom-http.module';
 import { CustomCacheModule } from './custom-cache/custom-cache.module';
 import { NotificationModule } from './notification/notification.module';
+import { CronModule } from './cron/cron.module';
 
 /**
  * @comment IF YOU ADD A NEW CORE MODULE, THEN IMPORT INTO THIS FILE!
@@ -20,6 +21,7 @@ import { NotificationModule } from './notification/notification.module';
     CustomHttpModule,
     CustomCacheModule,
     NotificationModule,
+    CronModule,
   ],
   exports: [
     CustomConfigModule,
@@ -28,6 +30,7 @@ import { NotificationModule } from './notification/notification.module';
     CustomHttpModule,
     CustomCacheModule,
     NotificationModule,
+    CronModule,
   ],
 })
 export class CoreModule {}

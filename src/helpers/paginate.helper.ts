@@ -6,10 +6,10 @@ import { CommonExceptionCode } from 'src/common/exception-code/common.exception-
 /**
  * @summary 페이지 번호 결정함수
  * @author  Jason
- * @param   { number | string | undefined } pageNo
+ * @param   { number | string } pageNo
  * @returns { number }
  */
-export function setPageNo(pageNo?: number | string | undefined): number {
+export function setPageNo(pageNo?: number | string): number {
   if (typeof pageNo === 'string' && !isNumeric(pageNo)) {
     throw new BadRequestException(CommonExceptionCode.PageNumberMustNumberType);
   }

@@ -44,7 +44,7 @@ export class PostMarkMainLocationObject extends PickType(MarkLocationEntity, [
   )
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsNotEmpty(setValidatorContext(MarkExceptionCode.MarkLocationNameEmpty))
-  name: string;
+  name!: string;
 
   @Length(
     MarkLocationStreetAddressLengthEnum.MIN,
@@ -53,7 +53,7 @@ export class PostMarkMainLocationObject extends PickType(MarkLocationEntity, [
   )
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsOptional()
-  streetAddress?: string | undefined;
+  streetAddress?: string | undefined = '';
 
   @Length(
     MarkLocationLatitudeLengthEnum.MIN,
@@ -62,7 +62,7 @@ export class PostMarkMainLocationObject extends PickType(MarkLocationEntity, [
   )
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsOptional()
-  latitude?: string | undefined;
+  latitude?: string | undefined = '';
 
   @Length(
     MarkLocationLongitudeLengthEnum.MIN,
@@ -71,7 +71,7 @@ export class PostMarkMainLocationObject extends PickType(MarkLocationEntity, [
   )
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsOptional()
-  longitude?: string | undefined;
+  longitude?: string | undefined = '';
 
   /**
    * @summary 기록 대표위치를 직접 추가로 했을 때 저장하는 함수
@@ -102,11 +102,11 @@ export class PostMarkMetadataObject extends PickType(MarkMetadataEntity, [
   @IsNotEmpty(
     setValidatorContext(MarkExceptionCode.MarkMetadataIsMainImageEmpty),
   )
-  isMainImage: CheckColumnEnum;
+  isMainImage!: CheckColumnEnum;
 
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsOptional()
-  caption?: string | undefined;
+  caption?: string | undefined = '';
 }
 
 export class PostMarkRequestDto {
@@ -125,7 +125,7 @@ export class PostMarkRequestDto {
   )
   @IsNumber({}, setValidatorContext(CommonExceptionCode.MustNumberType))
   @IsNotEmpty(setValidatorContext(MarkExceptionCode.MarkColorIdEmpty))
-  colorId: number;
+  colorId!: number;
 
   @Length(
     MarkTitleLengthEnum.MIN,

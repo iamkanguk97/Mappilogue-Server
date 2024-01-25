@@ -217,10 +217,10 @@ export class UserService {
 
     try {
       await Promise.all([
-        queryRunner.manager.softRemove(UserEntity, deleteTarget),
+        // queryRunner.manager.softRemove(UserEntity, deleteTarget),
         queryRunner.manager.save(UserWithdrawReasonEntity, body.toEntity(user)),
-        this.customCacheService.delValue(refreshTokenRedisKey),
-        this.removeUserProfileImage(user),
+        //this.customCacheService.delValue(refreshTokenRedisKey),
+        // this.removeUserProfileImage(user),
       ]);
 
       await queryRunner.commitTransaction();
@@ -242,10 +242,7 @@ export class UserService {
     const userProfileKey = user?.profileImageKey;
 
     if (isDefined(userProfileKey) && userProfileKey !== '') {
-      const imageDeleteBuilder = new MulterBuilder(
-        ImageBuilderTypeEnum.DELETE,
-        user.id,
-      );
+      const imageDeleteBuilder = new MulterBuilder(ImageBuilderTypeEnum.DELETE);
       await imageDeleteBuilder.delete(user.profileImageKey);
     }
   }

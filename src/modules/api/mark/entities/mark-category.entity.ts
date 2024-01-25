@@ -11,44 +11,44 @@ import { CommonEntity } from 'src/common/entities/common.entity';
 @Entity('MarkCategory')
 export class MarkCategoryEntity extends CommonEntity {
   @Column('int')
-  userId: number;
+  userId!: number;
 
   @Column('varchar', { length: MARK_CATEGORY_TITLE_LENGTH })
-  title: string;
+  title!: string;
 
   @Column('int')
-  sequence: number;
+  sequence!: number;
 
   @Column('varchar', {
     length: StatusOrCheckColumnLengthEnum.STATUS,
     default: CheckColumnEnum.ACTIVE,
   })
-  isMarkedInMap: CheckColumnEnum;
+  isMarkedInMap!: CheckColumnEnum;
 
   @ManyToOne(() => UserEntity, (user) => user.markCategories, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
-  user: UserEntity;
+  user?: UserEntity;
 
   @OneToMany(() => MarkEntity, (marks) => marks.markCategory, {
     cascade: false,
   })
-  marks: MarkEntity[];
+  marks?: MarkEntity[];
 
   static from(
     userId: number,
     title: string,
     sequence: number,
-    isMarkedInMap?: CheckColumnEnum | undefined,
+    isMarkedInMap?: CheckColumnEnum,
   ): MarkCategoryEntity {
     const markCategory = new MarkCategoryEntity();
 
     markCategory.userId = userId;
     markCategory.title = title;
     markCategory.sequence = sequence;
-    markCategory.isMarkedInMap = isMarkedInMap;
+    markCategory.isMarkedInMap = isMarkedInMap ?? CheckColumnEnum.ACTIVE;
 
     return markCategory;
   }

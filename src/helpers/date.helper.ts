@@ -14,10 +14,8 @@ export const getKoreaTime = (): string => {
 /**
  * @summary 특정 년과 달의 마지막 날짜를 구하는 함수
  * @author  Jason
- *
  * @param   { number } year
  * @param   { number } month
- *
  * @returns { number }
  */
 export const getLastDate = (year: number, month: number): number => {
@@ -27,14 +25,12 @@ export const getLastDate = (year: number, month: number): number => {
 };
 
 /**
- * @summary 두 날짜 사이의 날짜가 맞는지 확인하는 함수
+ * @summary     두 날짜 사이의 날짜가 맞는지 확인하는 함수
  * @description startDate와 endDate는 yyyy-mm-dd 형태로 들어와야 한다.
- * @author Jason
- *
- * @param startDate
- * @param endDate
- * @param targetDate
- *
+ * @author      Jason
+ * @param       { string } startDate
+ * @param       { string } endDate
+ * @param       { string } targetDate
  * @returns { boolean }
  */
 export const checkBetweenDatesWithNoMoment = (
@@ -65,7 +61,6 @@ export const getKoreanDateFormatBySingle = (date: string): string => {
  * @param   { number } year
  * @param   { number } month
  * @param   { number } day
- *
  * @returns { string } Y년 M월 D일
  */
 export const getKoreanDateFormatByMultiple = (
@@ -80,10 +75,8 @@ export const getKoreanDateFormatByMultiple = (
  * @summary     이번달의 첫째 날 요일을 구하는 함수
  * @description 일요일은 0이고, 이후 1씩 증가한다. 따라서 토요일은 6
  * @author      Jason
- *
  * @param       { number } year
  * @param       { number } month
- *
  * @returns     { number }
  */
 export const getFirstDayOfWeek = (year: number, month: number): number => {
@@ -95,10 +88,8 @@ export const getFirstDayOfWeek = (year: number, month: number): number => {
 /**
  * @summary 특정 년월의 주말 리스트를 가져오는 함수 (캘린더의 주말리스트)
  * @author  Jason
- *
  * @param   { number } year
  * @param   { number } month
- *
  * @returns { string[][] }
  */
 export const getWeekendsByYearAndMonth = (

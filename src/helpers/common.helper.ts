@@ -14,11 +14,11 @@ export function isEmptyArray<T>(arr: Array<T>): boolean {
 /**
  * @summary 빈 객체인지 확인하는 함수
  * @author  Jason
- * @param   { object } obj
- * @returns { boolean}
+ * @param   { Record<string, unknown> } obj
+ * @returns { boolean }
  */
-export function isEmptyObject<T>(obj: T): boolean {
-  return !isDefined(obj) || Object.entries(obj).length === 0;
+export function isEmptyObject(obj: Record<string, unknown>): boolean {
+  return Object.keys(obj).length === 0;
 }
 
 /**

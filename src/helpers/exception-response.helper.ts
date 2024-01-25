@@ -6,10 +6,8 @@ export class ExceptionResponseHelper {
   /**
    * @summary 예외 Response 뼈대 만들어주는 함수
    * @author  Jason
-   *
    * @param   { number } statusCode
    * @param   { string } path
-   *
    * @returns { ExceptionResponseDto }
    */
   generateBasicExceptionResponse(
@@ -32,7 +30,6 @@ export class ExceptionResponseHelper {
   /**
    * @summary BadRequestException Property를 ExceptionResponseDto에 적용시켜주는 함수
    * @author  Jason
-   *
    * @param   { ExceptionResponseDto } exceptionResponse
    * @param   { string } errorCode
    * @param   { string } message
@@ -52,7 +49,6 @@ export class ExceptionResponseHelper {
   /**
    * @summary InternalServerException - NodeJS 레벨의 Property를 ExceptionResponseDto에 적용하는 함수
    * @author  Jason
-   *
    * @param   { ExceptionResponseDto } exceptionResponse
    * @param   { string | undefined } errorStack
    */
@@ -90,7 +86,6 @@ export class ExceptionResponseHelper {
   /**
    * @summary errorCode와 message setting 함수
    * @author  Jason
-   *
    * @param   { ExceptionResponseDto } exceptionResponse
    * @param   { string } errorCode
    * @param   { string } message

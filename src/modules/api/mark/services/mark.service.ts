@@ -456,10 +456,7 @@ export class MarkService {
       })
     ).map((beforeMarkMetadata) => beforeMarkMetadata.markImageKey);
 
-    const imageDeleteBuilder = new MulterBuilder(
-      ImageBuilderTypeEnum.DELETE,
-      mark.userId,
-    );
+    const imageDeleteBuilder = new MulterBuilder(ImageBuilderTypeEnum.DELETE);
 
     for (const beforeMarkMetadata of beforeMarkMetadatas) {
       await imageDeleteBuilder.delete(beforeMarkMetadata);

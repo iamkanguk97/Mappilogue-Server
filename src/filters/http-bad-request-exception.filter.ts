@@ -62,6 +62,7 @@ export class HttpBadRequestExceptionFilter
     // Class-Validator를 통해 나온 에러 객체
     if (exceptionResponse instanceof ValidationError) {
       const validationResult = this.getExceptionObj(exceptionResponse); // 첫 에러 가져오기
+      console.log(validationResult);
       this.setBadRequestException(
         exceptionJson,
         validationResult.code,
@@ -84,7 +85,7 @@ export class HttpBadRequestExceptionFilter
    * @returns { TBadRequestException }
    */
   getExceptionObj(validationError: ValidationError): TBadRequestException {
-    const errorChildren = validationError.children;
+    const errorChildren = validationError.children ?? [];
 
     // Error Children이 없을 시 ==> 바로 반환해주면 됨
     if (isEmptyArray(errorChildren)) {
@@ -118,8 +119,10 @@ export class HttpBadRequestExceptionFilter
       const errorValue = firstContexts[key];
       return { ...errorValue, target } as TBadRequestException;
     }
-    return !firstChildren.children.length
+
+    const secondChildren = firstChildren.children ?? [];
+    return !secondChildren.length
       ? { ...InternalServerExceptionCode.ContextNotSetting, target }
-      : this.getExceptionInChildren(firstChildren.children);
+      : this.getExceptionInChildren(secondChildren);
   }
 }

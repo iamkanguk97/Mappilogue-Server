@@ -11,42 +11,42 @@ import { CommonEntity } from 'src/common/entities/common.entity';
 @Entity('MarkLocation')
 export class MarkLocationEntity extends CommonEntity {
   @Column('int')
-  markId: number;
+  markId!: number;
 
   @Column('int', { nullable: true })
-  scheduleAreaId?: number | undefined;
+  scheduleAreaId!: number | null;
 
   @Column('varchar', { nullable: true, length: MarkLocationNameLengthEnum.MAX })
-  name?: string | undefined;
+  name!: string | null;
 
   @Column('varchar', {
     nullable: true,
     length: MarkLocationStreetAddressLengthEnum.MAX,
   })
-  streetAddress?: string | undefined;
+  streetAddress!: string | null;
 
   @Column('varchar', {
     nullable: true,
     length: MarkLocationLatitudeLengthEnum.MAX,
   })
-  latitude?: string | undefined;
+  latitude!: string | null;
 
   @Column('varchar', {
     nullable: true,
     length: MarkLocationLongitudeLengthEnum.MAX,
   })
-  longitude?: string | undefined;
+  longitude!: string | null;
 
   @OneToOne(() => MarkEntity, (mark) => mark.markLocation, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'markId', referencedColumnName: 'id' })
-  mark: MarkEntity;
+  mark?: MarkEntity;
 
   static from(
     markId: number,
-    scheduleAreaId?: number | undefined,
+    scheduleAreaId: number | null,
     name?: string | undefined,
     streetAddress?: string | undefined,
     latitude?: string | undefined,

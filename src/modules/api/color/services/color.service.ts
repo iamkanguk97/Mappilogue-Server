@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { ColorDto } from '../dtos/color.dto';
 import { ColorRepository } from '../repositories/color.repository';
 import { ColorExceptionCode } from 'src/common/exception-code/color.exception-code';
@@ -34,6 +38,10 @@ export class ColorService {
         id: colorId,
       },
     });
+
+    if (!result) {
+      throw new InternalServerErrorException(ColorExceptionCode.ColorNotExist);
+    }
 
     return ColorDto.of(result);
   }

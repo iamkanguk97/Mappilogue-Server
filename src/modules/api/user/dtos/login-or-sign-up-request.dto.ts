@@ -8,14 +8,14 @@ import { UserExceptionCode } from 'src/common/exception-code/user.exception-code
 export class LoginOrSignUpRequestDto {
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsNotEmpty(setValidatorContext(UserExceptionCode.SocialAccessTokenEmpty))
-  socialAccessToken: string;
+  socialAccessToken!: string;
 
   @IsEnum(
     UserSnsTypeEnum,
     setValidatorContext(UserExceptionCode.SocialVendorErrorType),
   )
   @IsNotEmpty(setValidatorContext(UserExceptionCode.SocialVendorEmpty))
-  socialVendor: UserSnsTypeEnum;
+  socialVendor!: UserSnsTypeEnum;
 
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsOptional()

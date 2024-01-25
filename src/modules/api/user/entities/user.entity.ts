@@ -15,41 +15,42 @@ import { ScheduleEntity } from '../../schedule/entities/schedule.entity';
 import { MarkCategoryEntity } from '../../mark/entities/mark-category.entity';
 import { MarkEntity } from '../../mark/entities/mark.entity';
 import { CommonEntity } from 'src/common/entities/common.entity';
+import { UserWithdrawReasonEntity } from './user-withdraw-reason.entity';
 
 @Entity('User')
 @Unique(['email', 'profileImageKey', 'snsId'])
 export class UserEntity extends CommonEntity {
   @Column('varchar', { length: USER_NICKNAME_LENGTH })
-  nickname: string;
+  nickname!: string;
 
   @Column('varchar', { length: USER_EMAIL_LENGTH })
-  email: string;
+  email!: string;
 
   @Column('text')
-  profileImageUrl: string;
+  profileImageUrl!: string;
 
   @Column('varchar', {
     nullable: true,
     length: USER_PROFILE_IMAGE_KEY_LENGTH,
   })
-  profileImageKey?: string | undefined;
+  profileImageKey!: string | null;
 
   @Column('varchar', { nullable: true, length: USER_GENDER_LENGTH })
-  gender?: UserGenderEnum | undefined;
+  gender!: UserGenderEnum | null;
 
   @Column('varchar', { nullable: true, length: USER_AGE_LENGTH })
-  age?: string | undefined;
+  age!: string | null;
 
   @Column('varchar', {
     nullable: true,
     length: USER_BIRTHDAY_LENGTH,
   })
-  birthday?: string | undefined;
+  birthday!: string | null;
 
   @Column('varchar', {
     length: USER_SNS_ID_LENGTH,
   })
-  snsId: string;
+  snsId!: string;
 
   @Column('varchar', {
     length: USER_SNS_TYPE_LENGTH,
@@ -57,25 +58,32 @@ export class UserEntity extends CommonEntity {
   snsType!: UserSnsTypeEnum;
 
   @Column('varchar', { nullable: true })
-  fcmToken?: string | undefined;
+  fcmToken?: string | null;
 
   @OneToOne(
     () => UserAlarmSettingEntity,
     (userAlarmSetting) => userAlarmSetting.user,
     { cascade: true },
   )
-  userAlarmSetting: UserAlarmSettingEntity;
+  userAlarmSetting?: UserAlarmSettingEntity;
+
+  @OneToOne(
+    () => UserWithdrawReasonEntity,
+    (userWithdrawReason) => userWithdrawReason.user,
+    { cascade: false },
+  )
+  userWithdrawReason?: UserAlarmSettingEntity;
 
   @OneToMany(() => ScheduleEntity, (schedule) => schedule.user, {
     cascade: true,
   })
-  schedules: ScheduleEntity[];
+  schedules?: ScheduleEntity[];
 
   @OneToMany(() => MarkCategoryEntity, (markCategory) => markCategory.user, {
     cascade: true,
   })
-  markCategories: MarkCategoryEntity[];
+  markCategories?: MarkCategoryEntity[];
 
   @OneToMany(() => MarkEntity, (marks) => marks.user, { cascade: true })
-  marks: MarkEntity[];
+  marks?: MarkEntity[];
 }

@@ -57,10 +57,7 @@ export class UserProfileService {
     const updateProfileImageParam =
       this.userProfileHelper.setUpdateProfileImageParam(profileImageFile);
 
-    const imageDeleteBuilder = new MulterBuilder(
-      ImageBuilderTypeEnum.DELETE,
-      user.id,
-    );
+    const imageDeleteBuilder = new MulterBuilder(ImageBuilderTypeEnum.DELETE);
 
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
