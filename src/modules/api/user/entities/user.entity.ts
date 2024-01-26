@@ -36,16 +36,16 @@ export class UserEntity extends CommonEntity {
   profileImageKey!: string | null;
 
   @Column('varchar', { nullable: true, length: USER_GENDER_LENGTH })
-  gender!: UserGenderEnum | null;
+  gender?: UserGenderEnum;
 
   @Column('varchar', { nullable: true, length: USER_AGE_LENGTH })
-  age!: string | null;
+  age?: string;
 
   @Column('varchar', {
     nullable: true,
     length: USER_BIRTHDAY_LENGTH,
   })
-  birthday!: string | null;
+  birthday?: string;
 
   @Column('varchar', {
     length: USER_SNS_ID_LENGTH,

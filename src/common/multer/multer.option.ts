@@ -9,8 +9,7 @@ import { UserExceptionCode } from '../exception-code/user.exception-code';
 import { Request } from 'express';
 import { DomainNameEnum } from 'src/constants/enum';
 import { isDefined } from 'src/helpers/common.helper';
-
-import multer from 'multer';
+import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 
 export enum FileTypeEnum {
   IMAGE = 'IMAGE',
@@ -21,10 +20,24 @@ export enum FileTypeEnum {
  * @summary 파일 유효성 확인 함수
  * @author  Jason
  * @param   { FileTypeEnum } kind
- * @returns { (req: Request, file: any, cb: any) => {} }
  */
 export const fileFilter =
-  (kind: FileTypeEnum) => (req: Request, file: any, cb: any) => {
+  (kind: FileTypeEnum) =>
+  (
+    _: Request,
+    file: {
+      fieldname: string;
+      originalname: string;
+      encoding: string;
+      mimetype: string;
+      size: number;
+      destination: string;
+      filename: string;
+      path: string;
+      buffer: Buffer;
+    },
+    cb: (error: Error | null, acceptFile: boolean) => void,
+  ) => {
     const types =
       kind === FileTypeEnum.IMAGE ? IMAGE_MIME_TYPES : MEDIA_MIME_TYPES;
     const mimeTypes = types.find((im) => im === file.mimetype);
@@ -46,9 +59,9 @@ export const fileFilter =
 /**
  * @summary 프로필 이미지 업로드 Multer 옵션
  * @author  Jason
- * @returns { multer.Options }
+ * @returns { MulterOptions }
  */
-export const CreateProfileImageMulterOption = (): multer.Options => {
+export const CreateProfileImageMulterOption = (): MulterOptions => {
   return {
     fileFilter: fileFilter(FileTypeEnum.IMAGE),
     storage: new MulterBuilder(ImageBuilderTypeEnum.UPLOAD)
@@ -63,9 +76,9 @@ export const CreateProfileImageMulterOption = (): multer.Options => {
 /**
  * @summary 기록 이미지 업로드 Multer 옵션
  * @author  Jason
- * @returns { multer.Options }
+ * @returns { MulterOptions }
  */
-export const CreateMarkImageMulterOption = (): multer.Options => {
+export const CreateMarkImageMulterOption = (): MulterOptions => {
   return {
     fileFilter: fileFilter(FileTypeEnum.IMAGE),
     storage: new MulterBuilder(ImageBuilderTypeEnum.UPLOAD)

@@ -4,15 +4,18 @@ import { CommonExceptionCode } from 'src/common/exception-code/common.exception-
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 import { REGEX_NICKNAME } from 'src/common/regex';
 import { UserEntity } from '../../entities/user.entity';
+import { PickType } from '@nestjs/mapped-types';
 
-export class PatchUserNicknameRequestDto {
+export class PatchUserNicknameRequestDto extends PickType(UserEntity, [
+  'nickname',
+] as const) {
   @Matches(
     REGEX_NICKNAME,
     setValidatorContext(UserExceptionCode.NicknameFormatError),
   )
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsNotEmpty(setValidatorContext(UserExceptionCode.NicknameEmpty))
-  nickname: string;
+  nickname!: string;
 
   /**
    * @summary UserEntity로 변환함

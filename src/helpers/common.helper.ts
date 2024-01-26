@@ -24,11 +24,11 @@ export function isEmptyObject(obj: Record<string, unknown>): boolean {
 /**
  * @summary null 또는 undefined인지 확인하는 함수
  * @author  Jason
- * @param   { T | undefined | null } value
- * @returns { boolean }
+ * @param   { T } value
+ * @returns { value is NonNullable<T> }
  */
-export function isDefined<T>(value: T | undefined | null): boolean {
-  return <T>value !== undefined && <T>value !== null;
+export function isDefined<T>(value: T): value is NonNullable<T> {
+  return value !== null && value !== undefined;
 }
 
 /**

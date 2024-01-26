@@ -14,7 +14,6 @@ import { PutUserAlarmSettingRequestDto } from '../dtos/request/put-user-alarm-se
 import { isDefined } from 'src/helpers/common.helper';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 import { UserProfileHelper } from '../helpers/user-profile.helper';
-import { UserHelper } from '../helpers/user.helper';
 
 @Injectable()
 export class UserProfileService {
@@ -23,7 +22,6 @@ export class UserProfileService {
   constructor(
     private readonly dataSource: DataSource,
     private readonly userService: UserService,
-    private readonly userHelper: UserHelper,
     private readonly userProfileHelper: UserProfileHelper,
     private readonly userAlarmSettingRepository: UserAlarmSettingRepository,
   ) {}
@@ -45,17 +43,15 @@ export class UserProfileService {
    * @summary 프로필 이미지 수정 API Service
    * @author  Jason
    * @param   { DecodedUserToken } user
-   * @param   { Express.MulterS3.File[] | undefined } imageFiles
+   * @param   { Express.MulterS3.File } imageFile
    * @returns { Promise<PatchUserProfileImageResponseDto> }
    */
   async modifyUserProfileImage(
     user: DecodedUserToken,
-    imageFiles?: Express.MulterS3.File[] | undefined,
+    imageFile?: Express.MulterS3.File,
   ): Promise<PatchUserProfileImageResponseDto> {
-    const [profileImageFile] = imageFiles || [];
-
     const updateProfileImageParam =
-      this.userProfileHelper.setUpdateProfileImageParam(profileImageFile);
+      this.userProfileHelper.setUpdateProfileImageParam(imageFile);
 
     const imageDeleteBuilder = new MulterBuilder(ImageBuilderTypeEnum.DELETE);
 
@@ -73,6 +69,7 @@ export class UserProfileService {
         imageDeleteBuilder.delete(user.profileImageKey),
       ]);
 
+      await queryRunner.commitTransaction();
       return PatchUserProfileImageResponseDto.from(
         user.id,
         updateProfileImageParam.profileImageUrl,
@@ -94,7 +91,9 @@ export class UserProfileService {
    */
   async findUserAlarmSettingById(userId: number): Promise<UserAlarmSettingDto> {
     const result = await this.userAlarmSettingRepository.findOne({
-      where: this.userHelper.setUpdateUserCriteriaByUserId(userId),
+      where: {
+        userId,
+      },
     });
 
     if (!isDefined(result)) {
@@ -116,9 +115,6 @@ export class UserProfileService {
     userId: number,
     body: PutUserAlarmSettingRequestDto,
   ): Promise<void> {
-    await this.userAlarmSettingRepository.update(
-      this.userHelper.setUpdateUserCriteriaByUserId(userId),
-      body.toEntity(),
-    );
+    await this.userAlarmSettingRepository.update({ userId }, body.toEntity());
   }
 }

@@ -7,7 +7,7 @@ import {
   HttpStatus,
   Patch,
   Put,
-  UploadedFiles,
+  UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { User } from '../decorators/user.decorator';
@@ -17,17 +17,14 @@ import { decryptEmail } from 'src/helpers/crypt.helper';
 import { UserId } from '../decorators/user-id.decorator';
 import { PatchUserNicknameRequestDto } from '../dtos/request/patch-user-nickname-request.dto';
 import { UserProfileService } from '../services/user-profile.service';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateProfileImageMulterOption } from 'src/common/multer/multer.option';
 import { PatchUserProfileImageResponseDto } from '../dtos/response/patch-user-profile-image-response.dto';
 import { UserAlarmSettingDto } from '../dtos/user-alarm-setting.dto';
 import { PutUserAlarmSettingRequestDto } from '../dtos/request/put-user-alarm-setting-request.dto';
 import { Public } from 'src/modules/core/auth/decorators/auth.decorator';
 import { TERMS_OF_SERVICE_URL } from 'src/constants/constant';
-import {
-  PATCH_USER_PROFILE_IMAGE_KEY,
-  PATCH_USER_PROFILE_IMAGE_LIMIT,
-} from '../constants/user-profile.constant';
+import { PATCH_USER_PROFILE_IMAGE_KEY } from '../constants/user-profile.constant';
 import { DomainNameEnum } from 'src/constants/enum';
 
 @Controller(DomainNameEnum.USER_PROFILE)
@@ -71,9 +68,8 @@ export class UserProfileController {
    * @returns { Promise<ResponseEntity<PatchUserProfileImageResponseDto>> }
    */
   @UseInterceptors(
-    FilesInterceptor(
+    FileInterceptor(
       PATCH_USER_PROFILE_IMAGE_KEY,
-      PATCH_USER_PROFILE_IMAGE_LIMIT,
       CreateProfileImageMulterOption(),
     ),
   )
@@ -81,11 +77,11 @@ export class UserProfileController {
   @HttpCode(HttpStatus.OK)
   async patchUserProfileImage(
     @User() user: DecodedUserToken,
-    @UploadedFiles() imageFiles?: Express.MulterS3.File[] | undefined,
+    @UploadedFile() imageFile?: Express.MulterS3.File,
   ): Promise<ResponseEntity<PatchUserProfileImageResponseDto>> {
     const result = await this.userProfileService.modifyUserProfileImage(
       user,
-      imageFiles,
+      imageFile,
     );
     return ResponseEntity.OK_WITH(HttpStatus.OK, result);
   }

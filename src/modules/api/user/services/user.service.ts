@@ -1,4 +1,9 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UserRepository } from '../repositories/user.repository';
 import { UserEntity } from '../entities/user.entity';
 import { AuthService } from 'src/modules/core/auth/services/auth.service';
@@ -259,7 +264,7 @@ export class UserService {
     return result.map((r) => r.alarmDate);
   }
 
-  async findOneBySnsId(socialId: string): Promise<UserEntity> {
+  async findOneBySnsId(socialId: string): Promise<UserEntity | null> {
     return await this.userRepository.findOne({
       where: { snsId: socialId },
     });
@@ -271,9 +276,9 @@ export class UserService {
    * @param   { number | undefined } userId
    * @returns { Promise<UserEntity> }
    */
-  async findOneById(userId?: number | undefined): Promise<UserEntity> {
+  async findOneById(userId?: number | undefined): Promise<UserEntity | null> {
     return await this.userRepository.findOne({
-      where: { id: Equal(userId) },
+      where: { id: userId },
     });
   }
 
@@ -282,16 +287,17 @@ export class UserService {
    * @author  Jason
    * @param   { number } userId
    * @param   { Partial<UserEntity> } properties
-   * @param   { QueryRunner | undefined } queryRunner
+   * @param   { QueryRunner } queryRunner
    */
   async modifyById(
     userId: number,
     properties: Partial<UserEntity>,
-    queryRunner?: QueryRunner | undefined,
+    queryRunner?: QueryRunner,
   ): Promise<void> {
-    const criteria = this.userHelper.setUpdateUserCriteria(userId);
+    const criteria = { id: userId };
 
     if (isDefined(queryRunner)) {
+      console.log(properties);
       await queryRunner.manager.update(UserEntity, criteria, properties);
       return;
     }

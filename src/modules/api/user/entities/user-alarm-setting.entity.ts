@@ -9,7 +9,7 @@ import { CommonEntity } from 'src/common/entities/common.entity';
 @Entity('UserAlarmSetting')
 export class UserAlarmSettingEntity extends CommonEntity {
   @Column('int')
-  userId: number;
+  userId!: number;
 
   @Column('varchar', { length: StatusOrCheckColumnLengthEnum.CHECK })
   isTotalAlarm!: CheckColumnEnum;
@@ -34,7 +34,7 @@ export class UserAlarmSettingEntity extends CommonEntity {
     onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
-  user: UserEntity;
+  user?: UserEntity;
 
   static from(
     isTotalAlarm: CheckColumnEnum,

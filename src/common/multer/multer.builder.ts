@@ -27,11 +27,11 @@ export enum ImageBuilderTypeEnum {
  */
 export class MulterBuilder {
   private readonly bucketName: string;
+  private readonly allowedMimeTypes: Array<string> = [];
 
+  private s3: S3Client | AWS.S3;
   private resource = '';
   private path = '';
-  private s3: S3Client | AWS.S3;
-  private allowedMimeTypes: Array<string> = [];
 
   constructor(type: ImageBuilderTypeEnum) {
     this.s3 = this.setS3(type);
@@ -144,7 +144,7 @@ export class MulterBuilder {
       key: (
         req: IRequestWithUserType,
         file: Express.Multer.File,
-        callback: (error: any, key?: string) => void,
+        callback: (error: Error | null, key?: string) => void,
       ) => {
         const userId = req.user.id;
         const splitedFileNames = file.originalname.split('.');
@@ -168,9 +168,9 @@ export class MulterBuilder {
       bucket: this.bucketName,
       contentType: multerS3.AUTO_CONTENT_TYPE,
       key: (
-        req: Request,
+        _: Request,
         file: Express.Multer.File,
-        callback: (error: any, key?: string) => void,
+        callback: (error: Error | null, key?: string) => void,
       ) => {
         const splitedFileNames = file.originalname.split('.');
         const extension = splitedFileNames.at(splitedFileNames.length - 1);
@@ -187,8 +187,8 @@ export class MulterBuilder {
    * @summary 파일 삭제 함수
    * @param   { string } imageKey
    */
-  async delete(imageKey: string): Promise<void> {
-    if (isDefined(imageKey) && imageKey !== '') {
+  async delete(imageKey?: string | null): Promise<void> {
+    if (isDefined(imageKey) && imageKey.length !== 0) {
       const awsS3 = this.s3 as AWS.S3;
       await awsS3
         .deleteObject({

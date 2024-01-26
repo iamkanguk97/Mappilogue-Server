@@ -27,9 +27,7 @@ export class UserProfileHelper {
    * @param   { Express.MulterS3.File } imageFile
    * @returns { UserEntity }
    */
-  setUpdateProfileImageParam(
-    imageFile?: Express.MulterS3.File | undefined,
-  ): UserEntity {
+  setUpdateProfileImageParam(imageFile?: Express.MulterS3.File): UserEntity {
     const user = new UserEntity();
 
     user.profileImageUrl = imageFile?.location ?? USER_DEFAULT_PROFILE_IMAGE;

@@ -20,21 +20,21 @@ export class PutUserAlarmSettingRequestDto extends PickType(
     setValidatorContext(CommonExceptionCode.MustCheckColumnType),
   )
   @IsNotEmpty(setValidatorContext(UserExceptionCode.IsTotalAlarmEmpty))
-  isTotalAlarm: CheckColumnEnum;
+  isTotalAlarm!: CheckColumnEnum;
 
   @IsEnum(
     CheckColumnEnum,
     setValidatorContext(CommonExceptionCode.MustCheckColumnType),
   )
   @IsNotEmpty(setValidatorContext(UserExceptionCode.IsNoticeAlarmEmpty))
-  isNoticeAlarm: CheckColumnEnum;
+  isNoticeAlarm!: CheckColumnEnum;
 
   @IsEnum(
     CheckColumnEnum,
     setValidatorContext(CommonExceptionCode.MustCheckColumnType),
   )
   @IsNotEmpty(setValidatorContext(UserExceptionCode.IsMarketingAlarmEmpty))
-  isMarketingAlarm: CheckColumnEnum;
+  isMarketingAlarm!: CheckColumnEnum;
 
   @IsEnum(
     CheckColumnEnum,
@@ -43,7 +43,7 @@ export class PutUserAlarmSettingRequestDto extends PickType(
   @IsNotEmpty(
     setValidatorContext(UserExceptionCode.IsScheduleReminderAlarmEmpty),
   )
-  isScheduleReminderAlarm: CheckColumnEnum;
+  isScheduleReminderAlarm!: CheckColumnEnum;
 
   toEntity(): UserAlarmSettingEntity {
     return UserAlarmSettingEntity.from(

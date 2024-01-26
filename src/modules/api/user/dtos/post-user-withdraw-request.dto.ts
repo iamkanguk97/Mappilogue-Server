@@ -9,7 +9,7 @@ import { PickType } from '@nestjs/mapped-types';
 
 export class PostUserWithdrawRequestDto extends PickType(
   UserWithdrawReasonEntity,
-  ['reason'],
+  ['reason'] as const,
 ) {
   @Length(
     0,

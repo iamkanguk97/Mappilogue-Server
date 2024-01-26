@@ -1,4 +1,4 @@
-export const TERMS_OF_SERVICE_URL = 'This is terms-of-service url';
+export const TERMS_OF_SERVICE_URL = 'This is terms-of-service url'; // 이용약관 경로
 
 export const IMAGE_MIME_TYPES = [
   'image/jpg',
