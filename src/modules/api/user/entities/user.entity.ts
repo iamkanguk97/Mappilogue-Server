@@ -5,6 +5,7 @@ import {
   USER_AGE_LENGTH,
   USER_BIRTHDAY_LENGTH,
   USER_EMAIL_LENGTH,
+  USER_FCM_TOKEN_LENGTH,
   USER_GENDER_LENGTH,
   USER_NICKNAME_LENGTH,
   USER_PROFILE_IMAGE_KEY_LENGTH,
@@ -36,16 +37,16 @@ export class UserEntity extends CommonEntity {
   profileImageKey!: string | null;
 
   @Column('varchar', { nullable: true, length: USER_GENDER_LENGTH })
-  gender?: UserGenderEnum;
+  gender!: UserGenderEnum | null;
 
   @Column('varchar', { nullable: true, length: USER_AGE_LENGTH })
-  age?: string;
+  age!: string | null;
 
   @Column('varchar', {
     nullable: true,
     length: USER_BIRTHDAY_LENGTH,
   })
-  birthday?: string;
+  birthday!: string | null;
 
   @Column('varchar', {
     length: USER_SNS_ID_LENGTH,
@@ -57,8 +58,8 @@ export class UserEntity extends CommonEntity {
   })
   snsType!: UserSnsTypeEnum;
 
-  @Column('varchar', { nullable: true })
-  fcmToken?: string | null;
+  @Column('varchar', { nullable: true, length: USER_FCM_TOKEN_LENGTH })
+  fcmToken!: string | null;
 
   @OneToOne(
     () => UserAlarmSettingEntity,
@@ -72,7 +73,7 @@ export class UserEntity extends CommonEntity {
     (userWithdrawReason) => userWithdrawReason.user,
     { cascade: false },
   )
-  userWithdrawReason?: UserAlarmSettingEntity;
+  userWithdrawReason?: UserWithdrawReasonEntity;
 
   @OneToMany(() => ScheduleEntity, (schedule) => schedule.user, {
     cascade: true,

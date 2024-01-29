@@ -17,8 +17,8 @@ import { CustomConfigService } from '../../custom-config/services';
 import { ENVIRONMENT_KEY } from '../../custom-config/constants/custom-config.constant';
 import { UserService } from 'src/modules/api/user/services/user.service';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
-import { CustomJwtPayload } from '../types';
 import { isDefined } from 'src/helpers/common.helper';
+import { ICustomJwtPayload } from '../types';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -54,7 +54,7 @@ export class AuthGuard implements CanActivate {
         secret: this.customConfigService.get<string>(
           ENVIRONMENT_KEY.ACCESS_SECRET_KEY,
         ),
-      })) as CustomJwtPayload;
+      })) as ICustomJwtPayload;
 
       const findUser = await this.userService.findOneById(payload.userId);
       if (!isDefined(findUser)) {

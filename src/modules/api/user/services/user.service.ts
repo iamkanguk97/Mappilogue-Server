@@ -9,7 +9,7 @@ import { UserEntity } from '../entities/user.entity';
 import { AuthService } from 'src/modules/core/auth/services/auth.service';
 import { JwtService } from '@nestjs/jwt';
 import {
-  CustomJwtPayload,
+  ICustomJwtPayload,
   SocialFactoryType,
 } from 'src/modules/core/auth/types';
 import { JwtHelper } from 'src/modules/core/auth/helpers/jwt.helper';
@@ -130,7 +130,7 @@ export class UserService {
   ): Promise<TokenRefreshResponseDto> {
     const refreshPayload = this.jwtService.decode(
       refreshToken,
-    ) as CustomJwtPayload;
+    ) as ICustomJwtPayload;
     const userId = refreshPayload?.userId;
 
     const checkUserStatus = await this.findOneById(userId);
@@ -273,10 +273,10 @@ export class UserService {
   /**
    * @summary find one user by id
    * @author  Jason
-   * @param   { number | undefined } userId
+   * @param   { number  } userId
    * @returns { Promise<UserEntity> }
    */
-  async findOneById(userId?: number | undefined): Promise<UserEntity | null> {
+  async findOneById(userId?: number): Promise<UserEntity | null> {
     return await this.userRepository.findOne({
       where: { id: userId },
     });
@@ -297,7 +297,6 @@ export class UserService {
     const criteria = { id: userId };
 
     if (isDefined(queryRunner)) {
-      console.log(properties);
       await queryRunner.manager.update(UserEntity, criteria, properties);
       return;
     }

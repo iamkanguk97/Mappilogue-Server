@@ -185,9 +185,9 @@ export class MulterBuilder {
 
   /**
    * @summary 파일 삭제 함수
-   * @param   { string } imageKey
+   * @param   { string | null } imageKey
    */
-  async delete(imageKey?: string | null): Promise<void> {
+  async delete(imageKey: string | null): Promise<void> {
     if (isDefined(imageKey) && imageKey.length !== 0) {
       const awsS3 = this.s3 as AWS.S3;
       await awsS3

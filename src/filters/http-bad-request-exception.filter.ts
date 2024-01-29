@@ -62,7 +62,6 @@ export class HttpBadRequestExceptionFilter
     // Class-Validator를 통해 나온 에러 객체
     if (exceptionResponse instanceof ValidationError) {
       const validationResult = this.getExceptionObj(exceptionResponse); // 첫 에러 가져오기
-      console.log(validationResult);
       this.setBadRequestException(
         exceptionJson,
         validationResult.code,

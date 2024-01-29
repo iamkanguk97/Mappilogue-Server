@@ -6,5 +6,5 @@ import { UserExceptionCode } from 'src/common/exception-code/user.exception-code
 export class TokenRefreshRequestDto {
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsNotEmpty(setValidatorContext(UserExceptionCode.RefreshTokenEmpty))
-  refreshToken: string;
+  refreshToken!: string;
 }

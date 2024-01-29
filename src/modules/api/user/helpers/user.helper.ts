@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { UserEntity } from '../entities/user.entity';
 import { JwtHelper } from 'src/modules/core/auth/helpers/jwt.helper';
 import { CustomCacheService } from 'src/modules/core/custom-cache/services/custom-cache.service';
-import { CustomJwtPayload } from 'src/modules/core/auth/types';
+import { ICustomJwtPayload } from 'src/modules/core/auth/types';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 import { isDefined } from 'src/helpers/common.helper';
 import { NotificationErrorCodeEnum } from 'src/modules/core/notification/constants/notification.enum';
@@ -43,16 +43,16 @@ export class UserHelper {
    * @summary 전달받은 refresh-token이 유효한지 확인
    * @author  Jason
    *
-   * @param   { CustomJwtPayload } refreshPayload
+   * @param   { ICustomJwtPayload } refreshPayload
    * @param   { string } refreshToken
-   * @param   { UserEntity | undefined } user
+   * @param   { UserEntity | null } user
    *
    * @returns { Promise<boolean> }
    */
   async isUserRefreshTokenValid(
-    refreshPayload: CustomJwtPayload,
+    refreshPayload: ICustomJwtPayload,
     refreshToken: string,
-    user?: UserEntity | undefined,
+    user?: UserEntity | null,
   ): Promise<boolean> {
     return (
       isDefined(user) &&

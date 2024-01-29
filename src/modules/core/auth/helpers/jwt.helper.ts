@@ -5,7 +5,7 @@ import { ENVIRONMENT_KEY } from '../../custom-config/constants/custom-config.con
 import { TokenTypeEnum } from '../constants/auth.enum';
 import { CustomCacheService } from '../../custom-cache/services/custom-cache.service';
 import { CustomCacheHelper } from '../../custom-cache/helpers';
-import { CustomJwtPayload } from '../types';
+import { ICustomJwtPayload } from '../types';
 import { isDefined } from 'src/helpers/common.helper';
 
 @Injectable()
@@ -82,11 +82,11 @@ export class JwtHelper {
   /**
    * @summary Refresh-Token의 Payload가 유효한지 확인하는 함수
    * @author  Jason
-   * @param   { CustomJwtPayload | undefined } refreshTokenPayload
+   * @param   { ICustomJwtPayload | null } refreshTokenPayload
    * @returns { boolean }
    */
   isRefreshTokenPayloadValid(
-    refreshTokenPayload?: CustomJwtPayload | undefined,
+    refreshTokenPayload?: ICustomJwtPayload | null,
   ): boolean {
     return (
       isDefined(refreshTokenPayload?.userId) &&

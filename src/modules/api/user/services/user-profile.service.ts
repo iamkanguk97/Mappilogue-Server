@@ -20,7 +20,6 @@ export class UserProfileService {
   private readonly logger = new Logger(UserProfileService.name);
 
   constructor(
-    private readonly dataSource: DataSource,
     private readonly userService: UserService,
     private readonly userProfileHelper: UserProfileHelper,
     private readonly userAlarmSettingRepository: UserAlarmSettingRepository,
@@ -55,32 +54,24 @@ export class UserProfileService {
 
     const imageDeleteBuilder = new MulterBuilder(ImageBuilderTypeEnum.DELETE);
 
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+    await this.userService.modifyById(user.id, updateProfileImageParam);
 
     try {
-      await Promise.all([
-        this.userService.modifyById(
-          user.id,
-          updateProfileImageParam,
-          queryRunner,
-        ),
-        imageDeleteBuilder.delete(user.profileImageKey),
-      ]);
-
-      await queryRunner.commitTransaction();
-      return PatchUserProfileImageResponseDto.from(
-        user.id,
-        updateProfileImageParam.profileImageUrl,
-      );
+      await imageDeleteBuilder.delete(user.profileImageKey);
     } catch (err) {
-      this.logger.error(`[modifyUserProfileImage - transacton error] ${err}`);
-      await queryRunner.rollbackTransaction();
-      throw err;
-    } finally {
-      await queryRunner.release();
+      /**
+       * 이미지 삭제에서 에러가 발생할 때 어짜피 DB에는 새로운 프로필 이미지에 대한 정보가 저장되었을 것임.
+       * 그렇기 때문에 여기에서는 단순히 개발자들에게 삭제에서 에러가 발생하는지 알려주기만 하면 됨.
+       */
+      this.logger.error(
+        '[UserProfileService - modifyUserProfileImage] 이미지 삭제 오류 발생! --> 해결 필요',
+      );
     }
+
+    return PatchUserProfileImageResponseDto.from(
+      user.id,
+      updateProfileImageParam.profileImageUrl,
+    );
   }
 
   /**
