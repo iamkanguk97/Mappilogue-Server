@@ -27,3 +27,8 @@ export enum DefaultPaginationEnum {
   DEFAULT_PAGE_NO = 1,
   DEFAULT_PAGE_SIZE = 10,
 }
+
+export enum PromiseStatusEnum {
+  FULFILLED = 'fulfilled',
+  REJECTED = 'rejected',
+}
