@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { UserRepository } from '../repositories/user.repository';
 import { UserEntity } from '../entities/user.entity';
 import { AuthService } from 'src/modules/core/auth/services/auth.service';
@@ -21,7 +16,6 @@ import { LoginOrSignUpEnum } from '../constants/user.enum';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 import { DecodedUserToken, ProcessedSocialKakaoInfo } from '../types';
 import { PostUserWithdrawRequestDto } from '../dtos/post-user-withdraw-request.dto';
-import { UserWithdrawReasonRepository } from '../repositories/user-withdraw-reason.repository';
 import { decryptEmail } from 'src/helpers/crypt.helper';
 import {
   ImageBuilderTypeEnum,
@@ -30,7 +24,7 @@ import {
 import { LoginOrSignUpRequestDto } from '../dtos/login-or-sign-up-request.dto';
 import { UserAlarmSettingRepository } from '../repositories/user-alarm-setting.repository';
 import { UserAlarmSettingEntity } from '../entities/user-alarm-setting.entity';
-import { DataSource, Equal, QueryRunner } from 'typeorm';
+import { DataSource, QueryRunner, Equal, FindOptionsWhere } from 'typeorm';
 import { UserAlarmHistoryRepository } from '../repositories/user-alarm-history.repository';
 import { isDefined } from 'src/helpers/common.helper';
 import { UserWithdrawReasonEntity } from '../entities/user-withdraw-reason.entity';
@@ -42,7 +36,6 @@ export class UserService {
   constructor(
     private readonly dataSource: DataSource,
     private readonly userRepository: UserRepository,
-    private readonly userWithdrawReasonRepository: UserWithdrawReasonRepository,
     private readonly userAlarmSettingRepository: UserAlarmSettingRepository,
     private readonly userAlarmHistoryRepository: UserAlarmHistoryRepository,
     private readonly authService: AuthService,
@@ -131,7 +124,7 @@ export class UserService {
     const refreshPayload = this.jwtService.decode(
       refreshToken,
     ) as ICustomJwtPayload;
-    const userId = refreshPayload?.userId;
+    const userId = refreshPayload.userId;
 
     const checkUserStatus = await this.findOneById(userId);
 
@@ -174,8 +167,8 @@ export class UserService {
 
     try {
       await Promise.all([
-        this.customCacheService.delValue(refreshTokenRedisKey),
         this.modifyById(userId, { fcmToken: null }, queryRunner),
+        this.customCacheService.delValue(refreshTokenRedisKey),
       ]);
 
       await queryRunner.commitTransaction();
@@ -273,10 +266,10 @@ export class UserService {
   /**
    * @summary find one user by id
    * @author  Jason
-   * @param   { number  } userId
+   * @param   { number } userId
    * @returns { Promise<UserEntity> }
    */
-  async findOneById(userId?: number): Promise<UserEntity | null> {
+  async findOneById(userId: number): Promise<UserEntity | null> {
     return await this.userRepository.findOne({
       where: { id: userId },
     });
