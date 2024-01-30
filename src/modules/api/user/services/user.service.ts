@@ -196,29 +196,21 @@ export class UserService {
     );
     user.email = decryptEmail(user.email);
 
-    const deleteTarget = await this.userRepository.find({
-      where: { id: user.id },
-      relations: [
-        'userAlarmSetting',
-        'schedules',
-        'schedules.scheduleAreas',
-        'markCategories',
-        'marks',
-        'marks.markMetadata',
-        'marks.markLocation',
-      ],
-    });
-
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
       await Promise.all([
-        // queryRunner.manager.softRemove(UserEntity, deleteTarget),
+        queryRunner.manager.softRemove(
+          UserEntity,
+          await this.userRepository.find({
+            where: { id: user.id },
+          }),
+        ),
         queryRunner.manager.save(UserWithdrawReasonEntity, body.toEntity(user)),
-        //this.customCacheService.delValue(refreshTokenRedisKey),
-        // this.removeUserProfileImage(user),
+        this.customCacheService.delValue(refreshTokenRedisKey),
+        this.removeUserProfileImage(user),
       ]);
 
       await queryRunner.commitTransaction();
@@ -237,11 +229,11 @@ export class UserService {
    * @param   { DecodedUserToken } user
    */
   async removeUserProfileImage(user: DecodedUserToken): Promise<void> {
-    const userProfileKey = user?.profileImageKey;
+    const userProfileKey = user.profileImageKey;
 
-    if (isDefined(userProfileKey) && userProfileKey !== '') {
+    if (isDefined(userProfileKey) && userProfileKey.length !== 0) {
       const imageDeleteBuilder = new MulterBuilder(ImageBuilderTypeEnum.DELETE);
-      await imageDeleteBuilder.delete(user.profileImageKey);
+      await imageDeleteBuilder.delete(userProfileKey);
     }
   }
 
