@@ -3,12 +3,6 @@ import { TokenTypeEnum } from '../constants/auth.enum';
 import { SocialAppleFactory } from '../factories/social-apple.factory';
 import { SocialKakaoFactory } from '../factories/social-kakao.factory';
 
-export interface SocialFactoryInterface {
-  validateSocialAccessToken(): Promise<string>;
-  // TODO: Type 지정해주기
-  processingSocialInfo(socialInfo: any): any;
-}
-
 export interface ICustomJwtPayload {
   userId: number;
   iat: number;
@@ -16,48 +10,49 @@ export interface ICustomJwtPayload {
   sub: TokenTypeEnum;
 }
 
-export interface SocialKakaoDataInfo {
-  id: number;
-  connected_at?: string | undefined;
-  properties?:
-    | {
-        nickname?: string | undefined;
-        profile_image?: string | undefined;
-        thumbnal_image?: string | undefined;
-      }
-    | undefined;
-  kakao_account?:
-    | {
-        profile_nickname_needs_agreement?: boolean;
-        profile_image_needs_agreement?: boolean;
-        profile?:
-          | {
-              nickname?: string | undefined;
-              thumbnail_image_url?: string | undefined;
-              profile_image_url?: string | undefined;
-              is_default_image?: boolean;
-            }
-          | undefined;
-        has_email: boolean;
-        email_needs_agreement: boolean;
-        is_email_valid: boolean;
-        is_email_verified: boolean;
-        email?: string | undefined;
-        has_age_range: boolean;
-        age_range_needs_agreement: boolean;
-        age_range?: string | undefined;
-        has_birthday: boolean;
-        birthday_needs_agreement: boolean;
-        birthday?: string | undefined;
-        birthday_type?: 'SOLAR' | 'LUNAR' | undefined;
-        has_gender: boolean;
-        gender_needs_agreement: boolean;
-        gender?: UserGenderEnum | undefined;
-      }
-    | undefined;
+// 소셜로그인 Factory Method 인터페이스
+export interface ISocialFactoryMethod {
+  validateSocialAccessToken(): Promise<string>;
 }
 
-export interface AppleJwtTokenPayload {
+// 카카오에서 검증 후 반환해주는 데이터 인터페이스
+export interface ISocialKakaoDataInfo {
+  id: number;
+  connected_at?: string;
+  properties?: {
+    nickname?: string;
+    profile_image?: string;
+    thumbnal_image?: string;
+  };
+  kakao_account?: {
+    profile_nickname_needs_agreement?: boolean;
+    profile_image_needs_agreement?: boolean;
+    profile?: {
+      nickname?: string;
+      thumbnail_image_url?: string;
+      profile_image_url?: string;
+      is_default_image?: boolean;
+    };
+    has_email: boolean;
+    email_needs_agreement: boolean;
+    is_email_valid: boolean;
+    is_email_verified: boolean;
+    email?: string;
+    has_age_range: boolean;
+    age_range_needs_agreement: boolean;
+    age_range?: string;
+    has_birthday: boolean;
+    birthday_needs_agreement: boolean;
+    birthday?: string;
+    birthday_type?: 'SOLAR' | 'LUNAR';
+    has_gender: boolean;
+    gender_needs_agreement: boolean;
+    gender?: UserGenderEnum;
+  };
+}
+
+// 애플로그인 검증 후 결과 토큰 Payload (아직 미정)
+export interface IAppleJwtTokenPayload {
   iss: string;
   aud: string;
   exp: number;
@@ -65,11 +60,11 @@ export interface AppleJwtTokenPayload {
   sub: string;
   nonce: string;
   c_hash: string;
-  email?: string | undefined;
-  email_verified?: string | undefined;
-  is_private_email?: string | undefined;
+  email?: string;
+  email_verified?: string;
+  is_private_email?: string;
   auth_time: number;
   nonce_supported: boolean;
 }
 
-export type SocialFactoryType = SocialKakaoFactory | SocialAppleFactory;
+export type TSocialFactory = SocialKakaoFactory | SocialAppleFactory;

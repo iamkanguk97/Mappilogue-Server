@@ -3,7 +3,7 @@ import { USER_WITHDRAW_REASON_LENGTH } from '../constants/user.constant';
 import { setValidatorContext } from 'src/common/common';
 import { CommonExceptionCode } from 'src/common/exception-code/common.exception-code';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
-import { DecodedUserToken } from '../types';
+import { TDecodedUserToken } from '../types';
 import { UserWithdrawReasonEntity } from '../entities/user-withdraw-reason.entity';
 import { PickType } from '@nestjs/mapped-types';
 
@@ -20,7 +20,7 @@ export class PostUserWithdrawRequestDto extends PickType(
   @IsOptional()
   reason?: string = '';
 
-  toEntity(user: DecodedUserToken): UserWithdrawReasonEntity {
+  toEntity(user: TDecodedUserToken): UserWithdrawReasonEntity {
     return UserWithdrawReasonEntity.from(user.id, user.email, this.reason);
   }
 }

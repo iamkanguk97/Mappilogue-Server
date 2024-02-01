@@ -3,31 +3,27 @@ import { UserRepository } from '../repositories/user.repository';
 import { UserEntity } from '../entities/user.entity';
 import { AuthService } from 'src/modules/core/auth/services/auth.service';
 import { JwtService } from '@nestjs/jwt';
-import {
-  ICustomJwtPayload,
-  SocialFactoryType,
-} from 'src/modules/core/auth/types';
+import { ICustomJwtPayload, TSocialFactory } from 'src/modules/core/auth/types';
 import { JwtHelper } from 'src/modules/core/auth/helpers/jwt.helper';
 import { UserHelper } from '../helpers/user.helper';
 import { CustomCacheService } from 'src/modules/core/custom-cache/services/custom-cache.service';
 import { TokenRefreshResponseDto } from '../dtos/token-refresh-response.dto';
-import { LoginOrSignUpResponseDto } from '../dtos/login-or-sign-up-response.dto';
 import { LoginOrSignUpEnum } from '../constants/user.enum';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
-import { DecodedUserToken, ProcessedSocialKakaoInfo } from '../types';
+import { TDecodedUserToken } from '../types';
 import { PostUserWithdrawRequestDto } from '../dtos/post-user-withdraw-request.dto';
 import { decryptEmail } from 'src/helpers/crypt.helper';
 import {
   ImageBuilderTypeEnum,
   MulterBuilder,
 } from 'src/common/multer/multer.builder';
-import { LoginOrSignUpRequestDto } from '../dtos/login-or-sign-up-request.dto';
-import { UserAlarmSettingRepository } from '../repositories/user-alarm-setting.repository';
 import { UserAlarmSettingEntity } from '../entities/user-alarm-setting.entity';
-import { DataSource, QueryRunner, Equal, FindOptionsWhere } from 'typeorm';
+import { DataSource, QueryRunner } from 'typeorm';
 import { UserAlarmHistoryRepository } from '../repositories/user-alarm-history.repository';
 import { isDefined } from 'src/helpers/common.helper';
 import { UserWithdrawReasonEntity } from '../entities/user-withdraw-reason.entity';
+import { PostLoginOrSignUpRequestDto } from '../dtos/login-or-sign-up-request.dto';
+import { PostLoginOrSignUpResponseDto } from '../dtos/login-or-sign-up-response.dto';
 
 @Injectable()
 export class UserService {
@@ -36,7 +32,6 @@ export class UserService {
   constructor(
     private readonly dataSource: DataSource,
     private readonly userRepository: UserRepository,
-    private readonly userAlarmSettingRepository: UserAlarmSettingRepository,
     private readonly userAlarmHistoryRepository: UserAlarmHistoryRepository,
     private readonly authService: AuthService,
     private readonly jwtService: JwtService,
@@ -45,29 +40,39 @@ export class UserService {
     private readonly jwtHelper: JwtHelper,
   ) {}
 
+  /**
+   * @summary 소셜 로그인 API - 회원가입 처리
+   * @author  Jason
+   * @param   { TSocialFactory } userSocialFactory
+   * @param   { PostLoginOrSignUpRequestDto } body
+   * @returns { Promise<PostLoginOrSignUpResponseDto> }
+   */
   async createSignUp(
-    userSocialFactory: SocialFactoryType,
-    body: LoginOrSignUpRequestDto,
-  ): Promise<LoginOrSignUpResponseDto> {
+    userSocialFactory: TSocialFactory,
+    body: PostLoginOrSignUpRequestDto,
+  ): Promise<PostLoginOrSignUpResponseDto> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
+      const newUserId = await this.createUser(socialUserInfo, body.fcmToken);
+
+      await queryRunner.manager.save(
+        UserAlarmSettingEntity,
+        body.toUserAlarmSettingEntity(newUserId),
+      );
+
       // TODO: type을 ProcessedSocialAppleInfo도 추가해야함.
       const socialUserInfo = (await userSocialFactory.getUserSocialInfo()) as
         | ProcessedSocialKakaoInfo
         | any;
 
       // TODO: Apple Login 구현 시 repository로 전달하는 parameter entity-from 구현
-      const newUserId = await this.createUser(socialUserInfo, body.fcmToken);
       const newTokens = await this.authService.setUserToken(newUserId);
-      await this.userAlarmSettingRepository.save(
-        UserAlarmSettingEntity.fromValue(newUserId, body.isAlarmAccept),
-      );
 
       await queryRunner.commitTransaction();
-      return LoginOrSignUpResponseDto.from(
+      return PostLoginOrSignUpResponseDto.from(
         LoginOrSignUpEnum.SIGNUP,
         newUserId,
         newTokens,
@@ -81,35 +86,31 @@ export class UserService {
     }
   }
 
+  /**
+   * @summary 소셜 로그인 API - 로그인 처리
+   * @author  Jason
+   * @param   { UserEntity } user
+   * @param   { string | null } fcmToken
+   * @returns { Promise<PostLoginOrSignUpResponseDto> }
+   */
   async createLogin(
     user: UserEntity,
-    fcmToken?: string | undefined,
-  ): Promise<LoginOrSignUpResponseDto> {
+    fcmToken?: string | null,
+  ): Promise<PostLoginOrSignUpResponseDto> {
     /**
      * @comment 로그인에서는 isAlarmAccept property를 무시한다 (알림 업데이트 X)
      */
 
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+    const [tokens] = await Promise.all([
+      this.authService.setUserToken(user.id),
+      this.modifyById(user.id, { fcmToken }),
+    ]);
 
-    try {
-      const tokens = await this.authService.setUserToken(user.id);
-      await this.modifyById(user.id, { fcmToken });
-
-      await queryRunner.commitTransaction();
-      return LoginOrSignUpResponseDto.from(
-        LoginOrSignUpEnum.LOGIN,
-        user.id,
-        tokens,
-      );
-    } catch (err) {
-      this.logger.error(`[login - transaction error] ${err}`);
-      await queryRunner.rollbackTransaction();
-      throw err;
-    } finally {
-      await queryRunner.release();
-    }
+    return PostLoginOrSignUpResponseDto.from(
+      LoginOrSignUpEnum.LOGIN,
+      user.id,
+      tokens,
+    );
   }
 
   /**
@@ -184,11 +185,11 @@ export class UserService {
   /**
    * @summary 회원탈퇴 API Service
    * @author  Jason
-   * @param   { DecodedUserToken } user
+   * @param   { TDecodedUserToken } user
    * @param   { PostUserWithdrawRequestDto } body
    */
   async createWithdraw(
-    user: DecodedUserToken,
+    user: TDecodedUserToken,
     body: PostUserWithdrawRequestDto,
   ): Promise<void> {
     const refreshTokenRedisKey = this.jwtHelper.getRefreshTokenRedisKey(
@@ -226,9 +227,9 @@ export class UserService {
   /**
    * @summary 사용자 프로필 이미지 삭제하기
    * @author  Jason
-   * @param   { DecodedUserToken } user
+   * @param   { TDecodedUserToken } user
    */
-  async removeUserProfileImage(user: DecodedUserToken): Promise<void> {
+  async removeUserProfileImage(user: TDecodedUserToken): Promise<void> {
     const userProfileKey = user.profileImageKey;
 
     if (isDefined(userProfileKey) && userProfileKey.length !== 0) {
@@ -249,6 +250,12 @@ export class UserService {
     return result.map((r) => r.alarmDate);
   }
 
+  /**
+   * @summary find one user by snsId
+   * @author  Jason
+   * @param   { string } socialId
+   * @returns { Promise<UserEntity | null> }
+   */
   async findOneBySnsId(socialId: string): Promise<UserEntity | null> {
     return await this.userRepository.findOne({
       where: { snsId: socialId },
@@ -259,7 +266,7 @@ export class UserService {
    * @summary find one user by id
    * @author  Jason
    * @param   { number } userId
-   * @returns { Promise<UserEntity> }
+   * @returns { Promise<UserEntity | null> }
    */
   async findOneById(userId: number): Promise<UserEntity | null> {
     return await this.userRepository.findOne({

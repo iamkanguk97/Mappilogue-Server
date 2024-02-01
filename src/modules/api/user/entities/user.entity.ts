@@ -19,13 +19,13 @@ import { CommonEntity } from 'src/common/entities/common.entity';
 import { UserWithdrawReasonEntity } from './user-withdraw-reason.entity';
 
 @Entity('User')
-@Unique(['email', 'profileImageKey', 'snsId'])
+@Unique(['profileImageKey', 'snsId'])
 export class UserEntity extends CommonEntity {
   @Column('varchar', { length: USER_NICKNAME_LENGTH })
   nickname!: string;
 
-  @Column('varchar', { length: USER_EMAIL_LENGTH })
-  email!: string;
+  @Column('varchar', { nullable: true, length: USER_EMAIL_LENGTH })
+  email!: string | null;
 
   @Column('text')
   profileImageUrl!: string;

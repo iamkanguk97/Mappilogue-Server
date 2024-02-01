@@ -29,6 +29,12 @@ export const AWS_KEY = {
   AWS_S3_BUCKET_NAME: 'AWS_S3_BUCKET_NAME',
 } as const;
 
+export const APPLE_KEY = {
+  APPLE_KEY_ID: 'APPLE_KEY_ID',
+  APPLE_KEY_TEAM_ID: 'APPLE_KEY_TEAM_ID',
+  APPLE_KEY_CLIENT_ID: 'APPLE_KEY_CLIENT_ID',
+} as const;
+
 export const ENVIRONMENT_KEY = {
   NODE_ENV: 'NODE_ENV',
   PORT: 'PORT',
@@ -37,4 +43,5 @@ export const ENVIRONMENT_KEY = {
   ...JWT_KEY,
   ...EMAIL_CRYPT_KEY,
   ...AWS_KEY,
+  ...APPLE_KEY,
 } as const;

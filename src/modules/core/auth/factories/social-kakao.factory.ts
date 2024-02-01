@@ -14,24 +14,28 @@ import {
 } from '@nestjs/common';
 import { InternalServerExceptionCode } from 'src/common/exception-code/internal-server.exception-code';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
-import { SocialFactoryInterface, SocialKakaoDataInfo } from '../types';
 import {
   USER_DEFAULT_NICKNAME_PREFIX,
   USER_DEFAULT_PROFILE_IMAGE,
 } from 'src/modules/api/user/constants/user.constant';
 import { UserSnsTypeEnum } from 'src/modules/api/user/constants/user.enum';
-import { ProcessedSocialKakaoInfo } from 'src/modules/api/user/types';
+import { TProcessedSocialKakaoInfo } from 'src/modules/api/user/types';
 import { v4 as uuidv4 } from 'uuid';
+import { ISocialFactoryMethod, ISocialKakaoDataInfo } from '../types';
 
-export class SocialKakaoFactory implements SocialFactoryInterface {
+export class SocialKakaoFactory implements ISocialFactoryMethod {
   private readonly httpService = new HttpService();
-  private readonly snsType: UserSnsTypeEnum = UserSnsTypeEnum.KAKAO;
+
   private readonly socialAccessToken: string;
 
   constructor(socialAccessToken: string) {
     this.socialAccessToken = socialAccessToken;
   }
 
+  /**
+   * @summary 클라이언트에서 보낸 token을 검증하는 함수
+   * @author  Jason
+   */
   async validateSocialAccessToken(): Promise<string> {
     const requestHeader = generateBearerHeader(this.socialAccessToken);
 
@@ -48,10 +52,10 @@ export class SocialKakaoFactory implements SocialFactoryInterface {
     );
   }
 
-  async getUserSocialInfo(): Promise<ProcessedSocialKakaoInfo> {
+  async getUserSocialInfo(): Promise<TProcessedSocialKakaoInfo> {
     const requestHeader = generateBearerHeader(this.socialAccessToken);
 
-    const result = await lastValueFrom<SocialKakaoDataInfo>(
+    const result = await lastValueFrom<ISocialKakaoDataInfo>(
       this.httpService.get(KAKAO_GET_USER_INFO_URL, requestHeader).pipe(
         map((res) => res.data),
         catchError((err) => {
@@ -65,6 +69,11 @@ export class SocialKakaoFactory implements SocialFactoryInterface {
     return this.processingSocialInfo(result);
   }
 
+  /**
+   * @summary 카카오 소셜로그인 중 에러 발생했을 때 에러코드 분류
+   * @author  Jason
+   * @param   { KakaoErrorCodeEnum } kakaoErrorCode
+   */
   checkKakaoErrorCode(kakaoErrorCode: KakaoErrorCodeEnum): Promise<void> {
     switch (kakaoErrorCode) {
       case KakaoErrorCodeEnum.Unauthorized:
@@ -86,25 +95,30 @@ export class SocialKakaoFactory implements SocialFactoryInterface {
     }
   }
 
+  /**
+   * @summary 카카오 소셜로부터 사용자 정보를 정상적으로 받아왔을 때 데이터 처리
+   * @author  Jason
+   * @param   { ISocialKakaoDataInfo } kakaoInfo
+   * @returns { TProcessedSocialKakaoInfo }
+   */
   processingSocialInfo(
-    kakaoInfo: SocialKakaoDataInfo,
-  ): ProcessedSocialKakaoInfo {
-    const kakaoAccount = kakaoInfo.kakao_account;
-    const kakaoProfile = kakaoAccount.profile;
+    kakaoInfo: ISocialKakaoDataInfo,
+  ): TProcessedSocialKakaoInfo {
+    const kakaoAccount = kakaoInfo?.kakao_account;
+    const kakaoProfile = kakaoAccount?.profile;
 
     return {
       snsId: kakaoInfo.id.toString(),
-      snsType: this.snsType,
+      snsType: UserSnsTypeEnum.KAKAO,
       nickname:
-        kakaoProfile.nickname ??
-        `${USER_DEFAULT_NICKNAME_PREFIX}-${uuidv4().substr(0, 10)}`,
-      email: kakaoAccount.email,
-      profileImageUrl: kakaoProfile.is_default_image
-        ? USER_DEFAULT_PROFILE_IMAGE
-        : kakaoProfile.profile_image_url,
-      age: kakaoAccount?.age_range,
-      gender: kakaoAccount?.gender,
-      birthday: kakaoAccount?.birthday,
+        kakaoProfile?.nickname ??
+        `${USER_DEFAULT_NICKNAME_PREFIX}-${uuidv4().substring(0, 10)}`,
+      email: kakaoAccount?.email ?? null,
+      profileImageUrl:
+        kakaoProfile?.profile_image_url ?? USER_DEFAULT_PROFILE_IMAGE,
+      age: kakaoAccount?.age_range ?? null,
+      gender: kakaoAccount?.gender ?? null,
+      birthday: kakaoAccount?.birthday ?? null,
     };
   }
 }

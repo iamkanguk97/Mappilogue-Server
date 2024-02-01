@@ -51,16 +51,4 @@ export class UserAlarmSettingEntity extends CommonEntity {
 
     return userAlarmSetting;
   }
-
-  static fromValue(userId: number, isAlarmAccept: CheckColumnEnum) {
-    const userAlarmSetting = new UserAlarmSettingEntity();
-
-    userAlarmSetting.userId = userId;
-    userAlarmSetting.isTotalAlarm = isAlarmAccept;
-    userAlarmSetting.isNoticeAlarm = isAlarmAccept;
-    userAlarmSetting.isMarketingAlarm = isAlarmAccept;
-    userAlarmSetting.isScheduleReminderAlarm = isAlarmAccept;
-
-    return userAlarmSetting;
-  }
 }

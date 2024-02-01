@@ -1,6 +1,7 @@
 import { UserEntity } from '../entities/user.entity';
 
-export type ProcessedSocialKakaoInfo = Pick<
+// 카카오 소셜 데이터 처리 후 타입
+export type TProcessedSocialKakaoInfo = Pick<
   UserEntity,
   | 'snsId'
   | 'snsType'
@@ -12,7 +13,8 @@ export type ProcessedSocialKakaoInfo = Pick<
   | 'birthday'
 >;
 
-export type DecodedUserToken = Pick<
+// Access-Token Decode 후 Payload Type
+export type TDecodedUserToken = Pick<
   UserEntity,
   | 'id'
   | 'email'

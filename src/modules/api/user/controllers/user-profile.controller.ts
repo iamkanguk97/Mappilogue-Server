@@ -11,7 +11,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { User } from '../decorators/user.decorator';
-import { DecodedUserToken } from '../types';
+import { TDecodedUserToken } from '../types';
 import { ResponseEntity } from 'src/common/entities/response.entity';
 import { decryptEmail } from 'src/helpers/crypt.helper';
 import { UserId } from '../decorators/user-id.decorator';
@@ -36,13 +36,13 @@ export class UserProfileController {
    * @summary 사용자 프로필 조회 API
    * @author  Jason
    * @url     [GET] /api/v1/user-profiles
-   * @returns { ResponseEntity<DecodedUserToken> }
+   * @returns { ResponseEntity<TDecodedUserToken> }
    */
   @Get()
   @HttpCode(HttpStatus.OK)
   getUserProfile(
-    @User() user: DecodedUserToken,
-  ): ResponseEntity<DecodedUserToken> {
+    @User() user: TDecodedUserToken,
+  ): ResponseEntity<TDecodedUserToken> {
     user.email = decryptEmail(user.email);
     return ResponseEntity.OK_WITH(HttpStatus.OK, user);
   }
@@ -76,7 +76,7 @@ export class UserProfileController {
   @Patch('images')
   @HttpCode(HttpStatus.OK)
   async patchUserProfileImage(
-    @User() user: DecodedUserToken,
+    @User() user: TDecodedUserToken,
     @UploadedFile() imageFile?: Express.MulterS3.File,
   ): Promise<ResponseEntity<PatchUserProfileImageResponseDto>> {
     const result = await this.userProfileService.modifyUserProfileImage(

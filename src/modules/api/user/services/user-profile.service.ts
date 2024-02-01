@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { UserService } from './user.service';
 import { PatchUserNicknameRequestDto } from '../dtos/request/patch-user-nickname-request.dto';
-import { DecodedUserToken } from '../types';
+import { TDecodedUserToken } from '../types';
 import {
   ImageBuilderTypeEnum,
   MulterBuilder,
@@ -41,12 +41,12 @@ export class UserProfileService {
   /**
    * @summary 프로필 이미지 수정 API Service
    * @author  Jason
-   * @param   { DecodedUserToken } user
+   * @param   { TDecodedUserToken } user
    * @param   { Express.MulterS3.File } imageFile
    * @returns { Promise<PatchUserProfileImageResponseDto> }
    */
   async modifyUserProfileImage(
-    user: DecodedUserToken,
+    user: TDecodedUserToken,
     imageFile?: Express.MulterS3.File,
   ): Promise<PatchUserProfileImageResponseDto> {
     const updateProfileImageParam =

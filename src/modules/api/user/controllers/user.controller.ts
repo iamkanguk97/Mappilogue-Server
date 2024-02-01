@@ -7,44 +7,45 @@ import {
   Post,
   UseInterceptors,
 } from '@nestjs/common';
-import { LoginOrSignUpRequestDto } from '../dtos/login-or-sign-up-request.dto';
 import { ResponseEntity } from 'src/common/entities/response.entity';
 import { UserService } from '../services/user.service';
 import { TokenRefreshRequestDto } from '../dtos/token-refresh-request.dto';
 import { TokenRefreshResponseDto } from '../dtos/token-refresh-response.dto';
-import { LoginOrSignUpResponseDto } from '../dtos/login-or-sign-up-response.dto';
-import { UserSocialFactory } from '../factories/user-social.factory';
 import { Public } from 'src/modules/core/auth/decorators/auth.decorator';
 import { UserId } from '../decorators/user-id.decorator';
 import { User } from '../decorators/user.decorator';
-import { DecodedUserToken } from '../types';
+import { TDecodedUserToken } from '../types';
 import { PostUserWithdrawRequestDto } from '../dtos/post-user-withdraw-request.dto';
 import { DomainNameEnum } from 'src/constants/enum';
-
-import * as _ from 'lodash';
+import { PostLoginOrSignUpRequestDto } from '../dtos/login-or-sign-up-request.dto';
+import { PostLoginOrSignUpResponseDto } from '../dtos/login-or-sign-up-response.dto';
+import { isDefined } from 'src/helpers/common.helper';
 
 @Controller(DomainNameEnum.USER)
 @UseInterceptors(ClassSerializerInterceptor)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  /**
+   * @summary 소셜로그인 API (+ 회원가입)
+   * @author  Jason
+   * @url     [POST] /api/v1/users/social-login
+   * @returns { Promise<ResponseEntity<PostLoginOrSignUpResponseDto>> }
+   */
   @Public()
   @Post('social-login')
   @HttpCode(HttpStatus.CREATED)
   async postLoginOrSignUp(
-    @Body() body: LoginOrSignUpRequestDto,
-  ): Promise<ResponseEntity<LoginOrSignUpResponseDto>> {
-    const userSocialFactory = new UserSocialFactory(
-      body.socialVendor,
-      body.socialAccessToken,
-    ).setSocialFactory();
+    @Body() body: PostLoginOrSignUpRequestDto,
+  ): Promise<ResponseEntity<PostLoginOrSignUpResponseDto>> {
+    const socialFactory = body.buildSocialFactory();
 
-    const socialId = await userSocialFactory.validateSocialAccessToken();
+    const socialId = await socialFactory.validateSocialAccessToken();
     const user = await this.userService.findOneBySnsId(socialId);
 
-    if (_.isNil(user)) {
+    if (!isDefined(user)) {
       const signUpResult = await this.userService.createSignUp(
-        userSocialFactory,
+        socialFactory,
         body,
       );
       return ResponseEntity.OK_WITH(HttpStatus.CREATED, signUpResult);
@@ -88,7 +89,7 @@ export class UserController {
   @Post('withdrawal')
   @HttpCode(HttpStatus.NO_CONTENT)
   async postWithdraw(
-    @User() user: DecodedUserToken,
+    @User() user: TDecodedUserToken,
     @Body() body: PostUserWithdrawRequestDto,
   ): Promise<void> {
     await this.userService.createWithdraw(user, body);
