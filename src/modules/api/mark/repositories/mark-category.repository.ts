@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { MARK_CATEGORY_EMPTY_SEQUENCE } from '../constants/mark-category.constant';
 import { MarkEntity } from '../entities/mark.entity';
 import { isDefined } from 'src/helpers/common.helper';
-import { TMarkCategoryWithMarkCount } from '../types';
+import { IMarkCategoryWithMarkCount } from '../types';
 
 @CustomRepository(MarkCategoryEntity)
 export class MarkCategoryRepository extends Repository<MarkCategoryEntity> {
@@ -12,11 +12,11 @@ export class MarkCategoryRepository extends Repository<MarkCategoryEntity> {
    * @summary 사용자의 기록 카테고리 리스트 조회
    * @author  Jason
    * @param   { number } userId
-   * @returns { Promise<TMarkCategoryWithMarkCount[]> }
+   * @returns { Promise<IMarkCategoryWithMarkCount[]> }
    */
   async selectMarkCategoriesByUserId(
     userId: number,
-  ): Promise<TMarkCategoryWithMarkCount[]> {
+  ): Promise<IMarkCategoryWithMarkCount[]> {
     return await this.createQueryBuilder('MC')
       .select([
         'MC.id AS id',

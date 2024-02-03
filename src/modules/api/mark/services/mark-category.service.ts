@@ -165,10 +165,7 @@ export class MarkCategoryService {
       categories.map(
         async (category, idx) =>
           await this.markCategoryRepository.update(
-            this.markCategoryHelper.setUpdateMarkCategoryCriteriaWithUserId(
-              category.id,
-              userId,
-            ),
+            { id: category.id, userId },
             category.toEntity(idx + 1),
           ),
       ),

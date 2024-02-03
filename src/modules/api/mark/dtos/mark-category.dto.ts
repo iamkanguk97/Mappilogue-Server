@@ -1,5 +1,5 @@
 import { CheckColumnEnum } from 'src/constants/enum';
-import { TMarkCategoryWithMarkCount } from '../types';
+import { IMarkCategoryWithMarkCount } from '../types';
 import { Exclude, Expose } from 'class-transformer';
 
 export class MarkCategoryDto {
@@ -7,14 +7,14 @@ export class MarkCategoryDto {
   @Exclude() private readonly _title: string;
   @Exclude() private readonly _sequence: number;
   @Exclude() private readonly _isMarkedInMap: CheckColumnEnum;
-  @Exclude() private readonly _markCount?: number | undefined;
+  @Exclude() private readonly _markCount?: number;
 
   private constructor(
     id: number,
     title: string,
     sequence: number,
     isMarkedInMap: CheckColumnEnum,
-    markCount?: number | undefined,
+    markCount?: number,
   ) {
     this._id = id;
     this._title = title;
@@ -23,7 +23,7 @@ export class MarkCategoryDto {
     this._markCount = markCount;
   }
 
-  static of(markCategory: TMarkCategoryWithMarkCount): MarkCategoryDto {
+  static of(markCategory: IMarkCategoryWithMarkCount): MarkCategoryDto {
     return new MarkCategoryDto(
       markCategory.id,
       markCategory.title,
@@ -54,7 +54,7 @@ export class MarkCategoryDto {
   }
 
   @Expose()
-  get markCount(): number {
+  get markCount(): number | undefined {
     return this._markCount;
   }
 }

@@ -22,14 +22,14 @@ export class PutMarkCategoryObject extends PickType(MarkCategoryEntity, [
   @IsNotEmpty(
     setValidatorContext(MarkCategoryExceptionCode.MarkCategoryIdEmpty),
   )
-  id: number;
+  id!: number;
 
   @IsEnum(
     CheckColumnEnum,
     setValidatorContext(CommonExceptionCode.MustCheckColumnType),
   )
   @IsNotEmpty(setValidatorContext(MarkCategoryExceptionCode.IsMarkedInMapEmpty))
-  isMarkedInMap: CheckColumnEnum;
+  isMarkedInMap!: CheckColumnEnum;
 
   toEntity(sequence: number): MarkCategoryEntity {
     const markCategory = new MarkCategoryEntity();
@@ -51,5 +51,5 @@ export class PutMarkCategoryRequestDto {
   @IsNotEmpty(
     setValidatorContext(MarkCategoryExceptionCode.PutMarkCategoriesEmpty),
   )
-  categories: PutMarkCategoryObject[];
+  categories!: PutMarkCategoryObject[];
 }

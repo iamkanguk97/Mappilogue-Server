@@ -1,9 +1,10 @@
 import { MarkCategoryEntity } from '../entities/mark-category.entity';
 import { MarkEntity } from '../entities/mark.entity';
 
-export type TMarkCategoryWithMarkCount = MarkCategoryEntity & {
+// 기록 리스트 조회 Return 인터페이스
+export interface IMarkCategoryWithMarkCount extends MarkCategoryEntity {
   markCount: number;
-};
+}
 
 export type TMarkImages =
   | {
