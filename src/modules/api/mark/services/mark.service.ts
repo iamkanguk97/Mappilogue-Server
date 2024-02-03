@@ -286,7 +286,13 @@ export class MarkService {
     queryRunner: QueryRunner,
     markCategoryId: number,
   ): Promise<void> {
-    await queryRunner.manager.softDelete(MarkEntity, { markCategoryId });
+    const deletedTarget = await this.markRepository.find({
+      where: {
+        markCategoryId,
+      },
+      relations: ['markLocation', 'markMetadata'],
+    });
+    await queryRunner.manager.softRemove(deletedTarget);
   }
 
   /**
@@ -499,7 +505,7 @@ export class MarkService {
    * @param   { number } markId
    * @returns { Promise<MarkEntity> }
    */
-  async findOneById(markId: number): Promise<MarkEntity> {
+  async findOneById(markId: number): Promise<MarkEntity | null> {
     return await this.markRepository.findOne({
       where: {
         id: markId,

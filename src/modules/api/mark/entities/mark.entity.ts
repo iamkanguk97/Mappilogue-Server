@@ -22,47 +22,47 @@ export class MarkEntity extends CommonEntity {
   colorId!: number;
 
   @Column('int', { nullable: true })
-  markCategoryId?: number | undefined;
+  markCategoryId!: number | null;
 
   @Column('int', { nullable: true })
-  scheduleId?: number | undefined;
+  scheduleId!: number | null;
 
   @Column('varchar', { length: MarkTitleLengthEnum.MAX })
   title!: string;
 
   @Column('tinytext', { nullable: true })
-  content?: string | undefined;
+  content!: string | null;
 
   @ManyToOne(() => UserEntity, (user) => user.marks, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
-  user!: UserEntity;
+  user?: UserEntity;
 
   @ManyToOne(() => MarkCategoryEntity, (markCategory) => markCategory.marks, {
     createForeignKeyConstraints: false,
   })
   @JoinColumn({ name: 'markCategoryId', referencedColumnName: 'id' })
-  markCategory!: MarkCategoryEntity;
+  markCategory?: MarkCategoryEntity;
 
   @OneToOne(() => MarkLocationEntity, (markLocation) => markLocation.mark, {
     cascade: true,
   })
-  markLocation!: MarkLocationEntity;
+  markLocation?: MarkLocationEntity;
 
   @OneToMany(() => MarkMetadataEntity, (markMetadata) => markMetadata.marks, {
     cascade: true,
   })
-  markMetadata!: MarkMetadataEntity[];
+  markMetadata?: MarkMetadataEntity[];
 
   static from(
     userId: number,
     title: string,
     colorId: number,
-    markCategoryId?: number | undefined,
-    scheduleId?: number | undefined,
-    content?: string | undefined,
+    markCategoryId?: number,
+    scheduleId?: number,
+    content?: string,
   ): MarkEntity {
     const mark = new MarkEntity();
 
