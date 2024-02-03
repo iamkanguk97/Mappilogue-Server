@@ -103,13 +103,10 @@ export class MarkCategoryService {
 
     try {
       await Promise.all([
-        queryRunner.manager.softDelete(
-          MarkCategoryEntity,
-          this.markCategoryHelper.setUpdateMarkCategoryCriteriaWithUserId(
-            markCategoryId,
-            userId,
-          ),
-        ),
+        queryRunner.manager.softDelete(MarkCategoryEntity, {
+          id: markCategoryId,
+          userId,
+        }),
         this.updateMarkStatusInMarkDelete(queryRunner, option, markCategoryId),
       ]);
 
@@ -134,10 +131,7 @@ export class MarkCategoryService {
     body: PatchMarkCategoryTitleRequestDto,
   ): Promise<void> {
     await this.markCategoryRepository.update(
-      this.markCategoryHelper.setUpdateMarkCategoryCriteriaWithUserId(
-        body.id,
-        userId,
-      ),
+      { id: body.id, userId },
       body.toEntity(),
     );
   }
@@ -244,9 +238,11 @@ export class MarkCategoryService {
    * @summary findOneById Method
    * @author  Jason
    * @param   { number } markCategoryId
-   * @returns { Promise<MarkCategoryEntity> }
+   * @returns { Promise<MarkCategoryEntity | null> }
    */
-  async findOneById(markCategoryId: number): Promise<MarkCategoryEntity> {
+  async findOneById(
+    markCategoryId: number,
+  ): Promise<MarkCategoryEntity | null> {
     return await this.markCategoryRepository.findOne({
       where: {
         id: markCategoryId,

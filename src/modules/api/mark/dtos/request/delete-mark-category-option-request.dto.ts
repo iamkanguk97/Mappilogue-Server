@@ -15,5 +15,5 @@ export class DeleteMarkCategoryOptionRequestDto {
       MarkCategoryExceptionCode.DeleteMarkCategoryOptionEmpty,
     ),
   )
-  option: DeleteMarkCategoryOptionEnum;
+  option!: DeleteMarkCategoryOptionEnum;
 }

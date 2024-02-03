@@ -8,5 +8,5 @@ export class DeleteMarkCategoryRequestDto {
   @IsNotEmpty(
     setValidatorContext(MarkCategoryExceptionCode.MarkCategoryIdEmpty),
   )
-  id: number;
+  id!: number;
 }

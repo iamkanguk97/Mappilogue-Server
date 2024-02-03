@@ -10,7 +10,7 @@ export class PatchMarkCategoryTitleRequestDto {
   @IsNotEmpty(
     setValidatorContext(MarkCategoryExceptionCode.MarkCategoryIdEmpty),
   )
-  id: number;
+  id!: number;
 
   @Length(
     MarkCategoryTitleLengthEnum.MIN,
@@ -21,7 +21,7 @@ export class PatchMarkCategoryTitleRequestDto {
   @IsNotEmpty(
     setValidatorContext(MarkCategoryExceptionCode.MarkCategoryTitleEmpty),
   )
-  title: string;
+  title!: string;
 
   toEntity() {
     const markCategory = new MarkCategoryEntity();

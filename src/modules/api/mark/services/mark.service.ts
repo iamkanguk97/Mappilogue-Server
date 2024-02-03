@@ -286,10 +286,7 @@ export class MarkService {
     queryRunner: QueryRunner,
     markCategoryId: number,
   ): Promise<void> {
-    await queryRunner.manager.softDelete(
-      MarkEntity,
-      this.markHelper.setUpdateMarkCriteriaWithMarkCategory(markCategoryId),
-    );
+    await queryRunner.manager.softDelete(MarkEntity, { markCategoryId });
   }
 
   /**
@@ -304,7 +301,7 @@ export class MarkService {
   ): Promise<void> {
     await queryRunner.manager.update(
       MarkEntity,
-      this.markHelper.setUpdateMarkCriteriaWithMarkCategory(markCategoryId),
+      { markCategoryId },
       { markCategoryId: () => 'NULL' },
     );
   }
