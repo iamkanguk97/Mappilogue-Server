@@ -10,19 +10,20 @@ import { MarkService } from '../services/mark.service';
 import { MarkExceptionCode } from 'src/common/exception-code/mark.exception-code';
 import { isDefined } from 'src/helpers/common.helper';
 import { MarkDto } from '../dtos/mark.dto';
+import { IRequestWithUserType } from 'src/types/request-with-user.type';
 
 @Injectable()
 export class MarkValidationPipe implements PipeTransform {
   private readonly logger = new Logger(MarkValidationPipe.name);
 
   constructor(
-    @Inject(REQUEST) private readonly request: Request,
+    @Inject(REQUEST) private readonly request: IRequestWithUserType,
     private readonly markService: MarkService,
   ) {}
 
   async transform<T extends { markId: number }>(value: T): Promise<MarkDto> {
     try {
-      const userId = this.request['user'].id;
+      const userId = this.request.user.id;
       const markId = value?.markId;
 
       if (!isDefined(markId)) {

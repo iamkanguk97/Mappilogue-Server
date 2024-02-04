@@ -10,33 +10,33 @@ import { MarkEntity } from './mark.entity';
 @Entity('MarkMetadata')
 export class MarkMetadataEntity extends CommonEntity {
   @Column('int')
-  markId: number;
+  markId!: number;
 
   @Column('text')
-  markImageUrl: string;
+  markImageUrl!: string;
 
   @Column('varchar', { nullable: true, length: MARK_IMAGE_KEY_LENGTH })
-  markImageKey?: string | undefined;
+  markImageKey!: string | null;
 
   @Column('tinytext', { nullable: true })
-  caption?: string | undefined;
+  caption!: string | null;
 
   @Column('varchar', { length: StatusOrCheckColumnLengthEnum.CHECK })
-  isMainImage: CheckColumnEnum;
+  isMainImage!: CheckColumnEnum;
 
   @ManyToOne(() => MarkEntity, (mark) => mark.markMetadata, {
     onUpdate: 'CASCADE',
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'markId', referencedColumnName: 'id' })
-  marks: MarkEntity;
+  marks?: MarkEntity;
 
   static from(
     markId: number,
     markImageUrl: string,
     isMainImage: CheckColumnEnum,
-    markImageKey?: string | undefined,
-    caption?: string | undefined,
+    markImageKey?: string,
+    caption?: string,
   ): MarkMetadataEntity {
     const markMetadata = new MarkMetadataEntity();
 

@@ -8,12 +8,12 @@ import { PatchMarkCategoryTitleRequestDto } from '../dtos/request/patch-mark-cat
 import { MarkCategoryDto } from '../dtos/mark-category.dto';
 import { MarkCategoryHelper } from '../helpers/mark-category.helper';
 import { MarkCategoryExceptionCode } from 'src/common/exception-code/mark-category.exception-code';
-import { DeleteMarkCategoryOptionEnum } from '../constants/mark-category.enum';
 import { MarkService } from './mark.service';
 import { MarkRepository } from '../repositories/mark.repository';
 import { isDefined } from 'src/helpers/common.helper';
 import { PutMarkCategoryObject } from '../dtos/request/put-mark-category-request.dto';
 import { PostMarkCategoryRequestDto } from '../dtos/request/post-mark-category-request.dto';
+import { DeleteMarkCategoryOptionEnum } from '../constants/enums/mark-category.enum';
 
 @Injectable()
 export class MarkCategoryService {

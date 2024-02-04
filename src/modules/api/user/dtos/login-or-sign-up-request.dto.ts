@@ -4,8 +4,6 @@ import { UserSnsTypeEnum } from '../constants/user.enum';
 import { CheckColumnEnum } from 'src/constants/enum';
 import { CommonExceptionCode } from 'src/common/exception-code/common.exception-code';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
-import { UserSocialFactory } from '../factories/user-social.factory';
-import { TSocialFactory } from 'src/modules/core/auth/types';
 import { UserAlarmSettingEntity } from '../entities/user-alarm-setting.entity';
 
 export class PostLoginOrSignUpRequestDto {
@@ -30,18 +28,6 @@ export class PostLoginOrSignUpRequestDto {
   )
   @IsOptional()
   isAlarmAccept?: CheckColumnEnum = CheckColumnEnum.ACTIVE;
-
-  /**
-   * @summary 사용자 소셜 구분 후 Factory 생성
-   * @author  Jason
-   * @returns { TSocialFactory }
-   */
-  buildSocialFactory(): TSocialFactory {
-    return UserSocialFactory.from(
-      this.socialVendor,
-      this.socialAccessToken,
-    ).setSocialFactory();
-  }
 
   /**
    * @summary UserAlarmSettingEntity 변환 함수

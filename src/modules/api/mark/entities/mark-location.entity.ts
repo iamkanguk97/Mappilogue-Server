@@ -4,7 +4,7 @@ import {
   MarkLocationLongitudeLengthEnum,
   MarkLocationNameLengthEnum,
   MarkLocationStreetAddressLengthEnum,
-} from '../constants/mark.enum';
+} from '../constants/enums/mark.enum';
 import { MarkEntity } from './mark.entity';
 import { CommonEntity } from 'src/common/entities/common.entity';
 

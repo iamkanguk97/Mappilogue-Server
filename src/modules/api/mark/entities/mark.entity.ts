@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { UserEntity } from '../../user/entities/user.entity';
 import { MarkCategoryEntity } from './mark-category.entity';
-import { MarkTitleLengthEnum } from '../constants/mark.enum';
+import { MarkTitleLengthEnum } from '../constants/enums/mark.enum';
 import { CommonEntity } from 'src/common/entities/common.entity';
 import { MarkLocationEntity } from './mark-location.entity';
 import { MarkMetadataEntity } from './mark-metadata.entity';

@@ -11,5 +11,5 @@ export class GetMarkListByCategoryRequestDto extends PageOptionsDto {
   @IsNotEmpty(
     setValidatorContext(MarkCategoryExceptionCode.MarkCategoryIdEmpty),
   )
-  markCategoryId: number;
+  markCategoryId!: number;
 }

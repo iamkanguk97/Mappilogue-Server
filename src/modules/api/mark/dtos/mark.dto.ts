@@ -7,9 +7,9 @@ export class MarkDto {
   @Exclude() private readonly _userId: number;
   @Exclude() private readonly _colorId: number;
   @Exclude() private readonly _title: string;
-  @Exclude() private readonly _markCategoryId?: number | undefined;
-  @Exclude() private readonly _scheduleId?: number | undefined;
-  @Exclude() private readonly _content?: string | undefined;
+  @Exclude() private readonly _markCategoryId?: number;
+  @Exclude() private readonly _scheduleId?: number;
+  @Exclude() private readonly _content?: string;
   @Exclude() private readonly _createdAt?: Date;
 
   private constructor(

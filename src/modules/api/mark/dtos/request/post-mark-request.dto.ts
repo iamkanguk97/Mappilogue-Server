@@ -21,7 +21,7 @@ import {
   MarkLocationNameLengthEnum,
   MarkLocationStreetAddressLengthEnum,
   MarkTitleLengthEnum,
-} from '../../constants/mark.enum';
+} from '../../constants/enums/mark.enum';
 import { Type } from 'class-transformer';
 import { MarkEntity } from '../../entities/mark.entity';
 import { MarkLocationEntity } from '../../entities/mark-location.entity';

@@ -1,3 +1,4 @@
+import { AuthService } from 'src/modules/core/auth/services/auth.service';
 import {
   Body,
   ClassSerializerInterceptor,
@@ -24,7 +25,10 @@ import { isDefined } from 'src/helpers/common.helper';
 @Controller(DomainNameEnum.USER)
 @UseInterceptors(ClassSerializerInterceptor)
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userService: UserService,
+  ) {}
 
   /**
    * @summary 소셜로그인 API (+ 회원가입)
@@ -38,16 +42,11 @@ export class UserController {
   async postLoginOrSignUp(
     @Body() body: PostLoginOrSignUpRequestDto,
   ): Promise<ResponseEntity<PostLoginOrSignUpResponseDto>> {
-    const socialFactory = body.buildSocialFactory();
-
-    const socialId = await socialFactory.validateSocialAccessToken();
+    const socialId = await this.authService.validateSocialAccessToken(body);
     const user = await this.userService.findOneBySnsId(socialId);
 
     if (!isDefined(user)) {
-      const signUpResult = await this.userService.createSignUp(
-        socialFactory,
-        body,
-      );
+      const signUpResult = await this.userService.createSignUp(body);
       return ResponseEntity.OK_WITH(HttpStatus.CREATED, signUpResult);
     }
     const loginResult = await this.userService.createLogin(user, body.fcmToken);

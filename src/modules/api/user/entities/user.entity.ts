@@ -3,6 +3,7 @@ import { UserGenderEnum, UserSnsTypeEnum } from '../constants/user.enum';
 import { UserAlarmSettingEntity } from './user-alarm-setting.entity';
 import {
   USER_AGE_LENGTH,
+  USER_APPLE_REFRESH_TOKEN_LENGTH,
   USER_BIRTHDAY_LENGTH,
   USER_EMAIL_LENGTH,
   USER_FCM_TOKEN_LENGTH,
@@ -24,8 +25,8 @@ export class UserEntity extends CommonEntity {
   @Column('varchar', { length: USER_NICKNAME_LENGTH })
   nickname!: string;
 
-  @Column('varchar', { nullable: true, length: USER_EMAIL_LENGTH })
-  email!: string | null;
+  @Column('varchar', { length: USER_EMAIL_LENGTH })
+  email!: string;
 
   @Column('text')
   profileImageUrl!: string;
@@ -60,6 +61,12 @@ export class UserEntity extends CommonEntity {
 
   @Column('varchar', { nullable: true, length: USER_FCM_TOKEN_LENGTH })
   fcmToken!: string | null;
+
+  @Column('varchar', {
+    nullable: true,
+    length: USER_APPLE_REFRESH_TOKEN_LENGTH,
+  })
+  appleRefreshToken!: string | null;
 
   @OneToOne(
     () => UserAlarmSettingEntity,

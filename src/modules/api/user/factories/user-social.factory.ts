@@ -1,6 +1,5 @@
 import { SocialKakaoFactory } from 'src/modules/core/auth/factories/social-kakao.factory';
 import { UserSnsTypeEnum } from '../constants/user.enum';
-import { SocialAppleFactory } from 'src/modules/core/auth/factories/social-apple.factory';
 import { TSocialFactory } from 'src/modules/core/auth/types';
 
 export class UserSocialFactory {
@@ -28,8 +27,6 @@ export class UserSocialFactory {
     switch (this.userSnsType) {
       case UserSnsTypeEnum.KAKAO:
         return new SocialKakaoFactory(this.socialAccessToken);
-      case UserSnsTypeEnum.APPLE:
-        return new SocialAppleFactory(this.socialAccessToken);
     }
   }
 }

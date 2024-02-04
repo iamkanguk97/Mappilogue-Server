@@ -36,4 +36,4 @@ lerna-debug.log*
 
 /src/config/firebase-admin.json
 .env
-apple-login-key.p8
+apple-social-login-key.p8

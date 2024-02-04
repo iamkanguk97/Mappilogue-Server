@@ -1,7 +1,5 @@
 import { UserGenderEnum } from 'src/modules/api/user/constants/user.enum';
 import { TokenTypeEnum } from '../constants/auth.enum';
-import { SocialAppleFactory } from '../factories/social-apple.factory';
-import { SocialKakaoFactory } from '../factories/social-kakao.factory';
 
 export interface ICustomJwtPayload {
   userId: number;
@@ -10,12 +8,6 @@ export interface ICustomJwtPayload {
   sub: TokenTypeEnum;
 }
 
-// 소셜로그인 Factory Method 인터페이스
-export interface ISocialFactoryMethod {
-  validateSocialAccessToken(): Promise<string>;
-}
-
-// 카카오에서 검증 후 반환해주는 데이터 인터페이스
 export interface ISocialKakaoDataInfo {
   id: number;
   connected_at?: string;
@@ -51,7 +43,6 @@ export interface ISocialKakaoDataInfo {
   };
 }
 
-// 애플로그인 검증 후 결과 토큰 Payload (아직 미정)
 export interface IAppleJwtTokenPayload {
   iss: string;
   aud: string;
@@ -67,4 +58,10 @@ export interface IAppleJwtTokenPayload {
   nonce_supported: boolean;
 }
 
-export type TSocialFactory = SocialKakaoFactory | SocialAppleFactory;
+export interface IVerifyAppleAuthCode {
+  access_token: string;
+  refresh_token: string;
+  id_token: string;
+  token_type: string;
+  expires_in: number;
+}

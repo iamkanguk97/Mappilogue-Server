@@ -6,5 +6,5 @@ import { MarkExceptionCode } from 'src/common/exception-code/mark.exception-code
 export class DeleteMarkRequestDto {
   @Type(() => Number)
   @IsNotEmpty(setValidatorContext(MarkExceptionCode.MarkIdEmpty))
-  markId: number;
+  markId!: number;
 }

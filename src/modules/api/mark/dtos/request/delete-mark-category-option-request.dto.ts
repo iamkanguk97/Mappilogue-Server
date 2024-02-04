@@ -1,7 +1,7 @@
 import { IsEnum, IsNotEmpty } from 'class-validator';
-import { DeleteMarkCategoryOptionEnum } from '../../constants/mark-category.enum';
 import { setValidatorContext } from 'src/common/common';
 import { MarkCategoryExceptionCode } from 'src/common/exception-code/mark-category.exception-code';
+import { DeleteMarkCategoryOptionEnum } from '../../constants/enums/mark-category.enum';
 
 export class DeleteMarkCategoryOptionRequestDto {
   @IsEnum(

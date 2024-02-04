@@ -1,4 +1,3 @@
-import { MarkCategoryService } from '../services/mark-category.service';
 import { ScheduleModule } from '../../schedule/schedule.module';
 import { Module } from '@nestjs/common';
 import { CustomRepositoryModule } from 'src/modules/core/custom-repository/custom-repository.module';
@@ -10,11 +9,22 @@ import { MarkCategoryRepository } from '../repositories/mark-category.repository
 import { MarkCategoryModule } from './mark-category.module';
 import { MarkMetadataRepository } from '../repositories/mark-metadata.repository';
 import { MarkLocationRepository } from '../repositories/mark-location.repository';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { MarkEntity } from '../entities/mark.entity';
+import { MarkCategoryEntity } from '../entities/mark-category.entity';
+import { MarkMetadataEntity } from '../entities/mark-metadata.entity';
+import { MarkLocationEntity } from '../entities/mark-location.entity';
 
 @Module({
   imports: [
-    ScheduleModule,
     MarkCategoryModule,
+    ScheduleModule,
+    TypeOrmModule.forFeature([
+      MarkEntity,
+      MarkCategoryEntity,
+      MarkMetadataEntity,
+      MarkLocationEntity,
+    ]),
     CustomRepositoryModule.forCustomRepository([
       MarkRepository,
       MarkCategoryRepository,
@@ -23,7 +33,7 @@ import { MarkLocationRepository } from '../repositories/mark-location.repository
     ]),
   ],
   controllers: [MarkController],
-  providers: [MarkService, MarkHelper, MarkCategoryService],
+  providers: [MarkService, MarkHelper],
   exports: [MarkService, MarkHelper],
 })
 export class MarkModule {}

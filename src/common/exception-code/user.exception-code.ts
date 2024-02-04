@@ -92,4 +92,8 @@ export const UserExceptionCode = {
     '1028',
     '홈화면 조회 옵션은 today 또는 after로 입력해주세요.',
   ),
+  AppleSocialLoginTokenError: setExceptionCode(
+    '1029',
+    '잘못된 요청으로 애플로그인을 처리할 수 없습니다. 만료되었거나 이미 사용된 토큰인지, 잘못된 토큰인지 확인해주세요.',
+  ),
 };

@@ -3,7 +3,7 @@ import { UserRepository } from '../repositories/user.repository';
 import { UserEntity } from '../entities/user.entity';
 import { AuthService } from 'src/modules/core/auth/services/auth.service';
 import { JwtService } from '@nestjs/jwt';
-import { ICustomJwtPayload, TSocialFactory } from 'src/modules/core/auth/types';
+import { ICustomJwtPayload } from 'src/modules/core/auth/types';
 import { JwtHelper } from 'src/modules/core/auth/helpers/jwt.helper';
 import { UserHelper } from '../helpers/user.helper';
 import { CustomCacheService } from 'src/modules/core/custom-cache/services/custom-cache.service';
@@ -17,7 +17,6 @@ import {
   ImageBuilderTypeEnum,
   MulterBuilder,
 } from 'src/common/multer/multer.builder';
-import { UserAlarmSettingEntity } from '../entities/user-alarm-setting.entity';
 import { DataSource, QueryRunner } from 'typeorm';
 import { UserAlarmHistoryRepository } from '../repositories/user-alarm-history.repository';
 import { isDefined } from 'src/helpers/common.helper';
@@ -43,40 +42,24 @@ export class UserService {
   /**
    * @summary 소셜 로그인 API - 회원가입 처리
    * @author  Jason
-   * @param   { TSocialFactory } userSocialFactory
    * @param   { PostLoginOrSignUpRequestDto } body
    * @returns { Promise<PostLoginOrSignUpResponseDto> }
    */
   async createSignUp(
-    userSocialFactory: TSocialFactory,
     body: PostLoginOrSignUpRequestDto,
   ): Promise<PostLoginOrSignUpResponseDto> {
+    let newUserId: number;
+
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
-      const newUserId = await this.createUser(socialUserInfo, body.fcmToken);
-
-      await queryRunner.manager.save(
-        UserAlarmSettingEntity,
-        body.toUserAlarmSettingEntity(newUserId),
-      );
-
-      // TODO: type을 ProcessedSocialAppleInfo도 추가해야함.
-      const socialUserInfo = (await userSocialFactory.getUserSocialInfo()) as
-        | ProcessedSocialKakaoInfo
-        | any;
-
-      // TODO: Apple Login 구현 시 repository로 전달하는 parameter entity-from 구현
-      const newTokens = await this.authService.setUserToken(newUserId);
+      const insertUserParam = {};
+      // newUserId = await this.createUser(insertUserParam, body.fcmToken);
+      newUserId = 1;
 
       await queryRunner.commitTransaction();
-      return PostLoginOrSignUpResponseDto.from(
-        LoginOrSignUpEnum.SIGNUP,
-        newUserId,
-        newTokens,
-      );
     } catch (err) {
       this.logger.error(`[createSignUp - transaction error] ${err}`);
       await queryRunner.rollbackTransaction();
@@ -84,6 +67,36 @@ export class UserService {
     } finally {
       await queryRunner.release();
     }
+
+    const newTokens = await this.authService.setUserToken(newUserId);
+    return PostLoginOrSignUpResponseDto.from(
+      LoginOrSignUpEnum.SIGNUP,
+      newUserId,
+      newTokens,
+    );
+
+    // try {
+    //   const newUserId = await this.createUser(socialUserInfo, body.fcmToken);
+
+    //   await queryRunner.manager.save(
+    //     UserAlarmSettingEntity,
+    //     body.toUserAlarmSettingEntity(newUserId),
+    //   );
+
+    //   // TODO: type을 ProcessedSocialAppleInfo도 추가해야함.
+    //   const socialUserInfo = (await userSocialFactory.getUserSocialInfo()) as
+    //     | ProcessedSocialKakaoInfo
+    //     | any;
+
+    //   // TODO: Apple Login 구현 시 repository로 전달하는 parameter entity-from 구현
+    //   const newTokens = await this.authService.setUserToken(newUserId);
+
+    //   await queryRunner.commitTransaction();
+    //   return PostLoginOrSignUpResponseDto.from(
+    //     LoginOrSignUpEnum.SIGNUP,
+    //     newUserId,
+    //     newTokens,
+    //   );
   }
 
   /**
@@ -142,16 +155,6 @@ export class UserService {
 
     const result = await this.authService.setUserToken(userId);
     return TokenRefreshResponseDto.from(userId, result);
-  }
-
-  async createUser(
-    socialUserInfo: ProcessedSocialKakaoInfo,
-    fcmToken?: string | undefined,
-  ): Promise<number> {
-    return await this.userRepository.insertUser({
-      ...socialUserInfo,
-      fcmToken,
-    });
   }
 
   /**
