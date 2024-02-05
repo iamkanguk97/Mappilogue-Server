@@ -3,6 +3,8 @@ import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
 import { CustomConfigService } from '../../custom-config/services';
 import { DATABASE_MODELS } from '../constants';
 
+import * as path from 'path';
+
 @Injectable()
 export class DatabaseService implements TypeOrmOptionsFactory {
   constructor(private readonly customConfigService: CustomConfigService) {}
@@ -19,9 +21,9 @@ export class DatabaseService implements TypeOrmOptionsFactory {
       logging: true,
       synchronize: this.customConfigService.isLocal(),
       charset: 'utf8mb4',
-      // timezone: 'Asia/Seoul',
       timezone: 'Z',
       migrationsTableName: 'migrations',
+      migrations: [path.join(__dirname, '..', 'migrations/*.ts')],
     };
   }
 }

@@ -7,11 +7,10 @@ import { ICustomJwtPayload } from 'src/modules/core/auth/types';
 import { JwtHelper } from 'src/modules/core/auth/helpers/jwt.helper';
 import { UserHelper } from '../helpers/user.helper';
 import { CustomCacheService } from 'src/modules/core/custom-cache/services/custom-cache.service';
-import { TokenRefreshResponseDto } from '../dtos/token-refresh-response.dto';
-import { LoginOrSignUpEnum } from '../constants/user.enum';
+import { LoginOrSignUpEnum } from '../constants/enums/user.enum';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 import { TDecodedUserToken } from '../types';
-import { PostUserWithdrawRequestDto } from '../dtos/post-user-withdraw-request.dto';
+import { PostUserWithdrawRequestDto } from '../dtos/request/post-user-withdraw-request.dto';
 import { decryptEmail } from 'src/helpers/crypt.helper';
 import {
   ImageBuilderTypeEnum,
@@ -21,8 +20,9 @@ import { DataSource, QueryRunner } from 'typeorm';
 import { UserAlarmHistoryRepository } from '../repositories/user-alarm-history.repository';
 import { isDefined } from 'src/helpers/common.helper';
 import { UserWithdrawReasonEntity } from '../entities/user-withdraw-reason.entity';
-import { PostLoginOrSignUpRequestDto } from '../dtos/login-or-sign-up-request.dto';
-import { PostLoginOrSignUpResponseDto } from '../dtos/login-or-sign-up-response.dto';
+import { PostLoginOrSignUpRequestDto } from '../dtos/request/post-login-or-sign-up-request.dto';
+import { PostLoginOrSignUpResponseDto } from '../dtos/response/post-login-or-sign-up-response.dto';
+import { PostTokenRefreshResponseDto } from '../dtos/response/post-token-refresh-response.dto';
 
 @Injectable()
 export class UserService {
@@ -55,9 +55,15 @@ export class UserService {
     await queryRunner.startTransaction();
 
     try {
-      const insertUserParam = {};
-      // newUserId = await this.createUser(insertUserParam, body.fcmToken);
-      newUserId = 1;
+      const insertUserParam = await this.userHelper.generateInsertUserParam(
+        body,
+      );
+
+      const result = await queryRunner.manager.save(
+        UserEntity,
+        insertUserParam,
+      );
+      console.log(result);
 
       await queryRunner.commitTransaction();
     } catch (err) {
@@ -130,11 +136,11 @@ export class UserService {
    * @summary 토큰 재발급 API Service
    * @author  Jason
    * @param   { string } refreshToken
-   * @returns { Promise<TokenRefreshResponseDto> }
+   * @returns { Promise<PostTokenRefreshResponseDto> }
    */
   async createTokenRefresh(
     refreshToken: string,
-  ): Promise<TokenRefreshResponseDto> {
+  ): Promise<PostTokenRefreshResponseDto> {
     const refreshPayload = this.jwtService.decode(
       refreshToken,
     ) as ICustomJwtPayload;
@@ -154,7 +160,7 @@ export class UserService {
     }
 
     const result = await this.authService.setUserToken(userId);
-    return TokenRefreshResponseDto.from(userId, result);
+    return PostTokenRefreshResponseDto.from(userId, result);
   }
 
   /**

@@ -13,7 +13,7 @@ import { CommonEntity } from 'src/common/entities/common.entity';
 @Entity('ScheduleArea')
 export class ScheduleAreaEntity extends CommonEntity {
   @Column('int')
-  scheduleId: number;
+  scheduleId!: number;
 
   @Column('varchar', { length: ScheduleAreaNameLengthEnum.MAX })
   name!: string;
@@ -25,25 +25,25 @@ export class ScheduleAreaEntity extends CommonEntity {
     nullable: true,
     length: ScheduleAreaStreetAddressLengthEnum.MAX,
   })
-  streetAddress?: string | undefined;
+  streetAddress!: string | null;
 
   @Column('varchar', {
     nullable: true,
     length: ScheduleAreaLatitudeLengthEnum.MAX,
   })
-  latitude?: string | undefined;
+  latitude!: string | null;
 
   @Column('varchar', {
     nullable: true,
     length: ScheduleAreaLongitudeLengthEnum.MAX,
   })
-  longitude?: string | undefined;
+  longitude!: string | null;
 
   @Column('varchar', {
     nullable: true,
     length: ScheduleAreaTimeLengthEnum.MAX,
   })
-  time?: string | undefined;
+  time!: string | null;
 
   @Column('int')
   sequence!: number;
@@ -53,17 +53,17 @@ export class ScheduleAreaEntity extends CommonEntity {
     onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'scheduleId', referencedColumnName: 'id' })
-  schedule: ScheduleEntity;
+  schedule?: ScheduleEntity;
 
   static from(
     scheduleId: number,
     name: string,
     date: string,
     sequence: number,
-    streetAddress?: string | undefined,
-    latitude?: string | undefined,
-    longitude?: string | undefined,
-    time?: string | undefined,
+    streetAddress?: string,
+    latitude?: string,
+    longitude?: string,
+    time?: string,
   ) {
     const scheduleArea = new ScheduleAreaEntity();
 
@@ -71,10 +71,10 @@ export class ScheduleAreaEntity extends CommonEntity {
     scheduleArea.name = name;
     scheduleArea.date = date;
     scheduleArea.sequence = sequence;
-    scheduleArea.streetAddress = streetAddress;
-    scheduleArea.latitude = latitude;
-    scheduleArea.longitude = longitude;
-    scheduleArea.time = time;
+    scheduleArea.streetAddress = streetAddress ?? '';
+    scheduleArea.latitude = latitude ?? '';
+    scheduleArea.longitude = longitude ?? '';
+    scheduleArea.time = time ?? '';
 
     return scheduleArea;
   }

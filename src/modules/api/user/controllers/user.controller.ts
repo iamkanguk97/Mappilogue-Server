@@ -10,17 +10,17 @@ import {
 } from '@nestjs/common';
 import { ResponseEntity } from 'src/common/entities/response.entity';
 import { UserService } from '../services/user.service';
-import { TokenRefreshRequestDto } from '../dtos/token-refresh-request.dto';
-import { TokenRefreshResponseDto } from '../dtos/token-refresh-response.dto';
+import { PostTokenRefreshRequestDto } from '../dtos/request/post-token-refresh-request.dto';
 import { Public } from 'src/modules/core/auth/decorators/auth.decorator';
 import { UserId } from '../decorators/user-id.decorator';
 import { User } from '../decorators/user.decorator';
 import { TDecodedUserToken } from '../types';
-import { PostUserWithdrawRequestDto } from '../dtos/post-user-withdraw-request.dto';
+import { PostUserWithdrawRequestDto } from '../dtos/request/post-user-withdraw-request.dto';
 import { DomainNameEnum } from 'src/constants/enum';
-import { PostLoginOrSignUpRequestDto } from '../dtos/login-or-sign-up-request.dto';
-import { PostLoginOrSignUpResponseDto } from '../dtos/login-or-sign-up-response.dto';
+import { PostLoginOrSignUpRequestDto } from '../dtos/request/post-login-or-sign-up-request.dto';
+import { PostLoginOrSignUpResponseDto } from '../dtos/response/post-login-or-sign-up-response.dto';
 import { isDefined } from 'src/helpers/common.helper';
+import { PostTokenRefreshResponseDto } from '../dtos/response/post-token-refresh-response.dto';
 
 @Controller(DomainNameEnum.USER)
 @UseInterceptors(ClassSerializerInterceptor)
@@ -57,14 +57,14 @@ export class UserController {
    * @summary 토큰 재발급 API
    * @author  Jason
    * @url     [POST] /api/v1/users/token-refresh
-   * @returns { Promise<ResponseEntity<TokenRefreshResponseDto>> }
+   * @returns { Promise<ResponseEntity<PostTokenRefreshResponseDto>> }
    */
   @Public()
   @Post('token-refresh')
   @HttpCode(HttpStatus.CREATED)
   async postTokenRefresh(
-    @Body() body: TokenRefreshRequestDto,
-  ): Promise<ResponseEntity<TokenRefreshResponseDto>> {
+    @Body() body: PostTokenRefreshRequestDto,
+  ): Promise<ResponseEntity<PostTokenRefreshResponseDto>> {
     const result = await this.userService.createTokenRefresh(body.refreshToken);
     return ResponseEntity.OK_WITH(HttpStatus.CREATED, result);
   }

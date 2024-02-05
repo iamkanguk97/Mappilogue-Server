@@ -1,6 +1,6 @@
 import { Exclude, Expose } from 'class-transformer';
-import { LoginOrSignUpEnum } from '../constants/user.enum';
-import { TokenDto } from './token.dto';
+import { LoginOrSignUpEnum } from '../../constants/enums/user.enum';
+import { TokenDto } from '../../../../core/auth/dtos/token.dto';
 
 export class PostLoginOrSignUpResponseDto {
   @Exclude() private readonly _type: LoginOrSignUpEnum;

@@ -1,7 +1,7 @@
 import { Exclude, Expose } from 'class-transformer';
-import { TokenDto } from './token.dto';
+import { TokenDto } from '../../../../core/auth/dtos/token.dto';
 
-export class TokenRefreshResponseDto {
+export class PostTokenRefreshResponseDto {
   @Exclude() private readonly _userId: number;
   @Exclude() private readonly _accessToken: string;
   @Exclude() private readonly _refreshToken: string;
@@ -12,8 +12,8 @@ export class TokenRefreshResponseDto {
     this._refreshToken = tokenDto.refreshToken;
   }
 
-  static from(userId: number, tokenDto: TokenDto): TokenRefreshResponseDto {
-    return new TokenRefreshResponseDto(userId, tokenDto);
+  static from(userId: number, tokenDto: TokenDto): PostTokenRefreshResponseDto {
+    return new PostTokenRefreshResponseDto(userId, tokenDto);
   }
 
   @Expose()

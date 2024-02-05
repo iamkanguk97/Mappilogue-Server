@@ -4,7 +4,7 @@ import { AnnouncementRepository } from '../repositories/announcement.repository'
 import { AnnouncementEntity } from '../entities/announcement.entity';
 import { ResultWithPageDto } from 'src/common/dtos/pagination/result-with-page.dto';
 import { MarkRepository } from '../../mark/repositories/mark.repository';
-import { GetHomeOptionEnum } from '../constants/user-home.enum';
+import { GetHomeOptionEnum } from '../constants/enums/user-home.enum';
 import { IMarkListInHome } from '../../mark/types';
 import { GetHomeResponseDto } from '../dtos/response/get-home-response.dto';
 import { ScheduleRepository } from '../../schedule/repositories/schedule.repository';

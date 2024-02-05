@@ -1,7 +1,7 @@
 import { IsEnum, IsNotEmpty } from 'class-validator';
 import { setValidatorContext } from 'src/common/common';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
-import { GetHomeOptionEnum } from '../../constants/user-home.enum';
+import { GetHomeOptionEnum } from '../../constants/enums/user-home.enum';
 
 export class GetHomeRequestDto {
   @IsEnum(

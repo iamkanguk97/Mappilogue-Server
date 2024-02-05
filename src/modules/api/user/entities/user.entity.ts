@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, OneToOne, Unique } from 'typeorm';
-import { UserGenderEnum, UserSnsTypeEnum } from '../constants/user.enum';
+import { UserGenderEnum, UserSnsTypeEnum } from '../constants/enums/user.enum';
 import { UserAlarmSettingEntity } from './user-alarm-setting.entity';
 import {
   USER_AGE_LENGTH,
@@ -25,8 +25,8 @@ export class UserEntity extends CommonEntity {
   @Column('varchar', { length: USER_NICKNAME_LENGTH })
   nickname!: string;
 
-  @Column('varchar', { length: USER_EMAIL_LENGTH })
-  email!: string;
+  @Column('varchar', { nullable: true, length: USER_EMAIL_LENGTH })
+  email!: string | null;
 
   @Column('text')
   profileImageUrl!: string;

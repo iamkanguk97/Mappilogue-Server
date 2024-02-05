@@ -15,43 +15,43 @@ import { NotificationTypeEnum } from 'src/modules/core/notification/constants/no
 @Entity('UserAlarmHistory')
 export class UserAlarmHistoryEntity extends DefaultColumnType {
   @Column('int')
-  userId: number;
+  userId!: number;
 
   @Column('int')
-  scheduleId: number;
+  scheduleId!: number;
 
   @Column('varchar', { length: USER_ALARM_HISTORY_TITLE_LENGTH })
-  title: string;
+  title!: string;
 
   @Column('varchar', {
     length: USER_ALARM_HISTORY_BODY_LENGTH,
     nullable: true,
   })
-  body?: string | undefined;
+  body!: string | null;
 
   @Column('varchar', {
     nullable: true,
     length: USER_ALARM_HISTORY_DATE_LENGTH,
   })
-  alarmDate: string;
+  alarmDate!: string | null;
 
   @Column('varchar', { length: USER_ALARM_HISTORY_TYPE_LENGTH, nullable: true })
-  type: NotificationTypeEnum;
+  type!: NotificationTypeEnum;
 
   @Column('varchar', {
     length: StatusOrCheckColumnLengthEnum.CHECK,
     default: CheckColumnEnum.INACTIVE,
   })
-  isRead: CheckColumnEnum;
+  isRead!: CheckColumnEnum;
 
   @Column('varchar', {
     length: StatusOrCheckColumnLengthEnum.CHECK,
     default: CheckColumnEnum.INACTIVE,
   })
-  isSent: CheckColumnEnum;
+  isSent!: CheckColumnEnum;
 
   @Column('varchar', { nullable: true })
-  alarmAt?: string | undefined;
+  alarmAt!: string | null;
 
   static from(
     userId: number,

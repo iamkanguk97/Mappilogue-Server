@@ -1,10 +1,10 @@
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { setValidatorContext } from 'src/common/common';
-import { UserSnsTypeEnum } from '../constants/user.enum';
+import { UserSnsTypeEnum } from '../../constants/enums/user.enum';
 import { CheckColumnEnum } from 'src/constants/enum';
 import { CommonExceptionCode } from 'src/common/exception-code/common.exception-code';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
-import { UserAlarmSettingEntity } from '../entities/user-alarm-setting.entity';
+import { UserAlarmSettingEntity } from '../../entities/user-alarm-setting.entity';
 
 export class PostLoginOrSignUpRequestDto {
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))

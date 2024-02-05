@@ -43,8 +43,8 @@ export class MarkMetadataEntity extends CommonEntity {
     markMetadata.markId = markId;
     markMetadata.markImageUrl = markImageUrl;
     markMetadata.isMainImage = isMainImage;
-    markMetadata.markImageKey = markImageKey;
-    markMetadata.caption = caption;
+    markMetadata.markImageKey = markImageKey ?? '';
+    markMetadata.caption = caption ?? '';
 
     return markMetadata;
   }

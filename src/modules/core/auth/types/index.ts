@@ -1,4 +1,4 @@
-import { UserGenderEnum } from 'src/modules/api/user/constants/user.enum';
+import { UserGenderEnum } from 'src/modules/api/user/constants/enums/user.enum';
 import { TokenTypeEnum } from '../constants/auth.enum';
 
 export interface ICustomJwtPayload {
@@ -64,4 +64,12 @@ export interface IVerifyAppleAuthCode {
   id_token: string;
   token_type: string;
   expires_in: number;
+}
+
+export interface IValidateKakaoTokenResponse {
+  expiresInMillis: number;
+  id: number;
+  expires_in: number;
+  app_id: number;
+  appId: number;
 }

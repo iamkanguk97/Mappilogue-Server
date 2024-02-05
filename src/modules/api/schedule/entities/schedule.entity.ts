@@ -16,40 +16,40 @@ import { CommonEntity } from 'src/common/entities/common.entity';
 @Entity('Schedule')
 export class ScheduleEntity extends CommonEntity {
   @Column('int')
-  userId: number;
+  userId!: number;
 
   @Column('int')
-  colorId: number;
+  colorId!: number;
 
   @Column('varchar', {
     nullable: true,
     length: SCHEDULE_TITLE_LENGTH,
     default: SCHEDULE_DEFAULT_TITLE,
   })
-  title?: string | undefined;
+  title!: string | null;
 
   @Column('date')
-  startDate: string;
+  startDate!: string;
 
   @Column('date')
-  endDate: string;
+  endDate!: string;
 
   @Column('varchar', {
     nullable: true,
     length: StatusOrCheckColumnLengthEnum.CHECK,
   })
-  isAlarm: CheckColumnEnum;
+  isAlarm!: CheckColumnEnum | null;
 
   @ManyToOne(() => UserEntity, (user) => user.schedules, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
-  user: UserEntity;
+  user?: UserEntity;
 
   @ManyToOne(() => ColorEntity, (color) => color.schedules)
   @JoinColumn({ name: 'colorId', referencedColumnName: 'id' })
-  color: ColorEntity;
+  color?: ColorEntity;
 
   @OneToMany(
     () => ScheduleAreaEntity,
@@ -58,7 +58,7 @@ export class ScheduleEntity extends CommonEntity {
       cascade: true,
     },
   )
-  scheduleAreas: ScheduleAreaEntity[];
+  scheduleAreas?: ScheduleAreaEntity[];
 
   static from(
     userId: number,
@@ -74,7 +74,7 @@ export class ScheduleEntity extends CommonEntity {
     schedule.colorId = colorId;
     schedule.startDate = startDate;
     schedule.endDate = endDate;
-    schedule.title = title;
+    schedule.title = title ?? '';
     schedule.isAlarm = setCheckColumnByValue(alarmOptions);
 
     return schedule;

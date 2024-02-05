@@ -1,10 +1,10 @@
 import { IsOptional, IsString, Length } from 'class-validator';
-import { USER_WITHDRAW_REASON_LENGTH } from '../constants/user.constant';
+import { USER_WITHDRAW_REASON_LENGTH } from '../../constants/user.constant';
 import { setValidatorContext } from 'src/common/common';
 import { CommonExceptionCode } from 'src/common/exception-code/common.exception-code';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
-import { TDecodedUserToken } from '../types';
-import { UserWithdrawReasonEntity } from '../entities/user-withdraw-reason.entity';
+import { TDecodedUserToken } from '../../types';
+import { UserWithdrawReasonEntity } from '../../entities/user-withdraw-reason.entity';
 import { PickType } from '@nestjs/mapped-types';
 
 export class PostUserWithdrawRequestDto extends PickType(

@@ -7,8 +7,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtHelper } from '../helpers/jwt.helper';
-import { TokenDto } from 'src/modules/api/user/dtos/token.dto';
-import { UserSnsTypeEnum } from 'src/modules/api/user/constants/user.enum';
+import { TokenDto } from 'src/modules/core/auth/dtos/token.dto';
+import { UserSnsTypeEnum } from 'src/modules/api/user/constants/enums/user.enum';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 import { generateBearerHeader } from 'src/common/common';
 import { catchError, lastValueFrom, map } from 'rxjs';
@@ -19,11 +19,12 @@ import {
 } from '../constants/auth.constant';
 import { KakaoErrorCodeEnum } from '../constants/auth.enum';
 import { InternalServerExceptionCode } from 'src/common/exception-code/internal-server.exception-code';
-import { PostLoginOrSignUpRequestDto } from 'src/modules/api/user/dtos/login-or-sign-up-request.dto';
+import { PostLoginOrSignUpRequestDto } from 'src/modules/api/user/dtos/request/post-login-or-sign-up-request.dto';
 import { ENVIRONMENT_KEY } from '../../custom-config/constants/custom-config.constant';
 import {
   IAppleJwtTokenPayload,
   ISocialKakaoDataInfo,
+  IValidateKakaoTokenResponse,
   IVerifyAppleAuthCode,
 } from '../types';
 
@@ -31,7 +32,6 @@ import axios from 'axios';
 import * as querystring from 'querystring';
 import * as fs from 'fs';
 import * as jwt from 'jsonwebtoken';
-import { UserEntity } from 'src/modules/api/user/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -67,26 +67,37 @@ export class AuthService {
   ): Promise<string> {
     switch (body.socialVendor) {
       case UserSnsTypeEnum.KAKAO:
-        return this.validateKakaoSocialAccessToken(body.socialAccessToken);
+        const kakaoResult = await this.validateKakaoSocialAccessToken(
+          body.socialAccessToken,
+        );
+        return kakaoResult.id.toString();
       case UserSnsTypeEnum.APPLE:
-        return this.validateAppleSocialAccessToken(body.socialAccessToken);
+        const appleResult = await this.validateAppleSocialAccessToken(
+          body.socialAccessToken,
+        );
+        const decodedIdToken = jwt.decode(
+          appleResult.id_token,
+        ) as IAppleJwtTokenPayload;
+        return decodedIdToken.sub;
       default:
         throw new BadRequestException(UserExceptionCode.SocialVendorErrorType);
     }
   }
 
   /**
-   * @summary 카카오 소셜 Access-Token을 받아서 검증 후 소셜ID를 추출함
+   * @summary 카카오 소셜 Access-Token을 받아서 검증 후 검증 결과 반환
    * @author  Jason
    * @param   { string } token
-   * @returns { Promise<string> }
+   * @returns { Promise<IValidateKakaoTokenResponse> }
    */
-  async validateKakaoSocialAccessToken(token: string): Promise<string> {
-    return await lastValueFrom<string>(
+  async validateKakaoSocialAccessToken(
+    token: string,
+  ): Promise<IValidateKakaoTokenResponse> {
+    return await lastValueFrom<IValidateKakaoTokenResponse>(
       this.httpService
         .get(KAKAO_ACCESS_TOKEN_VERIFY_URL, generateBearerHeader(token))
         .pipe(
-          map((res) => res.data.id),
+          map((res) => res.data),
           catchError((err) => {
             const kakaoErrorCode: KakaoErrorCodeEnum = err.response.data.code;
             this.logger.error(
@@ -100,17 +111,39 @@ export class AuthService {
   }
 
   /**
-   * @summary 애플 authorization_code를 받아서 검증 후 소셜ID를 추출함
+   * @summary 애플 authorization_code를 가지고 Apple 서버에 검증을 요청하고 나온 결과 반환
    * @author  Jason
    * @param   { string } code
-   * @returns { Promise<string> }
+   * @returns { Promise<IVerifyAppleAuthCode> }
    */
-  async validateAppleSocialAccessToken(code: string): Promise<string> {
-    const verifyResult = await this.verifyAppleAuthCode(code);
-    const decodedIdToken = jwt.decode(
-      verifyResult.id_token,
-    ) as IAppleJwtTokenPayload;
-    return decodedIdToken.sub;
+  async validateAppleSocialAccessToken(
+    code: string,
+  ): Promise<IVerifyAppleAuthCode> {
+    try {
+      return (await axios.post(
+        'https://appleid.apple.com/auth/token',
+        querystring.stringify({
+          grant_type: 'authorization_code',
+          code: code,
+          client_secret: this.generateAppleClientSecret(),
+          client_id: this.customConfigService.get<string>(
+            ENVIRONMENT_KEY.APPLE_KEY_CLIENT_ID,
+          ),
+        }),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        },
+      )) as IVerifyAppleAuthCode;
+    } catch (err) {
+      this.logger.error(
+        '[validateSocialAccessToken] 애플 로그인 처리 중 에러 발생.',
+      );
+      throw new UnauthorizedException(
+        UserExceptionCode.AppleSocialLoginTokenError,
+      );
+    }
   }
 
   /**
@@ -173,40 +206,6 @@ export class AuthService {
     }
   }
 
-  /**
-   * @summary 애플 authorization_code를 가지고 Apple 서버에 검증을 요청하고 나온 결과 반환
-   * @author  Jason
-   * @param   { string } code
-   * @returns { Promise<IVerifyAppleAuthCode> }
-   */
-  async verifyAppleAuthCode(code: string): Promise<IVerifyAppleAuthCode> {
-    try {
-      return (await axios.post(
-        'https://appleid.apple.com/auth/token',
-        querystring.stringify({
-          grant_type: 'authorization_code',
-          code: code,
-          client_secret: this.generateAppleClientSecret(),
-          client_id: this.customConfigService.get<string>(
-            ENVIRONMENT_KEY.APPLE_KEY_CLIENT_ID,
-          ),
-        }),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-        },
-      )) as IVerifyAppleAuthCode;
-    } catch (err) {
-      this.logger.error(
-        '[validateSocialAccessToken] 애플 로그인 처리 중 에러 발생.',
-      );
-      throw new UnauthorizedException(
-        UserExceptionCode.AppleSocialLoginTokenError,
-      );
-    }
-  }
-
   async getKakaoUserSocialInfo(token: string): Promise<ISocialKakaoDataInfo> {
     return await lastValueFrom<ISocialKakaoDataInfo>(
       this.httpService
@@ -221,46 +220,5 @@ export class AuthService {
           }),
         ),
     );
-  }
-
-  generateInsertUserParam(body: PostLoginOrSignUpRequestDto) {
-    switch (body.socialVendor) {
-      case UserSnsTypeEnum.KAKAO:
-        return this.generateKakaoInsertUserParam(body.socialAccessToken);
-      case UserSnsTypeEnum.APPLE:
-        return this.generateAppleInsertUserParam(body.socialAccessToken);
-      default:
-        throw new BadRequestException(UserExceptionCode.SocialVendorErrorType);
-    }
-  }
-
-  async generateKakaoInsertUserParam(token: string): Promise<UserEntity> {
-    const kakaoUserInfo = await this.getKakaoUserSocialInfo(token);
-
-    const kakaoAccount = kakaoUserInfo?.kakao_account;
-    const kakaoProfile = kakaoAccount?.profile;
-
-    const user = new UserEntity();
-
-    user.snsId = kakaoUserInfo.id.toString();
-    user.snsType = UserSnsTypeEnum.KAKAO;
-    user.nickname = kakaoProfile?.nickname ?? '안녕!';
-    user.email = kakaoAccount?.email ?? '';
-
-    return user;
-  }
-
-  async generateAppleInsertUserParam(code: string) {
-    const verifyResult = await this.verifyAppleAuthCode(code);
-    const decodedIdToken = jwt.decode(
-      verifyResult.id_token,
-    ) as IAppleJwtTokenPayload;
-
-    const user = new UserEntity();
-
-    user.snsId = decodedIdToken.sub;
-    user.snsType = UserSnsTypeEnum.APPLE;
-    user.nickname = '안녕!';
-    user.email = '';
   }
 }
