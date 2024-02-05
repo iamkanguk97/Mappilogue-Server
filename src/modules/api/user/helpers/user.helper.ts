@@ -5,6 +5,7 @@ import { CustomCacheService } from 'src/modules/core/custom-cache/services/custo
 import {
   IAppleJwtTokenPayload,
   ICustomJwtPayload,
+  ISocialKakaoDataInfo,
 } from 'src/modules/core/auth/types';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 import { isDefined } from 'src/helpers/common.helper';
@@ -159,17 +160,23 @@ export class UserHelper {
     user.snsId = kakaoUserInfo.id.toString();
     user.snsType = UserSnsTypeEnum.KAKAO;
     user.nickname = kakaoProfile?.nickname ?? this.generateUserRandomNickname();
-    user.email = kakaoAccount.email ?? '';
+    user.email = kakaoAccount?.email ?? null;
     user.age = kakaoAccount?.age_range ?? null;
     user.gender = kakaoAccount?.gender ?? null;
     user.birthday = kakaoAccount?.birthday ?? null;
-    user.profileImageUrl = kakaoProfile?.is_default_image
-      ? USER_DEFAULT_PROFILE_IMAGE
-      : kakaoProfile?.profile_image_url;
+    user.profileImageUrl = this.setKakaoUserProfileImage(kakaoAccount);
+    user.profileImageKey = null;
+    user.appleRefreshToken = null;
 
     return user;
   }
 
+  /**
+   * @summary 애플 로그인 사용자 회원가입 Property 생성
+   * @author  Jason
+   * @param   { PostLoginOrSignUpRequestDto } body
+   * @returns { Promise<UserEntity> }
+   */
   async generateAppleInsertUserParam(
     body: PostLoginOrSignUpRequestDto,
   ): Promise<UserEntity> {
@@ -186,9 +193,40 @@ export class UserHelper {
     user.snsId = decodedResult.sub;
     user.snsType = UserSnsTypeEnum.APPLE;
     user.nickname = this.generateUserRandomNickname();
-    user.email = '';
+    user.email = decodedResult.email ?? null;
+    user.age = null;
+    user.gender = null;
+    user.birthday = null;
     user.profileImageUrl = USER_DEFAULT_PROFILE_IMAGE;
+    user.profileImageKey = null;
+    user.appleRefreshToken = verifyResult.refresh_token;
 
     return user;
+  }
+
+  /**
+   * @summary 카카오 로그인 정보에서 프로필 이미지 추출하기
+   * @author  Jason
+   * @param   { ISocialKakaoDataInfo['kakao_account'] } kakao_account
+   * @returns { string }
+   */
+  setKakaoUserProfileImage(
+    kakao_account?: ISocialKakaoDataInfo['kakao_account'],
+  ): string {
+    const agreement = kakao_account?.profile_image_needs_agreement;
+    const isDefaultImage = kakao_account?.profile?.is_default_image;
+    const profileImageUrl = kakao_account?.profile?.profile_image_url;
+
+    const condition =
+      !isDefined(agreement) ||
+      !agreement ||
+      !isDefined(isDefaultImage) ||
+      isDefaultImage ||
+      !isDefined(profileImageUrl);
+
+    if (condition) {
+      return USER_DEFAULT_PROFILE_IMAGE;
+    }
+    return profileImageUrl;
   }
 }

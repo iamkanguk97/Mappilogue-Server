@@ -15,8 +15,8 @@ import {
 import { Observable, of, tap } from 'rxjs';
 import { Cache } from 'cache-manager';
 import { CustomCacheService } from 'src/modules/core/custom-cache/services/custom-cache.service';
-import { Request } from 'express';
 import { CACHE_PERSISTANT_TTL } from 'src/constants/constant';
+import { IRequestWithUserType } from 'src/types/request-with-user.type';
 
 @Injectable()
 export class CustomCacheInterceptor extends CacheInterceptor {
@@ -40,7 +40,7 @@ export class CustomCacheInterceptor extends CacheInterceptor {
     context: ExecutionContext,
     next: CallHandler<any>,
   ): Promise<Observable<any>> {
-    const request = context.switchToHttp().getRequest<Request>();
+    const request = context.switchToHttp().getRequest<IRequestWithUserType>();
 
     if (this.CACHE_EVICT_PATHS.includes(request.url)) {
       return next.handle();
@@ -55,7 +55,7 @@ export class CustomCacheInterceptor extends CacheInterceptor {
     //   return next.handle();
     // }
 
-    const userId = request['user']?.id;
+    const userId = request.user.id;
     const keyPrefix = `[userId_${userId}]`;
     const method = request.method;
 

@@ -1,18 +1,6 @@
 import { CustomRepository } from 'src/modules/core/custom-repository/decorators/custom-repository.decorator';
 import { UserEntity } from '../entities/user.entity';
 import { Repository } from 'typeorm';
-import { ProcessedSocialKakaoInfo } from '../types';
 
 @CustomRepository(UserEntity)
-export class UserRepository extends Repository<UserEntity> {
-  async insertUser(
-    userInfo: ProcessedSocialKakaoInfo & { fcmToken?: string | undefined },
-  ): Promise<number> {
-    const result = await this.createQueryBuilder('user')
-      .insert()
-      .into(UserEntity)
-      .values(userInfo)
-      .execute();
-    return result.identifiers[0].id;
-  }
-}
+export class UserRepository extends Repository<UserEntity> {}

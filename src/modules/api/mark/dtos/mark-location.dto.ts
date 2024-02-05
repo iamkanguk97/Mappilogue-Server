@@ -2,19 +2,19 @@ import { MarkLocationEntity } from '../entities/mark-location.entity';
 
 export class MarkLocationDto {
   private readonly markId: number;
-  private readonly scheduleAreaId?: number | undefined;
-  private readonly name?: string | undefined;
-  private readonly streetAddress?: string | undefined;
-  private readonly latitude?: string | undefined;
-  private readonly longitude?: string | undefined;
+  private readonly scheduleAreaId: number | null;
+  private readonly name?: string;
+  private readonly streetAddress?: string;
+  private readonly latitude?: string;
+  private readonly longitude?: string;
 
   private constructor(
     markId: number,
-    scheduleAreaId?: number | undefined,
-    name?: string | undefined,
-    streetAddress?: string | undefined,
-    latitude?: string | undefined,
-    longitude?: string | undefined,
+    scheduleAreaId: number | null,
+    name?: string,
+    streetAddress?: string,
+    latitude?: string,
+    longitude?: string,
   ) {
     this.markId = markId;
     this.scheduleAreaId = scheduleAreaId;

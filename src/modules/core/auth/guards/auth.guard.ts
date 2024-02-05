@@ -1,4 +1,3 @@
-import { UserHelper } from './../../../api/user/helpers/user.helper';
 import { encryptEmail } from 'src/helpers/crypt.helper';
 import {
   BadRequestException,
@@ -29,7 +28,6 @@ export class AuthGuard implements CanActivate {
     private readonly jwtService: JwtService,
     private readonly customConfigService: CustomConfigService,
     private readonly userService: UserService,
-    private readonly userHelper: UserHelper,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -64,7 +62,7 @@ export class AuthGuard implements CanActivate {
       request.user = {
         id: findUser.id,
         nickname: findUser.nickname,
-        email: encryptEmail(findUser.email),
+        email: !isDefined(findUser.email) ? null : encryptEmail(findUser.email),
         profileImageUrl: findUser.profileImageUrl,
         profileImageKey: findUser.profileImageKey ?? '',
         snsType: findUser.snsType,
@@ -72,14 +70,21 @@ export class AuthGuard implements CanActivate {
 
       return true;
     } catch (err) {
+      const error = err as { status?: unknown };
       this.logger.error(`[AuthGuard] ${err}`);
-      if (!err.status) {
+      if (!error.status) {
         throw new UnauthorizedException(UserExceptionCode.InvalidAccessToken);
       }
       throw err;
     }
   }
 
+  /**
+   * @summary 헤더에서 JWT를 추출
+   * @author  Jason
+   * @param   { Request } request
+   * @returns { string }
+   */
   extractTokenFromHeader(request: Request): string {
     const [type, token] = request.headers['authorization']?.split(' ') ?? [];
     return type === 'Bearer' ? token : '';

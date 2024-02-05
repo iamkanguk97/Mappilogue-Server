@@ -10,7 +10,9 @@ export interface ICustomJwtPayload {
 
 export interface ISocialKakaoDataInfo {
   id: number;
+  has_signed_up?: boolean;
   connected_at?: string;
+  synched_at?: string;
   properties?: {
     nickname?: string;
     profile_image?: string;
@@ -25,20 +27,20 @@ export interface ISocialKakaoDataInfo {
       profile_image_url?: string;
       is_default_image?: boolean;
     };
-    has_email: boolean;
-    email_needs_agreement: boolean;
-    is_email_valid: boolean;
-    is_email_verified: boolean;
+    has_email?: boolean;
+    email_needs_agreement?: boolean;
+    is_email_valid?: boolean;
+    is_email_verified?: boolean;
     email?: string;
-    has_age_range: boolean;
-    age_range_needs_agreement: boolean;
+    has_age_range?: boolean;
+    age_range_needs_agreement?: boolean;
     age_range?: string;
-    has_birthday: boolean;
-    birthday_needs_agreement: boolean;
+    has_birthday?: boolean;
+    birthday_needs_agreement?: boolean;
     birthday?: string;
     birthday_type?: 'SOLAR' | 'LUNAR';
-    has_gender: boolean;
-    gender_needs_agreement: boolean;
+    has_gender?: boolean;
+    gender_needs_agreement?: boolean;
     gender?: UserGenderEnum;
   };
 }

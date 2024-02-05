@@ -206,6 +206,12 @@ export class AuthService {
     }
   }
 
+  /**
+   * @summary 카카오 사용자 정보 받아오기
+   * @author  Jason
+   * @param   { string } token
+   * @returns { Promise<ISocialKakaoDataInfo> }
+   */
   async getKakaoUserSocialInfo(token: string): Promise<ISocialKakaoDataInfo> {
     return await lastValueFrom<ISocialKakaoDataInfo>(
       this.httpService

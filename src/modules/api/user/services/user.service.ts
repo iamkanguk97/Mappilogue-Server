@@ -23,6 +23,7 @@ import { UserWithdrawReasonEntity } from '../entities/user-withdraw-reason.entit
 import { PostLoginOrSignUpRequestDto } from '../dtos/request/post-login-or-sign-up-request.dto';
 import { PostLoginOrSignUpResponseDto } from '../dtos/response/post-login-or-sign-up-response.dto';
 import { PostTokenRefreshResponseDto } from '../dtos/response/post-token-refresh-response.dto';
+import { UserAlarmSettingEntity } from '../entities/user-alarm-setting.entity';
 
 @Injectable()
 export class UserService {
@@ -48,8 +49,6 @@ export class UserService {
   async createSignUp(
     body: PostLoginOrSignUpRequestDto,
   ): Promise<PostLoginOrSignUpResponseDto> {
-    let newUserId: number;
-
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -59,13 +58,24 @@ export class UserService {
         body,
       );
 
-      const result = await queryRunner.manager.save(
+      const { id: newUserId } = await queryRunner.manager.save(
         UserEntity,
         insertUserParam,
       );
-      console.log(result);
+
+      await queryRunner.manager.save(
+        UserAlarmSettingEntity,
+        body.toUserAlarmSettingEntity(newUserId),
+      ); // 알림 설정 생성
+
+      const newTokens = await this.authService.setUserToken(newUserId); // 토큰 생성
 
       await queryRunner.commitTransaction();
+      return PostLoginOrSignUpResponseDto.from(
+        LoginOrSignUpEnum.SIGNUP,
+        newUserId,
+        newTokens,
+      );
     } catch (err) {
       this.logger.error(`[createSignUp - transaction error] ${err}`);
       await queryRunner.rollbackTransaction();
@@ -73,36 +83,6 @@ export class UserService {
     } finally {
       await queryRunner.release();
     }
-
-    const newTokens = await this.authService.setUserToken(newUserId);
-    return PostLoginOrSignUpResponseDto.from(
-      LoginOrSignUpEnum.SIGNUP,
-      newUserId,
-      newTokens,
-    );
-
-    // try {
-    //   const newUserId = await this.createUser(socialUserInfo, body.fcmToken);
-
-    //   await queryRunner.manager.save(
-    //     UserAlarmSettingEntity,
-    //     body.toUserAlarmSettingEntity(newUserId),
-    //   );
-
-    //   // TODO: type을 ProcessedSocialAppleInfo도 추가해야함.
-    //   const socialUserInfo = (await userSocialFactory.getUserSocialInfo()) as
-    //     | ProcessedSocialKakaoInfo
-    //     | any;
-
-    //   // TODO: Apple Login 구현 시 repository로 전달하는 parameter entity-from 구현
-    //   const newTokens = await this.authService.setUserToken(newUserId);
-
-    //   await queryRunner.commitTransaction();
-    //   return PostLoginOrSignUpResponseDto.from(
-    //     LoginOrSignUpEnum.SIGNUP,
-    //     newUserId,
-    //     newTokens,
-    //   );
   }
 
   /**
@@ -204,7 +184,10 @@ export class UserService {
     const refreshTokenRedisKey = this.jwtHelper.getRefreshTokenRedisKey(
       user.id,
     );
-    user.email = decryptEmail(user.email);
+
+    if (isDefined(user.email)) {
+      user.email = decryptEmail(user.email);
+    }
 
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -250,7 +233,7 @@ export class UserService {
   async findUserScheduleAlarms(
     userId: number,
     scheduleId: number,
-  ): Promise<string[]> {
+  ): Promise<(string | null)[]> {
     const result =
       await this.userAlarmHistoryRepository.selectUserScheduleAlarms(
         userId,

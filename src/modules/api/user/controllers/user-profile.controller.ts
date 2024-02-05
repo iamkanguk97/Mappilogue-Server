@@ -1,3 +1,4 @@
+import { isDefined } from 'src/helpers/common.helper';
 import {
   Body,
   ClassSerializerInterceptor,
@@ -43,7 +44,9 @@ export class UserProfileController {
   getUserProfile(
     @User() user: TDecodedUserToken,
   ): ResponseEntity<TDecodedUserToken> {
-    user.email = decryptEmail(user.email);
+    if (isDefined(user.email)) {
+      user.email = decryptEmail(user.email);
+    }
     return ResponseEntity.OK_WITH(HttpStatus.OK, user);
   }
 
