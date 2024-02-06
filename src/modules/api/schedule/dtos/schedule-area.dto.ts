@@ -1,9 +1,11 @@
+import { isDefined } from 'src/helpers/common.helper';
 import {
   IsNotEmpty,
   IsOptional,
   IsString,
   Length,
   Matches,
+  ValidateIf,
 } from 'class-validator';
 import { setValidatorContext } from 'src/common/common';
 import { CommonExceptionCode } from 'src/common/exception-code/common.exception-code';
@@ -25,7 +27,7 @@ export class ScheduleAreaValueDto {
   )
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsNotEmpty(setValidatorContext(ScheduleExceptionCode.ScheduleAreaNameEmpty))
-  name: string;
+  name!: string;
 
   @Length(
     ScheduleAreaStreetAddressLengthEnum.MIN,
@@ -36,7 +38,7 @@ export class ScheduleAreaValueDto {
   )
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsOptional()
-  streetAddress?: string | undefined;
+  streetAddress?: string = '';
 
   @Length(
     ScheduleAreaLatitudeLengthEnum.MIN,
@@ -45,7 +47,7 @@ export class ScheduleAreaValueDto {
   )
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsOptional()
-  latitude?: string | undefined;
+  latitude?: string = '';
 
   @Length(
     ScheduleAreaLongitudeLengthEnum.MIN,
@@ -54,8 +56,9 @@ export class ScheduleAreaValueDto {
   )
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsOptional()
-  longitude?: string | undefined;
+  longitude?: string = '';
 
+  @ValidateIf((t) => isDefined(t.time) && t.time.length !== 0)
   @Matches(
     REGEX_SCHEDULE_AREA_TIME,
     setValidatorContext(ScheduleExceptionCode.ScheduleAreaTimeErrorFormat),
@@ -67,5 +70,5 @@ export class ScheduleAreaValueDto {
   )
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsOptional()
-  time?: string | undefined;
+  time?: string = '';
 }

@@ -16,7 +16,8 @@
     "resolveJsonModule": true,
     "noFallthroughCasesInSwitch": true,
     "outDir": "./dist",
-    "baseUrl": "./"
+    "baseUrl": "./",
+    "typeRoots": ["./@types", "./node_modules/@types"]
     // "paths": {
     //   "@src/*": ["./src/*"],
     //   "@common/*": ["./src/common/*"],

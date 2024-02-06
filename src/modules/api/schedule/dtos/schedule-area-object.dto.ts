@@ -19,7 +19,7 @@ export class ScheduleAreaDto {
   )
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsNotEmpty(setValidatorContext(ScheduleExceptionCode.ScheduleAreaDateEmpty))
-  date: string;
+  date!: string;
 
   @ValidateNested({ each: true })
   @Type(() => ScheduleAreaValueDto)
@@ -27,5 +27,5 @@ export class ScheduleAreaDto {
   // @ArrayNotEmpty(setValidatorContext(CommonExceptionCode.ArrayNotEmpty))
   @IsArray(setValidatorContext(CommonExceptionCode.MustArrayType))
   @IsNotEmpty(setValidatorContext(ScheduleExceptionCode.ScheduleAreaValueEmpty))
-  value: ScheduleAreaValueDto[];
+  value!: ScheduleAreaValueDto[];
 }

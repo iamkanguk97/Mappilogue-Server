@@ -15,6 +15,7 @@ import { ColorService } from '../../color/services/color.service';
 import { UserService } from '../../user/services/user.service';
 
 import * as moment from 'moment';
+import { PostScheduleRequestDto } from '../dtos/request/post-schedule-request.dto';
 
 @Injectable()
 export class ScheduleHelper {

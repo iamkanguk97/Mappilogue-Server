@@ -1,5 +1,5 @@
 import { Exclude, Expose } from 'class-transformer';
-import { IScheduleAreasById } from '../types';
+import { IScheduleAreasById } from '../../types';
 
 export class GetScheduleAreasByIdResponseDto {
   @Exclude() private readonly _areas: IScheduleAreasById[];

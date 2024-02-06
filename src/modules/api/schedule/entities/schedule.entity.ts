@@ -9,7 +9,7 @@ import {
   SCHEDULE_TITLE_LENGTH,
 } from '../constants/schedule.constant';
 import { ColorEntity } from '../../color/entities/color.entity';
-import { setCheckColumnByValue } from 'src/helpers/common.helper';
+import { isDefined } from 'src/helpers/common.helper';
 import { ScheduleAreaEntity } from './schedule-area.entity';
 import { CommonEntity } from 'src/common/entities/common.entity';
 
@@ -22,11 +22,10 @@ export class ScheduleEntity extends CommonEntity {
   colorId!: number;
 
   @Column('varchar', {
-    nullable: true,
     length: SCHEDULE_TITLE_LENGTH,
     default: SCHEDULE_DEFAULT_TITLE,
   })
-  title!: string | null;
+  title!: string;
 
   @Column('date')
   startDate!: string;
@@ -35,10 +34,9 @@ export class ScheduleEntity extends CommonEntity {
   endDate!: string;
 
   @Column('varchar', {
-    nullable: true,
     length: StatusOrCheckColumnLengthEnum.CHECK,
   })
-  isAlarm!: CheckColumnEnum | null;
+  isAlarm!: CheckColumnEnum;
 
   @ManyToOne(() => UserEntity, (user) => user.schedules, {
     onDelete: 'CASCADE',
@@ -65,8 +63,8 @@ export class ScheduleEntity extends CommonEntity {
     colorId: number,
     startDate: string,
     endDate: string,
-    alarmOptions?: string[] | undefined,
-    title?: string | undefined,
+    title: string,
+    alarmOptions: string[],
   ): ScheduleEntity {
     const schedule = new ScheduleEntity();
 
@@ -74,8 +72,12 @@ export class ScheduleEntity extends CommonEntity {
     schedule.colorId = colorId;
     schedule.startDate = startDate;
     schedule.endDate = endDate;
-    schedule.title = title ?? '';
-    schedule.isAlarm = setCheckColumnByValue(alarmOptions);
+    schedule.title =
+      !isDefined(title) || title.length === 0 ? SCHEDULE_DEFAULT_TITLE : title;
+    schedule.isAlarm =
+      !isDefined(alarmOptions) || alarmOptions.length === 0
+        ? CheckColumnEnum.INACTIVE
+        : CheckColumnEnum.ACTIVE;
 
     return schedule;
   }

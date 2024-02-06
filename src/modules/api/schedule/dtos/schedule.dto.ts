@@ -6,12 +6,12 @@ export class ScheduleDto {
   @Exclude() private readonly _id: number;
   @Exclude() private readonly _userId: number;
   @Exclude() private readonly _colorId: number;
-  @Exclude() private readonly _title?: string | undefined;
   @Exclude() private readonly _isAlarm: CheckColumnEnum;
+  @Exclude() private readonly _title: string | null;
 
   @Exclude() private _startDate: string;
   @Exclude() private _endDate: string;
-  @Exclude() private _colorCode?: string | undefined;
+  @Exclude() private _colorCode?: string;
 
   private constructor(
     id: number,
@@ -20,7 +20,7 @@ export class ScheduleDto {
     startDate: string,
     endDate: string,
     isAlarm: CheckColumnEnum,
-    title?: string | undefined,
+    title: string | null,
   ) {
     this._id = id;
     this._userId = userId;
@@ -79,7 +79,7 @@ export class ScheduleDto {
   }
 
   @Expose()
-  get title(): string {
+  get title(): string | null {
     return this._title;
   }
 

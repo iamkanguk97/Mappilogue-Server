@@ -1,5 +1,4 @@
 import { isNaN } from 'lodash';
-import { CheckColumnEnum } from 'src/constants/enum';
 
 /**
  * @summary 빈 배열인지 확인하는 함수
@@ -29,16 +28,6 @@ export function isEmptyObject(obj: Record<string, unknown>): boolean {
  */
 export function isDefined<T>(value: T): value is NonNullable<T> {
   return value !== null && value !== undefined;
-}
-
-/**
- * @summary value가 있음 없음을 판단해서 CheckColumnEnum으로 반환
- * @author  Jason
- * @param   { T } value
- * @returns { CheckColumnEnum }
- */
-export function setCheckColumnByValue<T>(value: T): CheckColumnEnum {
-  return isDefined(value) ? CheckColumnEnum.ACTIVE : CheckColumnEnum.INACTIVE;
 }
 
 /**

@@ -14,16 +14,16 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { UserId } from '../../user/decorators/user-id.decorator';
-import { PostScheduleRequestDto } from '../dtos/post-schedule-request.dto';
+import { PostScheduleRequestDto } from '../dtos/request/post-schedule-request.dto';
 import { ScheduleService } from '../services/schedule.service';
 import { ResponseEntity } from 'src/common/entities/response.entity';
 import { ScheduleValidationPipe } from '../pipes/schedule-validation.pipe';
 import { ScheduleDto } from '../dtos/schedule.dto';
-import { PostScheduleResponseDto } from '../dtos/post-schedule-response.dto';
+import { PostScheduleResponseDto } from '../dtos/response/post-schedule-response.dto';
 import { GetScheduleOnSpecificDateResponseDto } from '../dtos/get-schedule-on-specific-date-response.dto';
-import { GetScheduleDetailByIdResponseDto } from '../dtos/get-schedule-detail-by-id-response.dto';
+import { GetScheduleDetailByIdResponseDto } from '../dtos/response/get-schedule-detail-by-id-response.dto';
 import { PutScheduleRequestDto } from '../dtos/put-schedule-request.dto';
-import { GetScheduleAreasByIdResponseDto } from '../dtos/get-schedule-areas-by-id-response.dto';
+import { GetScheduleAreasByIdResponseDto } from '../dtos/response/get-schedule-areas-by-id-response.dto';
 import { DomainNameEnum } from 'src/constants/enum';
 import { GetSchedulesInCalendarRequestDto } from '../dtos/get-schedules-in-calendar-request.dto';
 import { GetSchedulesInCalendarResponseDto } from '../dtos/get-schedules-in-calendar-response.dto';
@@ -35,7 +35,9 @@ export class ScheduleController {
 
   /**
    * @summary 일정 생성하기 API
-   * @author Jason
+   * @author  Jason
+   * @url     [POST] /api/v1/schedules
+   * @returns { Promise<ResponseEntity<PostScheduleResponseDto>> }
    */
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -43,13 +45,18 @@ export class ScheduleController {
     @UserId() userId: number,
     @Body() body: PostScheduleRequestDto,
   ): Promise<ResponseEntity<PostScheduleResponseDto>> {
-    const result = await this.scheduleService.createSchedule(userId, body);
-    return ResponseEntity.OK_WITH(HttpStatus.CREATED, result);
+    console.log(body);
+    console.log(body.area[0].value);
+
+    const asdf = body.area[0].value;
+    // const result = await this.scheduleService.createSchedule(userId, body);
+    // return ResponseEntity.OK_WITH(HttpStatus.CREATED, result);
   }
 
   /**
    * @summary 일정 삭제하기 API
-   * @author Jason
+   * @author  Jason
+   * @url     [DELETE] /api/v1/schedules/:scheduleId
    */
   @Delete('/:scheduleId')
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -78,7 +85,8 @@ export class ScheduleController {
 
   /**
    * @summary 특정 일정 조회하기 API
-   * @author Jason
+   * @author  Jason
+   * @url     [GET] /api/v1/schedules/detail-by-id?id=
    */
   @Get('detail-by-id')
   @HttpCode(HttpStatus.OK)
@@ -123,7 +131,9 @@ export class ScheduleController {
 
   /**
    * @summary 특정 일정의 장소 조회하기 API
-   * @author Jason
+   * @author  Jason
+   * @url     [GET] /api/v1/schedules/{scheduleId}/areas
+   * @returns { Promise<ResponseEntity<GetScheduleAreasByIdResponseDto>> }
    */
   @Get('/:scheduleId/areas')
   @HttpCode(HttpStatus.OK)

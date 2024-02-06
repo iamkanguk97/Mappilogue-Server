@@ -6,6 +6,7 @@ import {
   IAppleJwtTokenPayload,
   ICustomJwtPayload,
   ISocialKakaoDataInfo,
+  IVerifyAppleAuthCode,
 } from 'src/modules/core/auth/types';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 import { isDefined } from 'src/helpers/common.helper';
@@ -124,16 +125,21 @@ export class UserHelper {
    * @summary 회원가입 시 새로운 유저 생성을 위한 Property 생성
    * @author  Jason
    * @param   { PostLoginOrSignUpRequestDto } body
+   * @param   { IVerifyAppleAuthCode | null } validateResult
    * @returns { Promise<UserEntity> }
    */
   generateInsertUserParam(
     body: PostLoginOrSignUpRequestDto,
+    validateResult: IVerifyAppleAuthCode | null,
   ): Promise<UserEntity> {
     switch (body.socialVendor) {
       case UserSnsTypeEnum.KAKAO:
         return this.generateKakaoInsertUserParam(body);
       case UserSnsTypeEnum.APPLE:
-        return this.generateAppleInsertUserParam(body);
+        return this.generateAppleInsertUserParam(
+          body,
+          validateResult as IVerifyAppleAuthCode,
+        );
       default:
         throw new BadRequestException(UserExceptionCode.SocialVendorErrorType);
     }
@@ -167,6 +173,10 @@ export class UserHelper {
     user.profileImageUrl = this.setKakaoUserProfileImage(kakaoAccount);
     user.profileImageKey = null;
     user.appleRefreshToken = null;
+    user.fcmToken =
+      isDefined(body.fcmToken) && body.fcmToken.length !== 0
+        ? body.fcmToken
+        : null;
 
     return user;
   }
@@ -179,13 +189,10 @@ export class UserHelper {
    */
   async generateAppleInsertUserParam(
     body: PostLoginOrSignUpRequestDto,
+    validateResult: IVerifyAppleAuthCode,
   ): Promise<UserEntity> {
-    const verifyResult = await this.authService.validateAppleSocialAccessToken(
-      body.socialAccessToken,
-    );
-
     const decodedResult = jwt.decode(
-      verifyResult.id_token,
+      validateResult.id_token,
     ) as IAppleJwtTokenPayload;
 
     const user = new UserEntity();
@@ -199,7 +206,11 @@ export class UserHelper {
     user.birthday = null;
     user.profileImageUrl = USER_DEFAULT_PROFILE_IMAGE;
     user.profileImageKey = null;
-    user.appleRefreshToken = verifyResult.refresh_token;
+    user.appleRefreshToken = validateResult.refresh_token;
+    user.fcmToken =
+      isDefined(body.fcmToken) && body.fcmToken.length !== 0
+        ? body.fcmToken
+        : null;
 
     return user;
   }

@@ -1,4 +1,7 @@
-import { SCHEDULE_ALARM_MAX_COUNT } from './../constants/schedule.constant';
+import {
+  SCHEDULE_ALARM_MAX_COUNT,
+  SCHEDULE_DEFAULT_TITLE,
+} from '../../constants/schedule.constant';
 import {
   ArrayMaxSize,
   ArrayUnique,
@@ -13,16 +16,16 @@ import {
 } from 'class-validator';
 import { setValidatorContext } from 'src/common/common';
 import { CommonExceptionCode } from 'src/common/exception-code/common.exception-code';
-import { ScheduleTitleLengthEnum } from '../constants/schedule.enum';
+import { ScheduleTitleLengthEnum } from '../../constants/schedule.enum';
 import { ScheduleExceptionCode } from 'src/common/exception-code/schedule.exception-code';
 import { IsNumberRange } from 'src/decorators/number-range.decorator';
-import { ColorIdRangeEnum } from '../../color/constants/color.enum';
+import { ColorIdRangeEnum } from '../../../color/constants/color.enum';
 import { ColorExceptionCode } from 'src/common/exception-code/color.exception-code';
 import { IsValidDateWithHyphen } from 'src/decorators/valid-date-with-hyphen.decorator';
 import { REGEX_ALARM_OPTION } from 'src/common/regex';
 import { Type } from 'class-transformer';
-import { ScheduleAreaDto } from './schedule-area-object.dto';
-import { ScheduleEntity } from '../entities/schedule.entity';
+import { ScheduleAreaDto } from '../schedule-area-object.dto';
+import { ScheduleEntity } from '../../entities/schedule.entity';
 
 export class PostScheduleRequestDto {
   @Length(
@@ -32,7 +35,7 @@ export class PostScheduleRequestDto {
   )
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsOptional()
-  title?: string | undefined;
+  title: string = SCHEDULE_DEFAULT_TITLE;
 
   @IsNumberRange(
     ColorIdRangeEnum.MIN,
@@ -41,21 +44,21 @@ export class PostScheduleRequestDto {
   )
   @IsNumber({}, setValidatorContext(CommonExceptionCode.MustNumberType))
   @IsNotEmpty(setValidatorContext(ScheduleExceptionCode.ScheduleColorIdEmpty))
-  colorId: number;
+  colorId!: number;
 
   @IsValidDateWithHyphen(
     setValidatorContext(ScheduleExceptionCode.ScheduleStartDateInvalidFormat),
   )
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsNotEmpty(setValidatorContext(ScheduleExceptionCode.ScheduleStartDateEmpty))
-  startDate: string;
+  startDate!: string;
 
   @IsValidDateWithHyphen(
     setValidatorContext(ScheduleExceptionCode.ScheduleEndDateInvalidFormat),
   )
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsNotEmpty(setValidatorContext(ScheduleExceptionCode.ScheduleEndDateEmpty))
-  endDate: string;
+  endDate!: string;
 
   @Matches(REGEX_ALARM_OPTION, {
     each: true,
@@ -71,7 +74,7 @@ export class PostScheduleRequestDto {
   // @ArrayNotEmpty(setValidatorContext(CommonExceptionCode.ArrayNotEmpty))
   @IsArray(setValidatorContext(CommonExceptionCode.MustArrayType))
   @IsOptional()
-  alarmOptions?: string[] | undefined;
+  alarmOptions: string[] = [];
 
   @ValidateNested({ each: true })
   @Type(() => ScheduleAreaDto)
@@ -79,16 +82,22 @@ export class PostScheduleRequestDto {
   // @ArrayNotEmpty(setValidatorContext(CommonExceptionCode.ArrayNotEmpty))
   @IsArray(setValidatorContext(CommonExceptionCode.MustArrayType))
   @IsOptional()
-  area?: ScheduleAreaDto[] | undefined;
+  area: ScheduleAreaDto[] = [];
 
+  /**
+   * @summary ScheduleEntity로 변환하는 함수
+   * @author  Jason
+   * @param   { number } userId
+   * @returns { ScheduleEntity }
+   */
   toScheduleEntity(userId: number): ScheduleEntity {
     return ScheduleEntity.from(
       userId,
       this.colorId,
       this.startDate,
       this.endDate,
-      this.alarmOptions,
       this.title,
+      this.alarmOptions,
     );
   }
 }

@@ -6,27 +6,28 @@ import {
   PipeTransform,
 } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
-import { Request } from 'express';
 import { ScheduleService } from '../services/schedule.service';
-import { ScheduleDto } from '../dtos/schedule.dto';
-import { ScheduleExceptionCode } from 'src/common/exception-code/schedule.exception-code';
+import { IRequestWithUserType } from 'src/types/request-with-user.type';
 import { isDefined } from 'src/helpers/common.helper';
+import { ScheduleExceptionCode } from 'src/common/exception-code/schedule.exception-code';
+import { ScheduleDto } from '../dtos/schedule.dto';
 
 @Injectable()
 export class ScheduleValidationPipe implements PipeTransform {
   private readonly logger = new Logger(ScheduleValidationPipe.name);
 
   constructor(
-    @Inject(REQUEST) private readonly request: Request,
+    @Inject(REQUEST) private readonly request: IRequestWithUserType,
     private readonly scheduleService: ScheduleService,
   ) {}
 
-  async transform<T extends { scheduleId: number }>(
-    value: T,
-  ): Promise<ScheduleDto> {
+  async transform<T extends { id: number }>(value: T) {
     try {
-      const scheduleId = value?.scheduleId;
-      const userId = this.request['user'].id;
+      const scheduleId = value.id;
+      const userId = this.request.user.id;
+
+      console.log(scheduleId);
+      console.log(userId);
 
       if (!isDefined(scheduleId)) {
         throw new BadRequestException(ScheduleExceptionCode.ScheduleIdEmpty);

@@ -1,6 +1,6 @@
 import { Exclude, Expose } from 'class-transformer';
-import { IProcessedScheduleAreasById } from '../types';
-import { ScheduleDto } from './schedule.dto';
+import { IProcessedScheduleAreasById } from '../../types';
+import { ScheduleDto } from '../schedule.dto';
 
 export class GetScheduleDetailByIdResponseDto {
   @Exclude() private readonly _scheduleBaseInfo: ScheduleDto;

@@ -42,11 +42,16 @@ export class UserController {
   async postLoginOrSignUp(
     @Body() body: PostLoginOrSignUpRequestDto,
   ): Promise<ResponseEntity<PostLoginOrSignUpResponseDto>> {
-    const socialId = await this.authService.validateSocialAccessToken(body);
-    const user = await this.userService.findOneBySnsId(socialId);
+    const validateResult = await this.authService.validateSocialAccessToken(
+      body,
+    );
+    const user = await this.userService.findOneBySnsId(validateResult.socialId);
 
     if (!isDefined(user)) {
-      const signUpResult = await this.userService.createSignUp(body);
+      const signUpResult = await this.userService.createSignUp(
+        body,
+        validateResult,
+      );
       return ResponseEntity.OK_WITH(HttpStatus.CREATED, signUpResult);
     }
     const loginResult = await this.userService.createLogin(user, body.fcmToken);

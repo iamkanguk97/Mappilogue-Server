@@ -1,7 +1,7 @@
-import { GetScheduleDetailByIdResponseDto } from './../dtos/get-schedule-detail-by-id-response.dto';
+import { GetScheduleDetailByIdResponseDto } from '../dtos/response/get-schedule-detail-by-id-response.dto';
 import { isDefined, isEmptyArray } from 'src/helpers/common.helper';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { PostScheduleRequestDto } from '../dtos/post-schedule-request.dto';
+import { PostScheduleRequestDto } from '../dtos/request/post-schedule-request.dto';
 import { DataSource, QueryRunner } from 'typeorm';
 import { ScheduleRepository } from '../repositories/schedule.repository';
 import {
@@ -17,7 +17,7 @@ import { UserHelper } from '../../user/helpers/user.helper';
 import { UserAlarmHistoryRepository } from '../../user/repositories/user-alarm-history.repository';
 import { ScheduleEntity } from '../entities/schedule.entity';
 import { ScheduleAreaEntity } from '../entities/schedule-area.entity';
-import { PostScheduleResponseDto } from '../dtos/post-schedule-response.dto';
+import { PostScheduleResponseDto } from '../dtos/response/post-schedule-response.dto';
 import { NotificationTypeEnum } from 'src/modules/core/notification/constants/notification.enum';
 import { UserAlarmHistoryEntity } from '../../user/entities/user-alarm-history.entity';
 import { ScheduleHelper } from '../helpers/schedule.helper';
@@ -25,7 +25,7 @@ import { solar2lunar } from 'solarlunar';
 import { GetScheduleOnSpecificDateResponseDto } from '../dtos/get-schedule-on-specific-date-response.dto';
 import { ScheduleAreaRepository } from '../repositories/schedule-area.repository';
 import { PutScheduleRequestDto } from '../dtos/put-schedule-request.dto';
-import { GetScheduleAreasByIdResponseDto } from '../dtos/get-schedule-areas-by-id-response.dto';
+import { GetScheduleAreasByIdResponseDto } from '../dtos/response/get-schedule-areas-by-id-response.dto';
 import { ScheduleDto } from '../dtos/schedule.dto';
 import { UserProfileHelper } from '../../user/helpers/user-profile.helper';
 import { GetSchedulesInCalendarRequestDto } from '../dtos/get-schedules-in-calendar-request.dto';
@@ -48,6 +48,13 @@ export class ScheduleService {
     private readonly userProfileHelper: UserProfileHelper,
   ) {}
 
+  /**
+   * @summary 일정 생성 API Service
+   * @author  Jason
+   * @param   { number } userId
+   * @param   { PostScheduleRequestDto } body
+   * @returns { Promise<PostScheduleResponseDto> }
+   */
   async createSchedule(
     userId: number,
     body: PostScheduleRequestDto,
@@ -57,12 +64,13 @@ export class ScheduleService {
     await queryRunner.startTransaction();
 
     try {
-      const { id: newScheduleId } = await this.scheduleRepository.save(
+      const { id: newScheduleId } = await queryRunner.manager.save(
+        ScheduleEntity,
         body.toScheduleEntity(userId),
       );
 
-      await this.createScheduleArea(newScheduleId, body);
-      await this.createScheduleAlarms(userId, newScheduleId, body);
+      await this.createScheduleArea(queryRunner, newScheduleId, body);
+      // await this.createScheduleAlarms(userId, newScheduleId, body);
 
       await queryRunner.commitTransaction();
       return PostScheduleResponseDto.of(newScheduleId);
@@ -75,6 +83,11 @@ export class ScheduleService {
     }
   }
 
+  /**
+   * @summary 일정 삭제하기 API Service
+   * @author  Jason
+   * @param   { ScheduleDto } schedule
+   */
   async removeSchedule(schedule: ScheduleDto): Promise<void> {
     const deletedScheduleData = await this.scheduleRepository.find({
       where: {
@@ -89,6 +102,12 @@ export class ScheduleService {
     await this.scheduleRepository.softRemove(deletedScheduleData);
   }
 
+  /**
+   * @summary 특정 일정 조회하기 API Service
+   * @author  Jason
+   * @param   { ScheduleDto } schedule
+   * @returns { Promise<GetScheduleDetailByIdResponseDto> }
+   */
   async findScheduleOnSpecificId(
     schedule: ScheduleDto,
   ): Promise<GetScheduleDetailByIdResponseDto> {
@@ -164,15 +183,21 @@ export class ScheduleService {
     }
   }
 
+  /**
+   * @summary 일정 생성 API Service - 장소 부분 생성
+   * @author  Jason
+   * @param   { QueryRunner } queryRunner
+   * @param   { number } newScheduleId
+   * @param   { PostScheduleRequestDto } body
+   */
   async createScheduleArea(
+    queryRunner: QueryRunner,
     newScheduleId: number,
     body: PostScheduleRequestDto,
   ): Promise<void> {
-    const areaList = body.area ?? [];
-
     try {
       await Promise.all(
-        areaList.map(async (area) => {
+        body.area.map(async (area) => {
           if (
             !checkBetweenDatesWithNoMoment(
               body.startDate,
@@ -200,7 +225,10 @@ export class ScheduleService {
             },
           );
 
-          this.scheduleAreaRepository.save(createScheduleAreaValueParam);
+          await queryRunner.manager.save(
+            ScheduleAreaEntity,
+            createScheduleAreaValueParam,
+          );
         }),
       );
     } catch (err) {
@@ -314,7 +342,13 @@ export class ScheduleService {
     );
   }
 
-  async findScheduleById(scheduleId: number): Promise<ScheduleEntity> {
+  /**
+   * @summary find one by id
+   * @author  Jason
+   * @param   { number } scheduleId
+   * @returns { Promise<ScheduleEntity | null> }
+   */
+  async findOneById(scheduleId: number): Promise<ScheduleEntity | null> {
     return this.scheduleRepository.findOne({
       where: {
         id: scheduleId,
@@ -374,6 +408,12 @@ export class ScheduleService {
     }
   }
 
+  /**
+   * @summary 특정 일정의 장소 조회하기 API Service
+   * @author  Jason
+   * @param   { number } scheduleId
+   * @returns { Promise<GetScheduleAreasByIdResponseDto> }
+   */
   async findScheduleAreasById(
     scheduleId: number,
   ): Promise<GetScheduleAreasByIdResponseDto> {
@@ -394,7 +434,7 @@ export class ScheduleService {
     userId: number,
     scheduleId: number,
   ): Promise<ScheduleDto> {
-    const scheduleStatus = await this.findScheduleById(scheduleId);
+    const scheduleStatus = await this.findOneById(scheduleId);
 
     if (!isDefined(scheduleStatus)) {
       throw new BadRequestException(ScheduleExceptionCode.ScheduleNotExist);

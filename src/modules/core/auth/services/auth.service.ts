@@ -25,6 +25,7 @@ import {
   IAppleJwtTokenPayload,
   ISocialKakaoDataInfo,
   IValidateKakaoTokenResponse,
+  IValidateSocialAccessToken,
   IVerifyAppleAuthCode,
 } from '../types';
 
@@ -60,17 +61,17 @@ export class AuthService {
    * @summary 소셜 별로 구분지어서 클라에서 보내준 토큰 검증하기
    * @author  Jason
    * @param   { PostLoginOrSignUpRequestDto } body
-   * @returns { Promise<string> } ==> 소셜 고유 아이디만 먼저 반환
+   * @returns { Promise<IValidateSocialAccessToken> }
    */
   async validateSocialAccessToken(
     body: PostLoginOrSignUpRequestDto,
-  ): Promise<string> {
+  ): Promise<IValidateSocialAccessToken> {
     switch (body.socialVendor) {
       case UserSnsTypeEnum.KAKAO:
         const kakaoResult = await this.validateKakaoSocialAccessToken(
           body.socialAccessToken,
         );
-        return kakaoResult.id.toString();
+        return { socialId: kakaoResult.id.toString(), data: null };
       case UserSnsTypeEnum.APPLE:
         const appleResult = await this.validateAppleSocialAccessToken(
           body.socialAccessToken,
@@ -78,7 +79,7 @@ export class AuthService {
         const decodedIdToken = jwt.decode(
           appleResult.id_token,
         ) as IAppleJwtTokenPayload;
-        return decodedIdToken.sub;
+        return { socialId: decodedIdToken.sub, data: appleResult };
       default:
         throw new BadRequestException(UserExceptionCode.SocialVendorErrorType);
     }
@@ -120,22 +121,24 @@ export class AuthService {
     code: string,
   ): Promise<IVerifyAppleAuthCode> {
     try {
-      return (await axios.post(
-        'https://appleid.apple.com/auth/token',
-        querystring.stringify({
-          grant_type: 'authorization_code',
-          code: code,
-          client_secret: this.generateAppleClientSecret(),
-          client_id: this.customConfigService.get<string>(
-            ENVIRONMENT_KEY.APPLE_KEY_CLIENT_ID,
-          ),
-        }),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+      return (
+        await axios.post(
+          'https://appleid.apple.com/auth/token',
+          querystring.stringify({
+            grant_type: 'authorization_code',
+            code: code,
+            client_secret: this.generateAppleClientSecret(),
+            client_id: this.customConfigService.get<string>(
+              ENVIRONMENT_KEY.APPLE_KEY_CLIENT_ID,
+            ),
+          }),
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
           },
-        },
-      )) as IVerifyAppleAuthCode;
+        )
+      ).data as IVerifyAppleAuthCode;
     } catch (err) {
       this.logger.error(
         '[validateSocialAccessToken] 애플 로그인 처리 중 에러 발생.',

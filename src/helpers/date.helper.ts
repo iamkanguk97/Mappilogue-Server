@@ -31,7 +31,7 @@ export const getLastDate = (year: number, month: number): number => {
  * @param       { string } startDate
  * @param       { string } endDate
  * @param       { string } targetDate
- * @returns { boolean }
+ * @returns     { boolean }
  */
 export const checkBetweenDatesWithNoMoment = (
   startDate: string,

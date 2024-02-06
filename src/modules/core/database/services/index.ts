@@ -20,6 +20,7 @@ export class DatabaseService implements TypeOrmOptionsFactory {
       entities: DATABASE_MODELS,
       logging: true,
       synchronize: this.customConfigService.isLocal(),
+      // synchronize: true,
       charset: 'utf8mb4',
       timezone: 'Z',
       migrationsTableName: 'migrations',
