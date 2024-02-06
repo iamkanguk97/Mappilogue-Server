@@ -118,7 +118,9 @@ export class UserHelper {
    * @returns { string }
    */
   generateUserRandomNickname(): string {
-    return `${USER_DEFAULT_NICKNAME_PREFIX}-${uuidv4().substring(0, 10)}`;
+    return `${USER_DEFAULT_NICKNAME_PREFIX}-${uuidv4()
+      .replace(/-/g, '')
+      .substring(0, 10)}`;
   }
 
   /**
