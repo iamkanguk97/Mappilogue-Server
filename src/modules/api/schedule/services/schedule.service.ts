@@ -30,6 +30,8 @@ import { ScheduleDto } from '../dtos/schedule.dto';
 import { UserProfileHelper } from '../../user/helpers/user-profile.helper';
 import { GetSchedulesInCalendarRequestDto } from '../dtos/get-schedules-in-calendar-request.dto';
 import { GetSchedulesInCalendarResponseDto } from '../dtos/get-schedules-in-calendar-response.dto';
+import { UserRepository } from '../../user/repositories/user.repository';
+import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 
 @Injectable()
 export class ScheduleService {
@@ -39,6 +41,7 @@ export class ScheduleService {
     private readonly dataSource: DataSource,
     private readonly scheduleRepository: ScheduleRepository,
     private readonly scheduleAreaRepository: ScheduleAreaRepository,
+    private readonly userRepository: UserRepository,
     private readonly userAlarmHistoryRepository: UserAlarmHistoryRepository,
     private readonly userService: UserService,
     private readonly userProfileService: UserProfileService,
@@ -69,9 +72,12 @@ export class ScheduleService {
         body.toScheduleEntity(userId),
       );
 
-      await this.createScheduleArea(queryRunner, newScheduleId, body);
-      // await this.createScheduleAlarms(userId, newScheduleId, body);
+      await Promise.all([
+        this.createScheduleArea(queryRunner, newScheduleId, body),
+        this.createScheduleAlarms(queryRunner, userId, newScheduleId, body),
+      ]);
 
+      await queryRunner.rollbackTransaction();
       await queryRunner.commitTransaction();
       return PostScheduleResponseDto.of(newScheduleId);
     } catch (err) {
@@ -237,7 +243,16 @@ export class ScheduleService {
     }
   }
 
+  /**
+   * @summary 일정 생성 API Service - 알림 부분 생성
+   * @author  Jason
+   * @param   { QueryRunner } queryRunner
+   * @param   { number } userId
+   * @param   { number } newScheduleId
+   * @param   { PostScheduleRequestDto } body
+   */
   async createScheduleAlarms(
+    queryRunner: QueryRunner,
     userId: number,
     newScheduleId: number,
     body: PostScheduleRequestDto,
@@ -245,76 +260,67 @@ export class ScheduleService {
     const alarmOptions = body.alarmOptions;
 
     if (isDefined(alarmOptions) && !isEmptyArray(alarmOptions)) {
-      const queryRunner = this.dataSource.createQueryRunner();
-      await queryRunner.connect();
-      await queryRunner.startTransaction();
+      const [userAlarmSetting, userStatus] = await Promise.all([
+        this.userProfileService.findUserAlarmSettingById(userId),
+        this.userService.findOneById(userId),
+      ]);
 
-      try {
-        const userAlarmSettings =
-          await this.userProfileService.findUserAlarmSettingById(userId);
-
-        // if (
-        //   !this.userProfileHelper.checkCanSendScheduleAlarm(userAlarmSettings)
-        // ) {
-        //   throw new BadRequestException(
-        //     UserExceptionCode.RequireAlarmAcceptInSchedule,
-        //   );
-        // }
-
-        const userStatus = await this.userService.findOneById(userId);
-        const fcmToken = userStatus.fcmToken;
-        const isFcmTokenValid = await this.userHelper.isUserFcmTokenValid(
-          fcmToken,
-        );
-
-        if (
-          isFcmTokenValid &&
-          this.userProfileHelper.checkCanSendScheduleAlarm(userAlarmSettings)
-        ) {
-          const notificationMessage =
-            this.scheduleHelper.generateScheduleNotificationMessage(
-              body.startDate,
-              body.title,
-            );
-
-          try {
-            await Promise.all(
-              alarmOptions.map(async (alarmOption) => {
-                const { id } = await this.userAlarmHistoryRepository.save(
-                  UserAlarmHistoryEntity.from(
-                    userId,
-                    newScheduleId,
-                    notificationMessage.title,
-                    notificationMessage.body,
-                    alarmOption,
-                    NotificationTypeEnum.SCHEDULE_REMINDER,
-                  ),
-                );
-
-                await this.notificationService.sendPushForScheduleCreate(
-                  id,
-                  notificationMessage.title,
-                  notificationMessage.body,
-                  fcmToken,
-                  alarmOption,
-                );
-              }),
-            );
-          } catch (err) {
-            this.logger.error(
-              `[createScheduleAlarms - notification part] ${err}`,
-            );
-          }
-        }
-
-        await queryRunner.commitTransaction();
-      } catch (err) {
-        this.logger.error(`[createScheduleAlarms - transaction error] ${err}`);
-        await queryRunner.rollbackTransaction();
-        throw err;
-      } finally {
-        await queryRunner.release();
+      if (!isDefined(userStatus)) {
+        throw new BadRequestException(UserExceptionCode.NotExistUser);
       }
+
+      const fcmToken = userStatus.fcmToken;
+      const isFcmTokenValid = await this.userHelper.isUserFcmTokenValid(
+        fcmToken,
+      );
+
+      if (
+        isFcmTokenValid &&
+        this.userProfileHelper.checkCanSendScheduleAlarm(userAlarmSetting)
+      ) {
+        const message =
+          this.scheduleHelper.generateScheduleNotificationMessage(body);
+        console.log(message);
+
+        try {
+          await Promise.all(
+            alarmOptions.map(async (option) => {
+              console.log(option);
+            }),
+          );
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+      //     await Promise.all(
+      //       alarmOptions.map(async (alarmOption) => {
+      //         const { id } = await this.userAlarmHistoryRepository.save(
+      //           UserAlarmHistoryEntity.from(
+      //             userId,
+      //             newScheduleId,
+      //             notificationMessage.title,
+      //             notificationMessage.body,
+      //             alarmOption,
+      //             NotificationTypeEnum.SCHEDULE_REMINDER,
+      //           ),
+      //         );
+      //         await this.notificationService.sendPushForScheduleCreate(
+      //           id,
+      //           notificationMessage.title,
+      //           notificationMessage.body,
+      //           fcmToken,
+      //           alarmOption,
+      //         );
+      //       }),
+      //     );
+      //   } catch (err) {
+      //     this.logger.error(
+      //       `[createScheduleAlarms - notification part] ${err}`,
+      //     );
+      //   }
+      // }
+      // await queryRunner.commitTransaction();
     }
   }
 

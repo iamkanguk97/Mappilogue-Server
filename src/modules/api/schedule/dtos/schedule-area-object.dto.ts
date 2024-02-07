@@ -7,7 +7,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { IsValidDateWithHyphen } from 'src/decorators/valid-date-with-hyphen.decorator';
-import { ScheduleAreaValueDto } from './schedule-area.dto';
+import { ScheduleAreaValueDto } from './schedule-area-value.dto';
 import { setValidatorContext } from 'src/common/common';
 import { ScheduleExceptionCode } from 'src/common/exception-code/schedule.exception-code';
 import { CommonExceptionCode } from 'src/common/exception-code/common.exception-code';

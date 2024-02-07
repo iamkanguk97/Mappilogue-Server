@@ -15,6 +15,7 @@ import { ColorService } from '../../color/services/color.service';
 import { UserService } from '../../user/services/user.service';
 
 import * as moment from 'moment';
+import { IScheduleNotificationData } from 'src/modules/core/notification/types';
 import { PostScheduleRequestDto } from '../dtos/request/post-schedule-request.dto';
 
 @Injectable()
@@ -25,19 +26,18 @@ export class ScheduleHelper {
   ) {}
 
   /**
-   * @title 일정 알림 메세지 제공하는 함수
-   * @param scheduleStartDate
-   * @param scheduleTitle
-   * @returns
+   * @title   일정 알림 메세지 제공하는 함수
+   * @author  Jason
+   * @param   { PostScheduleRequestDto } body
+   * @returns { IScheduleNotificationData }
    */
   generateScheduleNotificationMessage(
-    scheduleStartDate: string,
-    scheduleTitle?: string | undefined,
-  ): { title: string; body: string } {
-    const [, startDateMonth, startDateDay] = scheduleStartDate.split('-');
+    body: PostScheduleRequestDto,
+  ): IScheduleNotificationData {
+    const [, startDateMonth, startDateDay] = body.startDate.split('-');
 
     return {
-      title: scheduleTitle ?? SCHEDULE_DEFAULT_TITLE,
+      title: body.title,
       body: `${startDateMonth}월 ${startDateDay}일에 있을 일정을 알려드려요!`,
     };
   }

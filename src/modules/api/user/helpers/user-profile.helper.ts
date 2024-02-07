@@ -9,9 +9,9 @@ import { UserEntity } from '../entities/user.entity';
 export class UserProfileHelper {
   /**
    * @summary 일정 알림을 보낼 수 있는지 확인하는 함수
-   * @author Jason
-   *
-   * @param userAlarmSettings
+   * @author  Jason
+   * @param   { UserAlarmSettingDto } userAlarmSettings
+   * @returns { boolean }
    */
   checkCanSendScheduleAlarm(userAlarmSettings: UserAlarmSettingDto): boolean {
     return (

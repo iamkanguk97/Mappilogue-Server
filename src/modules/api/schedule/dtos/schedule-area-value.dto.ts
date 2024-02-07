@@ -38,7 +38,7 @@ export class ScheduleAreaValueDto {
   )
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsOptional()
-  streetAddress?: string = '';
+  streetAddress: string | null = null;
 
   @Length(
     ScheduleAreaLatitudeLengthEnum.MIN,
@@ -47,7 +47,7 @@ export class ScheduleAreaValueDto {
   )
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsOptional()
-  latitude?: string = '';
+  latitude: string | null = null;
 
   @Length(
     ScheduleAreaLongitudeLengthEnum.MIN,
@@ -56,7 +56,7 @@ export class ScheduleAreaValueDto {
   )
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsOptional()
-  longitude?: string = '';
+  longitude: string | null = null;
 
   @ValidateIf((t) => isDefined(t.time) && t.time.length !== 0)
   @Matches(
@@ -70,5 +70,5 @@ export class ScheduleAreaValueDto {
   )
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsOptional()
-  time?: string = '';
+  time: string | null = null;
 }

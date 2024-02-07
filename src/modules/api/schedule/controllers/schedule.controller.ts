@@ -45,12 +45,8 @@ export class ScheduleController {
     @UserId() userId: number,
     @Body() body: PostScheduleRequestDto,
   ): Promise<ResponseEntity<PostScheduleResponseDto>> {
-    console.log(body);
-    console.log(body.area[0].value);
-
-    const asdf = body.area[0].value;
-    // const result = await this.scheduleService.createSchedule(userId, body);
-    // return ResponseEntity.OK_WITH(HttpStatus.CREATED, result);
+    const result = await this.scheduleService.createSchedule(userId, body);
+    return ResponseEntity.OK_WITH(HttpStatus.CREATED, result);
   }
 
   /**

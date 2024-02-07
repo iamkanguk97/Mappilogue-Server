@@ -11,6 +11,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ScheduleEntity } from './entities/schedule.entity';
 import { ScheduleAreaEntity } from './entities/schedule-area.entity';
 import { UserProfileModule } from '../user/modules/user-profile.module';
+import { UserRepository } from '../user/repositories/user.repository';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { UserProfileModule } from '../user/modules/user-profile.module';
       ScheduleRepository,
       ScheduleAreaRepository,
       UserAlarmHistoryRepository,
+      UserRepository,
     ]),
   ],
   controllers: [ScheduleController],
