@@ -7,7 +7,6 @@ import {
   VersioningType,
 } from '@nestjs/common';
 import { CustomConfigService } from './modules/core/custom-config/services';
-import helmet from 'helmet';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ENVIRONMENT_KEY } from './modules/core/custom-config/constants/custom-config.constant';
 import { HttpBadRequestExceptionFilter } from './filters/http-bad-request-exception.filter';
@@ -16,6 +15,8 @@ import { ValidationError } from 'class-validator';
 import { HttpOtherExceptionFilter } from './filters/http-other-exception.filter';
 import { HttpInternalServerErrorExceptionFilter } from './filters/http-internal-server-error-exception.filter';
 import { HttpNodeInternalServerErrorExceptionFilter } from './filters/http-node-internal-server-error-exception.filter';
+
+import helmet from 'helmet';
 
 declare const module: any;
 
