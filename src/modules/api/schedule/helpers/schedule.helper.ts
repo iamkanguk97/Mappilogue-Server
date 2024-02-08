@@ -13,10 +13,10 @@ import {
 } from 'src/helpers/date.helper';
 import { ColorService } from '../../color/services/color.service';
 import { UserService } from '../../user/services/user.service';
+import { PostScheduleRequestDto } from '../dtos/request/post-schedule-request.dto';
+import { Notification } from 'firebase-admin/lib/messaging/messaging-api';
 
 import * as moment from 'moment';
-import { IScheduleNotificationData } from 'src/modules/core/notification/types';
-import { PostScheduleRequestDto } from '../dtos/request/post-schedule-request.dto';
 
 @Injectable()
 export class ScheduleHelper {
@@ -29,11 +29,11 @@ export class ScheduleHelper {
    * @title   일정 알림 메세지 제공하는 함수
    * @author  Jason
    * @param   { PostScheduleRequestDto } body
-   * @returns { IScheduleNotificationData }
+   * @returns { Notification }
    */
   generateScheduleNotificationMessage(
     body: PostScheduleRequestDto,
-  ): IScheduleNotificationData {
+  ): Notification {
     const [, startDateMonth, startDateDay] = body.startDate.split('-');
 
     return {

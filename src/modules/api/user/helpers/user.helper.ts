@@ -76,24 +76,17 @@ export class UserHelper {
   /**
    * @summary FCM Token이 유효한지 확인하는 함수
    * @author  Jason
-   * @param   { string | null } fcmToken
+   * @param   { string } fcmToken
    * @returns { Promise<boolean> }
    */
-  async isUserFcmTokenValid(fcmToken: string | null): Promise<boolean> {
+  async isUserFcmTokenValid(fcmToken: string): Promise<boolean> {
     try {
-      // fcmToken 유무 확인
-      if (!isDefined(fcmToken)) {
-        throw new BadRequestException(
-          UserExceptionCode.RequireFcmTokenRegister,
-        );
-      }
-
       // fcmToken 유효성 확인 (malformed or not-registered)
       await firebase.messaging().send(
         {
           token: fcmToken,
         },
-        true,
+        true, // dryRun option: Test를 위한 옵션
       );
 
       return true;

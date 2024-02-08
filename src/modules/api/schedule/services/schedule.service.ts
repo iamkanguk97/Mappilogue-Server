@@ -1,6 +1,12 @@
 import { GetScheduleDetailByIdResponseDto } from '../dtos/response/get-schedule-detail-by-id-response.dto';
 import { isDefined, isEmptyArray } from 'src/helpers/common.helper';
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { PostScheduleRequestDto } from '../dtos/request/post-schedule-request.dto';
 import { DataSource, QueryRunner } from 'typeorm';
 import { ScheduleRepository } from '../repositories/schedule.repository';
@@ -30,8 +36,9 @@ import { ScheduleDto } from '../dtos/schedule.dto';
 import { UserProfileHelper } from '../../user/helpers/user-profile.helper';
 import { GetSchedulesInCalendarRequestDto } from '../dtos/get-schedules-in-calendar-request.dto';
 import { GetSchedulesInCalendarResponseDto } from '../dtos/get-schedules-in-calendar-response.dto';
-import { UserRepository } from '../../user/repositories/user.repository';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
+import { ExceptionCodeDto } from 'src/common/dtos/exception-code.dto';
+import { InternalServerExceptionCode } from 'src/common/exception-code/internal-server.exception-code';
 
 @Injectable()
 export class ScheduleService {
@@ -41,8 +48,6 @@ export class ScheduleService {
     private readonly dataSource: DataSource,
     private readonly scheduleRepository: ScheduleRepository,
     private readonly scheduleAreaRepository: ScheduleAreaRepository,
-    private readonly userRepository: UserRepository,
-    private readonly userAlarmHistoryRepository: UserAlarmHistoryRepository,
     private readonly userService: UserService,
     private readonly userProfileService: UserProfileService,
     private readonly notificationService: NotificationService,
@@ -67,17 +72,13 @@ export class ScheduleService {
     await queryRunner.startTransaction();
 
     try {
-      const { id: newScheduleId } = await queryRunner.manager.save(
-        ScheduleEntity,
-        body.toScheduleEntity(userId),
-      );
+      const { id: newScheduleId } = await queryRunner.manager
+        .getRepository(ScheduleEntity)
+        .save(body.toScheduleEntity(userId));
 
-      await Promise.all([
-        this.createScheduleArea(queryRunner, newScheduleId, body),
-        this.createScheduleAlarms(queryRunner, userId, newScheduleId, body),
-      ]);
+      await this.createScheduleArea(queryRunner, newScheduleId, body);
+      await this.createScheduleAlarms(queryRunner, userId, newScheduleId, body);
 
-      await queryRunner.rollbackTransaction();
       await queryRunner.commitTransaction();
       return PostScheduleResponseDto.of(newScheduleId);
     } catch (err) {
@@ -231,10 +232,9 @@ export class ScheduleService {
             },
           );
 
-          await queryRunner.manager.save(
-            ScheduleAreaEntity,
-            createScheduleAreaValueParam,
-          );
+          await queryRunner.manager
+            .getRepository(ScheduleAreaEntity)
+            .save(createScheduleAreaValueParam);
         }),
       );
     } catch (err) {
@@ -270,6 +270,14 @@ export class ScheduleService {
       }
 
       const fcmToken = userStatus.fcmToken;
+
+      // fcmToken 유무 확인
+      if (!isDefined(fcmToken)) {
+        throw new BadRequestException(
+          UserExceptionCode.RequireFcmTokenRegister,
+        );
+      }
+
       const isFcmTokenValid = await this.userHelper.isUserFcmTokenValid(
         fcmToken,
       );
@@ -280,47 +288,46 @@ export class ScheduleService {
       ) {
         const message =
           this.scheduleHelper.generateScheduleNotificationMessage(body);
-        console.log(message);
 
         try {
           await Promise.all(
             alarmOptions.map(async (option) => {
-              console.log(option);
+              const { id } = await queryRunner.manager
+                .getRepository(UserAlarmHistoryEntity)
+                .save(
+                  UserAlarmHistoryEntity.from(
+                    userId,
+                    newScheduleId,
+                    message,
+                    option,
+                    NotificationTypeEnum.SCHEDULE_REMINDER,
+                  ),
+                );
+
+              await this.notificationService.sendPushForScheduleCreate(
+                newScheduleId,
+                id,
+                message,
+                option,
+                fcmToken,
+              );
             }),
           );
         } catch (err) {
-          console.log(err);
+          this.logger.error(
+            `[createScheduleAlarms - notification part] ${err}`,
+          );
+          if (err instanceof InternalServerErrorException) {
+            const errorResponse = err.getResponse() as ExceptionCodeDto;
+            if (
+              errorResponse.code !==
+              InternalServerExceptionCode.NotificationSchedulerError.code
+            ) {
+              throw err;
+            }
+          }
         }
       }
-
-      //     await Promise.all(
-      //       alarmOptions.map(async (alarmOption) => {
-      //         const { id } = await this.userAlarmHistoryRepository.save(
-      //           UserAlarmHistoryEntity.from(
-      //             userId,
-      //             newScheduleId,
-      //             notificationMessage.title,
-      //             notificationMessage.body,
-      //             alarmOption,
-      //             NotificationTypeEnum.SCHEDULE_REMINDER,
-      //           ),
-      //         );
-      //         await this.notificationService.sendPushForScheduleCreate(
-      //           id,
-      //           notificationMessage.title,
-      //           notificationMessage.body,
-      //           fcmToken,
-      //           alarmOption,
-      //         );
-      //       }),
-      //     );
-      //   } catch (err) {
-      //     this.logger.error(
-      //       `[createScheduleAlarms - notification part] ${err}`,
-      //     );
-      //   }
-      // }
-      // await queryRunner.commitTransaction();
     }
   }
 

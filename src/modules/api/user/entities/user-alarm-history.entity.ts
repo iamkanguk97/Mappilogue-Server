@@ -11,6 +11,7 @@ import {
   USER_ALARM_HISTORY_TYPE_LENGTH,
 } from '../constants/user.constant';
 import { NotificationTypeEnum } from 'src/modules/core/notification/constants/notification.enum';
+import { Notification } from 'firebase-admin/lib/messaging/messaging-api';
 
 @Entity('UserAlarmHistory')
 export class UserAlarmHistoryEntity extends DefaultColumnType {
@@ -20,7 +21,9 @@ export class UserAlarmHistoryEntity extends DefaultColumnType {
   @Column('int')
   scheduleId!: number;
 
-  @Column('varchar', { length: USER_ALARM_HISTORY_TITLE_LENGTH })
+  @Column('varchar', {
+    length: USER_ALARM_HISTORY_TITLE_LENGTH,
+  })
   title!: string;
 
   @Column('varchar', {
@@ -56,8 +59,7 @@ export class UserAlarmHistoryEntity extends DefaultColumnType {
   static from(
     userId: number,
     scheduleId: number,
-    title: string,
-    body: string,
+    notification: Notification,
     alarmDate: string,
     type: NotificationTypeEnum,
   ): UserAlarmHistoryEntity {
@@ -65,8 +67,8 @@ export class UserAlarmHistoryEntity extends DefaultColumnType {
 
     userAlarmHistory.userId = userId;
     userAlarmHistory.scheduleId = scheduleId;
-    userAlarmHistory.title = title;
-    userAlarmHistory.body = body;
+    userAlarmHistory.title = notification.title ?? '';
+    userAlarmHistory.body = notification.body ?? null;
     userAlarmHistory.alarmDate = alarmDate;
     userAlarmHistory.type = type;
 
