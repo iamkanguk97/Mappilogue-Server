@@ -21,13 +21,12 @@ export class ScheduleValidationPipe implements PipeTransform {
     private readonly scheduleService: ScheduleService,
   ) {}
 
-  async transform<T extends { id: number }>(value: T) {
+  async transform<T extends { scheduleId: number }>(
+    value: T,
+  ): Promise<ScheduleDto> {
     try {
-      const scheduleId = value.id;
+      const scheduleId = value.scheduleId;
       const userId = this.request.user.id;
-
-      console.log(scheduleId);
-      console.log(userId);
 
       if (!isDefined(scheduleId)) {
         throw new BadRequestException(ScheduleExceptionCode.ScheduleIdEmpty);

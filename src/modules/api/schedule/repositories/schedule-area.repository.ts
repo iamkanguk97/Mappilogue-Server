@@ -8,6 +8,12 @@ import { CheckColumnEnum } from 'src/constants/enum';
 
 @CustomRepository(ScheduleAreaEntity)
 export class ScheduleAreaRepository extends Repository<ScheduleAreaEntity> {
+  /**
+   * @summary 특정 일정의 장소 리스트 조회하기
+   * @author  Jason
+   * @param   { number } scheduleId
+   * @returns { Promise<IScheduleAreasById> }
+   */
   async selectScheduleAreasById(
     scheduleId: number,
   ): Promise<IScheduleAreasById[]> {
@@ -17,10 +23,10 @@ export class ScheduleAreaRepository extends Repository<ScheduleAreaEntity> {
         'SA.scheduleId AS scheduleId',
         'SA.date AS date',
         'SA.name AS name',
-        'IFNULL(SA.streetAddress, "") AS streetAddress',
-        'IFNULL(SA.latitude, "") AS latitude',
-        'IFNULL(SA.longitude, "") AS longitude',
-        'IFNULL(SA.time, "") AS time',
+        'SA.streetAddress AS streetAddress',
+        'SA.latitude AS latitude',
+        'SA.longitude AS longitude',
+        'SA.time AS time',
         'SA.sequence AS sequence',
         `IF(ML.scheduleAreaId IS NULL, "${CheckColumnEnum.INACTIVE}", "${CheckColumnEnum.ACTIVE}") AS isRepLocation`,
       ])
@@ -30,7 +36,8 @@ export class ScheduleAreaRepository extends Repository<ScheduleAreaEntity> {
       .andWhere('SA.deletedAt IS NULL')
       .andWhere('S.deletedAt IS NULL')
       .andWhere('ML.deletedAt IS NULL')
-      .orderBy('SA.date')
+      .orderBy(`isRepLocation = "${CheckColumnEnum.ACTIVE}"`, 'DESC')
+      .addOrderBy('SA.date')
       .addOrderBy('SA.sequence')
       .getRawMany();
   }

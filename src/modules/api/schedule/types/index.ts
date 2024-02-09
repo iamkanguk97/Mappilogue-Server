@@ -40,16 +40,8 @@ export interface ISchedulesOnSpecificDate
   areaTime: string;
 }
 
-export interface IScheduleAreasById {
+export interface IScheduleAreasById extends ScheduleAreaEntity {
   scheduleAreaId: number;
-  scheduleId: number;
-  date: string;
-  name: string;
-  streetAddress: string;
-  latitude: string;
-  longitude: string;
-  time: string;
-  sequence: number;
   isRepLocation: CheckColumnEnum;
 }
 

@@ -91,106 +91,6 @@ export class ScheduleService {
   }
 
   /**
-   * @summary 일정 삭제하기 API Service
-   * @author  Jason
-   * @param   { ScheduleDto } schedule
-   */
-  async removeSchedule(schedule: ScheduleDto): Promise<void> {
-    const deletedScheduleData = await this.scheduleRepository.find({
-      where: {
-        userId: schedule.userId,
-        id: schedule.id,
-      },
-      relations: {
-        scheduleAreas: true,
-      },
-    });
-
-    await this.scheduleRepository.softRemove(deletedScheduleData);
-  }
-
-  /**
-   * @summary 특정 일정 조회하기 API Service
-   * @author  Jason
-   * @param   { ScheduleDto } schedule
-   * @returns { Promise<GetScheduleDetailByIdResponseDto> }
-   */
-  async findScheduleOnSpecificId(
-    schedule: ScheduleDto,
-  ): Promise<GetScheduleDetailByIdResponseDto> {
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    try {
-      const scheduleBaseInfo = await this.scheduleHelper.setScheduleOnDetail(
-        schedule,
-      );
-      const scheduleAlarmInfo =
-        await this.scheduleHelper.setScheduleAlarmsOnDetail(schedule);
-      const scheduleAreaInfo =
-        await this.scheduleAreaRepository.selectScheduleAreasById(schedule.id);
-
-      await queryRunner.commitTransaction();
-      return GetScheduleDetailByIdResponseDto.from(
-        scheduleBaseInfo,
-        scheduleAlarmInfo,
-        this.scheduleHelper.preprocessScheduleAreaOnDetailById(
-          scheduleAreaInfo,
-        ),
-      );
-    } catch (err) {
-      this.logger.error(`[findScheduleDetailById - transaction error] ${err}`);
-      await queryRunner.rollbackTransaction();
-      throw err;
-    } finally {
-      await queryRunner.release();
-    }
-  }
-
-  async findSchedulesInCalendar(
-    userId: number,
-    query: GetSchedulesInCalendarRequestDto,
-  ): Promise<GetSchedulesInCalendarResponseDto> {
-    const weekendsList = getWeekendsByYearAndMonth(query.year, query.month);
-
-    const calendarStartDay = weekendsList[0][0];
-    const calendarEndDay = weekendsList[weekendsList.length - 1][1];
-
-    const result = await this.scheduleRepository.selectSchedulesInCalendar(
-      userId,
-      calendarStartDay,
-      calendarEndDay,
-    );
-
-    return GetSchedulesInCalendarResponseDto.of(result);
-  }
-
-  async findScheduleDetailById(userId: number, schedule: ScheduleDto) {
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    try {
-      console.log(userId);
-      console.log(schedule);
-
-      schedule.setStartDate = '';
-      schedule.setEndDate = '';
-
-      console.log(schedule);
-
-      await queryRunner.commitTransaction();
-    } catch (err) {
-      this.logger.error(`[findScheduleDetailById - transaction error] ${err}`);
-      await queryRunner.rollbackTransaction();
-      throw err;
-    } finally {
-      await queryRunner.release();
-    }
-  }
-
-  /**
    * @summary 일정 생성 API Service - 장소 부분 생성
    * @author  Jason
    * @param   { QueryRunner } queryRunner
@@ -331,6 +231,121 @@ export class ScheduleService {
     }
   }
 
+  /**
+   * @summary 일정 삭제하기 API Service
+   * @author  Jason
+   * @param   { ScheduleDto } schedule
+   */
+  async removeSchedule(schedule: ScheduleDto): Promise<void> {
+    const deletedScheduleData = await this.scheduleRepository.find({
+      where: {
+        userId: schedule.userId,
+        id: schedule.id,
+      },
+      relations: {
+        scheduleAreas: true,
+      },
+    });
+
+    await this.scheduleRepository.softRemove(deletedScheduleData);
+  }
+
+  /**
+   * @summary 특정 일정의 장소 조회하기 API Service
+   * @author  Jason
+   * @param   { number } scheduleId
+   * @returns { Promise<GetScheduleAreasByIdResponseDto> }
+   */
+  async findScheduleAreasById(
+    scheduleId: number,
+  ): Promise<GetScheduleAreasByIdResponseDto> {
+    const result = await this.scheduleAreaRepository.selectScheduleAreasById(
+      scheduleId,
+    );
+    return GetScheduleAreasByIdResponseDto.of(result);
+  }
+
+  /**
+   * @summary 특정 일정 조회하기 API Service
+   * @author  Jason
+   * @param   { ScheduleDto } schedule
+   * @returns { Promise<GetScheduleDetailByIdResponseDto> }
+   */
+  async findScheduleOnSpecificId(
+    schedule: ScheduleDto,
+  ): Promise<GetScheduleDetailByIdResponseDto> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const scheduleBaseInfo = await this.scheduleHelper.setScheduleOnDetail(
+        schedule,
+      );
+      const scheduleAlarmInfo =
+        await this.scheduleHelper.setScheduleAlarmsOnDetail(schedule);
+      const scheduleAreaInfo =
+        await this.scheduleAreaRepository.selectScheduleAreasById(schedule.id);
+
+      await queryRunner.commitTransaction();
+      return GetScheduleDetailByIdResponseDto.from(
+        scheduleBaseInfo,
+        scheduleAlarmInfo,
+        this.scheduleHelper.preprocessScheduleAreaOnDetailById(
+          scheduleAreaInfo,
+        ),
+      );
+    } catch (err) {
+      this.logger.error(`[findScheduleDetailById - transaction error] ${err}`);
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async findSchedulesInCalendar(
+    userId: number,
+    query: GetSchedulesInCalendarRequestDto,
+  ): Promise<GetSchedulesInCalendarResponseDto> {
+    const weekendsList = getWeekendsByYearAndMonth(query.year, query.month);
+
+    const calendarStartDay = weekendsList[0][0];
+    const calendarEndDay = weekendsList[weekendsList.length - 1][1];
+
+    const result = await this.scheduleRepository.selectSchedulesInCalendar(
+      userId,
+      calendarStartDay,
+      calendarEndDay,
+    );
+
+    return GetSchedulesInCalendarResponseDto.of(result);
+  }
+
+  async findScheduleDetailById(userId: number, schedule: ScheduleDto) {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      console.log(userId);
+      console.log(schedule);
+
+      schedule.setStartDate = '';
+      schedule.setEndDate = '';
+
+      console.log(schedule);
+
+      await queryRunner.commitTransaction();
+    } catch (err) {
+      this.logger.error(`[findScheduleDetailById - transaction error] ${err}`);
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
   async findSchedulesOnSpecificDate(
     userId: number,
     date: string,
@@ -419,21 +434,6 @@ export class ScheduleService {
     } finally {
       await queryRunner.release();
     }
-  }
-
-  /**
-   * @summary 특정 일정의 장소 조회하기 API Service
-   * @author  Jason
-   * @param   { number } scheduleId
-   * @returns { Promise<GetScheduleAreasByIdResponseDto> }
-   */
-  async findScheduleAreasById(
-    scheduleId: number,
-  ): Promise<GetScheduleAreasByIdResponseDto> {
-    const result = await this.scheduleAreaRepository.selectScheduleAreasById(
-      scheduleId,
-    );
-    return GetScheduleAreasByIdResponseDto.of(result);
   }
 
   /**
