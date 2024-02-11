@@ -12,12 +12,14 @@ export class ScheduleAreaRepository extends Repository<ScheduleAreaEntity> {
    * @summary 특정 일정의 장소 리스트 조회하기
    * @author  Jason
    * @param   { number } scheduleId
+   * @param   { boolean } locationCond
    * @returns { Promise<IScheduleAreasById> }
    */
   async selectScheduleAreasById(
     scheduleId: number,
+    locationCond: boolean,
   ): Promise<IScheduleAreasById[]> {
-    return await this.createQueryBuilder('SA')
+    const queryBuilder = this.createQueryBuilder('SA')
       .select([
         'SA.id AS scheduleAreaId',
         'SA.scheduleId AS scheduleId',
@@ -35,9 +37,17 @@ export class ScheduleAreaRepository extends Repository<ScheduleAreaEntity> {
       .where('SA.scheduleId = :scheduleId', { scheduleId })
       .andWhere('SA.deletedAt IS NULL')
       .andWhere('S.deletedAt IS NULL')
-      .andWhere('ML.deletedAt IS NULL')
-      .orderBy(`isRepLocation = "${CheckColumnEnum.ACTIVE}"`, 'DESC')
-      .addOrderBy('SA.date')
+      .andWhere('ML.deletedAt IS NULL');
+
+    if (locationCond) {
+      return await queryBuilder
+        .orderBy(`isRepLocation = "${CheckColumnEnum.ACTIVE}"`, 'DESC')
+        .addOrderBy('SA.date')
+        .addOrderBy('SA.sequence')
+        .getRawMany();
+    }
+    return await queryBuilder
+      .orderBy('SA.date')
       .addOrderBy('SA.sequence')
       .getRawMany();
   }

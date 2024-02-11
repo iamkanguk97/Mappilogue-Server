@@ -39,6 +39,7 @@ import { GetSchedulesInCalendarResponseDto } from '../dtos/get-schedules-in-cale
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 import { ExceptionCodeDto } from 'src/common/dtos/exception-code.dto';
 import { InternalServerExceptionCode } from 'src/common/exception-code/internal-server.exception-code';
+import { CheckColumnEnum } from 'src/constants/enum';
 
 @Injectable()
 export class ScheduleService {
@@ -48,6 +49,7 @@ export class ScheduleService {
     private readonly dataSource: DataSource,
     private readonly scheduleRepository: ScheduleRepository,
     private readonly scheduleAreaRepository: ScheduleAreaRepository,
+    private readonly userAlarmHistoryRepository: UserAlarmHistoryRepository,
     private readonly userService: UserService,
     private readonly userProfileService: UserProfileService,
     private readonly notificationService: NotificationService,
@@ -261,6 +263,7 @@ export class ScheduleService {
   ): Promise<GetScheduleAreasByIdResponseDto> {
     const result = await this.scheduleAreaRepository.selectScheduleAreasById(
       scheduleId,
+      true,
     );
     return GetScheduleAreasByIdResponseDto.of(result);
   }
@@ -274,34 +277,32 @@ export class ScheduleService {
   async findScheduleOnSpecificId(
     schedule: ScheduleDto,
   ): Promise<GetScheduleDetailByIdResponseDto> {
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+    const [scheduleBaseInfo, scheduleAlarmInfo, scheduleAreaInfo] =
+      await Promise.all([
+        this.scheduleHelper.setScheduleOnDetail(schedule),
+        this.setScheduleAlarmsOnDetail(schedule),
+        this.scheduleAreaRepository.selectScheduleAreasById(schedule.id, false),
+      ]);
 
-    try {
-      const scheduleBaseInfo = await this.scheduleHelper.setScheduleOnDetail(
-        schedule,
-      );
-      const scheduleAlarmInfo =
-        await this.scheduleHelper.setScheduleAlarmsOnDetail(schedule);
-      const scheduleAreaInfo =
-        await this.scheduleAreaRepository.selectScheduleAreasById(schedule.id);
+    return GetScheduleDetailByIdResponseDto.from(
+      scheduleBaseInfo,
+      scheduleAlarmInfo,
+      this.scheduleHelper.preprocessScheduleAreaOnDetailById(scheduleAreaInfo),
+    );
+  }
 
-      await queryRunner.commitTransaction();
-      return GetScheduleDetailByIdResponseDto.from(
-        scheduleBaseInfo,
-        scheduleAlarmInfo,
-        this.scheduleHelper.preprocessScheduleAreaOnDetailById(
-          scheduleAreaInfo,
-        ),
-      );
-    } catch (err) {
-      this.logger.error(`[findScheduleDetailById - transaction error] ${err}`);
-      await queryRunner.rollbackTransaction();
-      throw err;
-    } finally {
-      await queryRunner.release();
-    }
+  /**
+   * @summary 일정 조회 API Service - 일정 알림 리스트 조회
+   * @author  Jason
+   * @param   { ScheduleDto } schedule
+   * @returns { Promise<(string | null)[]> }
+   */
+  async setScheduleAlarmsOnDetail(
+    schedule: ScheduleDto,
+  ): Promise<(string | null)[]> {
+    return schedule.isAlarm === CheckColumnEnum.ACTIVE
+      ? await this.findScheduleAlarms(schedule.userId, schedule.id)
+      : [];
   }
 
   async findSchedulesInCalendar(
@@ -501,5 +502,24 @@ export class ScheduleService {
 
   async modifyScheduleAlarms() {
     return;
+  }
+
+  /**
+   * @summary 일정 알림 리스트 조회하기
+   * @author  Jason
+   * @param   { number } userId
+   * @param   { number } scheduleId
+   * @returns { Promise<(string | null)[]> }
+   */
+  async findScheduleAlarms(
+    userId: number,
+    scheduleId: number,
+  ): Promise<(string | null)[]> {
+    const result =
+      await this.userAlarmHistoryRepository.selectUserScheduleAlarms(
+        userId,
+        scheduleId,
+      );
+    return result.map((r) => r.alarmDate);
   }
 }

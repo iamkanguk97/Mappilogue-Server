@@ -82,7 +82,7 @@ export class ScheduleController {
   /**
    * @summary 특정 일정 조회하기 API
    * @author  Jason
-   * @url     [GET] /api/v1/schedules/detail-by-id?id=
+   * @url     [GET] /api/v1/schedules/detail-by-id?scheduleId=
    */
   @Get('detail-by-id')
   @HttpCode(HttpStatus.OK)

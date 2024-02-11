@@ -12,9 +12,11 @@ import { ScheduleEntity } from './entities/schedule.entity';
 import { ScheduleAreaEntity } from './entities/schedule-area.entity';
 import { UserProfileModule } from '../user/modules/user-profile.module';
 import { UserRepository } from '../user/repositories/user.repository';
+import { ColorModule } from '../color/color.module';
 
 @Module({
   imports: [
+    ColorModule,
     UserProfileModule,
     TypeOrmModule.forFeature([ScheduleEntity, ScheduleAreaEntity]),
     CustomRepositoryModule.forCustomRepository([

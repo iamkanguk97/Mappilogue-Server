@@ -4,12 +4,12 @@ import { ScheduleDto } from '../schedule.dto';
 
 export class GetScheduleDetailByIdResponseDto {
   @Exclude() private readonly _scheduleBaseInfo: ScheduleDto;
-  @Exclude() private readonly _scheduleAlarmInfo: Array<string | undefined>;
+  @Exclude() private readonly _scheduleAlarmInfo: Array<string | null>;
   @Exclude() private readonly _scheduleAreaInfo: IProcessedScheduleAreasById[];
 
   private constructor(
     scheduleBaseInfo: ScheduleDto,
-    scheduleAlarmInfo: Array<string | undefined>,
+    scheduleAlarmInfo: Array<string | null>,
     scheduleAreaInfo: IProcessedScheduleAreasById[],
   ) {
     this._scheduleBaseInfo = scheduleBaseInfo;
@@ -19,7 +19,7 @@ export class GetScheduleDetailByIdResponseDto {
 
   static from(
     scheduleBaseInfo: ScheduleDto,
-    scheduleAlarmInfo: Array<string | undefined>,
+    scheduleAlarmInfo: Array<string | null>,
     scheduleAreaInfo: IProcessedScheduleAreasById[],
   ) {
     return new GetScheduleDetailByIdResponseDto(
@@ -35,7 +35,7 @@ export class GetScheduleDetailByIdResponseDto {
   }
 
   @Expose()
-  get scheduleAlarmInfo(): Array<string | undefined> {
+  get scheduleAlarmInfo(): Array<string | null> {
     return this._scheduleAlarmInfo;
   }
 

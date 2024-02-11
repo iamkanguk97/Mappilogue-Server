@@ -1,6 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { CheckColumnEnum } from 'src/constants/enum';
-import { SCHEDULE_DEFAULT_TITLE } from '../constants/schedule.constant';
 import {
   IProcessedScheduleAreasById,
   IScheduleAreasById,
@@ -12,7 +10,6 @@ import {
   getKoreanDateFormatBySingle,
 } from 'src/helpers/date.helper';
 import { ColorService } from '../../color/services/color.service';
-import { UserService } from '../../user/services/user.service';
 import { PostScheduleRequestDto } from '../dtos/request/post-schedule-request.dto';
 import { Notification } from 'firebase-admin/lib/messaging/messaging-api';
 
@@ -20,10 +17,7 @@ import * as moment from 'moment';
 
 @Injectable()
 export class ScheduleHelper {
-  constructor(
-    private readonly colorService: ColorService,
-    private readonly userService: UserService,
-  ) {}
+  constructor(private readonly colorService: ColorService) {}
 
   /**
    * @title   일정 알림 메세지 제공하는 함수
@@ -63,10 +57,10 @@ export class ScheduleHelper {
   }
 
   /**
-   * @summary 일정을 조회할 때 시작/종료 날짜와 colorCode 설정해주는 함수
-   * @author Jason
-   *
-   * @param schedule
+   * @summary 특정 일정 조회하기 API Service - 시작/종료 날짜와 colorCode 설정해주는 함수
+   * @author  Jason
+   * @param   { ScheduleDto } schedule
+   * @returns { Promise<ScheduleDto> }
    */
   async setScheduleOnDetail(schedule: ScheduleDto): Promise<ScheduleDto> {
     schedule.setStartDate = getKoreanDateFormatBySingle(schedule.startDate);
@@ -76,23 +70,6 @@ export class ScheduleHelper {
     ).code;
 
     return schedule;
-  }
-
-  /**
-   * @summary 일정 조회할 때 형식 맞춰서 가져와주는 함수
-   * @author Jason
-   *
-   * @param schedule
-   */
-  async setScheduleAlarmsOnDetail(
-    schedule: ScheduleDto,
-  ): Promise<Array<string | undefined>> {
-    return schedule.isAlarm === CheckColumnEnum.ACTIVE
-      ? await this.userService.findUserScheduleAlarms(
-          schedule.userId,
-          schedule.id,
-        )
-      : [];
   }
 
   /**

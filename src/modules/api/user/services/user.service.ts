@@ -35,7 +35,6 @@ export class UserService {
   constructor(
     private readonly dataSource: DataSource,
     private readonly userRepository: UserRepository,
-    private readonly userAlarmHistoryRepository: UserAlarmHistoryRepository,
     private readonly authService: AuthService,
     private readonly jwtService: JwtService,
     private readonly customCacheService: CustomCacheService,
@@ -237,18 +236,6 @@ export class UserService {
       const imageDeleteBuilder = new MulterBuilder(ImageBuilderTypeEnum.DELETE);
       await imageDeleteBuilder.delete(userProfileKey);
     }
-  }
-
-  async findUserScheduleAlarms(
-    userId: number,
-    scheduleId: number,
-  ): Promise<(string | null)[]> {
-    const result =
-      await this.userAlarmHistoryRepository.selectUserScheduleAlarms(
-        userId,
-        scheduleId,
-      );
-    return result.map((r) => r.alarmDate);
   }
 
   /**

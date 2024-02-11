@@ -7,5 +7,5 @@ export class GetScheduleOnSpecificDateRequestDto {
   @IsValidDateWithHyphen()
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsNotEmpty()
-  date: string;
+  date!: string;
 }
