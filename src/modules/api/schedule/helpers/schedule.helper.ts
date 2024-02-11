@@ -74,14 +74,15 @@ export class ScheduleHelper {
 
   /**
    * @summary 일정 조회할 때 각 날짜별 일정 장소 Format 맞춰주는 함수
-   * @author Jason
-   *
-   * @param scheduleAreas
+   * @author  Jason
+   * @param   { IScheduleAreasById } scheduleAreas
+   * @returns { IProcessedScheduleAreasById[] }
    */
   preprocessScheduleAreaOnDetailById(
     scheduleAreas: IScheduleAreasById[],
   ): IProcessedScheduleAreasById[] {
-    const result = [];
+    const result: IProcessedScheduleAreasById[] = [];
+
     for (const scheduleArea of scheduleAreas) {
       const dateKey = moment(scheduleArea.date).format('M월 D일');
       const temp = result.find((r) => r.date === dateKey) || {
@@ -97,7 +98,7 @@ export class ScheduleHelper {
         longitude: scheduleArea.longitude,
         time: scheduleArea.time,
         sequence: scheduleArea.sequence,
-      };
+      } as Omit<IScheduleAreasById, 'scheduleId' | 'date'>;
       temp.value.push(transformedItem);
 
       if (!result.some((r) => r.date === dateKey)) {
