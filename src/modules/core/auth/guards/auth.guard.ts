@@ -18,6 +18,7 @@ import { UserService } from 'src/modules/api/user/services/user.service';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 import { isDefined } from 'src/helpers/common.helper';
 import { ICustomJwtPayload } from '../types';
+import { TDecodedUserToken } from 'src/modules/api/user/types';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -66,7 +67,7 @@ export class AuthGuard implements CanActivate {
         profileImageUrl: findUser.profileImageUrl,
         profileImageKey: findUser.profileImageKey ?? '',
         snsType: findUser.snsType,
-      };
+      } as TDecodedUserToken;
 
       return true;
     } catch (err) {
