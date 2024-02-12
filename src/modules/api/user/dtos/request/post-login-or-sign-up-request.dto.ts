@@ -20,7 +20,7 @@ export class PostLoginOrSignUpRequestDto {
 
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsOptional()
-  fcmToken?: string | null = null;
+  fcmToken: string | null = null;
 
   @IsEnum(
     CheckColumnEnum,

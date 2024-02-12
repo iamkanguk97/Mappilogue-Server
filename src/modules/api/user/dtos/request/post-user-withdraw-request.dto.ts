@@ -18,7 +18,7 @@ export class PostUserWithdrawRequestDto extends PickType(
   )
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsOptional()
-  reason?: string = '';
+  reason: string | null = null;
 
   toEntity(user: TDecodedUserToken): UserWithdrawReasonEntity {
     return UserWithdrawReasonEntity.from(user.id, user.email, this.reason);

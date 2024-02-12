@@ -9,5 +9,5 @@ export class GetHomeRequestDto {
     setValidatorContext(UserExceptionCode.GetHomeOptionErrorType),
   )
   @IsNotEmpty(setValidatorContext(UserExceptionCode.GetHomeOptionEmpty))
-  option: GetHomeOptionEnum;
+  option!: GetHomeOptionEnum;
 }

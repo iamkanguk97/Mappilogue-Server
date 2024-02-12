@@ -8,25 +8,25 @@ import {
 import { PostMarkRequestDto } from '../dtos/request/post-mark-request.dto';
 import { ScheduleService } from '../../schedule/services/schedule.service';
 import { REQUEST } from '@nestjs/core';
-import { Request } from 'express';
 import { MarkCategoryService } from '../services/mark-category.service';
 import { MarkExceptionCode } from 'src/common/exception-code/mark.exception-code';
 import { MarkHelper } from '../helpers/mark.helper';
 import { isDefined, isEmptyObject } from 'src/helpers/common.helper';
+import { IRequestWithUserType } from 'src/types/request-with-user.type';
 
 @Injectable()
 export class PostMarkValidationPipe implements PipeTransform {
   private readonly logger = new Logger(PostMarkValidationPipe.name);
 
   constructor(
-    @Inject(REQUEST) private readonly request: Request,
+    @Inject(REQUEST) private readonly request: IRequestWithUserType,
     private readonly scheduleService: ScheduleService,
     private readonly markCategoryService: MarkCategoryService,
     private readonly markHelper: MarkHelper,
   ) {}
 
   async transform(value: PostMarkRequestDto): Promise<PostMarkRequestDto> {
-    const userId = this.request['user'].id;
+    const userId = this.request.user.id;
     const markImages = this.request['files'];
     const markMetadata = value.markMetadata ?? [];
 

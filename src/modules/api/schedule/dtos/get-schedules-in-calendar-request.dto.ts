@@ -10,12 +10,12 @@ export class GetSchedulesInCalendarRequestDto {
   @IsNotEmpty(
     setValidatorContext(ScheduleExceptionCode.CalendarSearchYearEmpty),
   )
-  year: number;
+  year!: number;
 
   @IsNumber({}, setValidatorContext(CommonExceptionCode.MustNumberType))
   @Type(() => Number)
   @IsNotEmpty(
     setValidatorContext(ScheduleExceptionCode.CalendarSearchMonthEmpty),
   )
-  month: number;
+  month!: number;
 }

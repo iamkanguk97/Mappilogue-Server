@@ -11,11 +11,11 @@ export class UserWithdrawReasonEntity extends CommonEntity {
   @Column('int')
   userId!: number;
 
-  @Column('varchar', { length: USER_EMAIL_LENGTH })
-  email!: string;
+  @Column('varchar', { nullable: true, length: USER_EMAIL_LENGTH })
+  email!: string | null;
 
   @Column('varchar', { nullable: true, length: USER_WITHDRAW_REASON_LENGTH })
-  reason?: string;
+  reason!: string | null;
 
   @OneToOne(() => UserEntity, (user) => user.userWithdrawReason)
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
@@ -23,8 +23,8 @@ export class UserWithdrawReasonEntity extends CommonEntity {
 
   static from(
     userId: number,
-    email: string,
-    reason?: string,
+    email: string | null,
+    reason: string | null,
   ): UserWithdrawReasonEntity {
     const userWithdrawReason = new UserWithdrawReasonEntity();
 
