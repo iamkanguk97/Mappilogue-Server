@@ -1,4 +1,9 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UserRepository } from '../repositories/user.repository';
 import { UserEntity } from '../entities/user.entity';
 import { AuthService } from 'src/modules/core/auth/services/auth.service';
@@ -20,7 +25,6 @@ import {
   MulterBuilder,
 } from 'src/common/multer/multer.builder';
 import { DataSource, QueryRunner } from 'typeorm';
-import { UserAlarmHistoryRepository } from '../repositories/user-alarm-history.repository';
 import { isDefined } from 'src/helpers/common.helper';
 import { UserWithdrawReasonEntity } from '../entities/user-withdraw-reason.entity';
 import { PostLoginOrSignUpRequestDto } from '../dtos/request/post-login-or-sign-up-request.dto';
@@ -281,5 +285,32 @@ export class UserService {
       return;
     }
     await this.userRepository.update(criteria, properties);
+  }
+
+  /**
+   * @summary 사용자와 사용자 알림 설정 정보 가져오기
+   * @author  Jason
+   * @param   { number } userId
+   * @returns { Promise<UserEntity> }
+   */
+  async findUserWithAlarmSetting(userId: number): Promise<UserEntity> {
+    const result = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+      relations: ['userAlarmSetting'],
+    });
+
+    if (!isDefined(result)) {
+      throw new BadRequestException(UserExceptionCode.NotExistUser);
+    }
+
+    if (!isDefined(result.userAlarmSetting)) {
+      throw new BadRequestException(
+        UserExceptionCode.GetUserAlarmSettingNotExist,
+      );
+    }
+
+    return result;
   }
 }

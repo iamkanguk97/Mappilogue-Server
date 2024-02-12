@@ -4,16 +4,19 @@ import { UserAlarmSettingDto } from '../dtos/user-alarm-setting.dto';
 import { CheckColumnEnum } from 'src/constants/enum';
 import { isDefined } from 'src/helpers/common.helper';
 import { UserEntity } from '../entities/user.entity';
+import { UserAlarmSettingEntity } from '../entities/user-alarm-setting.entity';
 
 @Injectable()
 export class UserProfileHelper {
   /**
    * @summary 일정 알림을 보낼 수 있는지 확인하는 함수
    * @author  Jason
-   * @param   { UserAlarmSettingDto } userAlarmSettings
+   * @param   { UserAlarmSettingDto | UserAlarmSettingEntity } userAlarmSettings
    * @returns { boolean }
    */
-  checkCanSendScheduleAlarm(userAlarmSettings: UserAlarmSettingDto): boolean {
+  checkCanSendScheduleAlarm(
+    userAlarmSettings?: UserAlarmSettingDto | UserAlarmSettingEntity,
+  ): boolean {
     return (
       isDefined(userAlarmSettings) &&
       userAlarmSettings.isTotalAlarm === CheckColumnEnum.ACTIVE &&

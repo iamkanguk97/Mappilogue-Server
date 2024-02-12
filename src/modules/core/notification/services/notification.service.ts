@@ -31,6 +31,42 @@ export class NotificationService {
   ) {}
 
   /**
+   * @summary 일정 알림 CronJob 이름 생성
+   * @author  Jason
+   * @param   { number } scheduleId
+   * @param   { number } alarmHistoryId
+   * @returns { string }
+   */
+  setScheduleNotificationName(
+    scheduleId: number,
+    alarmHistoryId: number,
+  ): string {
+    return `scheduleId${scheduleId.toString()}/alarmId${alarmHistoryId.toString()}`;
+  }
+
+  /**
+   * @summary 일정 알림 CronJob Payload 생성
+   * @author  Jason
+   * @param   { Notification } message
+   * @param   { number } scheduleId
+   * @param   { string } fcmToken
+   * @returns { TokenMessage }
+   */
+  setScheduleNotificationPayload(
+    message: Notification,
+    scheduleId: number,
+    fcmToken: string,
+  ): TokenMessage {
+    return {
+      notification: message,
+      data: {
+        scheduleId: scheduleId.toString(),
+      },
+      token: fcmToken,
+    } as TokenMessage;
+  }
+
+  /**
    * @summary 푸시 메세지 발송
    * @author  Jason
    * @param   { TokenMessage } payload
@@ -55,17 +91,18 @@ export class NotificationService {
     alarmTime: string,
     fcmToken: string,
   ): Promise<void> {
-    const cronName = 'newScheduleId' + newScheduleId.toString();
+    const cronName = this.setScheduleNotificationName(
+      newScheduleId,
+      userAlarmHistoryId,
+    );
 
     try {
       const messageSendTime = new Date(alarmTime);
-      const payload = {
-        notification: message,
-        data: {
-          scheduleId: newScheduleId.toString(),
-        },
-        token: fcmToken,
-      } as TokenMessage;
+      const payload = this.setScheduleNotificationPayload(
+        message,
+        newScheduleId,
+        fcmToken,
+      );
 
       const sendMessageJob = new CronJob(messageSendTime, async () => {
         const queryRunner = this.dataSource.createQueryRunner();

@@ -2,7 +2,6 @@ import { GetScheduleDetailByIdResponseDto } from '../dtos/response/get-schedule-
 import { isDefined, isEmptyArray } from 'src/helpers/common.helper';
 import {
   BadRequestException,
-  HttpException,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -16,7 +15,6 @@ import {
   getWeekendsByYearAndMonth,
 } from 'src/helpers/date.helper';
 import { ScheduleExceptionCode } from 'src/common/exception-code/schedule.exception-code';
-import { UserProfileService } from '../../user/services/user-profile.service';
 import { UserService } from '../../user/services/user.service';
 import { NotificationService } from 'src/modules/core/notification/services/notification.service';
 import { UserHelper } from '../../user/helpers/user.helper';
@@ -30,7 +28,7 @@ import { ScheduleHelper } from '../helpers/schedule.helper';
 import { solar2lunar } from 'solarlunar';
 import { GetScheduleOnSpecificDateResponseDto } from '../dtos/get-schedule-on-specific-date-response.dto';
 import { ScheduleAreaRepository } from '../repositories/schedule-area.repository';
-import { PutScheduleRequestDto } from '../dtos/put-schedule-request.dto';
+import { PutScheduleRequestDto } from '../dtos/request/put-schedule-request.dto';
 import { GetScheduleAreasByIdResponseDto } from '../dtos/response/get-schedule-areas-by-id-response.dto';
 import { ScheduleDto } from '../dtos/schedule.dto';
 import { UserProfileHelper } from '../../user/helpers/user-profile.helper';
@@ -51,7 +49,6 @@ export class ScheduleService {
     private readonly scheduleAreaRepository: ScheduleAreaRepository,
     private readonly userAlarmHistoryRepository: UserAlarmHistoryRepository,
     private readonly userService: UserService,
-    private readonly userProfileService: UserProfileService,
     private readonly notificationService: NotificationService,
     private readonly scheduleHelper: ScheduleHelper,
     private readonly userHelper: UserHelper,
@@ -78,8 +75,10 @@ export class ScheduleService {
         .getRepository(ScheduleEntity)
         .save(body.toScheduleEntity(userId));
 
-      await this.createScheduleArea(queryRunner, newScheduleId, body);
-      await this.createScheduleAlarms(queryRunner, userId, newScheduleId, body);
+      await Promise.all([
+        this.createScheduleArea(queryRunner, newScheduleId, body),
+        this.createScheduleAlarms(queryRunner, userId, newScheduleId, body),
+      ]);
 
       await queryRunner.commitTransaction();
       return PostScheduleResponseDto.of(newScheduleId);
@@ -162,18 +161,11 @@ export class ScheduleService {
     const alarmOptions = body.alarmOptions;
 
     if (isDefined(alarmOptions) && !isEmptyArray(alarmOptions)) {
-      const [userAlarmSetting, userStatus] = await Promise.all([
-        this.userProfileService.findUserAlarmSettingById(userId),
-        this.userService.findOneById(userId),
-      ]);
+      const userWithAlarms = await this.userService.findUserWithAlarmSetting(
+        userId,
+      );
+      const fcmToken = userWithAlarms.fcmToken;
 
-      if (!isDefined(userStatus)) {
-        throw new BadRequestException(UserExceptionCode.NotExistUser);
-      }
-
-      const fcmToken = userStatus.fcmToken;
-
-      // fcmToken 유무 확인
       if (!isDefined(fcmToken)) {
         throw new BadRequestException(
           UserExceptionCode.RequireFcmTokenRegister,
@@ -186,7 +178,9 @@ export class ScheduleService {
 
       if (
         isFcmTokenValid &&
-        this.userProfileHelper.checkCanSendScheduleAlarm(userAlarmSetting)
+        this.userProfileHelper.checkCanSendScheduleAlarm(
+          userWithAlarms.userAlarmSetting,
+        )
       ) {
         const message =
           this.scheduleHelper.generateScheduleNotificationMessage(body);
@@ -250,6 +244,103 @@ export class ScheduleService {
     });
 
     await this.scheduleRepository.softRemove(deletedScheduleData);
+  }
+
+  /**
+   * @summary 일정 수정하기 API Service
+   * @author  Jason
+   * @param   { ScheduleDto } schedule
+   * @param   { PutScheduleRequestDto } body
+   */
+  async modifySchedule(
+    schedule: ScheduleDto,
+    body: PutScheduleRequestDto,
+  ): Promise<void> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      // await this.modifyById(
+      //   schedule.id,
+      //   body.toScheduleEntity(schedule.userId),
+      //   queryRunner,
+      // );
+      // await this.modifyScheduleArea(queryRunner, schedule.id, body);
+      await this.modifyScheduleAlarms(queryRunner, schedule, body); // TODO: 일정 수정 시 알림 적용해야함
+
+      await queryRunner.commitTransaction();
+      return;
+    } catch (err) {
+      this.logger.error(`[modifySchedule - transaction error] ${err}`);
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  /**
+   * @summary 일정 수정하기 API Service - 일정 장소 부분 수정
+   * @author  Jason
+   * @param   { QueryRunner } queryRunner
+   * @param   { number } scheduleId
+   * @param   { PutScheduleRequestDto } body
+   */
+  async modifyScheduleArea(
+    queryRunner: QueryRunner,
+    scheduleId: number,
+    body: PutScheduleRequestDto,
+  ): Promise<void> {
+    await Promise.all([
+      queryRunner.manager
+        .getRepository(ScheduleAreaEntity)
+        .softDelete({ scheduleId }),
+      this.createScheduleArea(queryRunner, scheduleId, body),
+    ]);
+  }
+
+  /**
+   * @summary 일정 수정하기 API Service - 일정 알림 부분 수정
+   * @author  Jason
+   * @param   { QueryRunner } queryRunner
+   * @param   { ScheduleDto } schedule
+   * @param   { PutScheduleRequestDto } body
+   */
+  async modifyScheduleAlarms(
+    queryRunner: QueryRunner,
+    schedule: ScheduleDto,
+    body: PutScheduleRequestDto,
+  ): Promise<void> {
+    const updateAlarmOptions = body.alarmOptions;
+    console.log(updateAlarmOptions);
+
+    const scheduleAlarmList = await queryRunner.manager
+      .getRepository(UserAlarmHistoryEntity)
+      .find({
+        where: {
+          userId: schedule.userId,
+          scheduleId: schedule.id,
+        },
+      });
+    console.log(scheduleAlarmList);
+
+    // body랑 비교해서 변경된 것들만 추려옴
+    const alarmDiff = scheduleAlarmList.filter(
+      (alarm) => !updateAlarmOptions.includes(alarm.alarmDate ?? ''),
+    );
+    console.log(alarmDiff);
+
+    /**
+     * 일정1: A, B, C, D
+     * 근데 여기서 A,B를 남겨두고 C,D를 없애고, E를 추가했음
+     *
+     * - 그러면 C,D의 CronJob을 삭제해준다. 이 때 이미 보내진 것들은 제외한다.
+     * - E를 CronJob을 추가해준다.
+     *
+     * (1) UserAlarmHistoryEntity에서 해당 일
+     */
+    return;
   }
 
   /**
@@ -372,7 +463,7 @@ export class ScheduleService {
   }
 
   /**
-   * @summary find one by id
+   * @summary find schedule by id
    * @author  Jason
    * @param   { number } scheduleId
    * @returns { Promise<ScheduleEntity | null> }
@@ -385,9 +476,15 @@ export class ScheduleService {
     });
   }
 
+  /**
+   * @summary Find schedule area by id
+   * @author  Jason
+   * @param   { number } scheduleAreaId
+   * @returns { Promise<ScheduleAreaEntity | null> }
+   */
   async findScheduleAreaById(
     scheduleAreaId: number,
-  ): Promise<ScheduleAreaEntity> {
+  ): Promise<ScheduleAreaEntity | null> {
     return this.scheduleAreaRepository.findOne({
       where: {
         id: scheduleAreaId,
@@ -395,10 +492,17 @@ export class ScheduleService {
     });
   }
 
+  /**
+   * @summary update schedule by id
+   * @author  Jason
+   * @param   { number } scheduleId
+   * @param   { Partial<ScheduleEntity> } properties
+   * @param   { QueryRunner } queryRunner
+   */
   async modifyById(
     scheduleId: number,
     properties: Partial<ScheduleEntity>,
-    queryRunner?: QueryRunner | undefined,
+    queryRunner?: QueryRunner,
   ): Promise<void> {
     if (isDefined(queryRunner)) {
       await queryRunner.manager.update(
@@ -409,32 +513,6 @@ export class ScheduleService {
       return;
     }
     await this.scheduleRepository.update({ id: scheduleId }, properties);
-  }
-
-  async modifySchedule(
-    schedule: ScheduleDto,
-    body: PutScheduleRequestDto,
-  ): Promise<void> {
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    try {
-      await this.modifyById(
-        schedule.id,
-        body.toScheduleEntity(schedule.userId),
-      );
-      await this.modifyScheduleArea(schedule.id, body);
-      await this.modifyScheduleAlarms(); // TODO: 일정 수정 시 알림 적용해야함
-
-      await queryRunner.commitTransaction();
-    } catch (err) {
-      this.logger.error(`[modifySchedule - transaction error] ${err}`);
-      await queryRunner.rollbackTransaction();
-      throw err;
-    } finally {
-      await queryRunner.release();
-    }
   }
 
   /**
@@ -474,34 +552,6 @@ export class ScheduleService {
         ScheduleExceptionCode.ScheduleAreaNotMathWithSchedule,
       );
     }
-  }
-
-  async modifyScheduleArea(
-    scheduleId: number,
-    body: PutScheduleRequestDto,
-  ): Promise<void> {
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    try {
-      await this.scheduleAreaRepository.softDelete({
-        scheduleId,
-      });
-      await this.createScheduleArea(scheduleId, body);
-
-      await queryRunner.commitTransaction();
-    } catch (err) {
-      this.logger.error(`[modifyScheduleArea - transaction error] ${err}`);
-      await queryRunner.rollbackTransaction();
-      throw err;
-    } finally {
-      await queryRunner.release();
-    }
-  }
-
-  async modifyScheduleAlarms() {
-    return;
   }
 
   /**

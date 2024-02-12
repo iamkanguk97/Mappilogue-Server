@@ -22,11 +22,12 @@ import { ScheduleDto } from '../dtos/schedule.dto';
 import { PostScheduleResponseDto } from '../dtos/response/post-schedule-response.dto';
 import { GetScheduleOnSpecificDateResponseDto } from '../dtos/get-schedule-on-specific-date-response.dto';
 import { GetScheduleDetailByIdResponseDto } from '../dtos/response/get-schedule-detail-by-id-response.dto';
-import { PutScheduleRequestDto } from '../dtos/put-schedule-request.dto';
+import { PutScheduleRequestDto } from '../dtos/request/put-schedule-request.dto';
 import { GetScheduleAreasByIdResponseDto } from '../dtos/response/get-schedule-areas-by-id-response.dto';
 import { DomainNameEnum } from 'src/constants/enum';
 import { GetSchedulesInCalendarRequestDto } from '../dtos/get-schedules-in-calendar-request.dto';
 import { GetSchedulesInCalendarResponseDto } from '../dtos/get-schedules-in-calendar-response.dto';
+import { PostScheduleAlarmsPipe } from '../pipes/post-schedule-alarms.pipe';
 
 @Controller(DomainNameEnum.SCHEDULE)
 @UseInterceptors(ClassSerializerInterceptor)
@@ -43,7 +44,7 @@ export class ScheduleController {
   @HttpCode(HttpStatus.CREATED)
   async postSchedule(
     @UserId() userId: number,
-    @Body() body: PostScheduleRequestDto,
+    @Body(PostScheduleAlarmsPipe) body: PostScheduleRequestDto,
   ): Promise<ResponseEntity<PostScheduleResponseDto>> {
     const result = await this.scheduleService.createSchedule(userId, body);
     return ResponseEntity.OK_WITH(HttpStatus.CREATED, result);
@@ -114,7 +115,8 @@ export class ScheduleController {
 
   /**
    * @summary 일정 수정하기 API
-   * @author Jason
+   * @author  Jason
+   * @url     [PUT] /api/v1/schedules/{scheduleId}
    */
   @Put('/:scheduleId')
   @HttpCode(HttpStatus.NO_CONTENT)

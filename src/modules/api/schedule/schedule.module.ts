@@ -13,6 +13,7 @@ import { ScheduleAreaEntity } from './entities/schedule-area.entity';
 import { UserProfileModule } from '../user/modules/user-profile.module';
 import { UserRepository } from '../user/repositories/user.repository';
 import { ColorModule } from '../color/color.module';
+import { PostScheduleAlarmsPipe } from './pipes/post-schedule-alarms.pipe';
 
 @Module({
   imports: [
@@ -27,7 +28,17 @@ import { ColorModule } from '../color/color.module';
     ]),
   ],
   controllers: [ScheduleController],
-  providers: [ScheduleService, ScheduleHelper, ScheduleValidationPipe],
-  exports: [ScheduleService, ScheduleHelper, ScheduleValidationPipe],
+  providers: [
+    ScheduleService,
+    ScheduleHelper,
+    ScheduleValidationPipe,
+    PostScheduleAlarmsPipe,
+  ],
+  exports: [
+    ScheduleService,
+    ScheduleHelper,
+    ScheduleValidationPipe,
+    PostScheduleAlarmsPipe,
+  ],
 })
 export class ScheduleModule {}

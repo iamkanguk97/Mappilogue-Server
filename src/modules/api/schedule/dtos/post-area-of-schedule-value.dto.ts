@@ -19,7 +19,7 @@ import {
   ScheduleAreaTimeLengthEnum,
 } from '../constants/schedule.enum';
 
-export class ScheduleAreaValueDto {
+export class PostAreaOfScheduleValueDto {
   @Length(
     ScheduleAreaNameLengthEnum.MIN,
     ScheduleAreaNameLengthEnum.MAX,
