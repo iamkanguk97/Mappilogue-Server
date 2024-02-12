@@ -38,6 +38,7 @@ import { UserExceptionCode } from 'src/common/exception-code/user.exception-code
 import { ExceptionCodeDto } from 'src/common/dtos/exception-code.dto';
 import { InternalServerExceptionCode } from 'src/common/exception-code/internal-server.exception-code';
 import { CheckColumnEnum } from 'src/constants/enum';
+import { SchedulerRegistry } from '@nestjs/schedule';
 
 @Injectable()
 export class ScheduleService {
@@ -45,6 +46,7 @@ export class ScheduleService {
 
   constructor(
     private readonly dataSource: DataSource,
+    private readonly scheduleRegistry: SchedulerRegistry,
     private readonly scheduleRepository: ScheduleRepository,
     private readonly scheduleAreaRepository: ScheduleAreaRepository,
     private readonly userAlarmHistoryRepository: UserAlarmHistoryRepository,
@@ -261,13 +263,15 @@ export class ScheduleService {
     await queryRunner.startTransaction();
 
     try {
-      // await this.modifyById(
-      //   schedule.id,
-      //   body.toScheduleEntity(schedule.userId),
-      //   queryRunner,
-      // );
-      // await this.modifyScheduleArea(queryRunner, schedule.id, body);
-      await this.modifyScheduleAlarms(queryRunner, schedule, body); // TODO: 일정 수정 시 알림 적용해야함
+      await Promise.all([
+        this.modifyById(
+          schedule.id,
+          body.toScheduleEntity(schedule.userId),
+          queryRunner,
+        ),
+        this.modifyScheduleArea(queryRunner, schedule.id, body),
+        this.modifyScheduleAlarms(queryRunner, schedule, body),
+      ]);
 
       await queryRunner.commitTransaction();
       return;
@@ -312,10 +316,8 @@ export class ScheduleService {
     schedule: ScheduleDto,
     body: PutScheduleRequestDto,
   ): Promise<void> {
-    const updateAlarmOptions = body.alarmOptions;
-    console.log(updateAlarmOptions);
-
-    const scheduleAlarmList = await queryRunner.manager
+    const updateAlarmOptions = body.alarmOptions; // Request로 들어온 수정해야 하는 일정 알림들
+    const scheduleAlarmList = await queryRunner.manager // 이전에 저장되어 있던 일정 알림들
       .getRepository(UserAlarmHistoryEntity)
       .find({
         where: {
@@ -323,24 +325,53 @@ export class ScheduleService {
           scheduleId: schedule.id,
         },
       });
-    console.log(scheduleAlarmList);
 
-    // body랑 비교해서 변경된 것들만 추려옴
-    const alarmDiff = scheduleAlarmList.filter(
-      (alarm) => !updateAlarmOptions.includes(alarm.alarmDate ?? ''),
+    // 삭제처리 해야하는 일정 알림들
+    const deletedAlarmDiff = scheduleAlarmList.filter(
+      (alarm) => !updateAlarmOptions.includes(alarm.alarmDate),
     );
-    console.log(alarmDiff);
 
-    /**
-     * 일정1: A, B, C, D
-     * 근데 여기서 A,B를 남겨두고 C,D를 없애고, E를 추가했음
-     *
-     * - 그러면 C,D의 CronJob을 삭제해준다. 이 때 이미 보내진 것들은 제외한다.
-     * - E를 CronJob을 추가해준다.
-     *
-     * (1) UserAlarmHistoryEntity에서 해당 일
-     */
-    return;
+    await this.removeScheduleAlarms(queryRunner, schedule, deletedAlarmDiff);
+
+    body.alarmOptions = updateAlarmOptions.filter((alarm) => {
+      !scheduleAlarmList.map((s) => s.alarmDate).includes(alarm);
+    });
+
+    await this.createScheduleAlarms(
+      queryRunner,
+      schedule.userId,
+      schedule.id,
+      body,
+    );
+  }
+
+  /**
+   * @summary 일정 수정 API Service - 삭제한 일정 알림들 처리
+   * @author  Jason
+   * @param   { QueryRunner } queryRunner
+   * @param   { ScheduleDto } schedule
+   * @param   { UserAlarmHistoryEntity[] } alarms
+   */
+  async removeScheduleAlarms(
+    queryRunner: QueryRunner,
+    schedule: ScheduleDto,
+    alarms: UserAlarmHistoryEntity[],
+  ): Promise<void> {
+    await Promise.all(
+      alarms.map(async (alarm) => {
+        await queryRunner.manager
+          .getRepository(UserAlarmHistoryEntity)
+          .softDelete(alarm.id);
+
+        const deletedCronName =
+          this.notificationService.setScheduleNotificationCronName(
+            schedule.id,
+            alarm.id,
+          );
+
+        this.scheduleRegistry.deleteCronJob(deletedCronName);
+      }),
+    );
   }
 
   /**

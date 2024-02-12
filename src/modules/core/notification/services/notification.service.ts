@@ -37,7 +37,7 @@ export class NotificationService {
    * @param   { number } alarmHistoryId
    * @returns { string }
    */
-  setScheduleNotificationName(
+  setScheduleNotificationCronName(
     scheduleId: number,
     alarmHistoryId: number,
   ): string {
@@ -91,7 +91,7 @@ export class NotificationService {
     alarmTime: string,
     fcmToken: string,
   ): Promise<void> {
-    const cronName = this.setScheduleNotificationName(
+    const cronName = this.setScheduleNotificationCronName(
       newScheduleId,
       userAlarmHistoryId,
     );

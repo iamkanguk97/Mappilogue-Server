@@ -2,7 +2,6 @@ import {
   CheckColumnEnum,
   StatusOrCheckColumnLengthEnum,
 } from 'src/constants/enum';
-import { DefaultColumnType } from 'src/types/default-column.type';
 import { Column, Entity } from 'typeorm';
 import {
   USER_ALARM_HISTORY_BODY_LENGTH,
@@ -12,9 +11,10 @@ import {
 } from '../constants/user.constant';
 import { NotificationTypeEnum } from 'src/modules/core/notification/constants/notification.enum';
 import { Notification } from 'firebase-admin/lib/messaging/messaging-api';
+import { CommonEntity } from 'src/common/entities/common.entity';
 
 @Entity('UserAlarmHistory')
-export class UserAlarmHistoryEntity extends DefaultColumnType {
+export class UserAlarmHistoryEntity extends CommonEntity {
   @Column('int')
   userId!: number;
 
@@ -33,10 +33,9 @@ export class UserAlarmHistoryEntity extends DefaultColumnType {
   body!: string | null;
 
   @Column('varchar', {
-    nullable: true,
     length: USER_ALARM_HISTORY_DATE_LENGTH,
   })
-  alarmDate!: string | null;
+  alarmDate!: string;
 
   @Column('varchar', { length: USER_ALARM_HISTORY_TYPE_LENGTH, nullable: true })
   type!: NotificationTypeEnum;

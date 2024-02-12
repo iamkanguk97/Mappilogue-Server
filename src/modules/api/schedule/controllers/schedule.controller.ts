@@ -64,6 +64,20 @@ export class ScheduleController {
   }
 
   /**
+   * @summary 일정 수정하기 API
+   * @author  Jason
+   * @url     [PUT] /api/v1/schedules/{scheduleId}
+   */
+  @Put('/:scheduleId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async putSchedule(
+    @Param(ScheduleValidationPipe) schedule: ScheduleDto,
+    @Body(PostScheduleAlarmsPipe) body: PutScheduleRequestDto,
+  ): Promise<void> {
+    await this.scheduleService.modifySchedule(schedule, body);
+  }
+
+  /**
    * @summary 특정 날짜의 일정 조회하기 API
    * @author Jason
    */
@@ -111,20 +125,6 @@ export class ScheduleController {
       query,
     );
     return ResponseEntity.OK_WITH(HttpStatus.OK, result);
-  }
-
-  /**
-   * @summary 일정 수정하기 API
-   * @author  Jason
-   * @url     [PUT] /api/v1/schedules/{scheduleId}
-   */
-  @Put('/:scheduleId')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async putSchedule(
-    @Param(ScheduleValidationPipe) schedule: ScheduleDto,
-    @Body() body: PutScheduleRequestDto,
-  ): Promise<void> {
-    await this.scheduleService.modifySchedule(schedule, body);
   }
 
   /**
