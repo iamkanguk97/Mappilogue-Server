@@ -98,4 +98,17 @@ export class UserController {
   ): Promise<void> {
     await this.userService.createWithdraw(user, body);
   }
+
+  /**
+   * @summary 자동로그인 API (스플래시 화면)
+   * @author  Jason
+   * @url     [POST] /api/v1/users/auto-login
+   */
+  @Post('auto-login')
+  @HttpCode(HttpStatus.OK)
+  postAutoLogin(): ResponseEntity<void> {
+    // AuthGuard에서 Access-Token에 대해서 유효성 검사 완료
+    // 검사가 정상적으로 완료 되었으면 Controller로 넘어와서 OK Response를 보내줌
+    return ResponseEntity.OK(HttpStatus.OK);
+  }
 }
