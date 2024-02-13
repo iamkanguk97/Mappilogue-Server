@@ -21,6 +21,7 @@ import { PostLoginOrSignUpRequestDto } from '../dtos/request/post-login-or-sign-
 import { PostLoginOrSignUpResponseDto } from '../dtos/response/post-login-or-sign-up-response.dto';
 import { isDefined } from 'src/helpers/common.helper';
 import { PostTokenRefreshResponseDto } from '../dtos/response/post-token-refresh-response.dto';
+import { PostAutoLoginResponseDto } from '../dtos/response/post-auto-login-response.dto';
 
 @Controller(DomainNameEnum.USER)
 @UseInterceptors(ClassSerializerInterceptor)
@@ -103,12 +104,18 @@ export class UserController {
    * @summary 자동로그인 API (스플래시 화면)
    * @author  Jason
    * @url     [POST] /api/v1/users/auto-login
+   * @returns { ResponseEntity<PostAutoLoginResponseDto> }
    */
   @Post('auto-login')
   @HttpCode(HttpStatus.OK)
-  postAutoLogin(): ResponseEntity<void> {
+  postAutoLogin(
+    @UserId() userId: number,
+  ): ResponseEntity<PostAutoLoginResponseDto> {
     // AuthGuard에서 Access-Token에 대해서 유효성 검사 완료
     // 검사가 정상적으로 완료 되었으면 Controller로 넘어와서 OK Response를 보내줌
-    return ResponseEntity.OK(HttpStatus.OK);
+    return ResponseEntity.OK_WITH(
+      HttpStatus.OK,
+      PostAutoLoginResponseDto.of(userId),
+    );
   }
 }

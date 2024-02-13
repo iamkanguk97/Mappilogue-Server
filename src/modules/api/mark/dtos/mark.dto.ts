@@ -18,9 +18,9 @@ export class MarkDto {
     userId: number,
     colorId: number,
     title: string,
-    markCategoryId?: number | undefined,
-    scheduleId?: number | undefined,
-    content?: string | undefined,
+    markCategoryId?: number,
+    scheduleId?: number,
+    content?: string,
     createdAt?: Date,
   ) {
     this._id = id;
