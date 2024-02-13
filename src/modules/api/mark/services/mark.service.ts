@@ -90,6 +90,26 @@ export class MarkService {
   }
 
   /**
+   * @summary 기록 삭제 API Service
+   * @author  Jason
+   * @param   { number } userId
+   * @param   { number } markId
+   */
+  async removeMark(userId: number, markId: number): Promise<void> {
+    const deletedMarkData = await this.markRepository.find({
+      where: {
+        userId,
+        id: markId,
+      },
+      relations: {
+        markLocation: true,
+        markMetadata: true,
+      },
+    });
+    await this.markRepository.softRemove(deletedMarkData);
+  }
+
+  /**
    * @summary 특정 기록 조회하기 API Service
    * @author  Jason
    * @param   { MarkDto } mark
@@ -118,26 +138,6 @@ export class MarkService {
       markDateResponse,
       markMetadataResponse,
     );
-  }
-
-  /**
-   * @summary 기록 삭제 API Service
-   * @author  Jason
-   * @param   { number } userId
-   * @param   { number } markId
-   */
-  async removeMark(userId: number, markId: number): Promise<void> {
-    const deletedMarkData = await this.markRepository.find({
-      where: {
-        userId,
-        id: markId,
-      },
-      relations: {
-        markLocation: true,
-        markMetadata: true,
-      },
-    });
-    await this.markRepository.softRemove(deletedMarkData);
   }
 
   /**

@@ -79,7 +79,9 @@ export class ScheduleController {
 
   /**
    * @summary 특정 날짜의 일정 조회하기 API
-   * @author Jason
+   * @author  Jason
+   * @url     [GET] /api/v1/schedules/detail-by-date?date=
+   * @returns { Promise<ResponseEntity<GetScheduleOnSpecificDateResponseDto>> }
    */
   @Get('detail-by-date')
   @HttpCode(HttpStatus.OK)
@@ -98,6 +100,7 @@ export class ScheduleController {
    * @summary 특정 일정 조회하기 API
    * @author  Jason
    * @url     [GET] /api/v1/schedules/detail-by-id?scheduleId=
+   * @returns { Promise<ResponseEntity<GetScheduleDetailByIdResponseDto>> }
    */
   @Get('detail-by-id')
   @HttpCode(HttpStatus.OK)
@@ -106,23 +109,6 @@ export class ScheduleController {
   ): Promise<ResponseEntity<GetScheduleDetailByIdResponseDto>> {
     const result = await this.scheduleService.findScheduleOnSpecificId(
       schedule,
-    );
-    return ResponseEntity.OK_WITH(HttpStatus.OK, result);
-  }
-
-  /**
-   * @summary 캘린더 조회 API
-   * @author Jason
-   */
-  @Get('calendars')
-  @HttpCode(HttpStatus.OK)
-  async getSchedulesInCalendar(
-    @UserId() userId: number,
-    @Query() query: GetSchedulesInCalendarRequestDto,
-  ): Promise<ResponseEntity<GetSchedulesInCalendarResponseDto>> {
-    const result = await this.scheduleService.findSchedulesInCalendar(
-      userId,
-      query,
     );
     return ResponseEntity.OK_WITH(HttpStatus.OK, result);
   }
@@ -140,6 +126,23 @@ export class ScheduleController {
   ): Promise<ResponseEntity<GetScheduleAreasByIdResponseDto>> {
     const result = await this.scheduleService.findScheduleAreasById(
       schedule.id,
+    );
+    return ResponseEntity.OK_WITH(HttpStatus.OK, result);
+  }
+
+  /**
+   * @summary 캘린더 조회 API
+   * @author Jason
+   */
+  @Get('calendars')
+  @HttpCode(HttpStatus.OK)
+  async getSchedulesInCalendar(
+    @UserId() userId: number,
+    @Query() query: GetSchedulesInCalendarRequestDto,
+  ): Promise<ResponseEntity<GetSchedulesInCalendarResponseDto>> {
+    const result = await this.scheduleService.findSchedulesInCalendar(
+      userId,
+      query,
     );
     return ResponseEntity.OK_WITH(HttpStatus.OK, result);
   }

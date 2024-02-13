@@ -2,10 +2,8 @@ import { Exclude, Expose } from 'class-transformer';
 import { ISchedulesOnSpecificDate } from '../types';
 
 export class GetScheduleOnSpecificDateResponseDto {
-  @Exclude()
-  private readonly _solarDate: string;
-  @Exclude()
-  private readonly _lunarDate: string;
+  @Exclude() private readonly _solarDate: string;
+  @Exclude() private readonly _lunarDate: string;
   @Exclude()
   private readonly _schedulesOnSpecificDate: ISchedulesOnSpecificDate[];
 

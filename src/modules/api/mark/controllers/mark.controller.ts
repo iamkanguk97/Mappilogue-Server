@@ -47,7 +47,7 @@ export class MarkController {
   /**
    * @summary 기록 생성하기 API
    * @author  Jason
-   * @url     /api/v1/marks
+   * @url     [POST] /api/v1/marks
    * @returns { Promise<ResponseEntity<PostMarkResponseDto>> }
    */
   @UseInterceptors(

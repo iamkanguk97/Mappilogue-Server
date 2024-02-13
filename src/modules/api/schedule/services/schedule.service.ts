@@ -375,19 +375,34 @@ export class ScheduleService {
   }
 
   /**
-   * @summary 특정 일정의 장소 조회하기 API Service
+   * @summary 특정 날짜의 일정 조회하기 API Service
    * @author  Jason
-   * @param   { number } scheduleId
-   * @returns { Promise<GetScheduleAreasByIdResponseDto> }
+   * @param   { number } userId
+   * @param   { string } date
+   * @returns { Promise<GetScheduleOnSpecificDateResponseDto> }
    */
-  async findScheduleAreasById(
-    scheduleId: number,
-  ): Promise<GetScheduleAreasByIdResponseDto> {
-    const result = await this.scheduleAreaRepository.selectScheduleAreasById(
-      scheduleId,
-      true,
+  async findSchedulesOnSpecificDate(
+    userId: number,
+    date: string,
+  ): Promise<GetScheduleOnSpecificDateResponseDto> {
+    const [year, month, day] = date.split('-').map(Number);
+    const solarToLunarResult = solar2lunar(year, month, day);
+
+    const lunarDate =
+      this.scheduleHelper.generateLunarDateBySolarToLunarResult(
+        solarToLunarResult,
+      );
+
+    const result = await this.scheduleRepository.selectSchedulesOnSpecificDate(
+      userId,
+      date,
     );
-    return GetScheduleAreasByIdResponseDto.of(result);
+
+    return GetScheduleOnSpecificDateResponseDto.from(
+      getKoreanDateFormatByMultiple(year, month, day),
+      lunarDate,
+      result,
+    );
   }
 
   /**
@@ -414,7 +429,7 @@ export class ScheduleService {
   }
 
   /**
-   * @summary 일정 조회 API Service - 일정 알림 리스트 조회
+   * @summary 특정 일정 조회 API Service - 일정 알림 리스트 조회
    * @author  Jason
    * @param   { ScheduleDto } schedule
    * @returns { Promise<(string | null)[]> }
@@ -427,6 +442,29 @@ export class ScheduleService {
       : [];
   }
 
+  /**
+   * @summary 특정 일정의 장소 조회하기 API Service
+   * @author  Jason
+   * @param   { number } scheduleId
+   * @returns { Promise<GetScheduleAreasByIdResponseDto> }
+   */
+  async findScheduleAreasById(
+    scheduleId: number,
+  ): Promise<GetScheduleAreasByIdResponseDto> {
+    const result = await this.scheduleAreaRepository.selectScheduleAreasById(
+      scheduleId,
+      true,
+    );
+    return GetScheduleAreasByIdResponseDto.of(result);
+  }
+
+  /**
+   * @summary 캘린더 조회 API Service
+   * @author  Jason
+   * @param   { number } userId
+   * @param   { GetSchedulesInCalendarRequestDto } query
+   * @returns { Promise<GetSchedulesInCalendarResponseDto> }
+   */
   async findSchedulesInCalendar(
     userId: number,
     query: GetSchedulesInCalendarRequestDto,
@@ -469,32 +507,8 @@ export class ScheduleService {
     }
   }
 
-  async findSchedulesOnSpecificDate(
-    userId: number,
-    date: string,
-  ): Promise<GetScheduleOnSpecificDateResponseDto> {
-    const [year, month, day] = date.split('-').map(Number);
-    const solarToLunarResult = solar2lunar(year, month, day);
-
-    const lunarDate =
-      this.scheduleHelper.generateLunarDateBySolarToLunarResult(
-        solarToLunarResult,
-      );
-
-    const result = await this.scheduleRepository.selectSchedulesOnSpecificDate(
-      userId,
-      date,
-    );
-
-    return GetScheduleOnSpecificDateResponseDto.from(
-      getKoreanDateFormatByMultiple(year, month, day),
-      lunarDate,
-      result,
-    );
-  }
-
   /**
-   * @summary find schedule by id
+   * @summary Find schedule by id
    * @author  Jason
    * @param   { number } scheduleId
    * @returns { Promise<ScheduleEntity | null> }
@@ -524,7 +538,7 @@ export class ScheduleService {
   }
 
   /**
-   * @summary update schedule by id
+   * @summary Update schedule by id
    * @author  Jason
    * @param   { number } scheduleId
    * @param   { Partial<ScheduleEntity> } properties
@@ -569,6 +583,12 @@ export class ScheduleService {
     return ScheduleDto.of(scheduleStatus);
   }
 
+  /**
+   * @summary 일정 장소 상태 확인 함수
+   * @author  Jason
+   * @param   { number } scheduleAreaId
+   * @param   { number } scheduleId
+   */
   async checkScheduleAreaStatus(
     scheduleAreaId: number,
     scheduleId: number,

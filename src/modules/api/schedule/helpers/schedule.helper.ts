@@ -37,9 +37,10 @@ export class ScheduleHelper {
   }
 
   /**
-   * @title 양력->음력 변환결과를 가지고 음력날짜 구하는 함수
-   * @param result
-   * @returns
+   * @summary 양력->음력 변환결과를 가지고 음력날짜 구하는 함수
+   * @author  Jason
+   * @param   { number | ISolarToLunarResult } result
+   * @returns { string }
    */
   generateLunarDateBySolarToLunarResult(
     result: number | ISolarToLunarResult,
