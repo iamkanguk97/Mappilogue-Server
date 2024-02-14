@@ -1,5 +1,6 @@
 import { AxiosRequestConfig } from 'axios';
 import { ExceptionCodeDto } from './dtos/exception-code.dto';
+import { Request } from 'express';
 
 /**
  * @summary Bearer Token Header 생성함수
@@ -13,6 +14,17 @@ export function generateBearerHeader(bearerToken: string): AxiosRequestConfig {
       Authorization: `Bearer ${bearerToken}`,
     },
   };
+}
+
+/**
+ * @summary 헤더에서 JWT를 추출
+ * @author  Jason
+ * @param   { Request } request
+ * @returns { string }
+ */
+export function extractTokenFromHeader(request: Request): string {
+  const [type, token] = request.headers['authorization']?.split(' ') ?? [];
+  return type === 'Bearer' ? token : '';
 }
 
 /**

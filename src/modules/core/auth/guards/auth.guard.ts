@@ -9,7 +9,6 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Request } from 'express';
 import { IS_PUBLIC_DECORATOR_KEY } from '../constants/auth.constant';
 import { JwtService } from '@nestjs/jwt';
 import { CustomConfigService } from '../../custom-config/services';
@@ -19,6 +18,11 @@ import { UserExceptionCode } from 'src/common/exception-code/user.exception-code
 import { isDefined } from 'src/helpers/common.helper';
 import { ICustomJwtPayload } from '../types';
 import { TDecodedUserToken } from 'src/modules/api/user/types';
+import { extractTokenFromHeader } from 'src/common/common';
+import {
+  CustomCacheService,
+  TOKEN_BLACK_LIST_KEY,
+} from '../../custom-cache/services/custom-cache.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -28,6 +32,7 @@ export class AuthGuard implements CanActivate {
     private readonly reflector: Reflector,
     private readonly jwtService: JwtService,
     private readonly customConfigService: CustomConfigService,
+    private readonly customCacheService: CustomCacheService,
     private readonly userService: UserService,
   ) {}
 
@@ -42,13 +47,21 @@ export class AuthGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest();
-    const token = this.extractTokenFromHeader(request);
+    const token = extractTokenFromHeader(request);
 
     if (token === '') {
       throw new BadRequestException(UserExceptionCode.AccessTokenEmpty);
     }
 
     try {
+      const checkBlackListResult = await this.customCacheService.getValue(
+        token,
+      );
+
+      if (checkBlackListResult === TOKEN_BLACK_LIST_KEY) {
+        throw new ForbiddenException(UserExceptionCode.AccessTokenInBlackList);
+      }
+
       const payload = (await this.jwtService.verifyAsync(token, {
         secret: this.customConfigService.get<string>(
           ENVIRONMENT_KEY.ACCESS_SECRET_KEY,
@@ -78,16 +91,5 @@ export class AuthGuard implements CanActivate {
       }
       throw err;
     }
-  }
-
-  /**
-   * @summary 헤더에서 JWT를 추출
-   * @author  Jason
-   * @param   { Request } request
-   * @returns { string }
-   */
-  extractTokenFromHeader(request: Request): string {
-    const [type, token] = request.headers['authorization']?.split(' ') ?? [];
-    return type === 'Bearer' ? token : '';
   }
 }

@@ -86,10 +86,10 @@ export class JwtHelper {
    * @returns { boolean }
    */
   isRefreshTokenPayloadValid(
-    refreshTokenPayload?: ICustomJwtPayload | null,
+    refreshTokenPayload: ICustomJwtPayload | null,
   ): boolean {
     return (
-      isDefined(refreshTokenPayload?.userId) &&
+      isDefined(refreshTokenPayload) &&
       refreshTokenPayload.sub === TokenTypeEnum.REFRESH
     );
   }

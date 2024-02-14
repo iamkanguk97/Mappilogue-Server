@@ -13,8 +13,6 @@ import { UserService } from '../services/user.service';
 import { PostTokenRefreshRequestDto } from '../dtos/request/post-token-refresh-request.dto';
 import { Public } from 'src/modules/core/auth/decorators/auth.decorator';
 import { UserId } from '../decorators/user-id.decorator';
-import { User } from '../decorators/user.decorator';
-import { TDecodedUserToken } from '../types';
 import { PostUserWithdrawRequestDto } from '../dtos/request/post-user-withdraw-request.dto';
 import { DomainNameEnum } from 'src/constants/enum';
 import { PostLoginOrSignUpRequestDto } from '../dtos/request/post-login-or-sign-up-request.dto';
@@ -22,6 +20,8 @@ import { PostLoginOrSignUpResponseDto } from '../dtos/response/post-login-or-sig
 import { isDefined } from 'src/helpers/common.helper';
 import { PostTokenRefreshResponseDto } from '../dtos/response/post-token-refresh-response.dto';
 import { PostAutoLoginResponseDto } from '../dtos/response/post-auto-login-response.dto';
+import { AccessTokenWithExpire } from 'src/decorators/access-token.decorator';
+import { ITokenWithExpireTime } from 'src/modules/core/auth/types';
 
 @Controller(DomainNameEnum.USER)
 @UseInterceptors(ClassSerializerInterceptor)
@@ -82,8 +82,10 @@ export class UserController {
    */
   @Post('logout')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async postLogout(@UserId() userId: number): Promise<void> {
-    await this.userService.logout(userId);
+  async postLogout(
+    @AccessTokenWithExpire() data: ITokenWithExpireTime,
+  ): Promise<void> {
+    await this.userService.logout(data);
   }
 
   /**
@@ -94,10 +96,10 @@ export class UserController {
   @Post('withdrawal')
   @HttpCode(HttpStatus.NO_CONTENT)
   async postWithdraw(
-    @User() user: TDecodedUserToken,
+    @AccessTokenWithExpire() data: ITokenWithExpireTime,
     @Body() body: PostUserWithdrawRequestDto,
   ): Promise<void> {
-    await this.userService.createWithdraw(user, body);
+    await this.userService.createWithdraw(data, body);
   }
 
   /**

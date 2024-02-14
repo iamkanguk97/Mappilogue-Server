@@ -54,17 +54,15 @@ export class UserHelper {
   /**
    * @summary 전달받은 refresh-token이 유효한지 확인
    * @author  Jason
-   *
-   * @param   { ICustomJwtPayload } refreshPayload
    * @param   { string } refreshToken
+   * @param   { ICustomJwtPayload } refreshPayload
    * @param   { UserEntity | null } user
-   *
    * @returns { Promise<boolean> }
    */
   async isUserRefreshTokenValid(
-    refreshPayload: ICustomJwtPayload,
     refreshToken: string,
-    user?: UserEntity | null,
+    refreshPayload: ICustomJwtPayload | null,
+    user: UserEntity | null,
   ): Promise<boolean> {
     return (
       isDefined(user) &&

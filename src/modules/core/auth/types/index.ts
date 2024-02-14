@@ -1,11 +1,18 @@
 import { UserGenderEnum } from 'src/modules/api/user/constants/enums/user.enum';
 import { TokenTypeEnum } from '../constants/auth.enum';
+import { TDecodedUserToken } from 'src/modules/api/user/types';
 
 export interface ICustomJwtPayload {
   userId: number;
   iat: number;
   exp: number;
   sub: TokenTypeEnum;
+}
+
+export interface ITokenWithExpireTime {
+  user: TDecodedUserToken;
+  accessToken: string;
+  remainExpireTime: number;
 }
 
 export interface ISocialKakaoDataInfo {

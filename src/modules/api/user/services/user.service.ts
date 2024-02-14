@@ -10,6 +10,7 @@ import { AuthService } from 'src/modules/core/auth/services/auth.service';
 import { JwtService } from '@nestjs/jwt';
 import {
   ICustomJwtPayload,
+  ITokenWithExpireTime,
   IValidateSocialAccessToken,
 } from 'src/modules/core/auth/types';
 import { JwtHelper } from 'src/modules/core/auth/helpers/jwt.helper';
@@ -135,15 +136,15 @@ export class UserService {
   ): Promise<PostTokenRefreshResponseDto> {
     const refreshPayload = this.jwtService.decode(
       refreshToken,
-    ) as ICustomJwtPayload;
-    const userId = refreshPayload.userId;
+    ) as ICustomJwtPayload | null;
+    const userId = refreshPayload?.userId ?? -1;
 
     const checkUserStatus = await this.findOneById(userId);
 
     const isUserRefreshTokenValidResult =
       await this.userHelper.isUserRefreshTokenValid(
-        refreshPayload,
         refreshToken,
+        refreshPayload,
         checkUserStatus,
       );
 
@@ -157,10 +158,13 @@ export class UserService {
 
   /**
    * @summary 로그아웃 API Service
+   * @param   { ITokenWithExpireTime } data
    * @author  Jason
-   * @param   { number } userId
    */
-  async logout(userId: number): Promise<void> {
+  async logout(data: ITokenWithExpireTime): Promise<void> {
+    const { user, accessToken, remainExpireTime } = data;
+    const userId = user.id;
+
     const refreshTokenRedisKey = this.jwtHelper.getRefreshTokenRedisKey(userId);
 
     const queryRunner = this.dataSource.createQueryRunner();
@@ -171,6 +175,7 @@ export class UserService {
       await Promise.all([
         this.modifyById(userId, { fcmToken: null }, queryRunner),
         this.customCacheService.delValue(refreshTokenRedisKey),
+        this.customCacheService.setBlackList(accessToken, remainExpireTime),
       ]);
 
       await queryRunner.commitTransaction();
@@ -186,16 +191,17 @@ export class UserService {
   /**
    * @summary 회원탈퇴 API Service
    * @author  Jason
-   * @param   { TDecodedUserToken } user
+   * @param   { ITokenWithExpireTime } data
    * @param   { PostUserWithdrawRequestDto } body
    */
   async createWithdraw(
-    user: TDecodedUserToken,
+    data: ITokenWithExpireTime,
     body: PostUserWithdrawRequestDto,
   ): Promise<void> {
-    const refreshTokenRedisKey = this.jwtHelper.getRefreshTokenRedisKey(
-      user.id,
-    );
+    const { user, accessToken, remainExpireTime } = data;
+    const userId = user.id;
+
+    const refreshTokenRedisKey = this.jwtHelper.getRefreshTokenRedisKey(userId);
 
     if (isDefined(user.email)) {
       user.email = decryptEmail(user.email);
@@ -210,11 +216,12 @@ export class UserService {
         queryRunner.manager.softRemove(
           UserEntity,
           await this.userRepository.find({
-            where: { id: user.id },
+            where: { id: userId },
           }),
         ),
         queryRunner.manager.save(UserWithdrawReasonEntity, body.toEntity(user)),
         this.customCacheService.delValue(refreshTokenRedisKey),
+        this.customCacheService.setBlackList(accessToken, remainExpireTime),
         this.removeUserProfileImage(user),
       ]);
 

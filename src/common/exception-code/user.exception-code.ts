@@ -96,4 +96,8 @@ export const UserExceptionCode = {
     '1029',
     '잘못된 요청으로 애플로그인을 처리할 수 없습니다. 만료되었거나 이미 사용된 토큰인지, 잘못된 토큰인지 확인해주세요.',
   ),
+  AccessTokenInBlackList: setExceptionCode(
+    '1030',
+    '블랙리스트에 추가된 토큰입니다.',
+  ),
 };
