@@ -69,7 +69,10 @@ export const CreateProfileImageMulterOption = (): MulterOptions => {
       .setResource(S3_BASE_IMAGE_DIRECTORY)
       .setPath(DomainNameEnum.USER)
       .build(),
-    limits: { fileSize: 1024 * 1024 * 20 },
+    limits: {
+      files: 1,
+      fileSize: 1024 * 1024 * 10,
+    },
   };
 };
 
