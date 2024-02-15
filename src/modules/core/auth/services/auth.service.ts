@@ -28,6 +28,8 @@ import {
   IValidateSocialAccessToken,
   IVerifyAppleAuthCode,
 } from '../types';
+import { isDefined } from 'src/helpers/common.helper';
+import { TDecodedUserToken } from 'src/modules/api/user/types';
 
 import axios from 'axios';
 import * as querystring from 'querystring';
@@ -229,5 +231,44 @@ export class AuthService {
           }),
         ),
     );
+  }
+
+  /**
+   * @summary 회원탈퇴 API Service - 애플과 연결 끊기 (애플로그인 유저들만)
+   * @author  Jason
+   * @param   { TDecodedUserToken } user
+   */
+  async disconnectFromAppleInWithdraw(user: TDecodedUserToken): Promise<void> {
+    if (
+      user.snsType === UserSnsTypeEnum.APPLE &&
+      isDefined(user.appleRefreshToken)
+    ) {
+      try {
+        await axios.post(
+          'https://appleid.apple.com/auth/revoke',
+          querystring.stringify({
+            grant_type: 'authorization_code',
+            token: user.appleRefreshToken,
+            client_secret: this.generateAppleClientSecret(),
+            client_id: this.customConfigService.get<string>(
+              ENVIRONMENT_KEY.APPLE_KEY_CLIENT_ID,
+            ),
+            token_type_hint: 'refresh_token',
+          }),
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+          },
+        );
+      } catch (err) {
+        this.logger.error(
+          `[AuthService - disconnectFromAppleInWithdraw] ${err}`,
+        );
+        throw new InternalServerErrorException(
+          InternalServerExceptionCode.AppleUserWithdrawError,
+        );
+      }
+    }
   }
 }

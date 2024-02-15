@@ -80,6 +80,7 @@ export class AuthGuard implements CanActivate {
         profileImageUrl: findUser.profileImageUrl,
         profileImageKey: findUser.profileImageKey ?? '',
         snsType: findUser.snsType,
+        appleRefreshToken: findUser.appleRefreshToken,
       } as TDecodedUserToken;
 
       return true;

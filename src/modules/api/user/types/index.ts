@@ -22,4 +22,5 @@ export type TDecodedUserToken = Pick<
   | 'profileImageUrl'
   | 'profileImageKey'
   | 'snsType'
+  | 'appleRefreshToken'
 >;

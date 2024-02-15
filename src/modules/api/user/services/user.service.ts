@@ -220,12 +220,16 @@ export class UserService {
           }),
         ),
         queryRunner.manager.save(UserWithdrawReasonEntity, body.toEntity(user)),
-        this.customCacheService.delValue(refreshTokenRedisKey),
-        this.customCacheService.setBlackList(accessToken, remainExpireTime),
-        this.removeUserProfileImage(user),
       ]);
 
       await queryRunner.commitTransaction();
+
+      await this.customCacheService.delValue(refreshTokenRedisKey);
+      await this.customCacheService.setBlackList(accessToken, remainExpireTime);
+      await this.removeUserProfileImage(user);
+      await this.authService.disconnectFromAppleInWithdraw(user);
+
+      return;
     } catch (err) {
       this.logger.error(`[createWithdraw - transaction error] ${err}`);
       await queryRunner.rollbackTransaction();

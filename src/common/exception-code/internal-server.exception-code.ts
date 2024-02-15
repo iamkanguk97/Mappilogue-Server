@@ -13,4 +13,8 @@ export const InternalServerExceptionCode = {
     '9007',
     'Apple Secret Key를 생성하는 도중 에러가 발생했습니다.',
   ),
+  AppleUserWithdrawError: setExceptionCode(
+    '9008',
+    '애플 로그인 유저 탈퇴처리를 하는 도중 에러가 발생했습니다.',
+  ),
 };

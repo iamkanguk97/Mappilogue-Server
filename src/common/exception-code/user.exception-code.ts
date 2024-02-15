@@ -100,4 +100,8 @@ export const UserExceptionCode = {
     '1030',
     '블랙리스트에 추가된 토큰입니다.',
   ),
+  AppleTokenEmptyInWithdraw: setExceptionCode(
+    '1031',
+    '애플로그인으로 가입한 유저는 회원탈퇴 시 인증토큰이 필요합니다.',
+  ),
 };
