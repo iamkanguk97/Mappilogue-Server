@@ -173,7 +173,7 @@ export class MarkCategoryService {
   }
 
   /**
-   * @summary option에 따라 Mark 삭제 여부 판단
+   * @summary 기록 카테고리 삭제 API Service - option에 따라 Mark 삭제 여부 판단
    * @author  Jason
    * @param   { QueryRunner } queryRunner
    * @param   { DeleteMarkCategoryOptionEnum } option
@@ -232,7 +232,7 @@ export class MarkCategoryService {
   }
 
   /**
-   * @summary findOneById Method
+   * @summary Find one mark category by id
    * @author  Jason
    * @param   { number } markCategoryId
    * @returns { Promise<MarkCategoryEntity | null> }

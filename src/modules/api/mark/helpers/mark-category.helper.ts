@@ -15,12 +15,12 @@ export class MarkCategoryHelper {
     beforeUpdateDto: MarkCategoryDto[],
     updateDto: PutMarkCategoryObject[],
   ): boolean {
-    const beforeUpdateIdArr = beforeUpdateDto.map((item) => item.id).sort();
-    const updateIdArr = updateDto.map((item) => item.id).sort();
-
-    if (beforeUpdateIdArr.length !== updateIdArr.length) {
+    if (beforeUpdateDto.length !== updateDto.length) {
       return false;
     }
+
+    const beforeUpdateIdArr = beforeUpdateDto.map((item) => item.id).sort();
+    const updateIdArr = updateDto.map((item) => item.id).sort();
 
     for (let i = 0; i < beforeUpdateIdArr.length; i++) {
       if (beforeUpdateIdArr[i] !== updateIdArr[i]) {
