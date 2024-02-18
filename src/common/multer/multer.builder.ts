@@ -11,8 +11,6 @@ import { IRequestWithUserType } from 'src/types/request-with-user.type';
 
 import multer from 'multer';
 import * as AWS from 'aws-sdk';
-// import * as multerS3 from 'multer-s3-transform';
-import S3 from 'aws-sdk/clients/s3';
 import * as multerS3 from 'multer-s3';
 
 config();
