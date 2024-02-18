@@ -5,10 +5,7 @@ import {
   ISolarToLunarResult,
 } from '../types';
 import { ScheduleDto } from '../dtos/schedule.dto';
-import {
-  getKoreanDateFormatByMultiple,
-  getKoreanDateFormatBySingle,
-} from 'src/helpers/date.helper';
+import { getKoreanDateFormatByMultiple } from 'src/helpers/date.helper';
 import { ColorService } from '../../color/services/color.service';
 import { PostScheduleRequestDto } from '../dtos/request/post-schedule-request.dto';
 import { Notification } from 'firebase-admin/lib/messaging/messaging-api';
@@ -64,8 +61,8 @@ export class ScheduleHelper {
    * @returns { Promise<ScheduleDto> }
    */
   async setScheduleOnDetail(schedule: ScheduleDto): Promise<ScheduleDto> {
-    schedule.setStartDate = getKoreanDateFormatBySingle(schedule.startDate);
-    schedule.setEndDate = getKoreanDateFormatBySingle(schedule.endDate);
+    // schedule.setStartDate = getKoreanDateFormatBySingle(schedule.startDate);
+    // schedule.setEndDate = getKoreanDateFormatBySingle(schedule.endDate);
     schedule.setColorCode = (
       await this.colorService.findOneById(schedule.colorId)
     ).code;

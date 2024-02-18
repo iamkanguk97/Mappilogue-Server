@@ -325,6 +325,9 @@ export class MarkService {
     if (!isDefined(markStatus)) {
       throw new BadRequestException(MarkExceptionCode.MarkNotExist);
     }
+    if (markStatus.userId !== userId) {
+      throw new BadRequestException(MarkExceptionCode.MarkNotMine);
+    }
 
     return MarkDto.of(markStatus);
   }
