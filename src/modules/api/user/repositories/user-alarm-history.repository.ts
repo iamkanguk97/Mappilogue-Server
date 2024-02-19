@@ -12,7 +12,9 @@ export class UserAlarmHistoryRepository extends Repository<UserAlarmHistoryEntit
     scheduleId: number,
   ): Promise<UserAlarmHistoryEntity[]> {
     return await this.createQueryBuilder('UAH')
-      .select('DATE_FORMAT(UAH.alarmDate, "%c월 %e일 %l:%i %p")', 'alarmDate')
+      // .select('DATE_FORMAT(UAH.alarmDate, "%c월 %e일 %l:%i %p")', 'alarmDate')
+      // .select('DATE_FORMAT(UAH.alarmDate, "%Y-%m-%d")', 'alarmDate')
+      .select('UAH.alarmDate', 'alarmDate')
       .innerJoin(
         (subQuery) =>
           subQuery
