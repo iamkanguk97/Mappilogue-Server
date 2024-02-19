@@ -65,4 +65,8 @@ export const MarkExceptionCode = {
     '5019',
     'mainScheduleAreaId와 mainLocation 둘 중 하나의 값은 입력하셔야 합니다.',
   ),
+  MarkMetadatCaptionLengthMustOverOne: setExceptionCode(
+    '5020',
+    '기록 사진에 대한 설명은 빈 문자열을 입력할 수 없습니다.',
+  ),
 };

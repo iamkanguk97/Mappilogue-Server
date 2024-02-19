@@ -29,6 +29,7 @@ import {
   ImageBuilderTypeEnum,
   MulterBuilder,
 } from 'src/common/multer/multer.builder';
+import { MarkLocationEntity } from '../entities/mark-location.entity';
 
 @Injectable()
 export class MarkService {
@@ -47,11 +48,9 @@ export class MarkService {
   /**
    * @summary 기록 생성하기 API Service
    * @author  Jason
-   *
    * @param   { number } userId
    * @param   { Express.MulterS3.File[] } files
    * @param   { PostMarkRequestDto } body
-   *
    * @returns { Promise<PostMarkResponseDto> }
    */
   async createMark(
@@ -63,25 +62,23 @@ export class MarkService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
-    const markMetadata = body.markMetadata ?? [];
-
     try {
-      const { id: markId } = await queryRunner.manager.save(
-        MarkEntity,
-        body.toMarkEntity(userId),
-      );
+      const { id: markId } = await queryRunner.manager
+        .getRepository(MarkEntity)
+        .save(body.toMarkEntity(userId));
 
       await Promise.all([
         this.modifyScheduleColorByCreateMark(queryRunner, body), // 기록 생성시 연관되어 있는 일정의 색깔을 변경함
-        this.createMarkMetadata(queryRunner, markId, files, markMetadata), // 기록 이미지 + 캡션 데이터 INSERT
+        this.createMarkMetadata(queryRunner, markId, files, body.markMetadata), // 기록 이미지 + 캡션 데이터 INSERT
         this.createMarkMainLocation(queryRunner, markId, body), // 기록 대표 위치 INSERT
       ]);
 
       await queryRunner.commitTransaction();
       return PostMarkResponseDto.of(markId);
     } catch (err) {
+      console.log(err);
       this.logger.error(`[createMark - transaction error] ${err}`);
-      await this.markHelper.deleteUploadedMarkImageWhenError(userId, files);
+      await this.markHelper.deleteUploadedMarkImageWhenError(files);
       await queryRunner.rollbackTransaction();
       throw err;
     } finally {
@@ -173,10 +170,7 @@ export class MarkService {
       await queryRunner.commitTransaction();
     } catch (err) {
       this.logger.error(`[modifyMark - transaction error] ${err}`);
-      await this.markHelper.deleteUploadedMarkImageWhenError(
-        mark.userId,
-        files,
-      );
+      await this.markHelper.deleteUploadedMarkImageWhenError(files);
       await queryRunner.rollbackTransaction();
     } finally {
       await queryRunner.release();
@@ -186,7 +180,6 @@ export class MarkService {
   /**
    * @summary 특정 카테고리의 기록 조회하기 API Service
    * @author  Jason
-   *
    * @param   { number } userId
    * @param   { number } markCategoryId
    * @param   { PageOptionsDto } pageOptionsDto
@@ -213,7 +206,6 @@ export class MarkService {
   /**
    * @summary 기록 Metadata Insert하는 함수
    * @author  Jason
-   *
    * @param   { QueryRunner } queryRunner
    * @param   { number } markId
    * @param   { Express.MulterS3.File[] } files
@@ -225,16 +217,16 @@ export class MarkService {
     files: Express.MulterS3.File[],
     metadata: PostMarkMetadataObject[],
   ): Promise<void> {
-    await queryRunner.manager.save(
-      MarkMetadataEntity,
-      this.markHelper.mappingMarkMetadataWithImages(markId, files, metadata),
-    );
+    await queryRunner.manager
+      .getRepository(MarkMetadataEntity)
+      .save(
+        this.markHelper.mappingMarkMetadataWithImages(markId, files, metadata),
+      );
   }
 
   /**
    * @summary 기록 대표위치 저장하는 함수
    * @author  Jason
-   *
    * @param   { QueryRunner } queryRunner
    * @param   { number } markId
    * @param   { PostMarkRequestDto } body
@@ -248,10 +240,9 @@ export class MarkService {
       const insertMarkLocationParam =
         this.markHelper.setCreateMarkLocationParam(markId, body);
 
-      await queryRunner.manager.save(
-        MarkLocationRepository,
-        insertMarkLocationParam,
-      );
+      await queryRunner.manager
+        .getRepository(MarkLocationEntity)
+        .save(insertMarkLocationParam);
     }
   }
 

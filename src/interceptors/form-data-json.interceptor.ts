@@ -11,10 +11,10 @@ import { CommonExceptionCode } from 'src/common/exception-code/common.exception-
 
 @Injectable()
 export class FormDataJsonInterceptor implements NestInterceptor {
-  intercept(
+  intercept<T>(
     context: ExecutionContext,
-    next: CallHandler<any>,
-  ): Observable<any> | Promise<Observable<any>> {
+    next: CallHandler<T>,
+  ): Observable<T> | Promise<Observable<T>> {
     const request = context.switchToHttp().getRequest<Request>();
 
     try {

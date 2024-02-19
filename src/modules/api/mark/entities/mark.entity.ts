@@ -60,18 +60,18 @@ export class MarkEntity extends CommonEntity {
     userId: number,
     title: string,
     colorId: number,
-    markCategoryId?: number,
-    scheduleId?: number,
-    content?: string,
+    markCategoryId: number | null,
+    scheduleId: number | null,
+    content: string | null,
   ): MarkEntity {
     const mark = new MarkEntity();
 
     mark.userId = userId;
     mark.title = title;
     mark.colorId = colorId;
-    mark.markCategoryId = markCategoryId ?? null;
-    mark.scheduleId = scheduleId ?? null;
-    mark.content = content ?? null;
+    mark.markCategoryId = markCategoryId;
+    mark.scheduleId = scheduleId;
+    mark.content = content;
 
     return mark;
   }

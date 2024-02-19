@@ -550,11 +550,9 @@ export class ScheduleService {
     queryRunner?: QueryRunner,
   ): Promise<void> {
     if (isDefined(queryRunner)) {
-      await queryRunner.manager.update(
-        ScheduleEntity,
-        { id: scheduleId },
-        properties,
-      );
+      await queryRunner.manager
+        .getRepository(ScheduleEntity)
+        .update({ id: scheduleId }, properties);
       return;
     }
     await this.scheduleRepository.update({ id: scheduleId }, properties);

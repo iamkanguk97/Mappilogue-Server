@@ -53,7 +53,7 @@ export class PostMarkMainLocationObject extends PickType(MarkLocationEntity, [
   )
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsOptional()
-  streetAddress?: string | undefined = '';
+  streetAddress: string | null = null;
 
   @Length(
     MarkLocationLatitudeLengthEnum.MIN,
@@ -62,7 +62,7 @@ export class PostMarkMainLocationObject extends PickType(MarkLocationEntity, [
   )
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsOptional()
-  latitude?: string | undefined = '';
+  latitude: string | null = null;
 
   @Length(
     MarkLocationLongitudeLengthEnum.MIN,
@@ -71,7 +71,7 @@ export class PostMarkMainLocationObject extends PickType(MarkLocationEntity, [
   )
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsOptional()
-  longitude?: string | undefined = '';
+  longitude: string | null = null;
 
   /**
    * @summary 기록 대표위치를 직접 추가로 했을 때 저장하는 함수
@@ -104,19 +104,24 @@ export class PostMarkMetadataObject extends PickType(MarkMetadataEntity, [
   )
   isMainImage!: CheckColumnEnum;
 
+  @Length(
+    1,
+    undefined,
+    setValidatorContext(MarkExceptionCode.MarkMetadatCaptionLengthMustOverOne),
+  )
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsOptional()
-  caption?: string | undefined = '';
+  caption: string | null = null;
 }
 
 export class PostMarkRequestDto {
   @IsNumber({}, setValidatorContext(CommonExceptionCode.MustNumberType))
   @IsOptional()
-  markCategoryId?: number | undefined;
+  markCategoryId: number | null = null;
 
   @IsNumber({}, setValidatorContext(CommonExceptionCode.MustNumberType))
   @IsOptional()
-  scheduleId?: number | undefined;
+  scheduleId: number | null = null;
 
   @IsNumberRange(
     ColorIdRangeEnum.MIN,
@@ -135,27 +140,25 @@ export class PostMarkRequestDto {
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsOptional()
   // @IsNotEmpty(setValidatorContext(MarkExceptionCode.MarkTitleEmpty))
-  title?: string | undefined;
+  title: string = MARK_DEFAULT_TITLE;
 
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsOptional()
-  content?: string | undefined;
+  content: string | null = null;
 
   @IsNumber({}, setValidatorContext(CommonExceptionCode.MustNumberType))
   @IsOptional()
-  mainScheduleAreaId?: number | undefined;
+  mainScheduleAreaId: number | null = null;
 
-  @ValidateNested({ each: true })
-  @Type(() => PostMarkMainLocationObject)
   @ValidateIf((obj, value) => isDefined(value) && !isEmptyObject(value))
   @IsOptional()
-  mainLocation?: PostMarkMainLocationObject | undefined;
+  mainLocation: PostMarkMainLocationObject | null = null;
 
   @ValidateNested({ each: true })
   @Type(() => PostMarkMetadataObject)
   @IsArray(setValidatorContext(CommonExceptionCode.MustArrayType))
   @IsOptional()
-  markMetadata?: PostMarkMetadataObject[] | undefined = [];
+  markMetadata: PostMarkMetadataObject[] = [];
 
   /**
    * @summary 기록 제목 결정하는 함수
@@ -176,7 +179,7 @@ export class PostMarkRequestDto {
   toMarkEntity(userId: number): MarkEntity {
     return MarkEntity.from(
       userId,
-      this.setMarkTitleByParam(this.title),
+      this.title,
       this.colorId,
       this.markCategoryId,
       this.scheduleId,

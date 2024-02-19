@@ -12,7 +12,6 @@ import {
   PostMarkRequestDto,
 } from '../dtos/request/post-mark-request.dto';
 import { MarkLocationEntity } from '../entities/mark-location.entity';
-import { TMarkImages } from '../types';
 import { MarkEntity } from '../entities/mark.entity';
 
 @Injectable()
@@ -24,11 +23,9 @@ export class MarkHelper {
   /**
    * @summary 업로드된 이미지와 MarkMetadata와 Mapping
    * @author Jason
-   *
    * @param { number } markId
    * @param { Express.MulterS3.File[] } files
    * @param { PostMarkMetadataObject[] } metadatas
-   *
    * @returns { MarkMetadataEntity[] }
    */
   mappingMarkMetadataWithImages(
@@ -50,13 +47,10 @@ export class MarkHelper {
   /**
    * @summary 기록 관련 API 진행 시 에러 발생한 경우 Multer로 선 업로드된 사진 Delete
    * @author Jason
-   *
-   * @param { number } userId
    * @param { Express.Multer.File[] } markImages
    */
   async deleteUploadedMarkImageWhenError(
-    userId: number,
-    markImages: TMarkImages,
+    markImages: Express.MulterS3.File[],
   ): Promise<void> {
     const imageDeleteBuilder = new MulterBuilder(ImageBuilderTypeEnum.DELETE);
 
@@ -68,11 +62,9 @@ export class MarkHelper {
   /**
    * @summary MarkLocation을 insert할 Parameter를 만들어주는 함수
    * @author Jason
-   *
    * @param { number } markId
    * @param { PostMarkRequestDto } body
-   *
-   * @return { MarkLocationEntity }
+   * @return { MarkLocationEntity | undefined }
    */
   setCreateMarkLocationParam(
     markId: number,
@@ -84,7 +76,12 @@ export class MarkHelper {
         body.mainScheduleAreaId,
       );
     }
-    return body.mainLocation.toMarkLocationEntityWithLocationInfo(markId);
+
+    if (isDefined(body.mainLocation)) {
+      return body.mainLocation.toMarkLocationEntityWithLocationInfo(markId);
+    }
+
+    return {} as MarkLocationEntity;
   }
 
   /**

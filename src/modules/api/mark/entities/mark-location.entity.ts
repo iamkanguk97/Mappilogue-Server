@@ -47,19 +47,19 @@ export class MarkLocationEntity extends CommonEntity {
   static from(
     markId: number,
     scheduleAreaId: number | null,
-    name?: string,
-    streetAddress?: string,
-    latitude?: string,
-    longitude?: string,
+    name?: string | null,
+    streetAddress?: string | null,
+    latitude?: string | null,
+    longitude?: string | null,
   ): MarkLocationEntity {
     const markLocation = new MarkLocationEntity();
 
     markLocation.markId = markId;
     markLocation.scheduleAreaId = scheduleAreaId;
-    markLocation.name = name ?? '';
-    markLocation.streetAddress = streetAddress ?? '';
-    markLocation.latitude = latitude ?? '';
-    markLocation.longitude = longitude ?? '';
+    markLocation.name = name ?? null;
+    markLocation.streetAddress = streetAddress ?? null;
+    markLocation.latitude = latitude ?? null;
+    markLocation.longitude = longitude ?? null;
 
     return markLocation;
   }

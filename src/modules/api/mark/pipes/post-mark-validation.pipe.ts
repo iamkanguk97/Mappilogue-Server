@@ -11,7 +11,7 @@ import { REQUEST } from '@nestjs/core';
 import { MarkCategoryService } from '../services/mark-category.service';
 import { MarkExceptionCode } from 'src/common/exception-code/mark.exception-code';
 import { MarkHelper } from '../helpers/mark.helper';
-import { isDefined, isEmptyObject } from 'src/helpers/common.helper';
+import { isDefined } from 'src/helpers/common.helper';
 import { IRequestWithUserType } from 'src/types/request-with-user.type';
 
 @Injectable()
@@ -26,18 +26,17 @@ export class PostMarkValidationPipe implements PipeTransform {
   ) {}
 
   async transform(value: PostMarkRequestDto): Promise<PostMarkRequestDto> {
-    const userId = this.request.user.id;
-    const markImages = this.request['files'];
-    const markMetadata = value.markMetadata ?? [];
+    console.log(value);
 
-    let isScheduleIdExistInParameter = false; // RequestDTO에 scheduleId가 있는지 판단하는 변수
+    const userId = this.request.user.id;
+    const markImages = this.request.files ?? [];
 
     try {
       /**
        * @Validate RequestDTO에 scheduleId가 있으면 => 유효성 검사 필요
+       * - scheduleId가 없다 ==> 새로 작성한 기록
        */
       if (isDefined(value.scheduleId)) {
-        isScheduleIdExistInParameter = true;
         await this.scheduleService.checkScheduleStatus(
           userId,
           value.scheduleId,
@@ -46,6 +45,7 @@ export class PostMarkValidationPipe implements PipeTransform {
 
       /**
        * @Validate RequestDTO에 markCategoryId가 있으면 => 유효성 검사 필요
+       * - markCategoryId가 없다 ==> 전체 카테고리
        */
       if (isDefined(value.markCategoryId)) {
         await this.markCategoryService.checkMarkCategoryStatus(
@@ -55,17 +55,17 @@ export class PostMarkValidationPipe implements PipeTransform {
       }
 
       /**
-       * @TODO 기획 확인하기!!
        * @Validate mainScheduleAreaId와 mainLocation이 둘다 없으면 안된다?
+       * - 대표 위치는 정하지 않아도 된다고 기획이 변경됨 ==> 따라서 유효성 검사 X
        */
-      if (
-        !isDefined(value.mainScheduleAreaId) &&
-        (!isDefined(value.mainLocation) || isEmptyObject(value.mainLocation))
-      ) {
-        throw new BadRequestException(
-          MarkExceptionCode.MainScheduleAreaIdAndMainLocationBothNotInclude,
-        );
-      }
+      // if (
+      //   !isDefined(value.mainScheduleAreaId) &&
+      //   (!isDefined(value.mainLocation) || isEmptyObject(value.mainLocation))
+      // ) {
+      //   throw new BadRequestException(
+      //     MarkExceptionCode.MainScheduleAreaIdAndMainLocationBothNotInclude,
+      //   );
+      // }
 
       /**
        * @Validate RequestDTO에 mainScheduleAreaId와 mainLocation이 같이 있으면 안된다.
@@ -73,7 +73,7 @@ export class PostMarkValidationPipe implements PipeTransform {
       if (
         isDefined(value.mainScheduleAreaId) &&
         isDefined(value.mainLocation) &&
-        !isEmptyObject(value.mainLocation)
+        Object.keys(value.mainLocation).length
       ) {
         throw new BadRequestException(
           MarkExceptionCode.MainScheduleAreaIdAndMainLocationBothInclude,
@@ -83,21 +83,14 @@ export class PostMarkValidationPipe implements PipeTransform {
       /**
        * @Validate RequestDTO에 mainScheduleAreaId가 있으면?
        * - scheduleId가 필수로 있어야 한다.
+       * - mainScheduleAreaId에 대해 유효성 검사
        */
-      if (
-        isDefined(value.mainScheduleAreaId) &&
-        !isScheduleIdExistInParameter
-      ) {
-        throw new BadRequestException(
-          MarkExceptionCode.MustScheduleIdExistWhenScheduleAreaIdExist,
-        );
-      }
-
-      /**
-       * @Validate RequestDTO에 mainScheduleAreaId가 있으면?
-       * - 위에가 확인되면 mainScheduleAreaId에 대해 유효성 검사.
-       */
-      if (isDefined(value.mainScheduleAreaId) && isScheduleIdExistInParameter) {
+      if (isDefined(value.mainScheduleAreaId)) {
+        if (!isDefined(value.scheduleId)) {
+          throw new BadRequestException(
+            MarkExceptionCode.MustScheduleIdExistWhenScheduleAreaIdExist,
+          );
+        }
         await this.scheduleService.checkScheduleAreaStatus(
           value.mainScheduleAreaId,
           value.scheduleId,
@@ -107,7 +100,7 @@ export class PostMarkValidationPipe implements PipeTransform {
       /**
        * @Validate image 설정한 개수와 RequestDTO의 markMetadata 배열의 길이와 동일해야 한다.
        */
-      if (markImages.length !== markMetadata.length) {
+      if (markImages.length !== value.markMetadata.length) {
         throw new BadRequestException(
           MarkExceptionCode.MarkMetadataLengthError,
         );
@@ -116,24 +109,17 @@ export class PostMarkValidationPipe implements PipeTransform {
       /**
        * @Validate RequestDTO에 markMetadata가 있는 경우?
        * - content는 없어야 한다. (content는 이미지를 안올린 경우의 내용임)
-       */
-      if (
-        isDefined(markMetadata) &&
-        markMetadata.length !== 0 &&
-        isDefined(value.content) &&
-        value.content.length !== 0
-      ) {
-        throw new BadRequestException(
-          MarkExceptionCode.MarkContentNotExistWhenMetadatIsExist,
-        );
-      }
-
-      /**
-       * @Validate RequestDTO에 markMetadata가 있는 경우?
        * - isMainImage는 무조건 1개여야 한다.
        */
-      if (!this.markHelper.checkMarkMainImageCanUpload(markMetadata)) {
-        throw new BadRequestException(MarkExceptionCode.MarkMainImageMustOne);
+      if (value.markMetadata.length !== 0) {
+        if (isDefined(value.content) && value.content.length !== 0) {
+          throw new BadRequestException(
+            MarkExceptionCode.MarkContentNotExistWhenMetadatIsExist,
+          );
+        }
+        if (!this.markHelper.checkMarkMainImageCanUpload(value.markMetadata)) {
+          throw new BadRequestException(MarkExceptionCode.MarkMainImageMustOne);
+        }
       }
 
       /**
@@ -141,19 +127,24 @@ export class PostMarkValidationPipe implements PipeTransform {
        */
       if (
         (!isDefined(value.content) || !value.content.length) &&
-        !markMetadata.length
+        !value.markMetadata.length
       ) {
         throw new BadRequestException(
           MarkExceptionCode.MarkContentAndMetadataEmpty,
         );
       }
 
+      value.title = value.setMarkTitleByParam(value.title);
+      value.content =
+        isDefined(value.content) && !value.content.length
+          ? null
+          : value.content;
+
       return value;
     } catch (err) {
       this.logger.error(`[PostMarkValidationPipe] ${err}`);
       await this.markHelper.deleteUploadedMarkImageWhenError(
-        userId,
-        markImages,
+        this.request.files as Express.MulterS3.File[],
       );
       throw err;
     }

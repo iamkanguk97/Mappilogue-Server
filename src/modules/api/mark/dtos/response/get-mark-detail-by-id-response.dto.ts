@@ -5,7 +5,7 @@ import { MarkMetadataDto } from '../mark-metadata.dto';
 
 export class GetMarkDetailByIdResponseDto {
   @Exclude() private readonly _id: number;
-  @Exclude() private readonly _content: string;
+  @Exclude() private readonly _content: string | null;
   @Exclude() private readonly _markCategory: Partial<MarkCategoryDto>;
   @Exclude() private readonly _markMainLocation: MarkLocationDto;
   @Exclude() private readonly _markDate: string;
@@ -13,7 +13,7 @@ export class GetMarkDetailByIdResponseDto {
 
   private constructor(
     id: number,
-    content: string,
+    content: string | null,
     markCategory: Partial<MarkCategoryDto>,
     markMainLocation: MarkLocationDto,
     markDate: string,
@@ -29,7 +29,7 @@ export class GetMarkDetailByIdResponseDto {
 
   static from(
     id: number,
-    content: string,
+    content: string | null,
     markCategory: Partial<MarkCategoryDto>,
     markMainLocation: MarkLocationDto,
     markDate: string,
@@ -51,7 +51,7 @@ export class GetMarkDetailByIdResponseDto {
   }
 
   @Expose()
-  get content(): string {
+  get content(): string | null {
     return this._content;
   }
 

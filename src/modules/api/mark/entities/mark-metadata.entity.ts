@@ -35,16 +35,16 @@ export class MarkMetadataEntity extends CommonEntity {
     markId: number,
     markImageUrl: string,
     isMainImage: CheckColumnEnum,
-    markImageKey?: string,
-    caption?: string,
+    markImageKey: string | null,
+    caption: string | null,
   ): MarkMetadataEntity {
     const markMetadata = new MarkMetadataEntity();
 
     markMetadata.markId = markId;
     markMetadata.markImageUrl = markImageUrl;
     markMetadata.isMainImage = isMainImage;
-    markMetadata.markImageKey = markImageKey ?? '';
-    markMetadata.caption = caption ?? '';
+    markMetadata.markImageKey = markImageKey;
+    markMetadata.caption = caption;
 
     return markMetadata;
   }
