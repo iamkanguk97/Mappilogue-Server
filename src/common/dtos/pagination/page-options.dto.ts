@@ -8,12 +8,12 @@ export class PageOptionsDto {
   @Type(() => Number)
   @IsInt(setValidatorContext(CommonExceptionCode.MustIntegerType))
   @IsOptional()
-  pageNo?: number;
+  pageNo = 1;
 
   @Type(() => Number)
   @IsInt(setValidatorContext(CommonExceptionCode.MustIntegerType))
   @IsOptional()
-  pageSize?: number;
+  pageSize = 10;
 
   constructor(pageNo: number, pageSize: number) {
     this.pageNo = pageNo;
@@ -26,8 +26,8 @@ export class PageOptionsDto {
    * @returns { number }
    */
   getOffset(): number {
-    this.pageNo = setPageNo(this?.pageNo);
-    this.pageSize = setPageSize(this?.pageSize);
+    this.pageNo = setPageNo(this.pageNo);
+    this.pageSize = setPageSize(this.pageSize);
     return (Number(this.pageNo) - 1) * Number(this.pageSize);
   }
 
@@ -37,7 +37,7 @@ export class PageOptionsDto {
    * @returns { number }
    */
   getLimit(): number {
-    this.pageSize = setPageSize(this?.pageSize);
+    this.pageSize = setPageSize(this.pageSize);
     return Number(this.pageSize);
   }
 }

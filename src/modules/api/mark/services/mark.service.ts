@@ -183,7 +183,6 @@ export class MarkService {
    * @param   { number } userId
    * @param   { number } markCategoryId
    * @param   { PageOptionsDto } pageOptionsDto
-   *
    * @returns { Promise<ResultWithPageDto<GetMarkListByCategoryResponseDto>> }
    */
   async findMarkListByCategory(
