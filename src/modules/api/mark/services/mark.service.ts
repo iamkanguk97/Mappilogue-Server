@@ -341,10 +341,21 @@ export class MarkService {
       },
     });
 
-    return isDefined(markLocationStatus) &&
+    if (
+      isDefined(markLocationStatus) &&
       isDefined(markLocationStatus.scheduleAreaId)
-      ? MarkLocationDto.of(markLocationStatus)
-      : ({} as MarkLocationDto);
+    ) {
+      const result =
+        await this.markLocationRepository.selectMarkLocationWithScheduleArea(
+          markId,
+        );
+
+      if (!isDefined(result)) {
+        return {} as MarkLocationDto;
+      }
+      return MarkLocationDto.of(result);
+    }
+    return {} as MarkLocationDto;
   }
 
   /**
