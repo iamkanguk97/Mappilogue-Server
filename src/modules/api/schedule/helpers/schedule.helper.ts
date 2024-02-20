@@ -82,7 +82,7 @@ export class ScheduleHelper {
     const result: IProcessedScheduleAreasById[] = [];
 
     for (const scheduleArea of scheduleAreas) {
-      const dateKey = moment(scheduleArea.date).format('M월 D일');
+      const dateKey = moment(scheduleArea.date).format('YYYY-MM-DD');
       const temp = result.find((r) => r.date === dateKey) || {
         date: dateKey,
         value: [],
