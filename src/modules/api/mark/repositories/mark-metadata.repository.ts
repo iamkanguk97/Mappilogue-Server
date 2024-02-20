@@ -20,7 +20,7 @@ export class MarkMetadataRepository extends Repository<MarkMetadataEntity> {
         'markId',
         'markImageKey',
         'markImageUrl',
-        'IFNULL(MMD.caption, "") AS caption',
+        'caption',
         'isMainImage',
       ])
       .innerJoin(MarkEntity, 'M', 'M.id = MMD.markId')

@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
 import { ScheduleEntity } from './schedule.entity';
 import {
   ScheduleAreaLatitudeLengthEnum,
@@ -9,6 +9,7 @@ import {
 } from '../constants/schedule.enum';
 import { SCHEDULE_AREA_DATE_LENGTH } from '../constants/schedule.constant';
 import { CommonEntity } from 'src/common/entities/common.entity';
+import { MarkLocationEntity } from '../../mark/entities/mark-location.entity';
 
 @Entity('ScheduleArea')
 export class ScheduleAreaEntity extends CommonEntity {
@@ -54,6 +55,15 @@ export class ScheduleAreaEntity extends CommonEntity {
   })
   @JoinColumn({ name: 'scheduleId', referencedColumnName: 'id' })
   schedule?: ScheduleEntity;
+
+  @OneToOne(
+    () => MarkLocationEntity,
+    (markLocation) => markLocation.scheduleArea,
+    {
+      cascade: true,
+    },
+  )
+  markLocation?: MarkLocationEntity;
 
   static from(
     scheduleId: number,

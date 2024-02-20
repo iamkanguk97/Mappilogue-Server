@@ -10,11 +10,11 @@ export class MarkLocationRepository extends Repository<MarkLocationEntity> {
    * @summary ScheduleAreaId가 있을 때 MarkLocation을 가져오는 함수
    * @author Jason
    * @param { number } markId
-   * @returns { MarkLocationEntity }
+   * @returns { MarkLocationEntity | undefined }
    */
   async selectMarkLocationWithScheduleArea(
     markId: number,
-  ): Promise<MarkLocationEntity> {
+  ): Promise<MarkLocationEntity | undefined> {
     return await this.createQueryBuilder('ML')
       .select('ML.scheduleAreaId', 'scheduleAreaId')
       .addSelect('ML.markId', 'markId')

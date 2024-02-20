@@ -7,6 +7,7 @@ import {
 } from '../constants/enums/mark.enum';
 import { MarkEntity } from './mark.entity';
 import { CommonEntity } from 'src/common/entities/common.entity';
+import { ScheduleAreaEntity } from '../../schedule/entities/schedule-area.entity';
 
 @Entity('MarkLocation')
 export class MarkLocationEntity extends CommonEntity {
@@ -43,6 +44,17 @@ export class MarkLocationEntity extends CommonEntity {
   })
   @JoinColumn({ name: 'markId', referencedColumnName: 'id' })
   mark?: MarkEntity;
+
+  @OneToOne(
+    () => ScheduleAreaEntity,
+    (scheduleArea) => scheduleArea.markLocation,
+    {
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+  )
+  @JoinColumn({ name: 'scheduleAreaId', referencedColumnName: 'id' })
+  scheduleArea?: ScheduleAreaEntity;
 
   static from(
     markId: number,

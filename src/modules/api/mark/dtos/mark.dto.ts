@@ -8,20 +8,20 @@ export class MarkDto {
   @Exclude() private readonly _userId: number;
   @Exclude() private readonly _colorId: number;
   @Exclude() private readonly _title: string;
-  @Exclude() private readonly _markCategoryId?: number;
-  @Exclude() private readonly _scheduleId?: number;
-  @Exclude() private readonly _content?: string;
-  @Exclude() private readonly _createdAt?: Date;
+  @Exclude() private readonly _markCategoryId: number | null;
+  @Exclude() private readonly _scheduleId: number | null;
+  @Exclude() private readonly _content: string | null;
+  @Exclude() private readonly _createdAt: Date | null;
 
   private constructor(
     id: number,
     userId: number,
     colorId: number,
     title: string,
-    markCategoryId?: number,
-    scheduleId?: number,
-    content?: string,
-    createdAt?: Date,
+    markCategoryId: number | null,
+    scheduleId: number | null,
+    content: string | null,
+    createdAt: Date | null,
   ) {
     this._id = id;
     this._userId = userId;
@@ -67,21 +67,22 @@ export class MarkDto {
   }
 
   @Expose()
-  get markCategoryId(): number | undefined {
+  get markCategoryId(): number | null {
     return this._markCategoryId;
   }
 
   @Expose()
-  get scheduleId(): number {
+  get scheduleId(): number | null {
     return this._scheduleId;
   }
 
   @Expose()
-  get content(): string | undefined {
-    return this._content ?? '';
+  get content(): string | null {
+    return this._content;
   }
 
   get createdAt(): string {
-    return moment(this._createdAt).format('Y년 M월 D일');
+    // return moment(this._createdAt).format('Y년 M월 D일');
+    return moment(this._createdAt).format('YYYY-MM-DD');
   }
 }

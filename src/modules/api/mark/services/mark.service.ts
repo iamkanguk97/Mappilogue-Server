@@ -328,24 +328,23 @@ export class MarkService {
    * @description scheduleAreaId가 null이면 MarkLocation에서 select, 아니면 join 후 select
    * @author      Jason
    * @param       { number } markId
-   * @returns     { MarkLocationDto }
+   * @returns     { Promise<MarkLocationDto> }
    */
   async setMarkLocationOnDetail(markId: number): Promise<MarkLocationDto> {
     const markLocationStatus = await this.markLocationRepository.findOne({
       where: {
         markId,
       },
+      relations: {
+        mark: true,
+        scheduleArea: true,
+      },
     });
 
-    // 해당 기록의 장소에서 scheduleAreaId가 null이 아닌 경우
-    if (isDefined(markLocationStatus.scheduleAreaId)) {
-      return MarkLocationDto.of(
-        await this.markLocationRepository.selectMarkLocationWithScheduleArea(
-          markId,
-        ),
-      );
-    }
-    return MarkLocationDto.of(markLocationStatus);
+    return isDefined(markLocationStatus) &&
+      isDefined(markLocationStatus.scheduleAreaId)
+      ? MarkLocationDto.of(markLocationStatus)
+      : ({} as MarkLocationDto);
   }
 
   /**
@@ -399,7 +398,7 @@ export class MarkService {
      * - 없으면 Mark의 createdAt
      */
     if (isDefined(mark.scheduleId)) {
-      return '2023년 12월 19일'; // 곧 수정할거임!
+      return '2023-12-19'; // 곧 수정할거임!
     }
     return mark.createdAt;
   }
