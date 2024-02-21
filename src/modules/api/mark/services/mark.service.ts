@@ -30,6 +30,8 @@ import {
   MulterBuilder,
 } from 'src/common/multer/multer.builder';
 import { MarkLocationEntity } from '../entities/mark-location.entity';
+import { GetMarkSearchByOptionRequestDto } from '../dtos/request/get-mark-search-by-option-request.dto';
+import { EGetMarkSearchOption } from '../constants/enums/mark.enum';
 
 @Injectable()
 export class MarkService {
@@ -201,6 +203,39 @@ export class MarkService {
       GetMarkListByCategoryResponseDto.from(result.result),
       result.meta,
     );
+  }
+
+  /**
+   * @summary 기록 검색하기 API Service
+   * @author  Jason
+   * @param   { number } userId
+   * @param   { GetMarkSearchByOptionRequestDto } query
+   * @returns
+   */
+  async findMarkSearchByOption(
+    userId: number,
+    query: GetMarkSearchByOptionRequestDto,
+    pageOptionsDto: PageOptionsDto,
+  ) {
+    let result;
+    switch (query.option) {
+      case EGetMarkSearchOption.AREA:
+        result = await this.markRepository.selectMarkSearchByArea(
+          userId,
+          query.keyword,
+        );
+        return;
+      case EGetMarkSearchOption.MARK:
+        result = await this.markRepository.selectMarkSearchByMark(
+          userId,
+          query.keyword,
+        );
+        return;
+      default:
+        throw new BadRequestException(
+          MarkExceptionCode.MarkSearchOptionErrorType,
+        );
+    }
   }
 
   /**

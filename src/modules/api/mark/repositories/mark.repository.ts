@@ -166,4 +166,24 @@ export class MarkRepository extends Repository<MarkEntity> {
       .limit(USER_HOME_MARK_MAX_COUNT)
       .getRawMany();
   }
+
+  /**
+   * @summary 기록 검색 -> 장소로 기록 검색하기
+   * @author  Jason
+   * @param   { number } userId
+   * @param   { string } keyword
+   */
+  async selectMarkSearchByArea(userId: number, keyword: string) {
+    return;
+  }
+
+  /**
+   * @summary 기록 검색 -> 기록 이름으로 기록 검색하기
+   * @author  Jason
+   * @param   { number } userId
+   * @param   { string } keyword
+   */
+  async selectMarkSearchByMark(userId: number, keyword: string) {
+    return;
+  }
 }

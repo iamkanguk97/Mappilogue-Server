@@ -38,6 +38,7 @@ import { GetMarkListByCategoryResponseDto } from '../dtos/response/get-mark-list
 import { ResponseWithPageEntity } from 'src/common/entities/response-with-page.entity';
 import { PutMarkRequestDto } from '../dtos/request/put-mark-request.dto';
 import { Public } from 'src/modules/core/auth/decorators/auth.decorator';
+import { GetMarkSearchByOptionRequestDto } from '../dtos/request/get-mark-search-by-option-request.dto';
 
 @Controller(DomainNameEnum.MARK)
 @UseInterceptors(ClassSerializerInterceptor)
@@ -161,8 +162,17 @@ export class MarkController {
    */
   @Get('/searches')
   @HttpCode(HttpStatus.OK)
-  async getMarkSearchResult() {
-    return;
+  async getMarkSearchByOption(
+    @UserId() userId: number,
+    @Query() query: GetMarkSearchByOptionRequestDto,
+    @GetPagination() pageOptionsDto: PageOptionsDto,
+  ) {
+    const result = await this.markService.findMarkSearchByOption(
+      userId,
+      query,
+      pageOptionsDto,
+    );
+    return result;
   }
 
   @Public()
