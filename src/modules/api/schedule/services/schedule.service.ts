@@ -329,11 +329,18 @@ export class ScheduleService {
       (alarm) => !updateAlarmOptions.includes(alarm.alarmDate),
     );
 
+    // 알림 삭제처리하기
     await this.removeScheduleAlarms(queryRunner, schedule, deletedAlarmDiff);
 
-    body.alarmOptions = updateAlarmOptions.filter((alarm) => {
-      !scheduleAlarmList.map((s) => s.alarmDate).includes(alarm);
-    });
+    const beforeAlarmsExceptDeleted = scheduleAlarmList.filter(
+      (item) => !deletedAlarmDiff.includes(item),
+    );
+
+    const addedAlarms = updateAlarmOptions.filter(
+      (item) =>
+        !beforeAlarmsExceptDeleted.map((s) => s.alarmDate).includes(item),
+    );
+    body.alarmOptions = addedAlarms;
 
     await this.createScheduleAlarms(
       queryRunner,
@@ -361,13 +368,9 @@ export class ScheduleService {
           .getRepository(UserAlarmHistoryEntity)
           .softDelete(alarm.id);
 
-        const deletedCronName =
-          this.notificationService.setScheduleNotificationCronName(
-            schedule.id,
-            alarm.id,
-          );
-
-        this.scheduleRegistry.deleteCronJob(deletedCronName);
+        if (isDefined(alarm.cronName)) {
+          this.scheduleRegistry.deleteCronJob(alarm.cronName);
+        }
       }),
     );
   }
