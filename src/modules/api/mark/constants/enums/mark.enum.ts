@@ -22,3 +22,8 @@ export enum MarkLocationLongitudeLengthEnum {
   MIN = 0,
   MAX = 100,
 }
+
+export enum EGetMarkSearchOption {
+  AREA = 'AREA',
+  MARK = 'MARK',
+}

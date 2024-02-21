@@ -69,4 +69,16 @@ export const MarkExceptionCode = {
     '5020',
     '기록 사진에 대한 설명은 빈 문자열을 입력할 수 없습니다.',
   ),
+  MarkSearchOptionEmpty: setExceptionCode(
+    '5021',
+    '기록 검색 옵션을 입력해주세요.',
+  ),
+  MarkSearchOptionErrorType: setExceptionCode(
+    '5022',
+    '기록 검색 옵션은 AREA 또는 MARK로 입력해주세요.',
+  ),
+  MarkSearchKeywordEmpty: setExceptionCode(
+    '5023',
+    '기록 검색 키워드를 입력해주세요.',
+  ),
 };

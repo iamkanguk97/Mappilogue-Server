@@ -80,13 +80,13 @@ export class UserHomeService {
         return this.processingScheduleListWithArea(
           await this.scheduleRepository.selectScheduleListInHomeOnToday(userId),
         );
-      case GetHomeOptionEnum.AFTER:
-        // result = await this.scheduleRepository.selectScheduleListInHomeOnAfter(
-        //   userId,
-        // );
+      // case GetHomeOptionEnum.AFTER:
+      //   // result = await this.scheduleRepository.selectScheduleListInHomeOnAfter(
+      //   //   userId,
+      //   // );
 
-        // return result;
-        return;
+      //   // return result;
+      //   return;
       default:
         throw new BadRequestException(UserExceptionCode.GetHomeOptionErrorType);
     }
