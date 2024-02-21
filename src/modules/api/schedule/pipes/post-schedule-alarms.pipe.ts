@@ -11,12 +11,8 @@ export class PostScheduleAlarmsPipe implements PipeTransform {
    * @param   { PostScheduleRequestDto } value
    */
   transform(value: PostScheduleRequestDto): PostScheduleRequestDto {
-    const nowDate = moment().format('YYYY-MM-DDThh:mm:ss');
     const alarmOptions = value.alarmOptions;
-
-    const result = alarmOptions.filter(
-      (alarm) => moment(nowDate) < moment(alarm),
-    );
+    const result = alarmOptions.filter((alarm) => moment() < moment(alarm));
 
     value.alarmOptions = result;
     return value;

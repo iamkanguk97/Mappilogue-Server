@@ -1,3 +1,4 @@
+import { isDefined } from 'src/helpers/common.helper';
 import { Injectable } from '@nestjs/common';
 import {
   IProcessedScheduleAreasById,
@@ -11,6 +12,7 @@ import { PostScheduleRequestDto } from '../dtos/request/post-schedule-request.dt
 import { Notification } from 'firebase-admin/lib/messaging/messaging-api';
 
 import * as moment from 'moment';
+import { SCHEDULE_DEFAULT_TITLE } from '../constants/schedule.constant';
 
 @Injectable()
 export class ScheduleHelper {
@@ -28,7 +30,10 @@ export class ScheduleHelper {
     const [, startDateMonth, startDateDay] = body.startDate.split('-');
 
     return {
-      title: body.title,
+      title:
+        isDefined(body.title) && body.title.length
+          ? body.title
+          : SCHEDULE_DEFAULT_TITLE,
       body: `${startDateMonth}월 ${startDateDay}일에 있을 일정을 알려드려요!`,
     };
   }

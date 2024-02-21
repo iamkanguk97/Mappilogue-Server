@@ -34,7 +34,6 @@ import { ScheduleDto } from '../dtos/schedule.dto';
 import { UserProfileHelper } from '../../user/helpers/user-profile.helper';
 import { GetSchedulesInCalendarRequestDto } from '../dtos/get-schedules-in-calendar-request.dto';
 import { GetSchedulesInCalendarResponseDto } from '../dtos/get-schedules-in-calendar-response.dto';
-import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 import { ExceptionCodeDto } from 'src/common/dtos/exception-code.dto';
 import { InternalServerExceptionCode } from 'src/common/exception-code/internal-server.exception-code';
 import { CheckColumnEnum } from 'src/constants/enum';
@@ -163,66 +162,65 @@ export class ScheduleService {
     const alarmOptions = body.alarmOptions;
 
     if (isDefined(alarmOptions) && !isEmptyArray(alarmOptions)) {
+      const message =
+        this.scheduleHelper.generateScheduleNotificationMessage(body);
+
       const userWithAlarms = await this.userService.findUserWithAlarmSetting(
         userId,
       );
       const fcmToken = userWithAlarms.fcmToken;
 
-      if (!isDefined(fcmToken)) {
-        throw new BadRequestException(
-          UserExceptionCode.RequireFcmTokenRegister,
-        );
-      }
-
       const isFcmTokenValid = await this.userHelper.isUserFcmTokenValid(
         fcmToken,
       );
-
-      if (
-        isFcmTokenValid &&
+      const isCanSendScheduleAlarm =
         this.userProfileHelper.checkCanSendScheduleAlarm(
           userWithAlarms.userAlarmSetting,
-        )
-      ) {
-        const message =
-          this.scheduleHelper.generateScheduleNotificationMessage(body);
+        );
 
-        try {
-          await Promise.all(
-            alarmOptions.map(async (option) => {
-              const { id } = await queryRunner.manager
-                .getRepository(UserAlarmHistoryEntity)
-                .save(
-                  UserAlarmHistoryEntity.from(
-                    userId,
-                    newScheduleId,
-                    message,
-                    option,
-                    NotificationTypeEnum.SCHEDULE_REMINDER,
-                  ),
+      const pushAlarmCondition =
+        isDefined(fcmToken) && isFcmTokenValid && isCanSendScheduleAlarm;
+
+      try {
+        await Promise.all(
+          alarmOptions.map(async (option) => {
+            const { id } = await queryRunner.manager
+              .getRepository(UserAlarmHistoryEntity)
+              .save(
+                UserAlarmHistoryEntity.from(
+                  userId,
+                  newScheduleId,
+                  message,
+                  option,
+                  NotificationTypeEnum.SCHEDULE_REMINDER,
+                ),
+              );
+
+            if (pushAlarmCondition) {
+              const newCronName =
+                await this.notificationService.sendPushForScheduleCreate(
+                  newScheduleId,
+                  id,
+                  message,
+                  option,
+                  fcmToken,
                 );
 
-              await this.notificationService.sendPushForScheduleCreate(
-                newScheduleId,
-                id,
-                message,
-                option,
-                fcmToken,
-              );
-            }),
-          );
-        } catch (err) {
-          this.logger.error(
-            `[createScheduleAlarms - notification part] ${err}`,
-          );
-          if (err instanceof InternalServerErrorException) {
-            const errorResponse = err.getResponse() as ExceptionCodeDto;
-            if (
-              errorResponse.code !==
-              InternalServerExceptionCode.NotificationSchedulerError.code
-            ) {
-              throw err;
+              await queryRunner.manager
+                .getRepository(UserAlarmHistoryEntity)
+                .update({ id: id }, { cronName: newCronName });
             }
+          }),
+        );
+      } catch (err) {
+        this.logger.error(`[createScheduleAlarms - notification part] ${err}`);
+        if (err instanceof InternalServerErrorException) {
+          const errorResponse = err.getResponse() as ExceptionCodeDto;
+          if (
+            errorResponse.code !==
+            InternalServerExceptionCode.NotificationSchedulerError.code
+          ) {
+            throw err;
           }
         }
       }
@@ -555,7 +553,6 @@ export class ScheduleService {
         .update({ id: scheduleId }, properties);
       return;
     }
-    await this.scheduleRepository.update({ id: scheduleId }, properties);
   }
 
   /**
