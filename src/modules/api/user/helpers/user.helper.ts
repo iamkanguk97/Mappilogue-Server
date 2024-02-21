@@ -10,7 +10,6 @@ import {
 } from 'src/modules/core/auth/types';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 import { isDefined } from 'src/helpers/common.helper';
-import { NotificationErrorCodeEnum } from 'src/modules/core/notification/constants/notification.enum';
 import { PostLoginOrSignUpRequestDto } from '../dtos/request/post-login-or-sign-up-request.dto';
 import { UserSnsTypeEnum } from '../constants/enums/user.enum';
 import { AuthService } from 'src/modules/core/auth/services/auth.service';

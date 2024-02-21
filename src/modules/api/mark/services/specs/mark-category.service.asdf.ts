@@ -74,9 +74,6 @@ describe('MarkCategoryService', () => {
   });
 
   it('createMarkCategory - 기록 카테고리 생성 API', async () => {
-    const fn = () =>
-      markCategoryService.createMarkCategory(15, postMarkCategoryRequestDto);
-
     expect(
       await markCategoryService.createMarkCategory(
         15,
