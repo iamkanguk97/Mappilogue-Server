@@ -83,7 +83,6 @@ export class NotificationService {
    * @param   { TokenMessage } payload
    */
   async sendPushMessage(payload: TokenMessage): Promise<void> {
-    console.log(payload);
     await firebase.messaging().send(payload);
   }
 
@@ -132,12 +131,7 @@ export class NotificationService {
         true,
         'Asia/Seoul',
       );
-      console.log('hello!!!');
-      console.log(this.scheduleRegistry);
-
       this.scheduleRegistry.addCronJob(cronName, sendMessageJob);
-      console.log(this.scheduleRegistry.getCronJobs());
-      // sendMessageJob.start();
 
       return cronName;
     } catch (err) {
