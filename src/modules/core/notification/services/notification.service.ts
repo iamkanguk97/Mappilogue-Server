@@ -62,6 +62,18 @@ export class NotificationService {
         scheduleId: scheduleId.toString(),
       },
       token: fcmToken,
+      android: {
+        priority: 'high',
+      },
+      apns: {
+        payload: {
+          aps: {
+            contentAvailable: true,
+            title: message.title,
+            body: message.body,
+          },
+        },
+      },
     } as TokenMessage;
   }
 
@@ -103,19 +115,23 @@ export class NotificationService {
         fcmToken,
       );
 
-      const sendMessageJob = new CronJob(messageSendTime, async () => {
-        await this.sendPushMessage(payload);
-        await this.userAlarmHistoryRepository.update(
-          { id: userAlarmHistoryId },
-          {
-            isSent: CheckColumnEnum.ACTIVE,
-            alarmAt: () => 'CURRENT_TIMESTAMP',
-          },
-        );
-      });
-
+      const sendMessageJob = new CronJob(
+        messageSendTime,
+        async () => {
+          await this.sendPushMessage(payload);
+          await this.userAlarmHistoryRepository.update(
+            { id: userAlarmHistoryId },
+            {
+              isSent: CheckColumnEnum.ACTIVE,
+              alarmAt: () => 'CURRENT_TIMESTAMP',
+            },
+          );
+        },
+        null,
+        true,
+        'Asia/Seoul',
+      );
       this.scheduleRegistry.addCronJob(cronName, sendMessageJob);
-      sendMessageJob.start();
 
       return cronName;
     } catch (err) {

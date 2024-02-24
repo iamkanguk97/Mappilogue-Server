@@ -18,7 +18,7 @@ export class DatabaseService implements TypeOrmOptionsFactory {
       password: this.customConfigService.get<string>('DATABASE_PASSWORD'),
       database: this.customConfigService.get<string>('DATABASE_NAME'),
       entities: DATABASE_MODELS,
-      logging: true,
+      logging: this.customConfigService.isLocal(),
       synchronize: this.customConfigService.isLocal(),
       // synchronize: true,
       charset: 'utf8mb4',
