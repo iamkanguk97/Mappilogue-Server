@@ -62,6 +62,18 @@ export class NotificationService {
         scheduleId: scheduleId.toString(),
       },
       token: fcmToken,
+      android: {
+        priority: 'high',
+      },
+      apns: {
+        payload: {
+          aps: {
+            contentAvailable: true,
+            title: message.title,
+            body: message.body,
+          },
+        },
+      },
     } as TokenMessage;
   }
 
@@ -71,6 +83,7 @@ export class NotificationService {
    * @param   { TokenMessage } payload
    */
   async sendPushMessage(payload: TokenMessage): Promise<void> {
+    console.log(payload);
     await firebase.messaging().send(payload);
   }
 
@@ -103,19 +116,28 @@ export class NotificationService {
         fcmToken,
       );
 
-      const sendMessageJob = new CronJob(messageSendTime, async () => {
-        await this.sendPushMessage(payload);
-        await this.userAlarmHistoryRepository.update(
-          { id: userAlarmHistoryId },
-          {
-            isSent: CheckColumnEnum.ACTIVE,
-            alarmAt: () => 'CURRENT_TIMESTAMP',
-          },
-        );
-      });
+      const sendMessageJob = new CronJob(
+        messageSendTime,
+        async () => {
+          await this.sendPushMessage(payload);
+          await this.userAlarmHistoryRepository.update(
+            { id: userAlarmHistoryId },
+            {
+              isSent: CheckColumnEnum.ACTIVE,
+              alarmAt: () => 'CURRENT_TIMESTAMP',
+            },
+          );
+        },
+        null,
+        true,
+        'Asia/Seoul',
+      );
+      console.log('hello!!!');
+      console.log(this.scheduleRegistry);
 
       this.scheduleRegistry.addCronJob(cronName, sendMessageJob);
-      sendMessageJob.start();
+      console.log(this.scheduleRegistry.getCronJobs());
+      // sendMessageJob.start();
 
       return cronName;
     } catch (err) {
