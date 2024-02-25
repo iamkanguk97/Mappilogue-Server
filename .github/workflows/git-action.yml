@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Mappilogue-Server-Dev Build and Deploy to AWS EC2
 
 on:
   push:
@@ -8,7 +8,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
+
       - name: Login Dockerhub
         env:
           DOCKER_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}

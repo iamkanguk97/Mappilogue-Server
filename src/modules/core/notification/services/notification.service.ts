@@ -6,7 +6,6 @@ import {
 import { CronJob } from 'cron';
 import { InternalServerExceptionCode } from 'src/common/exception-code/internal-server.exception-code';
 import { CheckColumnEnum } from 'src/constants/enum';
-import { setFirebaseCredential } from 'src/helpers/firebase.helper';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import {
   Notification,
@@ -15,9 +14,11 @@ import {
 import { UserAlarmHistoryRepository } from 'src/modules/api/user/repositories/user-alarm-history.repository';
 
 import * as firebase from 'firebase-admin';
+import { setFirebaseCredential } from 'src/helpers/firebase.helper';
 
 firebase.initializeApp({
   credential: firebase.credential.cert(setFirebaseCredential(__dirname)),
+  // credential: firebase.credential.cert('./config/firebase-admin.json'),
 });
 
 @Injectable()
