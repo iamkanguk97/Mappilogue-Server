@@ -108,4 +108,14 @@ export const ScheduleExceptionCode = {
     '2029',
     '해당 일정의 지역이 아닙니다.',
   ),
+  YearRequiredIfMonthExist: setExceptionCode(
+    '2030',
+    '월을 넣은 경우에는 년도를 필수로 넣어주셔야 합니다.',
+  ),
+  YearAndMonthMustNumericString: setExceptionCode(
+    '2031',
+    '년도와 월 모두 숫자로 입력해주세요',
+  ),
+  YearRequired: setExceptionCode('2032', '년도를 입력해주세요.'),
+  MonthRequired: setExceptionCode('2033', '월을 입력해주세요.'),
 };

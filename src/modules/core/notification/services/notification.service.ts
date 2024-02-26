@@ -6,7 +6,6 @@ import {
 import { CronJob } from 'cron';
 import { InternalServerExceptionCode } from 'src/common/exception-code/internal-server.exception-code';
 import { CheckColumnEnum } from 'src/constants/enum';
-import { setFirebaseCredential } from 'src/helpers/firebase.helper';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import {
   Notification,
@@ -15,6 +14,7 @@ import {
 import { UserAlarmHistoryRepository } from 'src/modules/api/user/repositories/user-alarm-history.repository';
 
 import * as firebase from 'firebase-admin';
+import { setFirebaseCredential } from 'src/helpers/firebase.helper';
 
 firebase.initializeApp({
   credential: firebase.credential.cert(setFirebaseCredential(__dirname)),
@@ -62,6 +62,18 @@ export class NotificationService {
         scheduleId: scheduleId.toString(),
       },
       token: fcmToken,
+      android: {
+        priority: 'high',
+      },
+      apns: {
+        payload: {
+          aps: {
+            contentAvailable: true,
+            title: message.title,
+            body: message.body,
+          },
+        },
+      },
     } as TokenMessage;
   }
 
@@ -103,19 +115,23 @@ export class NotificationService {
         fcmToken,
       );
 
-      const sendMessageJob = new CronJob(messageSendTime, async () => {
-        await this.sendPushMessage(payload);
-        await this.userAlarmHistoryRepository.update(
-          { id: userAlarmHistoryId },
-          {
-            isSent: CheckColumnEnum.ACTIVE,
-            alarmAt: () => 'CURRENT_TIMESTAMP',
-          },
-        );
-      });
-
+      const sendMessageJob = new CronJob(
+        messageSendTime,
+        async () => {
+          await this.sendPushMessage(payload);
+          await this.userAlarmHistoryRepository.update(
+            { id: userAlarmHistoryId },
+            {
+              isSent: CheckColumnEnum.ACTIVE,
+              alarmAt: () => 'CURRENT_TIMESTAMP',
+            },
+          );
+        },
+        null,
+        true,
+        'Asia/Seoul',
+      );
       this.scheduleRegistry.addCronJob(cronName, sendMessageJob);
-      sendMessageJob.start();
 
       return cronName;
     } catch (err) {

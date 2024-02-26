@@ -38,3 +38,5 @@ lerna-debug.log*
 .env
 apple-social-login-key.p8
 /src/modules/core/database/migrations
+
+/scripts/mappilogue-ec2-key.pem

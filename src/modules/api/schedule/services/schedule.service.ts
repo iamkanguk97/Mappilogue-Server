@@ -11,6 +11,7 @@ import { DataSource, QueryRunner } from 'typeorm';
 import { ScheduleRepository } from '../repositories/schedule.repository';
 import {
   checkBetweenDatesWithNoMoment,
+  getDateListByYearAndMonth,
   getKoreanDateFormatByMultiple,
   getWeekendsByYearAndMonth,
 } from 'src/helpers/date.helper';
@@ -26,18 +27,20 @@ import { NotificationTypeEnum } from 'src/modules/core/notification/constants/no
 import { UserAlarmHistoryEntity } from '../../user/entities/user-alarm-history.entity';
 import { ScheduleHelper } from '../helpers/schedule.helper';
 import { solar2lunar } from 'solarlunar';
-import { GetScheduleOnSpecificDateResponseDto } from '../dtos/get-schedule-on-specific-date-response.dto';
+import { GetScheduleOnSpecificDateResponseDto } from '../dtos/response/get-schedule-on-specific-date-response.dto';
 import { ScheduleAreaRepository } from '../repositories/schedule-area.repository';
 import { PutScheduleRequestDto } from '../dtos/request/put-schedule-request.dto';
 import { GetScheduleAreasByIdResponseDto } from '../dtos/response/get-schedule-areas-by-id-response.dto';
 import { ScheduleDto } from '../dtos/schedule.dto';
 import { UserProfileHelper } from '../../user/helpers/user-profile.helper';
-import { GetSchedulesInCalendarRequestDto } from '../dtos/get-schedules-in-calendar-request.dto';
-import { GetSchedulesInCalendarResponseDto } from '../dtos/get-schedules-in-calendar-response.dto';
+import { GetSchedulesInCalendarRequestDto } from '../dtos/request/get-schedules-in-calendar-request.dto';
+import { GetSchedulesInCalendarResponseDto } from '../dtos/response/get-schedules-in-calendar-response.dto';
 import { ExceptionCodeDto } from 'src/common/dtos/exception-code.dto';
 import { InternalServerExceptionCode } from 'src/common/exception-code/internal-server.exception-code';
 import { CheckColumnEnum } from 'src/constants/enum';
 import { SchedulerRegistry } from '@nestjs/schedule';
+import { GetSchedulesInPostMarkRequestDto } from '../dtos/request/get-schedules-in-post-mark-request.dto';
+import { ISchedulesInPostMark } from '../types';
 
 @Injectable()
 export class ScheduleService {
@@ -620,5 +623,36 @@ export class ScheduleService {
         scheduleId,
       );
     return result.map((r) => r.alarmDate);
+  }
+
+  /**
+   * @summary 기록 생성시 일정 리스트 조회하기 API Service
+   * @author  Jason
+   * @param   { number } userId
+   * @param   { GetSchedulesInPostMarkRequestDto } query
+   * @returns { Promise<ISchedulesInPostMark> }
+   */
+  async findSchedulesInPostMark(
+    userId: number,
+    query: GetSchedulesInPostMarkRequestDto,
+  ): Promise<ISchedulesInPostMark> {
+    const dateList = getDateListByYearAndMonth(query.year, query.month);
+
+    const result = {};
+    for (const date of dateList) {
+      const schedulesPerDate =
+        await this.scheduleRepository.selectSchedulesByYearAndMonth(
+          userId,
+          date,
+        );
+
+      if (schedulesPerDate.length) {
+        Object.assign(result, {
+          [date]: schedulesPerDate,
+        });
+      }
+    }
+
+    return result;
   }
 }

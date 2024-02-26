@@ -58,16 +58,16 @@ export class UserService {
     body: PostLoginOrSignUpRequestDto,
     validateResult: IValidateSocialAccessToken,
   ): Promise<PostLoginOrSignUpResponseDto> {
+    const insertUserParam = await this.userHelper.generateInsertUserParam(
+      body,
+      validateResult.data,
+    );
+
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
-      const insertUserParam = await this.userHelper.generateInsertUserParam(
-        body,
-        validateResult.data,
-      );
-
       const { id: newUserId } = await queryRunner.manager.save(
         UserEntity,
         insertUserParam,
@@ -167,25 +167,11 @@ export class UserService {
 
     const refreshTokenRedisKey = this.jwtHelper.getRefreshTokenRedisKey(userId);
 
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+    await this.modifyById(userId, { fcmToken: null });
+    await this.customCacheService.delValue(refreshTokenRedisKey);
+    await this.customCacheService.setBlackList(accessToken, remainExpireTime);
 
-    try {
-      await Promise.all([
-        this.modifyById(userId, { fcmToken: null }, queryRunner),
-        this.customCacheService.delValue(refreshTokenRedisKey),
-        this.customCacheService.setBlackList(accessToken, remainExpireTime),
-      ]);
-
-      await queryRunner.commitTransaction();
-    } catch (err) {
-      this.logger.error(`[logout - transaction error] ${err}`);
-      await queryRunner.rollbackTransaction();
-      throw err;
-    } finally {
-      await queryRunner.release();
-    }
+    return;
   }
 
   /**

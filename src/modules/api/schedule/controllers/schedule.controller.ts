@@ -1,4 +1,5 @@
-import { GetScheduleOnSpecificDateRequestDto } from './../dtos/get-schedule-on-specific-date-request.dto';
+import { GetSchedulesInPostMarkQueryPipe } from './../pipes/get-schedules-in-post-mark-query.pipe';
+import { GetScheduleOnSpecificDateRequestDto } from '../dtos/request/get-schedule-on-specific-date-request.dto';
 import {
   Body,
   ClassSerializerInterceptor,
@@ -20,14 +21,16 @@ import { ResponseEntity } from 'src/common/entities/response.entity';
 import { ScheduleValidationPipe } from '../pipes/schedule-validation.pipe';
 import { ScheduleDto } from '../dtos/schedule.dto';
 import { PostScheduleResponseDto } from '../dtos/response/post-schedule-response.dto';
-import { GetScheduleOnSpecificDateResponseDto } from '../dtos/get-schedule-on-specific-date-response.dto';
+import { GetScheduleOnSpecificDateResponseDto } from '../dtos/response/get-schedule-on-specific-date-response.dto';
 import { GetScheduleDetailByIdResponseDto } from '../dtos/response/get-schedule-detail-by-id-response.dto';
 import { PutScheduleRequestDto } from '../dtos/request/put-schedule-request.dto';
 import { GetScheduleAreasByIdResponseDto } from '../dtos/response/get-schedule-areas-by-id-response.dto';
 import { DomainNameEnum } from 'src/constants/enum';
-import { GetSchedulesInCalendarRequestDto } from '../dtos/get-schedules-in-calendar-request.dto';
-import { GetSchedulesInCalendarResponseDto } from '../dtos/get-schedules-in-calendar-response.dto';
+import { GetSchedulesInCalendarRequestDto } from '../dtos/request/get-schedules-in-calendar-request.dto';
+import { GetSchedulesInCalendarResponseDto } from '../dtos/response/get-schedules-in-calendar-response.dto';
 import { PostScheduleAlarmsPipe } from '../pipes/post-schedule-alarms.pipe';
+import { GetSchedulesInPostMarkRequestDto } from '../dtos/request/get-schedules-in-post-mark-request.dto';
+import { ISchedulesInPostMark } from '../types';
 
 @Controller(DomainNameEnum.SCHEDULE)
 @UseInterceptors(ClassSerializerInterceptor)
@@ -141,6 +144,26 @@ export class ScheduleController {
     @Query() query: GetSchedulesInCalendarRequestDto,
   ): Promise<ResponseEntity<GetSchedulesInCalendarResponseDto>> {
     const result = await this.scheduleService.findSchedulesInCalendar(
+      userId,
+      query,
+    );
+    return ResponseEntity.OK_WITH(HttpStatus.OK, result);
+  }
+
+  /**
+   * @summary 기록 생성시 일정 리스트 조회하기 API
+   * @author  Jason
+   * @url     [GET] /api/v1/schedules?year=&month=
+   * @returns { Promise<ResponseEntity<ISchedulesInPostMark>> }
+   */
+  @Get()
+  @HttpCode(HttpStatus.OK)
+  async getSchedulesInPostMark(
+    @UserId() userId: number,
+    @Query(GetSchedulesInPostMarkQueryPipe)
+    query: GetSchedulesInPostMarkRequestDto,
+  ): Promise<ResponseEntity<ISchedulesInPostMark>> {
+    const result = await this.scheduleService.findSchedulesInPostMark(
       userId,
       query,
     );
