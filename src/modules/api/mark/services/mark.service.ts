@@ -218,6 +218,7 @@ export class MarkService {
     pageOptionsDto: PageOptionsDto,
   ) {
     let result;
+
     switch (query.option) {
       case EGetMarkSearchOption.AREA:
         result = await this.markRepository.selectMarkSearchByArea(

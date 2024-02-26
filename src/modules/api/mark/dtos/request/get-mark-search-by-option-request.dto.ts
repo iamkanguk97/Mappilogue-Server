@@ -15,4 +15,7 @@ export class GetMarkSearchByOptionRequestDto {
   )
   @IsNotEmpty(setValidatorContext(MarkExceptionCode.MarkSearchOptionEmpty))
   option!: EGetMarkSearchOption;
+
+  user_lat?: string;
+  user_lon?: string;
 }
