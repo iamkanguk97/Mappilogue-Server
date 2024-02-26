@@ -1,4 +1,5 @@
 #!/bin/bash
+
 PEM_PATH=./scripts/mappilogue-ec2-key.pem
 if [ ! -f $PEM_PATH ]; then
     echo "DEPLOY_FAIL: not file exist \"$PEM_PATH\""
@@ -48,16 +49,11 @@ echo -e '\n======================================\n'
 
 # 원격 서버에서 프로젝트 의존성 설치
 ssh -i $PEM_PATH $SERVER "npm --prefix $DEPLOY_PATH install"
-# ssh -i $PEM_PATH $SERVER "npm install"
 
 # PM2를 사용하여 애플리케이션 실행 또는 재시작
 ssh -i $PEM_PATH $SERVER "pm2 startOrReload $DEPLOY_PATH/ecosystem.config.js"
-# ssh -i $PEM_PATH $SERVER "npm run pm2:start:dev"
-# ssh -i $PEM_PATH $SERVER "npm run deploy:dev:start"
 
 # 배포 완료 메시지 출력
 echo -e '\n======================================\n'
 echo 'DEPLOY SUCCESS AND DONE.'
 echo -e '\n======================================\n'
-
-echo -e "hello $DEPLOY_PATH/ecosystem.config.js"

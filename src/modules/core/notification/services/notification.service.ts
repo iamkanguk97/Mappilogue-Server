@@ -18,7 +18,6 @@ import { setFirebaseCredential } from 'src/helpers/firebase.helper';
 
 firebase.initializeApp({
   credential: firebase.credential.cert(setFirebaseCredential(__dirname)),
-  // credential: firebase.credential.cert('./config/firebase-admin.json'),
 });
 
 @Injectable()
