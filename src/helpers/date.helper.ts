@@ -128,3 +128,26 @@ export const getWeekendsByYearAndMonth = (
 
   return result;
 };
+
+/**
+ * @summary 년월을 가지고 날짜 리스트 가져오기
+ * @author  Jason
+ * @param   { number } year
+ * @param   { number } month
+ * @returns { string[] }
+ */
+export const getDateListByYearAndMonth = (
+  year: number,
+  month: number,
+): string[] => {
+  const last = getLastDate(year, month);
+  const formattedMonth = month < 10 ? `0${month}` : month.toString();
+  const result = [];
+
+  for (let i = 1; i <= last; i++) {
+    const formattedDay = i < 10 ? `0${i}` : i.toString();
+    result.push(`${year}-${formattedMonth}-${formattedDay}`);
+  }
+
+  return result;
+};

@@ -56,3 +56,11 @@ export interface IScheduleListInHomeOnToday
   colorCode: string;
   areas?: ScheduleAreaEntity[];
 }
+
+export type TSchedulesByYearAndMonth = (ISchedulesOnSpecificDate & {
+  scheduleAreaId: number;
+})[];
+
+export interface ISchedulesInPostMark {
+  [date: string]: TSchedulesByYearAndMonth;
+}
