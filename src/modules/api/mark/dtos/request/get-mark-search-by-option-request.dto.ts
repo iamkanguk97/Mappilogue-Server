@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { EGetMarkSearchOption } from '../../constants/enums/mark.enum';
 import { setValidatorContext } from 'src/common/common';
 import { MarkExceptionCode } from 'src/common/exception-code/mark.exception-code';
@@ -16,6 +16,11 @@ export class GetMarkSearchByOptionRequestDto {
   @IsNotEmpty(setValidatorContext(MarkExceptionCode.MarkSearchOptionEmpty))
   option!: EGetMarkSearchOption;
 
-  user_lat?: string;
-  user_lon?: string;
+  @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
+  @IsOptional()
+  lat: string | null = null;
+
+  @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
+  @IsOptional()
+  lon: string | null = null;
 }

@@ -210,6 +210,7 @@ export class MarkService {
    * @author  Jason
    * @param   { number } userId
    * @param   { GetMarkSearchByOptionRequestDto } query
+   * @param   { PageOptionsDto } pageOptionsDto
    * @returns
    */
   async findMarkSearchByOption(
@@ -229,9 +230,14 @@ export class MarkService {
       case EGetMarkSearchOption.MARK:
         result = await this.markRepository.selectMarkSearchByMark(
           userId,
-          query.keyword,
+          query
+          pageOptionsDto,
         );
-        return;
+        console.log(result);
+        return ResultWithPageDto.from(
+          GetMarkListByCategoryResponseDto.from(result.result),
+          result.meta,
+        );
       default:
         throw new BadRequestException(
           MarkExceptionCode.MarkSearchOptionErrorType,

@@ -37,7 +37,6 @@ import { PageOptionsDto } from 'src/common/dtos/pagination/page-options.dto';
 import { GetMarkListByCategoryResponseDto } from '../dtos/response/get-mark-list-by-category-response.dto';
 import { ResponseWithPageEntity } from 'src/common/entities/response-with-page.entity';
 import { PutMarkRequestDto } from '../dtos/request/put-mark-request.dto';
-import { Public } from 'src/modules/core/auth/decorators/auth.decorator';
 import { GetMarkSearchByOptionRequestDto } from '../dtos/request/get-mark-search-by-option-request.dto';
 
 @Controller(DomainNameEnum.MARK)
@@ -166,19 +165,12 @@ export class MarkController {
     @UserId() userId: number,
     @Query() query: GetMarkSearchByOptionRequestDto,
     @GetPagination() pageOptionsDto: PageOptionsDto,
-  ) {
+  ): Promise<ResponseWithPageEntity<any>> {
     const result = await this.markService.findMarkSearchByOption(
       userId,
       query,
       pageOptionsDto,
     );
-    return result;
-  }
-
-  @Public()
-  @Get('/test')
-  async test(@GetPagination() page: PageOptionsDto) {
-    console.log(page);
-    return;
+    return ResponseWithPageEntity.OK_WITH_PAGINATION(HttpStatus.OK, result);
   }
 }

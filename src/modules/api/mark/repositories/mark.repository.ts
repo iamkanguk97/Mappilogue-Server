@@ -14,6 +14,7 @@ import { PageMetaDto } from 'src/common/dtos/pagination/page-meta.dto';
 import { PageOptionsDto } from 'src/common/dtos/pagination/page-options.dto';
 import { IMarkListByCategory, IMarkListInHome } from '../types';
 import { USER_HOME_MARK_MAX_COUNT } from '../../user/constants/user-home.constant';
+import { GetMarkSearchByOptionRequestDto } from '../dtos/request/get-mark-search-by-option-request.dto';
 
 @CustomRepository(MarkEntity)
 export class MarkRepository extends Repository<MarkEntity> {
@@ -181,9 +182,48 @@ export class MarkRepository extends Repository<MarkEntity> {
    * @summary 기록 검색 -> 기록 이름으로 기록 검색하기
    * @author  Jason
    * @param   { number } userId
-   * @param   { string } keyword
+   * @param   { GetMarkSearchByOptionRequestDto } query
    */
-  async selectMarkSearchByMark(userId: number, keyword: string) {
-    return;
+  async selectMarkSearchByMark(
+    userId: number,
+    query: GetMarkSearchByOptionRequestDto,
+    pageOptionsDto: PageOptionsDto,
+  ) {
+    const latitude = query.lat;
+    const longitude = query.lon;
+
+    const queryBuilder = this.createQueryBuilder('M');
+
+    const result = await queryBuilder
+      .select('M.*')
+      .addSelect(
+        'IF(ML.scheduleAreaId IS NULL, ML.name, SA.name) AS location_name',
+      )
+      .addSelect(
+        'IF(ML.scheduleAreaId IS NULL, ML.streetAddress, SA.streetAddress) AS location_streetAddress',
+      )
+      .addSelect(
+        'IF(ML.scheduleAreaId IS NULL, ML.latitude, SA.latitude) AS location_latitude',
+      )
+      .addSelect(
+        'IF(ML.scheduleAreaId IS NULL, ML.longitude, SA.longitude) AS location_longitude',
+      )
+      .innerJoin(MarkLocationEntity, 'ML', 'ML.markId = M.id')
+      .leftJoin(ScheduleAreaEntity, 'SA', 'SA.id = ML.scheduleAreaId')
+      .where(`M.title LIKE "%${query.keyword}%"`)
+      .andWhere('M.userId = :userId', { userId })
+      .andWhere('M.deletedAt IS NULL')
+      .andWhere('ML.deletedAt IS NULL')
+      .andWhere('SA.deletedAt IS NULL')
+      .offset(pageOptionsDto.getOffset())
+      .limit(pageOptionsDto.getLimit())
+      .getRawMany();
+
+    const itemCount = await queryBuilder.getCount();
+
+    return ResultWithPageDto.from(
+      result,
+      new PageMetaDto({ pageOptionsDto, itemCount }),
+    );
   }
 }
