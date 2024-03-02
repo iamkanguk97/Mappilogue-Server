@@ -100,12 +100,12 @@ export class ScheduleRepository extends Repository<ScheduleEntity> {
    * @author  Jason
    * @param   { number } userId
    * @param   { string } date
-   * @returns { Promise<TSchedulesByYearAndMonth> }
+   * @returns { Promise<TSchedulesByYearAndMonth[]> }
    */
   async selectSchedulesByYearAndMonth(
     userId: number,
     date: string,
-  ): Promise<TSchedulesByYearAndMonth> {
+  ): Promise<TSchedulesByYearAndMonth[]> {
     return await this.createQueryBuilder('S')
       .select([
         'S.id AS scheduleId',
@@ -122,13 +122,15 @@ export class ScheduleRepository extends Repository<ScheduleEntity> {
       .leftJoin(
         ScheduleAreaEntity,
         'SA',
-        'SA.scheduleId = S.id AND SA.date = :date AND SA.sequence = 1',
+        'SA.scheduleId = S.id AND SA.date = :date',
         { date },
       )
       .where('S.userId = :userId', { userId })
       .andWhere(':date BETWEEN S.startDate AND S.endDate', { date })
       .andWhere('S.deletedAt IS NULL')
       .andWhere('SA.deletedAt IS NULL')
+      .groupBy('S.id')
+      .having('MIN(SA.sequence)')
       .orderBy('S.startDate')
       .getRawMany();
   }

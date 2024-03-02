@@ -57,9 +57,9 @@ export interface IScheduleListInHomeOnToday
   areas?: ScheduleAreaEntity[];
 }
 
-export type TSchedulesByYearAndMonth = (ISchedulesOnSpecificDate & {
+export type TSchedulesByYearAndMonth = ISchedulesOnSpecificDate & {
   scheduleAreaId: number;
-})[];
+};
 
 export interface ISchedulesInPostMark {
   [date: string]: TSchedulesByYearAndMonth;
