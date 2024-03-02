@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   Logger,
   UnauthorizedException,
@@ -299,7 +300,7 @@ export class UserService {
     });
 
     if (!isDefined(result)) {
-      throw new BadRequestException(UserExceptionCode.NotExistUser);
+      throw new ForbiddenException(UserExceptionCode.NotExistUser);
     }
 
     if (!isDefined(result.userAlarmSetting)) {

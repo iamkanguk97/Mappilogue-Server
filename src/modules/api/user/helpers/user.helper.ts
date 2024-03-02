@@ -95,19 +95,6 @@ export class UserHelper {
     } catch (err) {
       this.logger.error(`[UserHelper - isUserFcmTokenValid] ${err}`);
       return false;
-      // const error = err as { errorInfo?: { code: string } };
-
-      // if (isDefined(error.errorInfo)) {
-      //   switch (error.errorInfo.code) {
-      //     case NotificationErrorCodeEnum.INVALID_ARGUMENT:
-      //       throw new BadRequestException(UserExceptionCode.InvalidFcmToken);
-      //     case NotificationErrorCodeEnum.NOT_REGISTERED_FCM_TOKEN:
-      //       throw new BadRequestException(UserExceptionCode.FcmTokenExpired);
-      //     default:
-      //       throw err;
-      //   }
-      // }
-      // throw err;
     }
   }
 
