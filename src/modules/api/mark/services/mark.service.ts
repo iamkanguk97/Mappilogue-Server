@@ -76,7 +76,6 @@ export class MarkService {
       await queryRunner.commitTransaction();
       return PostMarkResponseDto.of(markId);
     } catch (err) {
-      console.log(err);
       this.logger.error(`[createMark - transaction error] ${err}`);
       await this.markHelper.deleteUploadedMarkImageWhenError(files);
       await queryRunner.rollbackTransaction();
