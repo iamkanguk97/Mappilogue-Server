@@ -36,11 +36,9 @@ export class MarkRepository extends Repository<MarkEntity> {
   /**
    * @summary 특정 카테고리로 기록 리스트 구하기
    * @author  Jason
-   *
    * @param   { number } userId
    * @param   { number } markCategoryId
    * @param   { PageOptionsDto } pageOptionsDto
-   *
    * @returns { Promise<ResultWithPageDto<IMarkListByCategory[]>> }
    */
   async selectMarkListByCategory(
@@ -65,19 +63,19 @@ export class MarkRepository extends Repository<MarkEntity> {
         'markImageUrl',
       )
       .addSelect(
-        'IFNULL(IF(ML.scheduleAreaId IS NULL, ML.name, SA.name), "")',
+        'IF(ML.scheduleAreaId IS NULL, ML.name, SA.name)',
         'locationName',
       )
       .addSelect(
-        'IFNULL(IF(ML.scheduleAreaId IS NULL, ML.streetAddress, SA.streetAddress), "")',
+        'IF(ML.scheduleAreaId IS NULL, ML.streetAddress, SA.streetAddress)',
         'streetAddress',
       )
       .addSelect(
-        'IFNULL(IF(ML.scheduleAreaId IS NULL, ML.latitude, SA.latitude), "")',
+        'IF(ML.scheduleAreaId IS NULL, ML.latitude, SA.latitude)',
         'latitude',
       )
       .addSelect(
-        'IFNULL(IF(ML.scheduleAreaId IS NULL, ML.longitude, SA.longitude), "")',
+        'IF(ML.scheduleAreaId IS NULL, ML.longitude, SA.longitude)',
         'longitude',
       )
       .addSelect(
