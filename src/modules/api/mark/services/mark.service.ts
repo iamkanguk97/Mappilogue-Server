@@ -32,6 +32,7 @@ import {
 import { MarkLocationEntity } from '../entities/mark-location.entity';
 import { GetMarkSearchByOptionRequestDto } from '../dtos/request/get-mark-search-by-option-request.dto';
 import { EGetMarkSearchOption } from '../constants/enums/mark.enum';
+import { ScheduleAreaRepository } from '../../schedule/repositories/schedule-area.repository';
 
 @Injectable()
 export class MarkService {
@@ -43,6 +44,7 @@ export class MarkService {
     private readonly markMetadataRepository: MarkMetadataRepository,
     private readonly markLocationRepository: MarkLocationRepository,
     private readonly markCategoryRepository: MarkCategoryRepository,
+    private readonly scheduleAreaRepository: ScheduleAreaRepository,
     private readonly scheduleService: ScheduleService,
     private readonly markHelper: MarkHelper,
   ) {}
@@ -78,7 +80,6 @@ export class MarkService {
       await queryRunner.commitTransaction();
       return PostMarkResponseDto.of(markId);
     } catch (err) {
-      console.log(err);
       this.logger.error(`[createMark - transaction error] ${err}`);
       await this.markHelper.deleteUploadedMarkImageWhenError(files);
       await queryRunner.rollbackTransaction();
@@ -185,7 +186,6 @@ export class MarkService {
    * @param   { number } userId
    * @param   { number } markCategoryId
    * @param   { PageOptionsDto } pageOptionsDto
-   *
    * @returns { Promise<ResultWithPageDto<GetMarkListByCategoryResponseDto>> }
    */
   async findMarkListByCategory(
@@ -230,7 +230,7 @@ export class MarkService {
       case EGetMarkSearchOption.MARK:
         result = await this.markRepository.selectMarkSearchByMark(
           userId,
-          query
+          query,
           pageOptionsDto,
         );
         console.log(result);
@@ -446,13 +446,27 @@ export class MarkService {
    * @returns { Promise<string> }
    */
   async setMarkDateOnDetail(mark: MarkDto): Promise<string> {
-    /**
-     * @TODO 연결된 scheduleId (areaId)가 있는 경우에는 그 장소의 날짜
-     * - 없으면 Mark의 createdAt
-     */
-    if (isDefined(mark.scheduleId)) {
-      return '2023-12-19'; // 곧 수정할거임!
+    const markLocationStatus = await this.markLocationRepository.findOne({
+      where: {
+        markId: mark.id,
+      },
+    });
+
+    if (
+      isDefined(markLocationStatus) &&
+      isDefined(markLocationStatus.scheduleAreaId)
+    ) {
+      const scheduleAreaStatus = await this.scheduleAreaRepository.findOne({
+        where: {
+          id: markLocationStatus.scheduleAreaId,
+        },
+      });
+
+      if (isDefined(scheduleAreaStatus)) {
+        return scheduleAreaStatus.date;
+      }
     }
+
     return mark.createdAt;
   }
 

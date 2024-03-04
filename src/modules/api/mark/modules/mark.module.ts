@@ -14,6 +14,7 @@ import { MarkEntity } from '../entities/mark.entity';
 import { MarkCategoryEntity } from '../entities/mark-category.entity';
 import { MarkMetadataEntity } from '../entities/mark-metadata.entity';
 import { MarkLocationEntity } from '../entities/mark-location.entity';
+import { ScheduleAreaRepository } from '../../schedule/repositories/schedule-area.repository';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { MarkLocationEntity } from '../entities/mark-location.entity';
       MarkCategoryRepository,
       MarkMetadataRepository,
       MarkLocationRepository,
+      ScheduleAreaRepository,
     ]),
   ],
   controllers: [MarkController],

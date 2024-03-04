@@ -27,8 +27,8 @@ export class PageOptionsDto {
    * @returns { number }
    */
   getOffset(): number {
-    this.pageNo = setPageNo(this?.pageNo);
-    this.pageSize = setPageSize(this?.pageSize);
+    this.pageNo = setPageNo(this.pageNo);
+    this.pageSize = setPageSize(this.pageSize);
     return (Number(this.pageNo) - 1) * Number(this.pageSize);
   }
 
@@ -38,7 +38,7 @@ export class PageOptionsDto {
    * @returns { number }
    */
   getLimit(): number {
-    this.pageSize = setPageSize(this?.pageSize);
+    this.pageSize = setPageSize(this.pageSize);
     return Number(this.pageSize);
   }
 }

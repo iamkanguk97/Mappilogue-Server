@@ -122,7 +122,7 @@ export class MarkController {
   }
 
   /**
-   * @summary 특정 카테고리의 기록 조회하기 API
+   * @summary 특정 카테고리의 기록 리스트 조회하기 API
    * @author  Jason
    * @url     [GET] /api/v1/marks?markCategoryId=
    * @returns { Promise<ResponseWithPageEntity<GetMarkListByCategoryResponseDto>> }
@@ -165,12 +165,12 @@ export class MarkController {
     @UserId() userId: number,
     @Query() query: GetMarkSearchByOptionRequestDto,
     @GetPagination() pageOptionsDto: PageOptionsDto,
-  ): Promise<ResponseWithPageEntity<any>> {
+  ): Promise<any> {
     const result = await this.markService.findMarkSearchByOption(
       userId,
       query,
       pageOptionsDto,
     );
-    return ResponseWithPageEntity.OK_WITH_PAGINATION(HttpStatus.OK, result);
+    // return ResponseWithPageEntity.OK_WITH_PAGINATION(HttpStatus.OK, result);
   }
 }

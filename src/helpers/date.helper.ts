@@ -144,7 +144,7 @@ export const getDateListByYearAndMonth = (
   const formattedMonth = month < 10 ? `0${month}` : month.toString();
   const result = [];
 
-  for (let i = 1; i <= last; i++) {
+  for (let i = last; i >= 1; i--) {
     const formattedDay = i < 10 ? `0${i}` : i.toString();
     result.push(`${year}-${formattedMonth}-${formattedDay}`);
   }
