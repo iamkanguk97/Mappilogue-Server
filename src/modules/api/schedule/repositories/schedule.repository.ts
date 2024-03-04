@@ -117,6 +117,7 @@ export class ScheduleRepository extends Repository<ScheduleEntity> {
         'SA.id AS scheduleAreaId',
         'SA.name AS areaName',
         'SA.time AS areaTime',
+        'MIN(SA.sequence) AS sequence',
       ])
       .innerJoin(ColorEntity, 'C', 'C.id = S.colorId')
       .leftJoin(
@@ -130,8 +131,8 @@ export class ScheduleRepository extends Repository<ScheduleEntity> {
       .andWhere('S.deletedAt IS NULL')
       .andWhere('SA.deletedAt IS NULL')
       .groupBy('S.id')
-      .having('MIN(SA.sequence)')
       .orderBy('S.startDate')
+      .addOrderBy('S.id')
       .getRawMany();
   }
 }
