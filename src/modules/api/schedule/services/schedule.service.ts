@@ -11,6 +11,7 @@ import { DataSource, QueryRunner } from 'typeorm';
 import { ScheduleRepository } from '../repositories/schedule.repository';
 import {
   checkBetweenDatesWithNoMoment,
+  getDateListByYearAndMonth,
   getKoreanDateFormatByMultiple,
   getWeekendsByYearAndMonth,
 } from 'src/helpers/date.helper';
@@ -26,19 +27,20 @@ import { NotificationTypeEnum } from 'src/modules/core/notification/constants/no
 import { UserAlarmHistoryEntity } from '../../user/entities/user-alarm-history.entity';
 import { ScheduleHelper } from '../helpers/schedule.helper';
 import { solar2lunar } from 'solarlunar';
-import { GetScheduleOnSpecificDateResponseDto } from '../dtos/get-schedule-on-specific-date-response.dto';
+import { GetScheduleOnSpecificDateResponseDto } from '../dtos/response/get-schedule-on-specific-date-response.dto';
 import { ScheduleAreaRepository } from '../repositories/schedule-area.repository';
 import { PutScheduleRequestDto } from '../dtos/request/put-schedule-request.dto';
 import { GetScheduleAreasByIdResponseDto } from '../dtos/response/get-schedule-areas-by-id-response.dto';
 import { ScheduleDto } from '../dtos/schedule.dto';
 import { UserProfileHelper } from '../../user/helpers/user-profile.helper';
-import { GetSchedulesInCalendarRequestDto } from '../dtos/get-schedules-in-calendar-request.dto';
-import { GetSchedulesInCalendarResponseDto } from '../dtos/get-schedules-in-calendar-response.dto';
-import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
+import { GetSchedulesInCalendarRequestDto } from '../dtos/request/get-schedules-in-calendar-request.dto';
+import { GetSchedulesInCalendarResponseDto } from '../dtos/response/get-schedules-in-calendar-response.dto';
 import { ExceptionCodeDto } from 'src/common/dtos/exception-code.dto';
 import { InternalServerExceptionCode } from 'src/common/exception-code/internal-server.exception-code';
 import { CheckColumnEnum } from 'src/constants/enum';
 import { SchedulerRegistry } from '@nestjs/schedule';
+import { GetSchedulesInPostMarkRequestDto } from '../dtos/request/get-schedules-in-post-mark-request.dto';
+import { ISchedulesInPostMark } from '../types';
 
 @Injectable()
 export class ScheduleService {
@@ -163,66 +165,65 @@ export class ScheduleService {
     const alarmOptions = body.alarmOptions;
 
     if (isDefined(alarmOptions) && !isEmptyArray(alarmOptions)) {
+      const message =
+        this.scheduleHelper.generateScheduleNotificationMessage(body);
+
       const userWithAlarms = await this.userService.findUserWithAlarmSetting(
         userId,
       );
       const fcmToken = userWithAlarms.fcmToken;
 
-      if (!isDefined(fcmToken)) {
-        throw new BadRequestException(
-          UserExceptionCode.RequireFcmTokenRegister,
-        );
-      }
-
       const isFcmTokenValid = await this.userHelper.isUserFcmTokenValid(
         fcmToken,
       );
-
-      if (
-        isFcmTokenValid &&
+      const isCanSendScheduleAlarm =
         this.userProfileHelper.checkCanSendScheduleAlarm(
           userWithAlarms.userAlarmSetting,
-        )
-      ) {
-        const message =
-          this.scheduleHelper.generateScheduleNotificationMessage(body);
+        );
 
-        try {
-          await Promise.all(
-            alarmOptions.map(async (option) => {
-              const { id } = await queryRunner.manager
-                .getRepository(UserAlarmHistoryEntity)
-                .save(
-                  UserAlarmHistoryEntity.from(
-                    userId,
-                    newScheduleId,
-                    message,
-                    option,
-                    NotificationTypeEnum.SCHEDULE_REMINDER,
-                  ),
+      const pushAlarmCondition =
+        isDefined(fcmToken) && isFcmTokenValid && isCanSendScheduleAlarm;
+
+      try {
+        await Promise.all(
+          alarmOptions.map(async (option) => {
+            const { id } = await queryRunner.manager
+              .getRepository(UserAlarmHistoryEntity)
+              .save(
+                UserAlarmHistoryEntity.from(
+                  userId,
+                  newScheduleId,
+                  message,
+                  option,
+                  NotificationTypeEnum.SCHEDULE_REMINDER,
+                ),
+              );
+
+            if (pushAlarmCondition) {
+              const newCronName =
+                await this.notificationService.sendPushForScheduleCreate(
+                  newScheduleId,
+                  id,
+                  message,
+                  option,
+                  fcmToken,
                 );
 
-              await this.notificationService.sendPushForScheduleCreate(
-                newScheduleId,
-                id,
-                message,
-                option,
-                fcmToken,
-              );
-            }),
-          );
-        } catch (err) {
-          this.logger.error(
-            `[createScheduleAlarms - notification part] ${err}`,
-          );
-          if (err instanceof InternalServerErrorException) {
-            const errorResponse = err.getResponse() as ExceptionCodeDto;
-            if (
-              errorResponse.code !==
-              InternalServerExceptionCode.NotificationSchedulerError.code
-            ) {
-              throw err;
+              await queryRunner.manager
+                .getRepository(UserAlarmHistoryEntity)
+                .update({ id: id }, { cronName: newCronName });
             }
+          }),
+        );
+      } catch (err) {
+        this.logger.error(`[createScheduleAlarms - notification part] ${err}`);
+        if (err instanceof InternalServerErrorException) {
+          const errorResponse = err.getResponse() as ExceptionCodeDto;
+          if (
+            errorResponse.code !==
+            InternalServerExceptionCode.NotificationSchedulerError.code
+          ) {
+            throw err;
           }
         }
       }
@@ -331,11 +332,18 @@ export class ScheduleService {
       (alarm) => !updateAlarmOptions.includes(alarm.alarmDate),
     );
 
+    // 알림 삭제처리하기
     await this.removeScheduleAlarms(queryRunner, schedule, deletedAlarmDiff);
 
-    body.alarmOptions = updateAlarmOptions.filter((alarm) => {
-      !scheduleAlarmList.map((s) => s.alarmDate).includes(alarm);
-    });
+    const beforeAlarmsExceptDeleted = scheduleAlarmList.filter(
+      (item) => !deletedAlarmDiff.includes(item),
+    );
+
+    const addedAlarms = updateAlarmOptions.filter(
+      (item) =>
+        !beforeAlarmsExceptDeleted.map((s) => s.alarmDate).includes(item),
+    );
+    body.alarmOptions = addedAlarms;
 
     await this.createScheduleAlarms(
       queryRunner,
@@ -363,13 +371,9 @@ export class ScheduleService {
           .getRepository(UserAlarmHistoryEntity)
           .softDelete(alarm.id);
 
-        const deletedCronName =
-          this.notificationService.setScheduleNotificationCronName(
-            schedule.id,
-            alarm.id,
-          );
-
-        this.scheduleRegistry.deleteCronJob(deletedCronName);
+        if (isDefined(alarm.cronName)) {
+          this.scheduleRegistry.deleteCronJob(alarm.cronName);
+        }
       }),
     );
   }
@@ -555,7 +559,6 @@ export class ScheduleService {
         .update({ id: scheduleId }, properties);
       return;
     }
-    await this.scheduleRepository.update({ id: scheduleId }, properties);
   }
 
   /**
@@ -620,5 +623,36 @@ export class ScheduleService {
         scheduleId,
       );
     return result.map((r) => r.alarmDate);
+  }
+
+  /**
+   * @summary 기록 생성시 일정 리스트 조회하기 API Service
+   * @author  Jason
+   * @param   { number } userId
+   * @param   { GetSchedulesInPostMarkRequestDto } query
+   * @returns { Promise<ISchedulesInPostMark> }
+   */
+  async findSchedulesInPostMark(
+    userId: number,
+    query: GetSchedulesInPostMarkRequestDto,
+  ): Promise<ISchedulesInPostMark> {
+    const dateList = getDateListByYearAndMonth(query.year, query.month);
+
+    const result = {};
+    for (const date of dateList) {
+      const schedulesPerDate =
+        await this.scheduleRepository.selectSchedulesByYearAndMonth(
+          userId,
+          date,
+        );
+
+      if (schedulesPerDate.length) {
+        Object.assign(result, {
+          [date]: schedulesPerDate,
+        });
+      }
+    }
+
+    return result;
   }
 }

@@ -40,6 +40,9 @@ export class UserAlarmHistoryEntity extends CommonEntity {
   @Column('varchar', { length: USER_ALARM_HISTORY_TYPE_LENGTH, nullable: true })
   type!: NotificationTypeEnum;
 
+  @Column('varchar', { length: 50, nullable: true })
+  cronName!: string | null;
+
   @Column('varchar', {
     length: StatusOrCheckColumnLengthEnum.CHECK,
     default: CheckColumnEnum.INACTIVE,

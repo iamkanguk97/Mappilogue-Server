@@ -26,8 +26,6 @@ export class PostMarkValidationPipe implements PipeTransform {
   ) {}
 
   async transform(value: PostMarkRequestDto): Promise<PostMarkRequestDto> {
-    console.log(value);
-
     const userId = this.request.user.id;
     const markImages = this.request.files ?? [];
 

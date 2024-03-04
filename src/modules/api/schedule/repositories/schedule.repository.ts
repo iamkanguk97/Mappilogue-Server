@@ -6,6 +6,7 @@ import {
   IScheduleListInHomeOnToday,
   ISchedulesInCalendar,
   ISchedulesOnSpecificDate,
+  TSchedulesByYearAndMonth,
 } from '../types';
 import { ScheduleAreaEntity } from '../entities/schedule-area.entity';
 import { SCHEDULE_DEFAULT_TITLE } from '../constants/schedule.constant';
@@ -92,5 +93,46 @@ export class ScheduleRepository extends Repository<ScheduleEntity> {
 
   async selectScheduleListInHomeOnAfter(userId: number) {
     return;
+  }
+
+  /**
+   * @summary 날짜로 일정과 해당하는 지역 가져오기
+   * @author  Jason
+   * @param   { number } userId
+   * @param   { string } date
+   * @returns { Promise<TSchedulesByYearAndMonth[]> }
+   */
+  async selectSchedulesByYearAndMonth(
+    userId: number,
+    date: string,
+  ): Promise<TSchedulesByYearAndMonth[]> {
+    return await this.createQueryBuilder('S')
+      .select([
+        'S.id AS scheduleId',
+        'DATE_FORMAT(S.startDate, "%Y-%m-%d") AS startDate',
+        'DATE_FORMAT(S.endDate, "%Y-%m-%d") AS endDate',
+        'S.title AS title',
+        'S.colorId AS colorId',
+        'C.code AS colorCode',
+        'SA.id AS scheduleAreaId',
+        'SA.name AS areaName',
+        'SA.time AS areaTime',
+        'MIN(SA.sequence) AS sequence',
+      ])
+      .innerJoin(ColorEntity, 'C', 'C.id = S.colorId')
+      .leftJoin(
+        ScheduleAreaEntity,
+        'SA',
+        'SA.scheduleId = S.id AND SA.date = :date',
+        { date },
+      )
+      .where('S.userId = :userId', { userId })
+      .andWhere(':date BETWEEN S.startDate AND S.endDate', { date })
+      .andWhere('S.deletedAt IS NULL')
+      .andWhere('SA.deletedAt IS NULL')
+      .groupBy('S.id')
+      .orderBy('S.startDate')
+      .addOrderBy('S.id')
+      .getRawMany();
   }
 }

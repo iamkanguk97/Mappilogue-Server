@@ -6,16 +6,15 @@ import {
 import { CronJob } from 'cron';
 import { InternalServerExceptionCode } from 'src/common/exception-code/internal-server.exception-code';
 import { CheckColumnEnum } from 'src/constants/enum';
-import { setFirebaseCredential } from 'src/helpers/firebase.helper';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import {
   Notification,
   TokenMessage,
 } from 'firebase-admin/lib/messaging/messaging-api';
-import { DataSource } from 'typeorm';
-import { UserAlarmHistoryEntity } from 'src/modules/api/user/entities/user-alarm-history.entity';
+import { UserAlarmHistoryRepository } from 'src/modules/api/user/repositories/user-alarm-history.repository';
 
 import * as firebase from 'firebase-admin';
+import { setFirebaseCredential } from 'src/helpers/firebase.helper';
 
 firebase.initializeApp({
   credential: firebase.credential.cert(setFirebaseCredential(__dirname)),
@@ -26,8 +25,8 @@ export class NotificationService {
   private readonly logger = new Logger(NotificationService.name);
 
   constructor(
-    private readonly dataSource: DataSource,
     private readonly scheduleRegistry: SchedulerRegistry,
+    private readonly userAlarmHistoryRepository: UserAlarmHistoryRepository,
   ) {}
 
   /**
@@ -63,6 +62,18 @@ export class NotificationService {
         scheduleId: scheduleId.toString(),
       },
       token: fcmToken,
+      android: {
+        priority: 'high',
+      },
+      apns: {
+        payload: {
+          aps: {
+            contentAvailable: true,
+            title: message.title,
+            body: message.body,
+          },
+        },
+      },
     } as TokenMessage;
   }
 
@@ -90,7 +101,7 @@ export class NotificationService {
     message: Notification,
     alarmTime: string,
     fcmToken: string,
-  ): Promise<void> {
+  ): Promise<string> {
     const cronName = this.setScheduleNotificationCronName(
       newScheduleId,
       userAlarmHistoryId,
@@ -104,37 +115,25 @@ export class NotificationService {
         fcmToken,
       );
 
-      const sendMessageJob = new CronJob(messageSendTime, async () => {
-        const queryRunner = this.dataSource.createQueryRunner();
-        await queryRunner.connect();
-        await queryRunner.startTransaction();
-
-        try {
-          await Promise.all([
-            this.sendPushMessage(payload),
-            queryRunner.manager.getRepository(UserAlarmHistoryEntity).update(
-              { id: userAlarmHistoryId },
-              {
-                isSent: CheckColumnEnum.ACTIVE,
-                alarmAt: () => 'CURRENT_TIMESTAMP',
-              },
-            ),
-          ]);
-
-          await queryRunner.commitTransaction();
-          return;
-        } catch (err) {
-          this.logger.error(
-            `[sendPushForScheduleCreate - sendMessageJob] ${err}`,
+      const sendMessageJob = new CronJob(
+        messageSendTime,
+        async () => {
+          await this.sendPushMessage(payload);
+          await this.userAlarmHistoryRepository.update(
+            { id: userAlarmHistoryId },
+            {
+              isSent: CheckColumnEnum.ACTIVE,
+              alarmAt: () => 'CURRENT_TIMESTAMP',
+            },
           );
-          await queryRunner.rollbackTransaction();
-        } finally {
-          await queryRunner.release();
-        }
-      });
-
+        },
+        null,
+        true,
+        'Asia/Seoul',
+      );
       this.scheduleRegistry.addCronJob(cronName, sendMessageJob);
-      sendMessageJob.start();
+
+      return cronName;
     } catch (err) {
       this.logger.error(`[sendPushForScheduleCreate] ${err}`);
       throw new InternalServerErrorException(

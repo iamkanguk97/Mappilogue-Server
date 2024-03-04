@@ -1,5 +1,5 @@
 import { Exclude, Expose } from 'class-transformer';
-import { ISchedulesInCalendar } from '../types';
+import { ISchedulesInCalendar } from '../../types';
 
 export class GetSchedulesInCalendarResponseDto {
   @Exclude() private readonly _calendarSchedules: ISchedulesInCalendar[];

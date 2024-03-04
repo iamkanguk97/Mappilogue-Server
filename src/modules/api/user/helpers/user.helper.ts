@@ -10,7 +10,6 @@ import {
 } from 'src/modules/core/auth/types';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 import { isDefined } from 'src/helpers/common.helper';
-import { NotificationErrorCodeEnum } from 'src/modules/core/notification/constants/notification.enum';
 import { PostLoginOrSignUpRequestDto } from '../dtos/request/post-login-or-sign-up-request.dto';
 import { UserSnsTypeEnum } from '../constants/enums/user.enum';
 import { AuthService } from 'src/modules/core/auth/services/auth.service';
@@ -74,10 +73,15 @@ export class UserHelper {
   /**
    * @summary FCM Token이 유효한지 확인하는 함수
    * @author  Jason
-   * @param   { string } fcmToken
+   * @param   { string | null } fcmToken
    * @returns { Promise<boolean> }
    */
-  async isUserFcmTokenValid(fcmToken: string): Promise<boolean> {
+  async isUserFcmTokenValid(fcmToken: string | null): Promise<boolean> {
+    if (!isDefined(fcmToken)) {
+      return false;
+      // throw new BadRequestException(UserExceptionCode.RequireFcmTokenRegister);
+    }
+
     try {
       // fcmToken 유효성 확인 (malformed or not-registered)
       await firebase.messaging().send(
@@ -90,20 +94,7 @@ export class UserHelper {
       return true;
     } catch (err) {
       this.logger.error(`[UserHelper - isUserFcmTokenValid] ${err}`);
-
-      const error = err as { errorInfo?: { code: string } };
-
-      if (isDefined(error.errorInfo)) {
-        switch (error.errorInfo.code) {
-          case NotificationErrorCodeEnum.INVALID_ARGUMENT:
-            throw new BadRequestException(UserExceptionCode.InvalidFcmToken);
-          case NotificationErrorCodeEnum.NOT_REGISTERED_FCM_TOKEN:
-            throw new BadRequestException(UserExceptionCode.FcmTokenExpired);
-          default:
-            throw err;
-        }
-      }
-      throw err;
+      return false;
     }
   }
 

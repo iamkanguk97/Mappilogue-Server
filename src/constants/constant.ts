@@ -6,6 +6,7 @@ export const IMAGE_MIME_TYPES = [
   'image/png',
   'image/bmp',
   'image/webp',
+  'image/*',
 ];
 export const MEDIA_MIME_TYPES = ['video/mp4'];
 

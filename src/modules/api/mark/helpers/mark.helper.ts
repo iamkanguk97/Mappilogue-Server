@@ -1,7 +1,6 @@
 import { isDefined } from 'src/helpers/common.helper';
 import { Injectable } from '@nestjs/common';
 import { CheckColumnEnum } from 'src/constants/enum';
-import { ScheduleService } from '../../schedule/services/schedule.service';
 import { MarkMetadataEntity } from '../entities/mark-metadata.entity';
 import {
   ImageBuilderTypeEnum,
@@ -16,10 +15,6 @@ import { MarkEntity } from '../entities/mark.entity';
 
 @Injectable()
 export class MarkHelper {
-  constructor(
-    private readonly scheduleService: ScheduleService, // private readonly markCategoryService: MarkCategoryService,
-  ) {}
-
   /**
    * @summary 업로드된 이미지와 MarkMetadata와 Mapping
    * @author Jason
