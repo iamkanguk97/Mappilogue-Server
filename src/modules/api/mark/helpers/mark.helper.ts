@@ -73,7 +73,10 @@ export class MarkHelper {
     }
 
     if (isDefined(body.mainLocation)) {
-      return body.mainLocation.toMarkLocationEntityWithLocationInfo(markId);
+      return body.toMarkLocationEntityWithLocationInfo(
+        markId,
+        body.mainLocation,
+      );
     }
 
     return {} as MarkLocationEntity;

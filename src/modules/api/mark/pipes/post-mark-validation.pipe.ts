@@ -28,6 +28,7 @@ export class PostMarkValidationPipe implements PipeTransform {
   async transform(value: PostMarkRequestDto): Promise<PostMarkRequestDto> {
     const userId = this.request.user.id;
     const markImages = this.request.files ?? [];
+    const markMetadatas = value.markMetadata ?? [];
 
     try {
       /**
@@ -98,7 +99,7 @@ export class PostMarkValidationPipe implements PipeTransform {
       /**
        * @Validate image 설정한 개수와 RequestDTO의 markMetadata 배열의 길이와 동일해야 한다.
        */
-      if (markImages.length !== value.markMetadata.length) {
+      if (markImages.length !== markMetadatas.length) {
         throw new BadRequestException(
           MarkExceptionCode.MarkMetadataLengthError,
         );
@@ -109,13 +110,13 @@ export class PostMarkValidationPipe implements PipeTransform {
        * - content는 없어야 한다. (content는 이미지를 안올린 경우의 내용임)
        * - isMainImage는 무조건 1개여야 한다.
        */
-      if (value.markMetadata.length !== 0) {
+      if (markMetadatas.length !== 0) {
         if (isDefined(value.content) && value.content.length !== 0) {
           throw new BadRequestException(
             MarkExceptionCode.MarkContentNotExistWhenMetadatIsExist,
           );
         }
-        if (!this.markHelper.checkMarkMainImageCanUpload(value.markMetadata)) {
+        if (!this.markHelper.checkMarkMainImageCanUpload(markMetadatas)) {
           throw new BadRequestException(MarkExceptionCode.MarkMainImageMustOne);
         }
       }
@@ -125,7 +126,7 @@ export class PostMarkValidationPipe implements PipeTransform {
        */
       if (
         (!isDefined(value.content) || !value.content.length) &&
-        !value.markMetadata.length
+        !markMetadatas.length
       ) {
         throw new BadRequestException(
           MarkExceptionCode.MarkContentAndMetadataEmpty,
@@ -137,6 +138,7 @@ export class PostMarkValidationPipe implements PipeTransform {
         isDefined(value.content) && !value.content.length
           ? null
           : value.content;
+      value.markMetadata = markMetadatas;
 
       return value;
     } catch (err) {

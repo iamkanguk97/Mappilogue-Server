@@ -72,23 +72,6 @@ export class PostMarkMainLocationObject extends PickType(MarkLocationEntity, [
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsOptional()
   longitude: string | null = null;
-
-  /**
-   * @summary 기록 대표위치를 직접 추가로 했을 때 저장하는 함수
-   * @author  Jason
-   * @param   { number } markId
-   * @returns { MarkLocationEntity }
-   */
-  toMarkLocationEntityWithLocationInfo(markId: number): MarkLocationEntity {
-    return MarkLocationEntity.from(
-      markId,
-      null,
-      this.longitude,
-      this.name,
-      this.streetAddress,
-      this.latitude,
-    );
-  }
 }
 
 export class PostMarkMetadataObject extends PickType(MarkMetadataEntity, [
@@ -199,5 +182,25 @@ export class PostMarkRequestDto {
     scheduleAreaId: number,
   ): MarkLocationEntity {
     return MarkLocationEntity.from(markId, scheduleAreaId);
+  }
+
+  /**
+   * @summary 기록 대표위치를 직접 추가로 했을 때 저장하는 함수
+   * @author  Jason
+   * @param   { number } markId
+   * @returns { MarkLocationEntity }
+   */
+  toMarkLocationEntityWithLocationInfo(
+    markId: number,
+    location: PostMarkMainLocationObject,
+  ): MarkLocationEntity {
+    return MarkLocationEntity.from(
+      markId,
+      null,
+      location.longitude,
+      location.name,
+      location.streetAddress,
+      location.latitude,
+    );
   }
 }
