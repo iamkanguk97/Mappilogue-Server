@@ -1,3 +1,4 @@
+import { GetMarkSearchByOptionKeywordPipe } from './../pipes/get-mark-search-by-option-keyword.pipe';
 import {
   Body,
   ClassSerializerInterceptor,
@@ -146,7 +147,7 @@ export class MarkController {
   /**
    * @summary 본인 위치에서 기록 리스트 조회하기 API
    * @author  Jason
-   * @url     [GET] /api/v1/marks/positions?x=&y=
+   * @url     [GET] /api/v1/marks/positions?lat=&lon=
    */
   @Get('/positions')
   @HttpCode(HttpStatus.OK)
@@ -163,7 +164,8 @@ export class MarkController {
   @HttpCode(HttpStatus.OK)
   async getMarkSearchByOption(
     @UserId() userId: number,
-    @Query() query: GetMarkSearchByOptionRequestDto,
+    @Query(GetMarkSearchByOptionKeywordPipe)
+    query: GetMarkSearchByOptionRequestDto,
     @GetPagination() pageOptionsDto: PageOptionsDto,
   ): Promise<any> {
     const result = await this.markService.findMarkSearchByOption(
@@ -171,6 +173,6 @@ export class MarkController {
       query,
       pageOptionsDto,
     );
-    // return ResponseWithPageEntity.OK_WITH_PAGINATION(HttpStatus.OK, result);
+    return ResponseWithPageEntity.OK_WITH_PAGINATION(HttpStatus.OK, result);
   }
 }

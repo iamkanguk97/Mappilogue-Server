@@ -75,7 +75,7 @@ export const MarkExceptionCode = {
   ),
   MarkSearchOptionErrorType: setExceptionCode(
     '5022',
-    '기록 검색 옵션은 AREA 또는 MARK로 입력해주세요.',
+    '기록 검색 옵션은 area 또는 mark로 입력해주세요.',
   ),
   MarkSearchKeywordEmpty: setExceptionCode(
     '5023',

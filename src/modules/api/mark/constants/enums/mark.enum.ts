@@ -24,6 +24,6 @@ export enum MarkLocationLongitudeLengthEnum {
 }
 
 export enum EGetMarkSearchOption {
-  AREA = 'AREA',
-  MARK = 'MARK',
+  AREA = 'area',
+  MARK = 'mark',
 }

@@ -211,32 +211,25 @@ export class MarkService {
    * @param   { number } userId
    * @param   { GetMarkSearchByOptionRequestDto } query
    * @param   { PageOptionsDto } pageOptionsDto
-   * @returns
+   * @returns { Promise<ResultWithPageDto<IMarkSearchByArea[] | IMarkSearchByMark[]>> }
    */
   async findMarkSearchByOption(
     userId: number,
     query: GetMarkSearchByOptionRequestDto,
     pageOptionsDto: PageOptionsDto,
-  ) {
-    let result;
-
+  ): Promise<any> {
     switch (query.option) {
       case EGetMarkSearchOption.AREA:
-        result = await this.markRepository.selectMarkSearchByArea(
-          userId,
-          query.keyword,
-        );
-        return;
-      case EGetMarkSearchOption.MARK:
-        result = await this.markRepository.selectMarkSearchByMark(
+        return await this.markRepository.selectMarkSearchByArea(
           userId,
           query,
           pageOptionsDto,
         );
-        console.log(result);
-        return ResultWithPageDto.from(
-          GetMarkListByCategoryResponseDto.from(result.result),
-          result.meta,
+      case EGetMarkSearchOption.MARK:
+        return await this.markRepository.selectMarkSearchByMark(
+          userId,
+          query,
+          pageOptionsDto,
         );
       default:
         throw new BadRequestException(
