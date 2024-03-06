@@ -60,6 +60,8 @@ export class NotificationService {
       notification: message,
       data: {
         scheduleId: scheduleId.toString(),
+        title: message.title,
+        body: message.body,
       },
       token: fcmToken,
       android: {
