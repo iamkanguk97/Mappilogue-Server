@@ -34,6 +34,8 @@ export class MarkCategoryRepository extends Repository<MarkCategoryEntity> {
       .groupBy('MC.id')
       .orderBy('MC.sequence')
       .getRawMany();
+
+    // console.log(result.getQuery());
   }
 
   /**
