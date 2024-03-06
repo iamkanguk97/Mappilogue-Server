@@ -26,11 +26,10 @@ export class MarkRepository extends Repository<MarkEntity> {
    * @returns { Promise<number> }
    */
   async selectMarkExceptCategoryCount(userId: number): Promise<number> {
-    const result = await this.createQueryBuilder()
+    const result = await this.createQueryBuilder('M')
       .select('COUNT(*) AS markCount')
-      .where('userId = :userId', { userId })
-      .andWhere('markCategoryId IS NULL')
-      .andWhere('deletedAt IS NULL')
+      .where('M.userId = :userId', { userId })
+      .andWhere('M.markCategoryId IS NULL')
       .getRawOne();
     return parseInt(result.markCount);
   }

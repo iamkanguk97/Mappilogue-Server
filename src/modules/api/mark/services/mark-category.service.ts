@@ -13,7 +13,7 @@ import { MarkRepository } from '../repositories/mark.repository';
 import { isDefined } from 'src/helpers/common.helper';
 import { PutMarkCategoryObject } from '../dtos/request/put-mark-category-request.dto';
 import { PostMarkCategoryRequestDto } from '../dtos/request/post-mark-category-request.dto';
-import { DeleteMarkCategoryOptionEnum } from '../constants/enums/mark-category.enum';
+import { EDeleteMarkCategoryOption } from '../constants/enums/mark-category.enum';
 
 @Injectable()
 export class MarkCategoryService {
@@ -36,23 +36,19 @@ export class MarkCategoryService {
   async findMarkCategories(
     userId: number,
   ): Promise<GetMarkCategoriesResponseDto> {
-    const [markWithCategoryResult, markExceptCategoryCount] = await Promise.all(
-      [
+    const [markWithCategoryResult, countOfMarkWithoutCategory] =
+      await Promise.all([
         this.markCategoryRepository.selectMarkCategoriesByUserId(userId),
         this.markRepository.selectMarkExceptCategoryCount(userId),
-      ],
-    );
+      ]);
 
     const markWithCategoryCount = markWithCategoryResult.reduce(
       (acc, obj) => acc + Number(obj.markCount),
       0,
     ); // 카테고리 있는 기록 개수: result에서 MarkCount를 더해주면 됨
 
-    const totalCategoryMarkCount =
-      markExceptCategoryCount + markWithCategoryCount;
-
     return GetMarkCategoriesResponseDto.from(
-      totalCategoryMarkCount,
+      countOfMarkWithoutCategory + markWithCategoryCount,
       markWithCategoryResult.map((result) => MarkCategoryDto.of(result)),
     );
   }
@@ -74,50 +70,11 @@ export class MarkCategoryService {
       );
     const newMarkCategorySequenceNo = lastCategorySequenceNo + 1;
 
-    const { id: newMarkCategoryId } = await this.markCategoryRepository.save(
+    const result = await this.markCategoryRepository.save(
       body.toEntity(userId, newMarkCategorySequenceNo),
     );
 
-    return PostMarkCategoryResponseDto.from(
-      newMarkCategoryId,
-      body.title,
-      newMarkCategorySequenceNo,
-    );
-  }
-
-  /**
-   * @summary 기록 카테고리 삭제 API Service
-   * @author  Jason
-   * @param   { number } userId
-   * @param   { number } markCategoryId
-   * @param   { DeleteMarkCategoryOptionEnum } option
-   */
-  async removeMarkCategory(
-    userId: number,
-    markCategoryId: number,
-    option: DeleteMarkCategoryOptionEnum,
-  ): Promise<void> {
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    try {
-      await Promise.all([
-        queryRunner.manager.softDelete(MarkCategoryEntity, {
-          id: markCategoryId,
-          userId,
-        }),
-        this.updateMarkStatusInMarkDelete(queryRunner, option, markCategoryId),
-      ]);
-
-      await queryRunner.commitTransaction();
-    } catch (err) {
-      this.logger.error(`[removeMarkCategory - transaction error] ${err}`);
-      await queryRunner.rollbackTransaction();
-      throw err;
-    } finally {
-      await queryRunner.release();
-    }
+    return PostMarkCategoryResponseDto.of(result);
   }
 
   /**
@@ -137,6 +94,74 @@ export class MarkCategoryService {
   }
 
   /**
+   * @summary 기록 카테고리 삭제 API Service
+   * @author  Jason
+   * @param   { number } userId
+   * @param   { number } markCategoryId
+   * @param   { EDeleteMarkCategoryOption } option
+   */
+  async removeMarkCategory(
+    userId: number,
+    markCategoryId: number,
+    option: EDeleteMarkCategoryOption,
+  ): Promise<void> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      await Promise.all([
+        queryRunner.manager.getRepository(MarkCategoryEntity).softDelete({
+          id: markCategoryId,
+          userId,
+        }),
+        this.modifyMarkStatusInMarkDelete(queryRunner, option, markCategoryId),
+      ]);
+
+      await queryRunner.commitTransaction();
+      return;
+    } catch (err) {
+      this.logger.error(`[removeMarkCategory - transaction error] ${err}`);
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  /**
+   * @summary 기록 카테고리 삭제 API Service - option에 따라 Mark 삭제 여부 판단
+   * @author  Jason
+   * @param   { QueryRunner } queryRunner
+   * @param   { EDeleteMarkCategoryOption } option
+   * @param   { number } markCategoryId
+   */
+  async modifyMarkStatusInMarkDelete(
+    queryRunner: QueryRunner,
+    option: EDeleteMarkCategoryOption,
+    markCategoryId: number,
+  ): Promise<void> {
+    switch (option) {
+      case EDeleteMarkCategoryOption.ALL:
+        await this.markService.removeMarkByCategoryId(
+          queryRunner,
+          markCategoryId,
+        );
+        return;
+      case EDeleteMarkCategoryOption.ONLY:
+        await this.markService.modifyMarkCategoryIdToNullInMark(
+          queryRunner,
+          markCategoryId,
+        );
+        return;
+      default:
+        throw new BadRequestException(
+          MarkCategoryExceptionCode.DeleteMarkCategoryOptionErrorType,
+        );
+    }
+  }
+
+  /**
    * @summary 기록 카테고리 수정 API Service
    * @author  Jason
    * @param   { number } userId
@@ -150,7 +175,7 @@ export class MarkCategoryService {
       await this.markCategoryRepository.selectMarkCategoriesByUserId(userId);
 
     const isEqualWithRequestData =
-      this.markCategoryHelper.isMarkCategoryEqualWithRequestById(
+      this.markCategoryHelper.isMarkCategoryEqualWithRequest(
         markCategoriesBeforeUpdate.map((r) => MarkCategoryDto.of(r)),
         categories,
       );
@@ -170,38 +195,6 @@ export class MarkCategoryService {
           ),
       ),
     );
-  }
-
-  /**
-   * @summary 기록 카테고리 삭제 API Service - option에 따라 Mark 삭제 여부 판단
-   * @author  Jason
-   * @param   { QueryRunner } queryRunner
-   * @param   { DeleteMarkCategoryOptionEnum } option
-   * @param   { number } markCategoryId
-   */
-  async updateMarkStatusInMarkDelete(
-    queryRunner: QueryRunner,
-    option: DeleteMarkCategoryOptionEnum,
-    markCategoryId: number,
-  ): Promise<void> {
-    switch (option) {
-      case DeleteMarkCategoryOptionEnum.ALL:
-        await this.markService.removeMarkByCategoryId(
-          queryRunner,
-          markCategoryId,
-        );
-        return;
-      case DeleteMarkCategoryOptionEnum.ONLY:
-        await this.markService.modifyMarkCategoryIdToNullInMark(
-          queryRunner,
-          markCategoryId,
-        );
-        return;
-      default:
-        throw new BadRequestException(
-          MarkCategoryExceptionCode.DeleteMarkCategoryOptionErrorType,
-        );
-    }
   }
 
   /**

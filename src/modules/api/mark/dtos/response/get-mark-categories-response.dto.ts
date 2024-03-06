@@ -13,16 +13,6 @@ export class GetMarkCategoriesResponseDto {
     this._markCategories = markCategories;
   }
 
-  @Expose()
-  get totalCategoryMarkCount(): number {
-    return this._totalCategoryMarkCount;
-  }
-
-  @Expose()
-  get markCategories(): MarkCategoryDto[] {
-    return this._markCategories;
-  }
-
   static from(
     totalCategoryMarkCount: number,
     markCategories: MarkCategoryDto[],
@@ -31,5 +21,15 @@ export class GetMarkCategoriesResponseDto {
       totalCategoryMarkCount,
       markCategories,
     );
+  }
+
+  @Expose()
+  get totalCategoryMarkCount(): number {
+    return this._totalCategoryMarkCount;
+  }
+
+  @Expose()
+  get markCategories(): MarkCategoryDto[] {
+    return this._markCategories;
   }
 }

@@ -11,7 +11,7 @@ export class MarkCategoryHelper {
    * @param   { PutMarkCategoryObject[] } updateDto
    * @returns { boolean }
    */
-  isMarkCategoryEqualWithRequestById(
+  isMarkCategoryEqualWithRequest(
     beforeUpdateDto: MarkCategoryDto[],
     updateDto: PutMarkCategoryObject[],
   ): boolean {

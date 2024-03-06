@@ -24,18 +24,11 @@ export class MarkCategoryRepository extends Repository<MarkCategoryEntity> {
         'MC.isMarkedInMap AS isMarkedInMap',
         'COUNT(M.id) AS markCount',
       ])
-      .leftJoin(
-        MarkEntity,
-        'M',
-        'MC.id = M.markCategoryId AND M.deletedAt IS NULL',
-      )
+      .leftJoin(MarkEntity, 'M', 'MC.id = M.markCategoryId')
       .where('MC.userId = :userId', { userId })
-      .andWhere('MC.deletedAt IS NULL')
       .groupBy('MC.id')
       .orderBy('MC.sequence')
       .getRawMany();
-
-    // console.log(result.getQuery());
   }
 
   /**
@@ -45,11 +38,10 @@ export class MarkCategoryRepository extends Repository<MarkCategoryEntity> {
    * @returns { Promise<number> }
    */
   async selectLastMarkCategorySequenceNo(userId: number): Promise<number> {
-    const result = await this.createQueryBuilder()
-      .select('sequence')
-      .where('userId = :userId', { userId })
-      .andWhere('deletedAt IS NULL')
-      .orderBy('sequence', 'DESC')
+    const result = await this.createQueryBuilder('MC')
+      .select('MC.sequence', 'sequence')
+      .where('MC.userId = :userId', { userId })
+      .orderBy('MC.sequence', 'DESC')
       .limit(1)
       .getRawOne();
 

@@ -4,8 +4,12 @@ import { CommonExceptionCode } from 'src/common/exception-code/common.exception-
 import { MarkCategoryExceptionCode } from 'src/common/exception-code/mark-category.exception-code';
 import { MarkCategoryEntity } from '../../entities/mark-category.entity';
 import { MarkCategoryTitleLengthEnum } from '../../constants/enums/mark-category.enum';
+import { PickType } from '@nestjs/mapped-types';
 
-export class PatchMarkCategoryTitleRequestDto {
+export class PatchMarkCategoryTitleRequestDto extends PickType(
+  MarkCategoryEntity,
+  ['id', 'title'] as const,
+) {
   @IsNumber({}, setValidatorContext(CommonExceptionCode.MustNumberType))
   @IsNotEmpty(
     setValidatorContext(MarkCategoryExceptionCode.MarkCategoryIdEmpty),
@@ -23,7 +27,7 @@ export class PatchMarkCategoryTitleRequestDto {
   )
   title!: string;
 
-  toEntity() {
+  toEntity(): MarkCategoryEntity {
     const markCategory = new MarkCategoryEntity();
 
     markCategory.id = this.id;

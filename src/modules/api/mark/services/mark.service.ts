@@ -303,7 +303,7 @@ export class MarkService {
   }
 
   /**
-   * @summary 기록 카테고리 삭제하기 API -> 기록 카테고리 아이디로 기록 삭제하기
+   * @summary 기록 카테고리 삭제하기 API Service -> 기록 카테고리 아이디로 기록 삭제하기
    * @author  Jason
    * @param   { QueryRunner } queryRunner
    * @param   { number } markCategoryId
@@ -318,11 +318,14 @@ export class MarkService {
       },
       relations: ['markLocation', 'markMetadata'],
     });
-    await queryRunner.manager.softRemove(deletedTarget);
+
+    await queryRunner.manager
+      .getRepository(MarkEntity)
+      .softRemove(deletedTarget);
   }
 
   /**
-   * @summary 기록 카테고리 삭제 API - 기록에서 기록 카테고리를 NULL 처리함 (전체 카테고리로)
+   * @summary 기록 카테고리 삭제하기 API Service - 기록에서 기록 카테고리를 NULL 처리함 (전체 카테고리로)
    * @author  Jason
    * @param   { QueryRunner } queryRunner
    * @param   { number } markCategoryId
@@ -331,11 +334,9 @@ export class MarkService {
     queryRunner: QueryRunner,
     markCategoryId: number,
   ): Promise<void> {
-    await queryRunner.manager.update(
-      MarkEntity,
-      { markCategoryId },
-      { markCategoryId: () => 'NULL' },
-    );
+    await queryRunner.manager
+      .getRepository(MarkEntity)
+      .update({ markCategoryId }, { markCategoryId: () => 'NULL' });
   }
 
   /**

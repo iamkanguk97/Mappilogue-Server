@@ -3,7 +3,7 @@ export enum MarkCategoryTitleLengthEnum {
   MAX = 50,
 }
 
-export enum DeleteMarkCategoryOptionEnum {
+export enum EDeleteMarkCategoryOption {
   ALL = 'all',
   ONLY = 'only',
 }

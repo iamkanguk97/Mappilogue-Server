@@ -1,36 +1,29 @@
 import { Exclude, Expose } from 'class-transformer';
+import { MarkCategoryEntity } from '../../entities/mark-category.entity';
 
 export class PostMarkCategoryResponseDto {
-  @Exclude() private readonly _markCategoryId: number;
-  @Exclude() private readonly _title: string;
-  @Exclude() private readonly _sequence: number;
+  @Exclude() private readonly _markCategory: MarkCategoryEntity;
 
-  private constructor(markCategoryId: number, title: string, sequence: number) {
-    this._markCategoryId = markCategoryId;
-    this._title = title;
-    this._sequence = sequence;
+  private constructor(markCategory: MarkCategoryEntity) {
+    this._markCategory = markCategory;
   }
 
-  static from(
-    markCategoryId: number,
-    title: string,
-    sequence: number,
-  ): PostMarkCategoryResponseDto {
-    return new PostMarkCategoryResponseDto(markCategoryId, title, sequence);
+  static of(markCategory: MarkCategoryEntity): PostMarkCategoryResponseDto {
+    return new PostMarkCategoryResponseDto(markCategory);
   }
 
   @Expose()
   get markCategoryId(): number {
-    return this._markCategoryId;
+    return this._markCategory.id;
   }
 
   @Expose()
   get title(): string {
-    return this._title;
+    return this._markCategory.title;
   }
 
   @Expose()
   get sequence(): number {
-    return this._sequence;
+    return this._markCategory.sequence;
   }
 }
