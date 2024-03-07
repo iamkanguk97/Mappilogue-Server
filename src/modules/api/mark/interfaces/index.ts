@@ -1,7 +1,12 @@
 import { MarkCategoryEntity } from '../entities/mark-category.entity';
 import { MarkEntity } from '../entities/mark.entity';
 
-export interface IMarkCategoryWithMarkCount extends MarkCategoryEntity {
+// 기록 카테고리 조회 API Interface
+export interface IMarkCategoryWithMarkCount
+  extends Pick<
+    MarkCategoryEntity,
+    'id' | 'title' | 'isMarkedInMap' | 'sequence'
+  > {
   markCount: number;
 }
 

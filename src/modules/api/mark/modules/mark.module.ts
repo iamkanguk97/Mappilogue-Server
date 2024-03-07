@@ -11,10 +11,13 @@ import { MarkMetadataRepository } from '../repositories/mark-metadata.repository
 import { MarkLocationRepository } from '../repositories/mark-location.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MarkEntity } from '../entities/mark.entity';
-import { MarkCategoryEntity } from '../entities/mark-category.entity';
 import { MarkMetadataEntity } from '../entities/mark-metadata.entity';
 import { MarkLocationEntity } from '../entities/mark-location.entity';
 import { ScheduleAreaRepository } from '../../schedule/repositories/schedule-area.repository';
+import { GetMarkListByCategoryValidationPipe } from '../pipes/get-mark-list-by-category-validation.pipe';
+import { GetMarkSearchByOptionKeywordPipe } from '../pipes/get-mark-search-by-option-keyword.pipe';
+import { MarkValidationPipe } from '../pipes/mark-validation.pipe';
+import { PostMarkValidationPipe } from '../pipes/post-mark-validation.pipe';
 
 @Module({
   imports: [
@@ -22,7 +25,6 @@ import { ScheduleAreaRepository } from '../../schedule/repositories/schedule-are
     ScheduleModule,
     TypeOrmModule.forFeature([
       MarkEntity,
-      MarkCategoryEntity,
       MarkMetadataEntity,
       MarkLocationEntity,
     ]),
@@ -35,7 +37,21 @@ import { ScheduleAreaRepository } from '../../schedule/repositories/schedule-are
     ]),
   ],
   controllers: [MarkController],
-  providers: [MarkService, MarkHelper],
-  exports: [MarkService, MarkHelper],
+  providers: [
+    MarkService,
+    MarkHelper,
+    GetMarkListByCategoryValidationPipe,
+    GetMarkSearchByOptionKeywordPipe,
+    MarkValidationPipe,
+    PostMarkValidationPipe,
+  ],
+  exports: [
+    MarkService,
+    MarkHelper,
+    GetMarkListByCategoryValidationPipe,
+    GetMarkSearchByOptionKeywordPipe,
+    MarkValidationPipe,
+    PostMarkValidationPipe,
+  ],
 })
 export class MarkModule {}
