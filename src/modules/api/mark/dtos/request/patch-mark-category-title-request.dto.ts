@@ -3,7 +3,7 @@ import { IsNotEmpty, IsNumber, IsString, Length } from 'class-validator';
 import { CommonExceptionCode } from 'src/common/exception-code/common.exception-code';
 import { MarkCategoryExceptionCode } from 'src/common/exception-code/mark-category.exception-code';
 import { MarkCategoryEntity } from '../../entities/mark-category.entity';
-import { MarkCategoryTitleLengthEnum } from '../../constants/enums/mark-category.enum';
+import { EMarkCategoryTitleLength } from '../../variables/enums/mark-category.enum';
 import { PickType } from '@nestjs/mapped-types';
 
 export class PatchMarkCategoryTitleRequestDto extends PickType(
@@ -17,8 +17,8 @@ export class PatchMarkCategoryTitleRequestDto extends PickType(
   id!: number;
 
   @Length(
-    MarkCategoryTitleLengthEnum.MIN,
-    MarkCategoryTitleLengthEnum.MAX,
+    EMarkCategoryTitleLength.MIN,
+    EMarkCategoryTitleLength.MAX,
     MarkCategoryExceptionCode.MarkCategoryTitleLengthError,
   )
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))

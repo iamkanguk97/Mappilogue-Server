@@ -4,14 +4,14 @@ import { CommonExceptionCode } from 'src/common/exception-code/common.exception-
 import { MarkCategoryExceptionCode } from 'src/common/exception-code/mark-category.exception-code';
 import { PickType } from '@nestjs/mapped-types';
 import { MarkCategoryEntity } from '../../entities/mark-category.entity';
-import { MarkCategoryTitleLengthEnum } from '../../constants/enums/mark-category.enum';
+import { EMarkCategoryTitleLength } from '../../variables/enums/mark-category.enum';
 
 export class PostMarkCategoryRequestDto extends PickType(MarkCategoryEntity, [
   'title',
 ] as const) {
   @Length(
-    MarkCategoryTitleLengthEnum.MIN,
-    MarkCategoryTitleLengthEnum.MAX,
+    EMarkCategoryTitleLength.MIN,
+    EMarkCategoryTitleLength.MAX,
     setValidatorContext(MarkCategoryExceptionCode.MarkCategoryTitleLengthError),
   )
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))

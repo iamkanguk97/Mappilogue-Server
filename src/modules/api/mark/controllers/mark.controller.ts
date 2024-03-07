@@ -24,12 +24,12 @@ import { PostMarkRequestDto } from '../dtos/request/post-mark-request.dto';
 import { PostMarkValidationPipe } from '../pipes/post-mark-validation.pipe';
 import { ResponseEntity } from 'src/common/entities/response.entity';
 import { PostMarkResponseDto } from '../dtos/response/post-mark-response.dto';
-import { MarkDto } from '../dtos/mark.dto';
+import { MarkDto } from '../dtos/common/mark.dto';
 import { DomainNameEnum } from 'src/constants/enum';
 import {
   POST_MARK_IMAGE_KEY,
   POST_MARK_IMAGE_LIMIT,
-} from '../constants/mark.constant';
+} from '../variables/constants/mark.constant';
 import { GetMarkDetailByIdResponseDto } from '../dtos/response/get-mark-detail-by-id-response.dto';
 import { GetMarkListByCategoryRequestDto } from '../dtos/request/get-mark-list-by-category-request.dto';
 import { GetMarkListByCategoryValidationPipe } from '../pipes/get-mark-list-by-category-validation.pipe';

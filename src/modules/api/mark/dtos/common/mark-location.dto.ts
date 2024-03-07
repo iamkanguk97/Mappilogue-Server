@@ -1,5 +1,5 @@
 import { Exclude, Expose } from 'class-transformer';
-import { MarkLocationEntity } from '../entities/mark-location.entity';
+import { MarkLocationEntity } from '../../entities/mark-location.entity';
 
 export class MarkLocationDto {
   @Exclude() private readonly _markId: number;

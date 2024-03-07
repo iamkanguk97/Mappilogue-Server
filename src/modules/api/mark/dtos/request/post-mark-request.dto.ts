@@ -21,12 +21,12 @@ import {
   MarkLocationNameLengthEnum,
   MarkLocationStreetAddressLengthEnum,
   MarkTitleLengthEnum,
-} from '../../constants/enums/mark.enum';
+} from '../../variables/enums/mark.enum';
 import { Type } from 'class-transformer';
 import { MarkEntity } from '../../entities/mark.entity';
 import { MarkLocationEntity } from '../../entities/mark-location.entity';
 import { isDefined, isEmptyObject } from 'src/helpers/common.helper';
-import { MARK_DEFAULT_TITLE } from '../../constants/mark.constant';
+import { MARK_DEFAULT_TITLE } from '../../variables/constants/mark.constant';
 import { PickType } from '@nestjs/mapped-types';
 import { MarkMetadataEntity } from '../../entities/mark-metadata.entity';
 import { CheckColumnEnum } from 'src/constants/enum';

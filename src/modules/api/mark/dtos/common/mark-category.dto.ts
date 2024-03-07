@@ -1,6 +1,6 @@
 import { CheckColumnEnum } from 'src/constants/enum';
-import { IMarkCategoryWithMarkCount } from '../types';
 import { Exclude, Expose } from 'class-transformer';
+import { IMarkCategoryWithMarkCount } from '../../interfaces';
 
 export class MarkCategoryDto {
   @Exclude() private readonly _id: number;

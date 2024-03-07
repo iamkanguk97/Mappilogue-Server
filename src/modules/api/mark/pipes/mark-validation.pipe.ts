@@ -9,7 +9,7 @@ import { REQUEST } from '@nestjs/core';
 import { MarkService } from '../services/mark.service';
 import { MarkExceptionCode } from 'src/common/exception-code/mark.exception-code';
 import { isDefined } from 'src/helpers/common.helper';
-import { MarkDto } from '../dtos/mark.dto';
+import { MarkDto } from '../dtos/common/mark.dto';
 import { IRequestWithUserType } from 'src/types/request-with-user.type';
 
 @Injectable()

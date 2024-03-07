@@ -1,4 +1,4 @@
-import { MARK_CATEGORY_TOTAL_NAME } from './../constants/mark-category.constant';
+import { MARK_CATEGORY_TOTAL_NAME } from '../variables/constants/mark-category.constant';
 import { CustomRepository } from 'src/modules/core/custom-repository/decorators/custom-repository.decorator';
 import { MarkEntity } from '../entities/mark.entity';
 import { Repository } from 'typeorm';
@@ -12,10 +12,10 @@ import { ScheduleAreaEntity } from '../../schedule/entities/schedule-area.entity
 import { ResultWithPageDto } from 'src/common/dtos/pagination/result-with-page.dto';
 import { PageMetaDto } from 'src/common/dtos/pagination/page-meta.dto';
 import { PageOptionsDto } from 'src/common/dtos/pagination/page-options.dto';
-import { IMarkListByCategory, IMarkListInHome } from '../types';
 import { USER_HOME_MARK_MAX_COUNT } from '../../user/constants/user-home.constant';
 import { GetMarkSearchByOptionRequestDto } from '../dtos/request/get-mark-search-by-option-request.dto';
 import { IMarkSearchByArea, IMarkSearchByMark } from '../../schedule/types';
+import { IMarkListByCategory, IMarkListInHome } from '../interfaces';
 
 @CustomRepository(MarkEntity)
 export class MarkRepository extends Repository<MarkEntity> {

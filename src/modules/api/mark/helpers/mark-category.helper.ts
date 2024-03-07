@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { MarkCategoryDto } from '../dtos/mark-category.dto';
+import { MarkCategoryDto } from '../dtos/common/mark-category.dto';
 import { PutMarkCategoryObject } from '../dtos/request/put-mark-category-request.dto';
 
 @Injectable()

@@ -1,6 +1,6 @@
 import { Exclude, Expose } from 'class-transformer';
 import { CheckColumnEnum } from 'src/constants/enum';
-import { MarkMetadataEntity } from '../entities/mark-metadata.entity';
+import { MarkMetadataEntity } from '../../entities/mark-metadata.entity';
 
 export class MarkMetadataDto {
   @Exclude() private readonly _id: number;

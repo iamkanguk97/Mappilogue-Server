@@ -3,7 +3,7 @@ import {
   StatusOrCheckColumnLengthEnum,
 } from 'src/constants/enum';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { MARK_IMAGE_KEY_LENGTH } from '../constants/mark.constant';
+import { MARK_IMAGE_KEY_LENGTH } from '../variables/constants/mark.constant';
 import { CommonEntity } from 'src/common/entities/common.entity';
 import { MarkEntity } from './mark.entity';
 

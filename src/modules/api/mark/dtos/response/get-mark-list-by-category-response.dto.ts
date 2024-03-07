@@ -1,5 +1,5 @@
 import { Exclude, Expose } from 'class-transformer';
-import { IMarkListByCategory } from '../../types';
+import { IMarkListByCategory } from '../../interfaces';
 
 export class GetMarkListByCategoryResponseDto {
   @Exclude() private readonly _markListByCategory: IMarkListByCategory[];

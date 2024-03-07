@@ -1,5 +1,5 @@
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { EGetMarkSearchOption } from '../../constants/enums/mark.enum';
+import { EGetMarkSearchOption } from '../../variables/enums/mark.enum';
 import { setValidatorContext } from 'src/common/common';
 import { MarkExceptionCode } from 'src/common/exception-code/mark.exception-code';
 import { CommonExceptionCode } from 'src/common/exception-code/common.exception-code';

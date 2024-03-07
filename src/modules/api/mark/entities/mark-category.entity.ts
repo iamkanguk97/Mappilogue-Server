@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { UserEntity } from '../../user/entities/user.entity';
-import { MARK_CATEGORY_TITLE_LENGTH } from '../constants/mark-category.constant';
+import { MARK_CATEGORY_TITLE_LENGTH } from '../variables/constants/mark-category.constant';
 import {
   CheckColumnEnum,
   StatusOrCheckColumnLengthEnum,

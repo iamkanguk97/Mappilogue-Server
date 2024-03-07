@@ -1,4 +1,4 @@
-import { MARK_CATEGORY_TOTAL_NAME } from '../constants/mark-category.constant';
+import { MARK_CATEGORY_TOTAL_NAME } from '../variables/constants/mark-category.constant';
 import { DataSource, QueryRunner } from 'typeorm';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { MarkRepository } from '../repositories/mark.repository';
@@ -10,16 +10,16 @@ import { PostMarkResponseDto } from '../dtos/response/post-mark-response.dto';
 import { MarkLocationRepository } from '../repositories/mark-location.repository';
 import { isDefined } from 'src/helpers/common.helper';
 import { MarkExceptionCode } from 'src/common/exception-code/mark.exception-code';
-import { MarkDto } from '../dtos/mark.dto';
+import { MarkDto } from '../dtos/common/mark.dto';
 import { GetMarkDetailByIdResponseDto } from '../dtos/response/get-mark-detail-by-id-response.dto';
 import { MarkCategoryRepository } from '../repositories/mark-category.repository';
-import { MarkLocationDto } from '../dtos/mark-location.dto';
+import { MarkLocationDto } from '../dtos/common/mark-location.dto';
 import {
   PostMarkMetadataObject,
   PostMarkRequestDto,
 } from '../dtos/request/post-mark-request.dto';
-import { MarkCategoryDto } from '../dtos/mark-category.dto';
-import { MarkMetadataDto } from '../dtos/mark-metadata.dto';
+import { MarkCategoryDto } from '../dtos/common/mark-category.dto';
+import { MarkMetadataDto } from '../dtos/common/mark-metadata.dto';
 import { GetMarkListByCategoryResponseDto } from '../dtos/response/get-mark-list-by-category-response.dto';
 import { ResultWithPageDto } from 'src/common/dtos/pagination/result-with-page.dto';
 import { PageOptionsDto } from 'src/common/dtos/pagination/page-options.dto';
@@ -31,7 +31,7 @@ import {
 } from 'src/common/multer/multer.builder';
 import { MarkLocationEntity } from '../entities/mark-location.entity';
 import { GetMarkSearchByOptionRequestDto } from '../dtos/request/get-mark-search-by-option-request.dto';
-import { EGetMarkSearchOption } from '../constants/enums/mark.enum';
+import { EGetMarkSearchOption } from '../variables/enums/mark.enum';
 import { ScheduleAreaRepository } from '../../schedule/repositories/schedule-area.repository';
 
 @Injectable()

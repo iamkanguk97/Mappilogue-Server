@@ -1,5 +1,5 @@
 import { Exclude, Expose } from 'class-transformer';
-import { IMarkListInHome } from 'src/modules/api/mark/types';
+import { IMarkListInHome } from 'src/modules/api/mark/interfaces';
 import { IScheduleListInHomeOnToday } from 'src/modules/api/schedule/types';
 
 export class GetHomeResponseDto {

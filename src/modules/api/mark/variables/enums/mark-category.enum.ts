@@ -1,4 +1,4 @@
-export enum MarkCategoryTitleLengthEnum {
+export enum EMarkCategoryTitleLength {
   MIN = 1,
   MAX = 50,
 }

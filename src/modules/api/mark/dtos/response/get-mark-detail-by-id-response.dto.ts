@@ -1,7 +1,7 @@
 import { Exclude, Expose } from 'class-transformer';
-import { MarkCategoryDto } from '../mark-category.dto';
-import { MarkLocationDto } from '../mark-location.dto';
-import { MarkMetadataDto } from '../mark-metadata.dto';
+import { MarkCategoryDto } from '../common/mark-category.dto';
+import { MarkLocationDto } from '../common/mark-location.dto';
+import { MarkMetadataDto } from '../common/mark-metadata.dto';
 
 export class GetMarkDetailByIdResponseDto {
   @Exclude() private readonly _id: number;
