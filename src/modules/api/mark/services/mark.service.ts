@@ -1,4 +1,3 @@
-import { MARK_CATEGORY_TOTAL_NAME } from '../variables/constants/mark-category.constant';
 import { DataSource, QueryRunner } from 'typeorm';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { MarkRepository } from '../repositories/mark.repository';
@@ -12,13 +11,10 @@ import { isDefined } from 'src/helpers/common.helper';
 import { MarkExceptionCode } from 'src/common/exception-code/mark.exception-code';
 import { MarkDto } from '../dtos/common/mark.dto';
 import { GetMarkDetailByIdResponseDto } from '../dtos/response/get-mark-detail-by-id-response.dto';
-import { MarkCategoryRepository } from '../repositories/mark-category.repository';
-import { MarkLocationDto } from '../dtos/common/mark-location.dto';
 import {
   PostMarkMetadataObject,
   PostMarkRequestDto,
 } from '../dtos/request/post-mark-request.dto';
-import { MarkCategoryDto } from '../dtos/common/mark-category.dto';
 import { MarkMetadataDto } from '../dtos/common/mark-metadata.dto';
 import { GetMarkListByCategoryResponseDto } from '../dtos/response/get-mark-list-by-category-response.dto';
 import { ResultWithPageDto } from 'src/common/dtos/pagination/result-with-page.dto';
@@ -32,7 +28,6 @@ import {
 import { MarkLocationEntity } from '../entities/mark-location.entity';
 import { GetMarkSearchByOptionRequestDto } from '../dtos/request/get-mark-search-by-option-request.dto';
 import { EGetMarkSearchOption } from '../variables/enums/mark.enum';
-import { ScheduleAreaRepository } from '../../schedule/repositories/schedule-area.repository';
 
 @Injectable()
 export class MarkService {
@@ -42,9 +37,6 @@ export class MarkService {
     private readonly dataSource: DataSource,
     private readonly markRepository: MarkRepository,
     private readonly markMetadataRepository: MarkMetadataRepository,
-    private readonly markLocationRepository: MarkLocationRepository,
-    private readonly markCategoryRepository: MarkCategoryRepository,
-    private readonly scheduleAreaRepository: ScheduleAreaRepository,
     private readonly scheduleService: ScheduleService,
     private readonly markHelper: MarkHelper,
   ) {}
@@ -115,40 +107,6 @@ export class MarkService {
    * @param   { MarkDto } mark
    * @returns { Promise<GetMarkDetailByIdResponseDto> }
    */
-  // async _findMarkOnSpecificId(
-  //   mark: MarkDto,
-  // ): Promise<GetMarkDetailByIdResponseDto> {
-  //   const [
-  //     markCategoryResponse,
-  //     markLocationResponse,
-  //     markMetadataResponse,
-  //     markDateResponse,
-  //   ] = await Promise.all([
-  //     this.findMarkCategoryOnDetail(mark),
-  //     this.findMarkLocationOnDetail(mark.id),
-  //     this.setMarkMetadataOnDetail(mark),
-  //     this.setMarkDateOnDetail(mark),
-  //   ]);
-
-  //   console.log(markCategoryResponse);
-  //   console.log(markLocationResponse);
-
-  //   return GetMarkDetailByIdResponseDto.from(
-  //     mark.id,
-  //     mark.content,
-  //     markCategoryResponse,
-  //     markLocationResponse,
-  //     markDateResponse,
-  //     markMetadataResponse,
-  //   );
-  // }
-
-  /**
-   * @summary 특정 기록 조회하기 API Service
-   * @author  Jason
-   * @param   { MarkDto } mark
-   * @returns { Promise<GetMarkDetailByIdResponseDto> }
-   */
   async findMarkOnSpecificId(
     mark: MarkDto,
   ): Promise<GetMarkDetailByIdResponseDto> {
@@ -157,8 +115,9 @@ export class MarkService {
       this.findMarkMetadataOnDetail(mark),
     ]);
 
-    console.log(selectMarkResult);
-    console.log(selectMarkMetadataResult);
+    if (!isDefined(selectMarkResult)) {
+      throw new BadRequestException(MarkExceptionCode.MarkNotExist);
+    }
 
     return GetMarkDetailByIdResponseDto.from(
       selectMarkResult,
@@ -167,65 +126,15 @@ export class MarkService {
   }
 
   /**
-   * @summary 특정 기록 조회 API Service -> Category 부분 조회하는 함수
+   * @summary 특정 기록 조회 API Service -> Metadata 부분 조회하는 함수
    * @author  Jason
    * @param   { MarkDto } mark
-   * @returns { Promise<Partial<MarkCategoryDto>> }
+   * @returns { Promise<MarkMetadataDto[]> }
    */
-  async findMarkCategoryOnDetail(
-    mark: MarkDto,
-  ): Promise<Partial<MarkCategoryDto>> {
-    const markCategoryId = mark.markCategoryId;
-    const title = !isDefined(markCategoryId)
-      ? MARK_CATEGORY_TOTAL_NAME
-      : await this.markCategoryRepository.findOne({
-          select: {
-            title: true,
-          },
-          where: {
-            id: markCategoryId,
-          },
-        });
-
-    return {
-      id: markCategoryId,
-      title,
-    } as Partial<MarkCategoryDto>;
-  }
-
-  /**
-   * @summary     기록 조회하기 API - MarkLocation 설정하기
-   * @description scheduleAreaId가 null이면 MarkLocation에서 select, 아니면 join 후 select
-   * @author      Jason
-   * @param       { number } markId
-   * @returns     { Promise<MarkLocationDto> }
-   */
-  async findMarkLocationOnDetail(markId: number): Promise<MarkLocationDto> {
-    const markLocationStatus = await this.markLocationRepository.findOne({
-      where: {
-        markId,
-      },
-      relations: {
-        mark: true,
-        scheduleArea: true,
-      },
-    });
-
-    if (
-      isDefined(markLocationStatus) &&
-      isDefined(markLocationStatus.scheduleAreaId)
-    ) {
-      const result =
-        await this.markLocationRepository.selectMarkLocationWithScheduleArea(
-          markId,
-        );
-
-      if (!isDefined(result)) {
-        return {} as MarkLocationDto;
-      }
-      return MarkLocationDto.of(result);
-    }
-    return {} as MarkLocationDto;
+  async findMarkMetadataOnDetail(mark: MarkDto): Promise<MarkMetadataDto[]> {
+    return (
+      await this.markMetadataRepository.selectMarkMetadatasByMarkId(mark.id)
+    ).map((metadata) => MarkMetadataDto.of(metadata));
   }
 
   /**
@@ -445,49 +354,6 @@ export class MarkService {
     }
 
     return MarkDto.of(markStatus);
-  }
-
-  /**
-   * @summary 특정 기록 조회 API Service -> Metadata 부분 조회하는 함수
-   * @author  Jason
-   * @param   { MarkDto } mark
-   * @returns { Promise<MarkMetadataDto[]> }
-   */
-  async findMarkMetadataOnDetail(mark: MarkDto): Promise<MarkMetadataDto[]> {
-    return (
-      await this.markMetadataRepository.selectMarkMetadatasByMarkId(mark.id)
-    ).map((metadata) => MarkMetadataDto.of(metadata));
-  }
-
-  /**
-   * @summary 특정 기록 조회 API Service -> 날짜 부분 조회하는 함수
-   * @author  Jason
-   * @param   { MarkDto } mark
-   * @returns { Promise<string> }
-   */
-  async setMarkDateOnDetail(mark: MarkDto): Promise<string> {
-    const markLocationStatus = await this.markLocationRepository.findOne({
-      where: {
-        markId: mark.id,
-      },
-    });
-
-    if (
-      isDefined(markLocationStatus) &&
-      isDefined(markLocationStatus.scheduleAreaId)
-    ) {
-      const scheduleAreaStatus = await this.scheduleAreaRepository.findOne({
-        where: {
-          id: markLocationStatus.scheduleAreaId,
-        },
-      });
-
-      if (isDefined(scheduleAreaStatus)) {
-        return scheduleAreaStatus.date;
-      }
-    }
-
-    return mark.createdAt;
   }
 
   /**
