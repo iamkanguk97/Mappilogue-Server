@@ -15,7 +15,11 @@ import { PageOptionsDto } from 'src/common/dtos/pagination/page-options.dto';
 import { USER_HOME_MARK_MAX_COUNT } from '../../user/constants/user-home.constant';
 import { GetMarkSearchByOptionRequestDto } from '../dtos/request/get-mark-search-by-option-request.dto';
 import { IMarkSearchByArea, IMarkSearchByMark } from '../../schedule/types';
-import { IMarkListByCategory, IMarkListInHome } from '../interfaces';
+import {
+  IMarkListByCategory,
+  IMarkListInHome,
+  ISelectMarkByIdExceptMetadata,
+} from '../interfaces';
 
 @CustomRepository(MarkEntity)
 export class MarkRepository extends Repository<MarkEntity> {
@@ -267,5 +271,48 @@ export class MarkRepository extends Repository<MarkEntity> {
       result,
       new PageMetaDto({ pageOptionsDto, itemCount: result.length }),
     );
+  }
+
+  /**
+   * @summary 특정 기록 조회하기 API Service -> MarkMetadata 제외한 데이터 가져오기
+   * @author  Jason
+   * @param   { number } markId
+   * @returns { Promise<ISelectMarkByIdExceptMetadata | undefined> }
+   */
+  async selectMarkById(
+    markId: number,
+  ): Promise<ISelectMarkByIdExceptMetadata | undefined> {
+    return await this.createQueryBuilder('M')
+      .select('M.id', 'id')
+      .addSelect('M.title', 'title')
+      .addSelect('M.content', 'content')
+      .addSelect('MC.id', 'markCategoryId')
+      .addSelect(
+        `IF(MC.id IS NULL, "${MARK_CATEGORY_TOTAL_NAME}", MC.title)`,
+        'markCategoryTitle',
+      )
+      .addSelect('ML.scheduleAreaId', 'scheduleAreaId')
+      .addSelect('IF(ML.scheduleAreaId is null, ML.name, SA.name)', 'name')
+      .addSelect(
+        'IF(ML.scheduleAreaId is null, ML.streetAddress, SA.streetAddress)',
+        'streetAddress',
+      )
+      .addSelect(
+        'IF(ML.scheduleAreaId is null, ML.latitude, SA.latitude)',
+        'latitude',
+      )
+      .addSelect(
+        'IF(ML.scheduleAreaId is null, ML.longitude, SA.longitude)',
+        'longitude',
+      )
+      .addSelect(
+        'IF(ML.scheduleAreaId is not null, SA.date, M.createdAt)',
+        'markDate',
+      )
+      .leftJoin(MarkCategoryEntity, 'MC', 'MC.id = M.markCategoryId')
+      .leftJoin(MarkLocationEntity, 'ML', 'ML.markId = M.id')
+      .leftJoin(ScheduleAreaEntity, 'SA', 'SA.id = ML.scheduleAreaId')
+      .where('M.id = :markId', { markId })
+      .getRawOne();
   }
 }

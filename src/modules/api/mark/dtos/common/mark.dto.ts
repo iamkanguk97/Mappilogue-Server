@@ -50,37 +50,30 @@ export class MarkDto {
   get id(): number {
     return this._id;
   }
-
   @Expose()
   get userId(): number {
     return this._userId;
   }
-
   @Expose()
   get colorId(): number {
     return this._colorId;
   }
-
   @Expose()
   get title(): string {
     return this._title;
   }
-
   @Expose()
   get markCategoryId(): number | null {
     return this._markCategoryId;
   }
-
   @Expose()
   get scheduleId(): number | null {
     return this._scheduleId;
   }
-
   @Expose()
   get content(): string | null {
     return this._content;
   }
-
   get createdAt(): string {
     // return moment(this._createdAt).format('Y년 M월 D일');
     return moment(this._createdAt).format('YYYY-MM-DD');

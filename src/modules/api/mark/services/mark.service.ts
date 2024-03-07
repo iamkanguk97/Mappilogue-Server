@@ -115,29 +115,117 @@ export class MarkService {
    * @param   { MarkDto } mark
    * @returns { Promise<GetMarkDetailByIdResponseDto> }
    */
+  // async _findMarkOnSpecificId(
+  //   mark: MarkDto,
+  // ): Promise<GetMarkDetailByIdResponseDto> {
+  //   const [
+  //     markCategoryResponse,
+  //     markLocationResponse,
+  //     markMetadataResponse,
+  //     markDateResponse,
+  //   ] = await Promise.all([
+  //     this.findMarkCategoryOnDetail(mark),
+  //     this.findMarkLocationOnDetail(mark.id),
+  //     this.setMarkMetadataOnDetail(mark),
+  //     this.setMarkDateOnDetail(mark),
+  //   ]);
+
+  //   console.log(markCategoryResponse);
+  //   console.log(markLocationResponse);
+
+  //   return GetMarkDetailByIdResponseDto.from(
+  //     mark.id,
+  //     mark.content,
+  //     markCategoryResponse,
+  //     markLocationResponse,
+  //     markDateResponse,
+  //     markMetadataResponse,
+  //   );
+  // }
+
+  /**
+   * @summary 특정 기록 조회하기 API Service
+   * @author  Jason
+   * @param   { MarkDto } mark
+   * @returns { Promise<GetMarkDetailByIdResponseDto> }
+   */
   async findMarkOnSpecificId(
     mark: MarkDto,
   ): Promise<GetMarkDetailByIdResponseDto> {
-    const [
-      markCategoryResponse,
-      markLocationResponse,
-      markMetadataResponse,
-      markDateResponse,
-    ] = await Promise.all([
-      this.setMarkCategoryOnDetail(mark),
-      this.setMarkLocationOnDetail(mark.id),
-      this.setMarkMetadataOnDetail(mark),
-      this.setMarkDateOnDetail(mark),
+    const [selectMarkResult, selectMarkMetadataResult] = await Promise.all([
+      this.markRepository.selectMarkById(mark.id),
+      this.findMarkMetadataOnDetail(mark),
     ]);
 
+    console.log(selectMarkResult);
+    console.log(selectMarkMetadataResult);
+
     return GetMarkDetailByIdResponseDto.from(
-      mark.id,
-      mark.content,
-      markCategoryResponse,
-      markLocationResponse,
-      markDateResponse,
-      markMetadataResponse,
+      selectMarkResult,
+      selectMarkMetadataResult,
     );
+  }
+
+  /**
+   * @summary 특정 기록 조회 API Service -> Category 부분 조회하는 함수
+   * @author  Jason
+   * @param   { MarkDto } mark
+   * @returns { Promise<Partial<MarkCategoryDto>> }
+   */
+  async findMarkCategoryOnDetail(
+    mark: MarkDto,
+  ): Promise<Partial<MarkCategoryDto>> {
+    const markCategoryId = mark.markCategoryId;
+    const title = !isDefined(markCategoryId)
+      ? MARK_CATEGORY_TOTAL_NAME
+      : await this.markCategoryRepository.findOne({
+          select: {
+            title: true,
+          },
+          where: {
+            id: markCategoryId,
+          },
+        });
+
+    return {
+      id: markCategoryId,
+      title,
+    } as Partial<MarkCategoryDto>;
+  }
+
+  /**
+   * @summary     기록 조회하기 API - MarkLocation 설정하기
+   * @description scheduleAreaId가 null이면 MarkLocation에서 select, 아니면 join 후 select
+   * @author      Jason
+   * @param       { number } markId
+   * @returns     { Promise<MarkLocationDto> }
+   */
+  async findMarkLocationOnDetail(markId: number): Promise<MarkLocationDto> {
+    const markLocationStatus = await this.markLocationRepository.findOne({
+      where: {
+        markId,
+      },
+      relations: {
+        mark: true,
+        scheduleArea: true,
+      },
+    });
+
+    if (
+      isDefined(markLocationStatus) &&
+      isDefined(markLocationStatus.scheduleAreaId)
+    ) {
+      const result =
+        await this.markLocationRepository.selectMarkLocationWithScheduleArea(
+          markId,
+        );
+
+      if (!isDefined(result)) {
+        return {} as MarkLocationDto;
+      }
+      return MarkLocationDto.of(result);
+    }
+    return {} as MarkLocationDto;
   }
 
   /**
@@ -360,74 +448,12 @@ export class MarkService {
   }
 
   /**
-   * @summary     기록 조회하기 API - MarkLocation 설정하기
-   * @description scheduleAreaId가 null이면 MarkLocation에서 select, 아니면 join 후 select
-   * @author      Jason
-   * @param       { number } markId
-   * @returns     { Promise<MarkLocationDto> }
-   */
-  async setMarkLocationOnDetail(markId: number): Promise<MarkLocationDto> {
-    const markLocationStatus = await this.markLocationRepository.findOne({
-      where: {
-        markId,
-      },
-      relations: {
-        mark: true,
-        scheduleArea: true,
-      },
-    });
-
-    if (
-      isDefined(markLocationStatus) &&
-      isDefined(markLocationStatus.scheduleAreaId)
-    ) {
-      const result =
-        await this.markLocationRepository.selectMarkLocationWithScheduleArea(
-          markId,
-        );
-
-      if (!isDefined(result)) {
-        return {} as MarkLocationDto;
-      }
-      return MarkLocationDto.of(result);
-    }
-    return {} as MarkLocationDto;
-  }
-
-  /**
-   * @summary 특정 기록 조회 API Service -> Category 부분 조회하는 함수
-   * @author  Jason
-   * @param   { MarkDto } mark
-   * @returns { Promise<Partial<MarkCategoryDto>> }
-   */
-  async setMarkCategoryOnDetail(
-    mark: MarkDto,
-  ): Promise<Partial<MarkCategoryDto>> {
-    const markCategoryId = mark.markCategoryId;
-    const title = !isDefined(markCategoryId)
-      ? MARK_CATEGORY_TOTAL_NAME
-      : await this.markCategoryRepository.findOne({
-          select: {
-            title: true,
-          },
-          where: {
-            id: markCategoryId,
-          },
-        });
-
-    return {
-      id: markCategoryId,
-      title,
-    } as Partial<MarkCategoryDto>;
-  }
-
-  /**
    * @summary 특정 기록 조회 API Service -> Metadata 부분 조회하는 함수
    * @author  Jason
    * @param   { MarkDto } mark
    * @returns { Promise<MarkMetadataDto[]> }
    */
-  async setMarkMetadataOnDetail(mark: MarkDto): Promise<MarkMetadataDto[]> {
+  async findMarkMetadataOnDetail(mark: MarkDto): Promise<MarkMetadataDto[]> {
     return (
       await this.markMetadataRepository.selectMarkMetadatasByMarkId(mark.id)
     ).map((metadata) => MarkMetadataDto.of(metadata));

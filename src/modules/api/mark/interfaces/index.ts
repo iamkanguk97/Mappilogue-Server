@@ -35,3 +35,17 @@ export interface IMarkListInHome
   colorCode: string;
   markImageUrl: string;
 }
+
+export interface ISelectMarkByIdExceptMetadata {
+  id: number;
+  title: string;
+  content: string | null;
+  markCategoryId: number | null;
+  markCategoryTitle: string;
+  scheduleAreaId: number | null;
+  name: string;
+  streetAddress: string;
+  latitude: string;
+  longitude: string;
+  markDate: string;
+}

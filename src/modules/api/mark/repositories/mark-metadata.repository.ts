@@ -25,8 +25,6 @@ export class MarkMetadataRepository extends Repository<MarkMetadataEntity> {
       ])
       .innerJoin(MarkEntity, 'M', 'M.id = MMD.markId')
       .where('MMD.markId = :markId', { markId })
-      .andWhere('MMD.deletedAt IS NULL')
-      .andWhere('M.deletedAt IS NULL')
       .orderBy('MMD.createdAt')
       .getRawMany();
   }
