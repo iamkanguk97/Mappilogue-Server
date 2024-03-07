@@ -274,7 +274,7 @@ export class MarkService {
 
       await queryRunner.manager
         .getRepository(MarkLocationEntity)
-        .save(insertMarkLocationParam);
+        .save(insertMarkLocationParam ?? {});
     }
   }
 
@@ -440,7 +440,7 @@ export class MarkService {
       await queryRunner.manager.update(
         MarkLocationRepository,
         { markId: mark.id },
-        updateMarkLocationParam,
+        updateMarkLocationParam ?? {},
       );
     }
   }

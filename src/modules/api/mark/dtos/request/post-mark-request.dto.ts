@@ -97,7 +97,13 @@ export class PostMarkMetadataObject extends PickType(MarkMetadataEntity, [
   caption: string | null = null;
 }
 
-export class PostMarkRequestDto {
+export class PostMarkRequestDto extends PickType(MarkEntity, [
+  'markCategoryId',
+  'scheduleId',
+  'colorId',
+  'title',
+  'content',
+] as const) {
   @IsNumber({}, setValidatorContext(CommonExceptionCode.MustNumberType))
   @IsOptional()
   markCategoryId: number | null = null;
@@ -197,10 +203,10 @@ export class PostMarkRequestDto {
     return MarkLocationEntity.from(
       markId,
       null,
-      location.longitude,
       location.name,
       location.streetAddress,
       location.latitude,
+      location.longitude,
     );
   }
 }

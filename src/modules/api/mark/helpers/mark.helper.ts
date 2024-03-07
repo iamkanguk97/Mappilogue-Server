@@ -64,7 +64,7 @@ export class MarkHelper {
   setCreateMarkLocationParam(
     markId: number,
     body: PostMarkRequestDto,
-  ): MarkLocationEntity {
+  ): MarkLocationEntity | undefined {
     if (isDefined(body.mainScheduleAreaId)) {
       return body.toMarkLocationEntityWithScheduleAreaId(
         markId,
@@ -78,8 +78,6 @@ export class MarkHelper {
         body.mainLocation,
       );
     }
-
-    return {} as MarkLocationEntity;
   }
 
   /**
