@@ -10,6 +10,7 @@ module.exports = {
       kill_timeout: 5000,
       autorestart: true,
       watch: true,
+      args: ['--color'],
     },
   ],
 };
