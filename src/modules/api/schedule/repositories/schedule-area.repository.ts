@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { ScheduleEntity } from '../entities/schedule.entity';
 import { IScheduleAreasById } from '../types';
 import { MarkLocationEntity } from '../../mark/entities/mark-location.entity';
-import { CheckColumnEnum } from 'src/constants/enum';
+import { ECheckColumn } from 'src/constants/enum';
 
 @CustomRepository(ScheduleAreaEntity)
 export class ScheduleAreaRepository extends Repository<ScheduleAreaEntity> {
@@ -30,7 +30,7 @@ export class ScheduleAreaRepository extends Repository<ScheduleAreaEntity> {
         'SA.longitude AS longitude',
         'SA.time AS time',
         'SA.sequence AS sequence',
-        `IF(ML.scheduleAreaId IS NULL, "${CheckColumnEnum.INACTIVE}", "${CheckColumnEnum.ACTIVE}") AS isRepLocation`,
+        `IF(ML.scheduleAreaId IS NULL, "${ECheckColumn.INACTIVE}", "${ECheckColumn.ACTIVE}") AS isRepLocation`,
       ])
       .innerJoin(ScheduleEntity, 'S', 'S.id = SA.scheduleId')
       .leftJoin(MarkLocationEntity, 'ML', 'SA.id = ML.scheduleAreaId')
@@ -41,7 +41,7 @@ export class ScheduleAreaRepository extends Repository<ScheduleAreaEntity> {
 
     if (locationCond) {
       return await queryBuilder
-        .orderBy(`isRepLocation = "${CheckColumnEnum.ACTIVE}"`, 'DESC')
+        .orderBy(`isRepLocation = "${ECheckColumn.ACTIVE}"`, 'DESC')
         .addOrderBy('SA.date')
         .addOrderBy('SA.sequence')
         .getRawMany();

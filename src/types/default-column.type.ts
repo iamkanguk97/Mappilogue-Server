@@ -5,10 +5,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import {
-  StatusColumnEnum,
-  StatusOrCheckColumnLengthEnum,
-} from 'src/constants/enum';
+import { EStatusColumn, EStatusOrCheckColumnLength } from 'src/constants/enum';
 
 /**
  * @deprecated 2023-11-16 Deprecated 처리
@@ -37,8 +34,8 @@ export class DefaultColumnType {
   deletedAt?: Date | undefined;
 
   @Column('varchar', {
-    default: StatusColumnEnum.ACTIVE,
-    length: StatusOrCheckColumnLengthEnum.STATUS,
+    default: EStatusColumn.ACTIVE,
+    length: EStatusOrCheckColumnLength.STATUS,
   })
-  status!: StatusColumnEnum;
+  status!: EStatusColumn;
 }

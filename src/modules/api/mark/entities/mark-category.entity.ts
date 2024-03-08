@@ -1,10 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { UserEntity } from '../../user/entities/user.entity';
 import { MARK_CATEGORY_TITLE_LENGTH } from '../variables/constants/mark-category.constant';
-import {
-  CheckColumnEnum,
-  StatusOrCheckColumnLengthEnum,
-} from 'src/constants/enum';
+import { ECheckColumn, EStatusOrCheckColumnLength } from 'src/constants/enum';
 import { MarkEntity } from './mark.entity';
 import { CommonEntity } from 'src/common/entities/common.entity';
 
@@ -20,10 +17,10 @@ export class MarkCategoryEntity extends CommonEntity {
   sequence!: number;
 
   @Column('varchar', {
-    length: StatusOrCheckColumnLengthEnum.STATUS,
-    default: CheckColumnEnum.ACTIVE,
+    length: EStatusOrCheckColumnLength.STATUS,
+    default: ECheckColumn.ACTIVE,
   })
-  isMarkedInMap!: CheckColumnEnum;
+  isMarkedInMap!: ECheckColumn;
 
   @ManyToOne(() => UserEntity, (user) => user.markCategories, {
     onDelete: 'CASCADE',
@@ -41,14 +38,14 @@ export class MarkCategoryEntity extends CommonEntity {
     userId: number,
     title: string,
     sequence: number,
-    isMarkedInMap?: CheckColumnEnum,
+    isMarkedInMap?: ECheckColumn,
   ): MarkCategoryEntity {
     const markCategory = new MarkCategoryEntity();
 
     markCategory.userId = userId;
     markCategory.title = title;
     markCategory.sequence = sequence;
-    markCategory.isMarkedInMap = isMarkedInMap ?? CheckColumnEnum.ACTIVE;
+    markCategory.isMarkedInMap = isMarkedInMap ?? ECheckColumn.ACTIVE;
 
     return markCategory;
   }

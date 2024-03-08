@@ -1,12 +1,12 @@
 import { Exclude, Expose } from 'class-transformer';
-import { CheckColumnEnum } from 'src/constants/enum';
+import { ECheckColumn } from 'src/constants/enum';
 import { MarkMetadataEntity } from '../../entities/mark-metadata.entity';
 
 export class MarkMetadataDto {
   @Exclude() private readonly _id: number;
   @Exclude() private readonly _markId: number;
   @Exclude() private readonly _markImageUrl: string;
-  @Exclude() private readonly _isMainImage: CheckColumnEnum;
+  @Exclude() private readonly _isMainImage: ECheckColumn;
   @Exclude() private readonly _caption: string | null;
   @Exclude() private readonly _markImageKey: string | null;
 
@@ -14,7 +14,7 @@ export class MarkMetadataDto {
     id: number,
     markId: number,
     markImageUrl: string,
-    isMainImage: CheckColumnEnum,
+    isMainImage: ECheckColumn,
     caption: string | null,
     markImageKey: string | null,
   ) {
@@ -53,7 +53,7 @@ export class MarkMetadataDto {
   }
 
   @Expose()
-  get isMainImage(): CheckColumnEnum {
+  get isMainImage(): ECheckColumn {
     return this._isMainImage;
   }
 

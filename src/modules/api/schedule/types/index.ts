@@ -1,4 +1,4 @@
-import { CheckColumnEnum } from 'src/constants/enum';
+import { ECheckColumn } from 'src/constants/enum';
 import { ScheduleEntity } from '../entities/schedule.entity';
 import { ScheduleAreaEntity } from '../entities/schedule-area.entity';
 
@@ -42,7 +42,7 @@ export interface ISchedulesOnSpecificDate
 
 export interface IScheduleAreasById extends ScheduleAreaEntity {
   scheduleAreaId: number;
-  isRepLocation: CheckColumnEnum;
+  isRepLocation: ECheckColumn;
 }
 
 export interface IProcessedScheduleAreasById {

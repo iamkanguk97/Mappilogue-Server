@@ -1,5 +1,5 @@
 import { IsEnum, IsNotEmpty } from 'class-validator';
-import { CheckColumnEnum } from 'src/constants/enum';
+import { ECheckColumn } from 'src/constants/enum';
 import { UserAlarmSettingEntity } from '../../entities/user-alarm-setting.entity';
 import { setValidatorContext } from 'src/common/common';
 import { CommonExceptionCode } from 'src/common/exception-code/common.exception-code';
@@ -16,34 +16,34 @@ export class PutUserAlarmSettingRequestDto extends PickType(
   ] as const,
 ) {
   @IsEnum(
-    CheckColumnEnum,
+    ECheckColumn,
     setValidatorContext(CommonExceptionCode.MustCheckColumnType),
   )
   @IsNotEmpty(setValidatorContext(UserExceptionCode.IsTotalAlarmEmpty))
-  isTotalAlarm!: CheckColumnEnum;
+  isTotalAlarm!: ECheckColumn;
 
   @IsEnum(
-    CheckColumnEnum,
+    ECheckColumn,
     setValidatorContext(CommonExceptionCode.MustCheckColumnType),
   )
   @IsNotEmpty(setValidatorContext(UserExceptionCode.IsNoticeAlarmEmpty))
-  isNoticeAlarm!: CheckColumnEnum;
+  isNoticeAlarm!: ECheckColumn;
 
   @IsEnum(
-    CheckColumnEnum,
+    ECheckColumn,
     setValidatorContext(CommonExceptionCode.MustCheckColumnType),
   )
   @IsNotEmpty(setValidatorContext(UserExceptionCode.IsMarketingAlarmEmpty))
-  isMarketingAlarm!: CheckColumnEnum;
+  isMarketingAlarm!: ECheckColumn;
 
   @IsEnum(
-    CheckColumnEnum,
+    ECheckColumn,
     setValidatorContext(CommonExceptionCode.MustCheckColumnType),
   )
   @IsNotEmpty(
     setValidatorContext(UserExceptionCode.IsScheduleReminderAlarmEmpty),
   )
-  isScheduleReminderAlarm!: CheckColumnEnum;
+  isScheduleReminderAlarm!: ECheckColumn;
 
   toEntity(): UserAlarmSettingEntity {
     return UserAlarmSettingEntity.from(

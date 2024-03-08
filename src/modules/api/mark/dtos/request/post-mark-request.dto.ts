@@ -29,7 +29,7 @@ import { isDefined, isEmptyObject } from 'src/helpers/common.helper';
 import { MARK_DEFAULT_TITLE } from '../../variables/constants/mark.constant';
 import { PickType } from '@nestjs/mapped-types';
 import { MarkMetadataEntity } from '../../entities/mark-metadata.entity';
-import { CheckColumnEnum } from 'src/constants/enum';
+import { ECheckColumn } from 'src/constants/enum';
 
 export class PostMarkMainLocationObject extends PickType(MarkLocationEntity, [
   'name',
@@ -79,13 +79,13 @@ export class PostMarkMetadataObject extends PickType(MarkMetadataEntity, [
   'caption',
 ] as const) {
   @IsEnum(
-    CheckColumnEnum,
+    ECheckColumn,
     setValidatorContext(CommonExceptionCode.MustCheckColumnType),
   )
   @IsNotEmpty(
     setValidatorContext(MarkExceptionCode.MarkMetadataIsMainImageEmpty),
   )
-  isMainImage!: CheckColumnEnum;
+  isMainImage!: ECheckColumn;
 
   @Length(
     1,

@@ -6,7 +6,7 @@ import { ColorEntity } from '../../color/entities/color.entity';
 import { MarkLocationEntity } from '../entities/mark-location.entity';
 import { MarkCategoryEntity } from '../entities/mark-category.entity';
 import { MarkMetadataEntity } from '../entities/mark-metadata.entity';
-import { CheckColumnEnum } from 'src/constants/enum';
+import { ECheckColumn } from 'src/constants/enum';
 import { USER_DEFAULT_PROFILE_IMAGE } from '../../user/constants/user.constant';
 import { ScheduleAreaEntity } from '../../schedule/entities/schedule-area.entity';
 import { ResultWithPageDto } from 'src/common/dtos/pagination/result-with-page.dto';
@@ -94,7 +94,7 @@ export class MarkRepository extends Repository<MarkEntity> {
         MarkMetadataEntity,
         'MM',
         'MM.markId = M.id AND MM.isMainImage = :isMainImage',
-        { isMainImage: CheckColumnEnum.ACTIVE },
+        { isMainImage: ECheckColumn.ACTIVE },
       )
       .leftJoin(ScheduleAreaEntity, 'SA', 'SA.id = ML.scheduleAreaId')
       .where('M.userId = :userId', { userId })
@@ -158,7 +158,7 @@ export class MarkRepository extends Repository<MarkEntity> {
         MarkMetadataEntity,
         'MM',
         'MM.markId = M.id AND MM.isMainImage = :isMainImage',
-        { isMainImage: CheckColumnEnum.ACTIVE },
+        { isMainImage: ECheckColumn.ACTIVE },
       )
       .where('M.userId = :userId', { userId })
       .andWhere('M.deletedAt IS NULL')

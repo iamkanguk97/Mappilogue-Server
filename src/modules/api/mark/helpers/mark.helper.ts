@@ -1,6 +1,6 @@
 import { isDefined } from 'src/helpers/common.helper';
 import { Injectable } from '@nestjs/common';
-import { CheckColumnEnum } from 'src/constants/enum';
+import { ECheckColumn } from 'src/constants/enum';
 import { MarkMetadataEntity } from '../entities/mark-metadata.entity';
 import {
   EImageBuilderType,
@@ -100,8 +100,7 @@ export class MarkHelper {
    */
   getMarkMainImageStatusCount(metadata: PostMarkMetadataObject[]): number {
     return metadata.reduce(
-      (acc, obj) =>
-        obj.isMainImage === CheckColumnEnum.ACTIVE ? acc + 1 : acc,
+      (acc, obj) => (obj.isMainImage === ECheckColumn.ACTIVE ? acc + 1 : acc),
       0,
     );
   }

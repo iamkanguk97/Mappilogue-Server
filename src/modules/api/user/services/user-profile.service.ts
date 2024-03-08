@@ -13,7 +13,7 @@ import { PutUserAlarmSettingRequestDto } from '../dtos/request/put-user-alarm-se
 import { isDefined } from 'src/helpers/common.helper';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 import { UserProfileHelper } from '../helpers/user-profile.helper';
-import { PromiseStatusEnum } from 'src/constants/enum';
+import { EPromiseStatus } from 'src/constants/enum';
 
 @Injectable()
 export class UserProfileService {
@@ -59,7 +59,7 @@ export class UserProfileService {
       imageDeleteBuilder.delete(user.profileImageKey),
     ]);
 
-    if (result[result.length - 1].status === PromiseStatusEnum.REJECTED) {
+    if (result[result.length - 1].status === EPromiseStatus.REJECTED) {
       /**
        * 이미지 삭제에서 에러가 발생할 때 어짜피 DB에는 새로운 프로필 이미지에 대한 정보가 저장되었을 것임.
        * 그렇기 때문에 여기에서는 단순히 개발자들에게 삭제에서 에러가 발생하는지 알려주기만 하면 됨.

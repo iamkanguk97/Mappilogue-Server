@@ -25,7 +25,7 @@ import { PostMarkValidationPipe } from '../pipes/post-mark-validation.pipe';
 import { ResponseEntity } from 'src/common/entities/response.entity';
 import { PostMarkResponseDto } from '../dtos/response/post-mark-response.dto';
 import { MarkDto } from '../dtos/common/mark.dto';
-import { DomainNameEnum } from 'src/constants/enum';
+import { EDomainName } from 'src/constants/enum';
 import {
   POST_MARK_IMAGE_KEY,
   POST_MARK_IMAGE_LIMIT,
@@ -40,7 +40,7 @@ import { ResponseWithPageEntity } from 'src/common/entities/response-with-page.e
 import { PutMarkRequestDto } from '../dtos/request/put-mark-request.dto';
 import { GetMarkSearchByOptionRequestDto } from '../dtos/request/get-mark-search-by-option-request.dto';
 
-@Controller(DomainNameEnum.MARK)
+@Controller(EDomainName.MARK)
 @UseInterceptors(ClassSerializerInterceptor)
 export class MarkController {
   constructor(private readonly markService: MarkService) {}

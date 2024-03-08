@@ -14,7 +14,7 @@ import { PostTokenRefreshRequestDto } from '../dtos/request/post-token-refresh-r
 import { Public } from 'src/modules/core/auth/decorators/auth.decorator';
 import { UserId } from '../decorators/user-id.decorator';
 import { PostUserWithdrawRequestDto } from '../dtos/request/post-user-withdraw-request.dto';
-import { DomainNameEnum } from 'src/constants/enum';
+import { EDomainName } from 'src/constants/enum';
 import { PostLoginOrSignUpRequestDto } from '../dtos/request/post-login-or-sign-up-request.dto';
 import { PostLoginOrSignUpResponseDto } from '../dtos/response/post-login-or-sign-up-response.dto';
 import { isDefined } from 'src/helpers/common.helper';
@@ -23,7 +23,7 @@ import { PostAutoLoginResponseDto } from '../dtos/response/post-auto-login-respo
 import { AccessTokenWithExpire } from 'src/decorators/access-token.decorator';
 import { ITokenWithExpireTime } from 'src/modules/core/auth/types';
 
-@Controller(DomainNameEnum.USER)
+@Controller(EDomainName.USER)
 @UseInterceptors(ClassSerializerInterceptor)
 export class UserController {
   constructor(

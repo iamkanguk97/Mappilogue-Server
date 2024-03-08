@@ -1,7 +1,4 @@
-import {
-  CheckColumnEnum,
-  StatusOrCheckColumnLengthEnum,
-} from 'src/constants/enum';
+import { ECheckColumn, EStatusOrCheckColumnLength } from 'src/constants/enum';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { UserEntity } from '../../user/entities/user.entity';
 import {
@@ -34,9 +31,9 @@ export class ScheduleEntity extends CommonEntity {
   endDate!: string;
 
   @Column('varchar', {
-    length: StatusOrCheckColumnLengthEnum.CHECK,
+    length: EStatusOrCheckColumnLength.CHECK,
   })
-  isAlarm!: CheckColumnEnum;
+  isAlarm!: ECheckColumn;
 
   @ManyToOne(() => UserEntity, (user) => user.schedules, {
     onDelete: 'CASCADE',
@@ -76,8 +73,8 @@ export class ScheduleEntity extends CommonEntity {
       !isDefined(title) || title.length === 0 ? SCHEDULE_DEFAULT_TITLE : title;
     schedule.isAlarm =
       !isDefined(alarmOptions) || alarmOptions.length === 0
-        ? CheckColumnEnum.INACTIVE
-        : CheckColumnEnum.ACTIVE;
+        ? ECheckColumn.INACTIVE
+        : ECheckColumn.ACTIVE;
 
     return schedule;
   }

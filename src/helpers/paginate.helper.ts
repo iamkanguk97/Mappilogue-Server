@@ -1,4 +1,4 @@
-import { DefaultPaginationEnum } from 'src/constants/enum';
+import { EDefaultPagination } from 'src/constants/enum';
 import { isDefined, isNumeric } from './common.helper';
 import { BadRequestException } from '@nestjs/common';
 import { CommonExceptionCode } from 'src/common/exception-code/common.exception-code';
@@ -15,7 +15,7 @@ export function setPageNo(pageNo?: number | string): number {
   }
 
   return !isDefined(pageNo) || Number(pageNo) < 1
-    ? DefaultPaginationEnum.DEFAULT_PAGE_NO
+    ? EDefaultPagination.DEFAULT_PAGE_NO
     : Number(pageNo);
 }
 
@@ -31,6 +31,6 @@ export function setPageSize(pageSize?: number | string | undefined): number {
   }
 
   return !isDefined(pageSize) || Number(pageSize) < 1
-    ? DefaultPaginationEnum.DEFAULT_PAGE_SIZE
+    ? EDefaultPagination.DEFAULT_PAGE_SIZE
     : Number(pageSize);
 }

@@ -1,7 +1,4 @@
-import {
-  CheckColumnEnum,
-  StatusOrCheckColumnLengthEnum,
-} from 'src/constants/enum';
+import { ECheckColumn, EStatusOrCheckColumnLength } from 'src/constants/enum';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { MARK_IMAGE_KEY_LENGTH } from '../variables/constants/mark.constant';
 import { CommonEntity } from 'src/common/entities/common.entity';
@@ -21,8 +18,8 @@ export class MarkMetadataEntity extends CommonEntity {
   @Column('tinytext', { nullable: true })
   caption!: string | null;
 
-  @Column('varchar', { length: StatusOrCheckColumnLengthEnum.CHECK })
-  isMainImage!: CheckColumnEnum;
+  @Column('varchar', { length: EStatusOrCheckColumnLength.CHECK })
+  isMainImage!: ECheckColumn;
 
   @ManyToOne(() => MarkEntity, (mark) => mark.markMetadata, {
     onUpdate: 'CASCADE',
@@ -34,7 +31,7 @@ export class MarkMetadataEntity extends CommonEntity {
   static from(
     markId: number,
     markImageUrl: string,
-    isMainImage: CheckColumnEnum,
+    isMainImage: ECheckColumn,
     markImageKey: string | null,
     caption: string | null,
   ): MarkMetadataEntity {

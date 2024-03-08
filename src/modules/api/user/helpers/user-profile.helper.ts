@@ -1,7 +1,7 @@
 import { USER_DEFAULT_PROFILE_IMAGE } from './../constants/user.constant';
 import { Injectable } from '@nestjs/common';
 import { UserAlarmSettingDto } from '../dtos/user-alarm-setting.dto';
-import { CheckColumnEnum } from 'src/constants/enum';
+import { ECheckColumn } from 'src/constants/enum';
 import { isDefined } from 'src/helpers/common.helper';
 import { UserEntity } from '../entities/user.entity';
 import { UserAlarmSettingEntity } from '../entities/user-alarm-setting.entity';
@@ -19,8 +19,8 @@ export class UserProfileHelper {
   ): boolean {
     return (
       isDefined(userAlarmSettings) &&
-      userAlarmSettings.isTotalAlarm === CheckColumnEnum.ACTIVE &&
-      userAlarmSettings.isScheduleReminderAlarm === CheckColumnEnum.ACTIVE
+      userAlarmSettings.isTotalAlarm === ECheckColumn.ACTIVE &&
+      userAlarmSettings.isScheduleReminderAlarm === ECheckColumn.ACTIVE
     );
   }
 

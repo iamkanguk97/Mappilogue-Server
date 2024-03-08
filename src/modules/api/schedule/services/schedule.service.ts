@@ -37,7 +37,7 @@ import { GetSchedulesInCalendarRequestDto } from '../dtos/request/get-schedules-
 import { GetSchedulesInCalendarResponseDto } from '../dtos/response/get-schedules-in-calendar-response.dto';
 import { ExceptionCodeDto } from 'src/common/dtos/exception-code.dto';
 import { InternalServerExceptionCode } from 'src/common/exception-code/internal-server.exception-code';
-import { CheckColumnEnum } from 'src/constants/enum';
+import { ECheckColumn } from 'src/constants/enum';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { GetSchedulesInPostMarkRequestDto } from '../dtos/request/get-schedules-in-post-mark-request.dto';
 import { ISchedulesInPostMark } from '../types';
@@ -441,7 +441,7 @@ export class ScheduleService {
   async setScheduleAlarmsOnDetail(
     schedule: ScheduleDto,
   ): Promise<(string | null)[]> {
-    return schedule.isAlarm === CheckColumnEnum.ACTIVE
+    return schedule.isAlarm === ECheckColumn.ACTIVE
       ? await this.findScheduleAlarms(schedule.userId, schedule.id)
       : [];
   }

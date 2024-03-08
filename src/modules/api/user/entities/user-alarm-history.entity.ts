@@ -1,7 +1,4 @@
-import {
-  CheckColumnEnum,
-  StatusOrCheckColumnLengthEnum,
-} from 'src/constants/enum';
+import { ECheckColumn, EStatusOrCheckColumnLength } from 'src/constants/enum';
 import { Column, Entity } from 'typeorm';
 import {
   USER_ALARM_HISTORY_BODY_LENGTH,
@@ -44,16 +41,16 @@ export class UserAlarmHistoryEntity extends CommonEntity {
   cronName!: string | null;
 
   @Column('varchar', {
-    length: StatusOrCheckColumnLengthEnum.CHECK,
-    default: CheckColumnEnum.INACTIVE,
+    length: EStatusOrCheckColumnLength.CHECK,
+    default: ECheckColumn.INACTIVE,
   })
-  isRead!: CheckColumnEnum;
+  isRead!: ECheckColumn;
 
   @Column('varchar', {
-    length: StatusOrCheckColumnLengthEnum.CHECK,
-    default: CheckColumnEnum.INACTIVE,
+    length: EStatusOrCheckColumnLength.CHECK,
+    default: ECheckColumn.INACTIVE,
   })
-  isSent!: CheckColumnEnum;
+  isSent!: ECheckColumn;
 
   @Column('varchar', { nullable: true })
   alarmAt!: string | null;

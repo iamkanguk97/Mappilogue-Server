@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { CronJob } from 'cron';
 import { InternalServerExceptionCode } from 'src/common/exception-code/internal-server.exception-code';
-import { CheckColumnEnum } from 'src/constants/enum';
+import { ECheckColumn } from 'src/constants/enum';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import {
   Notification,
@@ -124,7 +124,7 @@ export class NotificationService {
           await this.userAlarmHistoryRepository.update(
             { id: userAlarmHistoryId },
             {
-              isSent: CheckColumnEnum.ACTIVE,
+              isSent: ECheckColumn.ACTIVE,
               alarmAt: () => 'CURRENT_TIMESTAMP',
             },
           );

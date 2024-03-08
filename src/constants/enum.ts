@@ -1,19 +1,19 @@
-export enum StatusColumnEnum {
+export enum EStatusColumn {
   ACTIVE = 'ACTIVE',
   DELETED = 'DELETED',
 }
 
-export enum CheckColumnEnum {
+export enum ECheckColumn {
   ACTIVE = 'ACTIVE',
   INACTIVE = 'INACTIVE',
 }
 
-export enum StatusOrCheckColumnLengthEnum {
+export enum EStatusOrCheckColumnLength {
   CHECK = 10,
   STATUS = 10,
 }
 
-export enum DomainNameEnum {
+export enum EDomainName {
   COLOR = 'colors',
   USER = 'users',
   USER_PROFILE = 'user-profiles',
@@ -23,12 +23,12 @@ export enum DomainNameEnum {
   SCHEDULE = 'schedules',
 }
 
-export enum DefaultPaginationEnum {
+export enum EDefaultPagination {
   DEFAULT_PAGE_NO = 1,
   DEFAULT_PAGE_SIZE = 10,
 }
 
-export enum PromiseStatusEnum {
+export enum EPromiseStatus {
   FULFILLED = 'fulfilled',
   REJECTED = 'rejected',
 }

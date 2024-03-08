@@ -1,4 +1,4 @@
-import { CheckColumnEnum } from 'src/constants/enum';
+import { ECheckColumn } from 'src/constants/enum';
 import { Exclude, Expose } from 'class-transformer';
 import { IMarkCategoryWithMarkCount } from '../../interfaces';
 
@@ -6,14 +6,14 @@ export class MarkCategoryDto {
   @Exclude() private readonly _id: number;
   @Exclude() private readonly _title: string;
   @Exclude() private readonly _sequence: number;
-  @Exclude() private readonly _isMarkedInMap: CheckColumnEnum;
+  @Exclude() private readonly _isMarkedInMap: ECheckColumn;
   @Exclude() private readonly _markCount?: number;
 
   private constructor(
     id: number,
     title: string,
     sequence: number,
-    isMarkedInMap: CheckColumnEnum,
+    isMarkedInMap: ECheckColumn,
     markCount?: number,
   ) {
     this._id = id;
@@ -49,7 +49,7 @@ export class MarkCategoryDto {
   }
 
   @Expose()
-  get isMarkedInMap(): CheckColumnEnum {
+  get isMarkedInMap(): ECheckColumn {
     return this._isMarkedInMap;
   }
 

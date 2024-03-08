@@ -24,9 +24,9 @@ import { PutMarkCategoryRequestDto } from '../dtos/request/put-mark-category-req
 import { DeleteMarkCategoryOptionRequestDto } from '../dtos/request/delete-mark-category-option-request.dto';
 import { GetMarkCategoriesResponseDto } from '../dtos/response/get-mark-categories-response.dto';
 import { MarkCategoryValidationPipe } from '../pipes/mark-category-validation.pipe';
-import { DomainNameEnum } from 'src/constants/enum';
+import { EDomainName } from 'src/constants/enum';
 
-@Controller(DomainNameEnum.MARK_CATEGORY)
+@Controller(EDomainName.MARK_CATEGORY)
 @UseInterceptors(ClassSerializerInterceptor)
 export class MarkCategoryController {
   constructor(private readonly markCategoryService: MarkCategoryService) {}

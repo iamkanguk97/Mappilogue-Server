@@ -26,9 +26,9 @@ import { PutUserAlarmSettingRequestDto } from '../dtos/request/put-user-alarm-se
 import { Public } from 'src/modules/core/auth/decorators/auth.decorator';
 import { TERMS_OF_SERVICE_URL } from 'src/constants/constant';
 import { PATCH_USER_PROFILE_IMAGE_KEY } from '../constants/user-profile.constant';
-import { DomainNameEnum } from 'src/constants/enum';
+import { EDomainName } from 'src/constants/enum';
 
-@Controller(DomainNameEnum.USER_PROFILE)
+@Controller(EDomainName.USER_PROFILE)
 @UseInterceptors(ClassSerializerInterceptor)
 export class UserProfileController {
   constructor(private readonly userProfileService: UserProfileService) {}

@@ -2,19 +2,19 @@ import { Type } from 'class-transformer';
 import { IsInt, IsOptional } from 'class-validator';
 import { setValidatorContext } from 'src/common/common';
 import { CommonExceptionCode } from 'src/common/exception-code/common.exception-code';
-import { DefaultPaginationEnum } from 'src/constants/enum';
+import { EDefaultPagination } from 'src/constants/enum';
 import { setPageNo, setPageSize } from 'src/helpers/paginate.helper';
 
 export class PageOptionsDto {
   @Type(() => Number)
   @IsInt(setValidatorContext(CommonExceptionCode.MustIntegerType))
   @IsOptional()
-  pageNo: number = DefaultPaginationEnum.DEFAULT_PAGE_NO;
+  pageNo: number = EDefaultPagination.DEFAULT_PAGE_NO;
 
   @Type(() => Number)
   @IsInt(setValidatorContext(CommonExceptionCode.MustIntegerType))
   @IsOptional()
-  pageSize: number = DefaultPaginationEnum.DEFAULT_PAGE_SIZE;
+  pageSize: number = EDefaultPagination.DEFAULT_PAGE_SIZE;
 
   constructor(pageNo: number, pageSize: number) {
     this.pageNo = pageNo;

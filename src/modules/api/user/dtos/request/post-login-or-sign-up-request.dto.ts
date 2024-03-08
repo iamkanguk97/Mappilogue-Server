@@ -1,7 +1,7 @@
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { setValidatorContext } from 'src/common/common';
 import { UserSnsTypeEnum } from '../../constants/enums/user.enum';
-import { CheckColumnEnum } from 'src/constants/enum';
+import { ECheckColumn } from 'src/constants/enum';
 import { CommonExceptionCode } from 'src/common/exception-code/common.exception-code';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 import { UserAlarmSettingEntity } from '../../entities/user-alarm-setting.entity';
@@ -23,11 +23,11 @@ export class PostLoginOrSignUpRequestDto {
   fcmToken: string | null = null;
 
   @IsEnum(
-    CheckColumnEnum,
+    ECheckColumn,
     setValidatorContext(CommonExceptionCode.MustCheckColumnType),
   )
   @IsOptional()
-  isAlarmAccept?: CheckColumnEnum = CheckColumnEnum.ACTIVE;
+  isAlarmAccept?: ECheckColumn = ECheckColumn.ACTIVE;
 
   /**
    * @summary UserAlarmSettingEntity 변환 함수
@@ -36,7 +36,7 @@ export class PostLoginOrSignUpRequestDto {
    * @returns { UserAlarmSettingEntity }
    */
   toUserAlarmSettingEntity(userId: number): UserAlarmSettingEntity {
-    const value = this.isAlarmAccept ?? CheckColumnEnum.ACTIVE;
+    const value = this.isAlarmAccept ?? ECheckColumn.ACTIVE;
 
     const userAlarmSetting = new UserAlarmSettingEntity();
 

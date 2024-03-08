@@ -1,7 +1,4 @@
-import {
-  CheckColumnEnum,
-  StatusOrCheckColumnLengthEnum,
-} from 'src/constants/enum';
+import { ECheckColumn, EStatusOrCheckColumnLength } from 'src/constants/enum';
 import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import { UserEntity } from './user.entity';
 import { CommonEntity } from 'src/common/entities/common.entity';
@@ -11,23 +8,23 @@ export class UserAlarmSettingEntity extends CommonEntity {
   @Column('int')
   userId!: number;
 
-  @Column('varchar', { length: StatusOrCheckColumnLengthEnum.CHECK })
-  isTotalAlarm!: CheckColumnEnum;
+  @Column('varchar', { length: EStatusOrCheckColumnLength.CHECK })
+  isTotalAlarm!: ECheckColumn;
 
   @Column('varchar', {
-    length: StatusOrCheckColumnLengthEnum.CHECK,
+    length: EStatusOrCheckColumnLength.CHECK,
   })
-  isNoticeAlarm!: CheckColumnEnum;
+  isNoticeAlarm!: ECheckColumn;
 
   @Column('varchar', {
-    length: StatusOrCheckColumnLengthEnum.CHECK,
+    length: EStatusOrCheckColumnLength.CHECK,
   })
-  isMarketingAlarm!: CheckColumnEnum;
+  isMarketingAlarm!: ECheckColumn;
 
   @Column('varchar', {
-    length: StatusOrCheckColumnLengthEnum.CHECK,
+    length: EStatusOrCheckColumnLength.CHECK,
   })
-  isScheduleReminderAlarm!: CheckColumnEnum;
+  isScheduleReminderAlarm!: ECheckColumn;
 
   @OneToOne(() => UserEntity, (user) => user.userAlarmSetting, {
     onDelete: 'CASCADE',
@@ -37,10 +34,10 @@ export class UserAlarmSettingEntity extends CommonEntity {
   user?: UserEntity;
 
   static from(
-    isTotalAlarm: CheckColumnEnum,
-    isNoticeAlarm: CheckColumnEnum,
-    isMarketingAlarm: CheckColumnEnum,
-    isScheduleReminderAlarm: CheckColumnEnum,
+    isTotalAlarm: ECheckColumn,
+    isNoticeAlarm: ECheckColumn,
+    isMarketingAlarm: ECheckColumn,
+    isScheduleReminderAlarm: ECheckColumn,
   ): UserAlarmSettingEntity {
     const userAlarmSetting = new UserAlarmSettingEntity();
 

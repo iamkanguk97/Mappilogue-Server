@@ -25,14 +25,14 @@ import { GetScheduleOnSpecificDateResponseDto } from '../dtos/response/get-sched
 import { GetScheduleDetailByIdResponseDto } from '../dtos/response/get-schedule-detail-by-id-response.dto';
 import { PutScheduleRequestDto } from '../dtos/request/put-schedule-request.dto';
 import { GetScheduleAreasByIdResponseDto } from '../dtos/response/get-schedule-areas-by-id-response.dto';
-import { DomainNameEnum } from 'src/constants/enum';
+import { EDomainName } from 'src/constants/enum';
 import { GetSchedulesInCalendarRequestDto } from '../dtos/request/get-schedules-in-calendar-request.dto';
 import { GetSchedulesInCalendarResponseDto } from '../dtos/response/get-schedules-in-calendar-response.dto';
 import { PostScheduleAlarmsPipe } from '../pipes/post-schedule-alarms.pipe';
 import { GetSchedulesInPostMarkRequestDto } from '../dtos/request/get-schedules-in-post-mark-request.dto';
 import { ISchedulesInPostMark } from '../types';
 
-@Controller(DomainNameEnum.SCHEDULE)
+@Controller(EDomainName.SCHEDULE)
 @UseInterceptors(ClassSerializerInterceptor)
 export class ScheduleController {
   constructor(private readonly scheduleService: ScheduleService) {}

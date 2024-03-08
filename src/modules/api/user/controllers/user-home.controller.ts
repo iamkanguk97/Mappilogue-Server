@@ -7,7 +7,7 @@ import {
   Query,
   UseInterceptors,
 } from '@nestjs/common';
-import { DomainNameEnum } from 'src/constants/enum';
+import { EDomainName } from 'src/constants/enum';
 import { UserHomeService } from '../services/user-home.service';
 import { Public } from 'src/modules/core/auth/decorators/auth.decorator';
 import { GetPagination } from 'src/decorators/get-paginate.decorator';
@@ -19,7 +19,7 @@ import { GetHomeRequestDto } from '../dtos/request/get-home-request.dto';
 import { ResponseEntity } from 'src/common/entities/response.entity';
 import { GetHomeResponseDto } from '../dtos/response/get-home-response.dto';
 
-@Controller(DomainNameEnum.USER_HOME)
+@Controller(EDomainName.USER_HOME)
 @UseInterceptors(ClassSerializerInterceptor)
 export class UserHomeController {
   constructor(private readonly userHomeService: UserHomeService) {}

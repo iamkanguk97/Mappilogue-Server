@@ -1,20 +1,20 @@
-import { CheckColumnEnum } from 'src/constants/enum';
+import { ECheckColumn } from 'src/constants/enum';
 import { UserAlarmSettingEntity } from '../entities/user-alarm-setting.entity';
 import { Exclude, Expose } from 'class-transformer';
 
 export class UserAlarmSettingDto {
   @Exclude() private readonly _userId: number;
-  @Exclude() private readonly _isTotalAlarm: CheckColumnEnum;
-  @Exclude() private readonly _isNoticeAlarm: CheckColumnEnum;
-  @Exclude() private readonly _isMarketingAlarm: CheckColumnEnum;
-  @Exclude() private readonly _isScheduleReminderAlarm: CheckColumnEnum;
+  @Exclude() private readonly _isTotalAlarm: ECheckColumn;
+  @Exclude() private readonly _isNoticeAlarm: ECheckColumn;
+  @Exclude() private readonly _isMarketingAlarm: ECheckColumn;
+  @Exclude() private readonly _isScheduleReminderAlarm: ECheckColumn;
 
   private constructor(
     userId: number,
-    isTotalAlarm: CheckColumnEnum,
-    isNoticeAlarm: CheckColumnEnum,
-    isMarketingAlarm: CheckColumnEnum,
-    isScheduleReminderAlarm: CheckColumnEnum,
+    isTotalAlarm: ECheckColumn,
+    isNoticeAlarm: ECheckColumn,
+    isMarketingAlarm: ECheckColumn,
+    isScheduleReminderAlarm: ECheckColumn,
   ) {
     this._userId = userId;
     this._isTotalAlarm = isTotalAlarm;
@@ -41,22 +41,22 @@ export class UserAlarmSettingDto {
   }
 
   @Expose()
-  get isTotalAlarm(): CheckColumnEnum {
+  get isTotalAlarm(): ECheckColumn {
     return this._isTotalAlarm;
   }
 
   @Expose()
-  get isNoticeAlarm(): CheckColumnEnum {
+  get isNoticeAlarm(): ECheckColumn {
     return this._isNoticeAlarm;
   }
 
   @Expose()
-  get isMarketingAlarm(): CheckColumnEnum {
+  get isMarketingAlarm(): ECheckColumn {
     return this._isMarketingAlarm;
   }
 
   @Expose()
-  get isScheduleReminderAlarm(): CheckColumnEnum {
+  get isScheduleReminderAlarm(): ECheckColumn {
     return this._isScheduleReminderAlarm;
   }
 }

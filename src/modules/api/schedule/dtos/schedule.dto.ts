@@ -1,12 +1,12 @@
 import { Exclude, Expose } from 'class-transformer';
-import { CheckColumnEnum } from 'src/constants/enum';
+import { ECheckColumn } from 'src/constants/enum';
 import { ScheduleEntity } from '../entities/schedule.entity';
 
 export class ScheduleDto {
   @Exclude() private readonly _id: number;
   @Exclude() private readonly _userId: number;
   @Exclude() private readonly _colorId: number;
-  @Exclude() private readonly _isAlarm: CheckColumnEnum;
+  @Exclude() private readonly _isAlarm: ECheckColumn;
   @Exclude() private readonly _title: string | null;
 
   @Exclude() private _startDate: string;
@@ -19,7 +19,7 @@ export class ScheduleDto {
     colorId: number,
     startDate: string,
     endDate: string,
-    isAlarm: CheckColumnEnum,
+    isAlarm: ECheckColumn,
     title: string | null,
   ) {
     this._id = id;
@@ -74,7 +74,7 @@ export class ScheduleDto {
   }
 
   @Expose()
-  get isAlarm(): CheckColumnEnum {
+  get isAlarm(): ECheckColumn {
     return this._isAlarm;
   }
 
