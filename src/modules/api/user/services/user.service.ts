@@ -23,7 +23,7 @@ import { TDecodedUserToken } from '../types';
 import { PostUserWithdrawRequestDto } from '../dtos/request/post-user-withdraw-request.dto';
 import { decryptEmail } from 'src/helpers/crypt.helper';
 import {
-  ImageBuilderTypeEnum,
+  EImageBuilderType,
   MulterBuilder,
 } from 'src/common/multer/multer.builder';
 import { DataSource, QueryRunner } from 'typeorm';
@@ -235,7 +235,7 @@ export class UserService {
     const userProfileKey = user.profileImageKey;
 
     if (isDefined(userProfileKey) && userProfileKey.length !== 0) {
-      const imageDeleteBuilder = new MulterBuilder(ImageBuilderTypeEnum.DELETE);
+      const imageDeleteBuilder = new MulterBuilder(EImageBuilderType.DELETE);
       await imageDeleteBuilder.delete(userProfileKey);
     }
   }

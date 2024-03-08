@@ -16,7 +16,7 @@ import * as multerS3 from 'multer-s3';
 config();
 const customConfigService = new CustomConfigService(new ConfigService());
 
-export enum ImageBuilderTypeEnum {
+export enum EImageBuilderType {
   UPLOAD = 'UPLOAD',
   DELETE = 'DELETE',
 }
@@ -33,7 +33,7 @@ export class MulterBuilder {
   private resource = '';
   private path = '';
 
-  constructor(type: ImageBuilderTypeEnum) {
+  constructor(type: EImageBuilderType) {
     this.s3 = this.setS3(type);
     this.bucketName = customConfigService.get<string>(
       ENVIRONMENT_KEY.AWS_S3_BUCKET_NAME,
@@ -78,14 +78,14 @@ export class MulterBuilder {
 
   /**
    * @summary Upload Builder 또는 Delete Builder를 설정하는 함수
-   * @param   { ImageBuilderTypeEnum } type
+   * @param   { EImageBuilderType } type
    * @returns { S3Client | AWS.S3 }
    */
-  setS3(type: ImageBuilderTypeEnum): S3Client | AWS.S3 {
+  setS3(type: EImageBuilderType): S3Client | AWS.S3 {
     switch (type) {
-      case ImageBuilderTypeEnum.UPLOAD:
+      case EImageBuilderType.UPLOAD:
         return this.setS3WithUpload();
-      case ImageBuilderTypeEnum.DELETE:
+      case EImageBuilderType.DELETE:
         return this.setS3WithDelete();
     }
   }

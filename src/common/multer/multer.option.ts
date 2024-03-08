@@ -4,7 +4,7 @@ import {
   S3_BASE_IMAGE_DIRECTORY,
 } from 'src/constants/constant';
 import { BadRequestException } from '@nestjs/common';
-import { ImageBuilderTypeEnum, MulterBuilder } from './multer.builder';
+import { EImageBuilderType, MulterBuilder } from './multer.builder';
 import { UserExceptionCode } from '../exception-code/user.exception-code';
 import { Request } from 'express';
 import { DomainNameEnum } from 'src/constants/enum';
@@ -64,7 +64,7 @@ export const fileFilter =
 export const CreateProfileImageMulterOption = (): MulterOptions => {
   return {
     fileFilter: fileFilter(FileTypeEnum.IMAGE),
-    storage: new MulterBuilder(ImageBuilderTypeEnum.UPLOAD)
+    storage: new MulterBuilder(EImageBuilderType.UPLOAD)
       .allowImageMimeTypes()
       .setResource(S3_BASE_IMAGE_DIRECTORY)
       .setPath(DomainNameEnum.USER)
@@ -84,7 +84,7 @@ export const CreateProfileImageMulterOption = (): MulterOptions => {
 export const CreateMarkImageMulterOption = (): MulterOptions => {
   return {
     fileFilter: fileFilter(FileTypeEnum.IMAGE),
-    storage: new MulterBuilder(ImageBuilderTypeEnum.UPLOAD)
+    storage: new MulterBuilder(EImageBuilderType.UPLOAD)
       .allowImageMimeTypes()
       .setResource(S3_BASE_IMAGE_DIRECTORY)
       .setPath(DomainNameEnum.MARK)

@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { CheckColumnEnum } from 'src/constants/enum';
 import { MarkMetadataEntity } from '../entities/mark-metadata.entity';
 import {
-  ImageBuilderTypeEnum,
+  EImageBuilderType,
   MulterBuilder,
 } from 'src/common/multer/multer.builder';
 import {
@@ -47,10 +47,22 @@ export class MarkHelper {
   async deleteUploadedMarkImageWhenError(
     markImages: Express.MulterS3.File[],
   ): Promise<void> {
-    const imageDeleteBuilder = new MulterBuilder(ImageBuilderTypeEnum.DELETE);
+    const imageDeleteBuilder = new MulterBuilder(EImageBuilderType.DELETE);
 
     for (const idx in markImages) {
       await imageDeleteBuilder.delete(markImages[idx].key);
+    }
+  }
+
+  /**
+   * @summary 이미지
+   * @param keyList
+   */
+  async deleteUploadedMarkImageWithKey(keyList: string[]) {
+    const imageDeleteBuilder = new MulterBuilder(EImageBuilderType.DELETE);
+
+    for (const key of keyList) {
+      await imageDeleteBuilder.delete(key);
     }
   }
 

@@ -3,7 +3,7 @@ import { UserService } from './user.service';
 import { PatchUserNicknameRequestDto } from '../dtos/request/patch-user-nickname-request.dto';
 import { TDecodedUserToken } from '../types';
 import {
-  ImageBuilderTypeEnum,
+  EImageBuilderType,
   MulterBuilder,
 } from 'src/common/multer/multer.builder';
 import { PatchUserProfileImageResponseDto } from '../dtos/response/patch-user-profile-image-response.dto';
@@ -52,7 +52,7 @@ export class UserProfileService {
     const updateProfileImageParam =
       this.userProfileHelper.setUpdateProfileImageParam(imageFile);
 
-    const imageDeleteBuilder = new MulterBuilder(ImageBuilderTypeEnum.DELETE);
+    const imageDeleteBuilder = new MulterBuilder(EImageBuilderType.DELETE);
 
     const result = await Promise.allSettled([
       this.userService.modifyById(user.id, updateProfileImageParam),
