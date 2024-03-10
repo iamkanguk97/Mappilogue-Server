@@ -1,5 +1,10 @@
 import { DataSource, QueryRunner } from 'typeorm';
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { MarkRepository } from '../repositories/mark.repository';
 import { MarkEntity } from '../entities/mark.entity';
 import { MarkHelper } from '../helpers/mark.helper';
@@ -24,6 +29,7 @@ import { MarkLocationEntity } from '../entities/mark-location.entity';
 import { GetMarkSearchByOptionRequestDto } from '../dtos/request/get-mark-search-by-option-request.dto';
 import { EGetMarkSearchOption } from '../variables/enums/mark.enum';
 import { deleteUploadedImageByKeyList } from 'src/common/multer/multer.helper';
+import { NotFoundExceptionCode } from 'src/common/exception-code/api-not-found.exception-code';
 
 @Injectable()
 export class MarkService {
@@ -251,6 +257,10 @@ export class MarkService {
       markCategoryId,
       pageOptionsDto,
     );
+
+    if (result.meta.pageCount < result.meta.pageNo) {
+      throw new NotFoundException(NotFoundExceptionCode.PageNotFoundError);
+    }
 
     return ResultWithPageDto.from(
       GetMarkListByCategoryResponseDto.of(result.data),

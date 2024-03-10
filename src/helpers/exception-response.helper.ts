@@ -1,5 +1,4 @@
 import { InternalServerExceptionCode } from './../common/exception-code/internal-server.exception-code';
-import { ApiNotFoundExceptionCode } from 'src/common/exception-code/api-not-found.exception-code';
 import { ExceptionResponseDto } from 'src/common/dtos/exception-response.dto';
 
 export class ExceptionResponseHelper {
@@ -22,10 +21,10 @@ export class ExceptionResponseHelper {
    * @author  Jason
    * @param   { ExceptionResponseDto } exceptionResponse
    */
-  setNotFoundException(exceptionResponse: ExceptionResponseDto): void {
-    exceptionResponse.errorCode = ApiNotFoundExceptionCode.code;
-    exceptionResponse.message = ApiNotFoundExceptionCode.message;
-  }
+  // setNotFoundException(exceptionResponse: ExceptionResponseDto): void {
+  //   exceptionResponse.errorCode = NotFoundExceptionCode.code;
+  //   exceptionResponse.message = NotFoundExceptionCode.message;
+  // }
 
   /**
    * @summary BadRequestException Property를 ExceptionResponseDto에 적용시켜주는 함수
