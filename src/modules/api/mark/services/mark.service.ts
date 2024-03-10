@@ -253,7 +253,7 @@ export class MarkService {
     );
 
     return ResultWithPageDto.from(
-      GetMarkListByCategoryResponseDto.from(result.result),
+      GetMarkListByCategoryResponseDto.of(result.data),
       result.meta,
     );
   }

@@ -36,7 +36,6 @@ import { GetMarkListByCategoryValidationPipe } from '../pipes/get-mark-list-by-c
 import { GetPagination } from 'src/decorators/get-paginate.decorator';
 import { PageOptionsDto } from 'src/common/dtos/pagination/page-options.dto';
 import { GetMarkListByCategoryResponseDto } from '../dtos/response/get-mark-list-by-category-response.dto';
-import { ResponseWithPageEntity } from 'src/common/entities/response-with-page.entity';
 import { PutMarkRequestDto } from '../dtos/request/put-mark-request.dto';
 import { GetMarkSearchByOptionRequestDto } from '../dtos/request/get-mark-search-by-option-request.dto';
 
@@ -126,7 +125,7 @@ export class MarkController {
    * @summary 특정 카테고리의 기록 리스트 조회하기 API
    * @author  Jason
    * @url     [GET] /api/v1/marks?markCategoryId=
-   * @returns { Promise<ResponseWithPageEntity<GetMarkListByCategoryResponseDto>> }
+   * @returns { ResponseEntity<GetMarkListByCategoryResponseDto> }
    */
   @Get()
   @HttpCode(HttpStatus.OK)
@@ -135,13 +134,13 @@ export class MarkController {
     @Query(GetMarkListByCategoryValidationPipe)
     query: GetMarkListByCategoryRequestDto,
     @GetPagination() pageOptionsDto: PageOptionsDto,
-  ): Promise<ResponseWithPageEntity<GetMarkListByCategoryResponseDto>> {
+  ): Promise<ResponseEntity<GetMarkListByCategoryResponseDto>> {
     const result = await this.markService.findMarkListByCategory(
       userId,
       query.markCategoryId,
       pageOptionsDto,
     );
-    return ResponseWithPageEntity.OK_WITH_PAGINATION(HttpStatus.OK, result);
+    return ResponseEntity.OK_WITH_PAGINATION(HttpStatus.OK, result);
   }
 
   /**
@@ -173,6 +172,6 @@ export class MarkController {
       query,
       pageOptionsDto,
     );
-    return ResponseWithPageEntity.OK_WITH_PAGINATION(HttpStatus.OK, result);
+    return ResponseEntity.OK_WITH_PAGINATION(HttpStatus.OK, result);
   }
 }

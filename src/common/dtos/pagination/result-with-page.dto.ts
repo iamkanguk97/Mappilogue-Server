@@ -1,15 +1,26 @@
+import { Exclude, Expose } from 'class-transformer';
 import { PageMetaDto } from './page-meta.dto';
 
 export class ResultWithPageDto<T> {
-  readonly result: T;
-  readonly meta: PageMetaDto;
+  @Exclude() private readonly _data: T;
+  @Exclude() private readonly _meta: PageMetaDto;
 
-  constructor(result: T, meta: PageMetaDto) {
-    this.result = result;
-    this.meta = meta;
+  private constructor(data: T, meta: PageMetaDto) {
+    this._data = data;
+    this._meta = meta;
   }
 
-  static from<T>(result: T, meta: PageMetaDto): ResultWithPageDto<T> {
-    return new ResultWithPageDto<T>(result, meta);
+  static from<T>(data: T, meta: PageMetaDto): ResultWithPageDto<T> {
+    return new ResultWithPageDto<T>(data, meta);
+  }
+
+  @Expose()
+  get data(): T {
+    return this._data;
+  }
+
+  @Expose()
+  get meta(): PageMetaDto {
+    return this._meta;
   }
 }

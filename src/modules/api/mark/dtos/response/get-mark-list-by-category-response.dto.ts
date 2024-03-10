@@ -8,7 +8,7 @@ export class GetMarkListByCategoryResponseDto {
     this._markListByCategory = markListByCategory;
   }
 
-  static from(
+  static of(
     markListByCategory: IMarkListByCategory[],
   ): GetMarkListByCategoryResponseDto {
     return new GetMarkListByCategoryResponseDto(markListByCategory);

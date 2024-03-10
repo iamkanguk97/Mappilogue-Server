@@ -20,6 +20,7 @@ import {
   IMarkListInHome,
   ISelectMarkByIdExceptMetadata,
 } from '../interfaces';
+import { PageDto } from 'src/common/dtos/pagination/page.dto';
 
 @CustomRepository(MarkEntity)
 export class MarkRepository extends Repository<MarkEntity> {
@@ -44,13 +45,13 @@ export class MarkRepository extends Repository<MarkEntity> {
    * @param   { number } userId
    * @param   { number } markCategoryId
    * @param   { PageOptionsDto } pageOptionsDto
-   * @returns { Promise<ResultWithPageDto<IMarkListByCategory[]>> }
+   * @returns { Promise<PageDto<IMarkListByCategory>> }
    */
   async selectMarkListByCategory(
     userId: number,
     markCategoryId: number,
     pageOptionsDto: PageOptionsDto,
-  ): Promise<ResultWithPageDto<IMarkListByCategory[]>> {
+  ): Promise<PageDto<IMarkListByCategory>> {
     const queryBuilder = this.createQueryBuilder('M');
 
     const result: IMarkListByCategory[] = await queryBuilder
@@ -104,23 +105,13 @@ export class MarkRepository extends Repository<MarkEntity> {
           : 'M.markCategoryId = :markCategoryId',
         { markCategoryId },
       )
-      .andWhere('M.deletedAt IS NULL')
-      .andWhere('MC.deletedAt IS NULL')
-      .andWhere('C.deletedAt IS NULL')
-      .andWhere('ML.deletedAt IS NULL')
-      .andWhere('MM.deletedAt IS NULL')
-      .andWhere('SA.deletedAt IS NULL')
       .orderBy('IF(ML.scheduleAreaId IS NULL, M.createdAt, SA.date)', 'DESC')
       .offset(pageOptionsDto.getOffset())
       .limit(pageOptionsDto.getLimit())
       .getRawMany();
 
     const itemCount = await queryBuilder.getCount();
-
-    return ResultWithPageDto.from(
-      result,
-      new PageMetaDto({ pageOptionsDto, itemCount }),
-    );
+    return PageDto.from(result, new PageMetaDto({ pageOptionsDto, itemCount }));
   }
 
   /**

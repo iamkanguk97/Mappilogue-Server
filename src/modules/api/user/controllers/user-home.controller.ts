@@ -12,7 +12,6 @@ import { UserHomeService } from '../services/user-home.service';
 import { Public } from 'src/modules/core/auth/decorators/auth.decorator';
 import { GetPagination } from 'src/decorators/get-paginate.decorator';
 import { PageOptionsDto } from 'src/common/dtos/pagination/page-options.dto';
-import { ResponseWithPageEntity } from 'src/common/entities/response-with-page.entity';
 import { AnnouncementEntity } from '../entities/announcement.entity';
 import { UserId } from '../decorators/user-id.decorator';
 import { GetHomeRequestDto } from '../dtos/request/get-home-request.dto';
@@ -35,9 +34,9 @@ export class UserHomeController {
   @HttpCode(HttpStatus.OK)
   async getAnnouncements(
     @GetPagination() pageOptionsDto: PageOptionsDto,
-  ): Promise<ResponseWithPageEntity<AnnouncementEntity[]>> {
+  ): Promise<ResponseEntity<AnnouncementEntity[]>> {
     const result = await this.userHomeService.findAnnouncements(pageOptionsDto);
-    return ResponseWithPageEntity.OK_WITH_PAGINATION(HttpStatus.OK, result);
+    return ResponseEntity.OK_WITH_PAGINATION(HttpStatus.OK, result);
   }
 
   /**
