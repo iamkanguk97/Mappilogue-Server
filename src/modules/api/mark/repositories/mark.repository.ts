@@ -61,17 +61,14 @@ export class MarkRepository extends Repository<MarkEntity> {
         `IF(M.markCategoryId IS NULL, "${MARK_CATEGORY_TOTAL_NAME}", MC.title)`,
         'markCategoryTitle',
       )
-      .addSelect('M.title', 'markTitle')
+      .addSelect('M.title', 'title')
       .addSelect('M.colorId', 'colorId')
       .addSelect('C.code', 'colorCode')
       .addSelect(
         `IF(MM.isMainImage IS NULL, "${USER_DEFAULT_PROFILE_IMAGE}", MM.markImageUrl)`,
         'markImageUrl',
       )
-      .addSelect(
-        'IF(ML.scheduleAreaId IS NULL, ML.name, SA.name)',
-        'locationName',
-      )
+      .addSelect('IF(ML.scheduleAreaId IS NULL, ML.name, SA.name)', 'name')
       .addSelect(
         'IF(ML.scheduleAreaId IS NULL, ML.streetAddress, SA.streetAddress)',
         'streetAddress',

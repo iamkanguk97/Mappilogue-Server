@@ -30,7 +30,6 @@ export class HttpNotFoundExceptionFilter
 
     if (exception instanceof NotFoundException) {
       const exceptionResponse = exception.getResponse();
-      console.log(exceptionResponse);
       const exceptionJson = this.generateBasicExceptionResponse(
         statusCode,
         request.url,

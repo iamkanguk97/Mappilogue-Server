@@ -1,4 +1,7 @@
+import { ScheduleAreaEntity } from '../../schedule/entities/schedule-area.entity';
 import { MarkCategoryEntity } from '../entities/mark-category.entity';
+import { MarkLocationEntity } from '../entities/mark-location.entity';
+import { MarkMetadataEntity } from '../entities/mark-metadata.entity';
 import { MarkEntity } from '../entities/mark.entity';
 
 // 기록 카테고리 조회 API Interface
@@ -10,18 +13,16 @@ export interface IMarkCategoryWithMarkCount
   markCount: number;
 }
 
-export interface IMarkListByCategory {
-  id: number;
-  markCategoryId: number;
+// 특정 카테고리의 기록 리스트 Interface
+export interface IMarkListByCategory
+  extends Pick<MarkEntity, 'id' | 'markCategoryId' | 'title' | 'colorId'>,
+    Pick<MarkMetadataEntity, 'markImageUrl'>,
+    Pick<
+      MarkLocationEntity | ScheduleAreaEntity,
+      'name' | 'latitude' | 'longitude' | 'streetAddress'
+    > {
   markCategoryTitle: string;
-  markTitle: string;
-  colorId: number;
   colorCode: string;
-  markImageUrl: string;
-  locationName: string;
-  streetAddress: string;
-  latitude: string;
-  longitude: string;
   markDate: string;
 }
 
