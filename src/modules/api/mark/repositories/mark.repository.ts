@@ -1,7 +1,7 @@
 import { MARK_CATEGORY_TOTAL_NAME } from '../variables/constants/mark-category.constant';
 import { CustomRepository } from 'src/modules/core/custom-repository/decorators/custom-repository.decorator';
 import { MarkEntity } from '../entities/mark.entity';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { ColorEntity } from '../../color/entities/color.entity';
 import { MarkLocationEntity } from '../entities/mark-location.entity';
 import { MarkCategoryEntity } from '../entities/mark-category.entity';
@@ -9,15 +9,15 @@ import { MarkMetadataEntity } from '../entities/mark-metadata.entity';
 import { ECheckColumn } from 'src/constants/enum';
 import { USER_DEFAULT_PROFILE_IMAGE } from '../../user/constants/user.constant';
 import { ScheduleAreaEntity } from '../../schedule/entities/schedule-area.entity';
-import { ResultWithPageDto } from 'src/common/dtos/pagination/result-with-page.dto';
 import { PageMetaDto } from 'src/common/dtos/pagination/page-meta.dto';
 import { PageOptionsDto } from 'src/common/dtos/pagination/page-options.dto';
 import { USER_HOME_MARK_MAX_COUNT } from '../../user/constants/user-home.constant';
 import { GetMarkSearchByOptionRequestDto } from '../dtos/request/get-mark-search-by-option-request.dto';
-import { IMarkSearchByArea, IMarkSearchByMark } from '../../schedule/types';
+import { IMarkSearchByArea } from '../../schedule/types';
 import {
   IMarkListByCategory,
   IMarkListInHome,
+  IMarkSearchByMark,
   ISelectMarkByIdExceptMetadata,
 } from '../interfaces';
 import { PageDto } from 'src/common/dtos/pagination/page.dto';
@@ -165,51 +165,108 @@ export class MarkRepository extends Repository<MarkEntity> {
    * @param   { GetMarkSearchByOptionRequestDto } query
    * @param   { PageOptionsDto } pageOptionsDto
    */
+  // async selectMarkSearchByArea(
+  //   userId: number,
+  //   query: GetMarkSearchByOptionRequestDto,
+  //   pageOptionsDto: PageOptionsDto,
+  // ): Promise<ResultWithPageDto<IMarkSearchByArea[]>> {
+  //   const result = await this.query(
+  //     `
+  //     SELECT *
+  //     FROM (
+  //       SELECT M.id AS markId,
+  //              ML.id AS markLocationId,
+  //              ML.scheduleAreaId AS scheduleAreaId,
+  //              IF(ML.scheduleAreaId IS NULL, ML.name, SA.name) AS location_name,
+  //              IF(ML.scheduleAreaId IS NULL, ML.streetAddress, SA.streetAddress) AS location_streetAddress,
+  //              IF(ML.scheduleAreaId IS NULL, ML.latitude, SA.latitude) AS location_latitude,
+  //              IF(ML.scheduleAreaId IS NULL, ML.longitude, SA.longitude) AS location_longtitude
+  //       FROM Mark AS M
+  //         INNER JOIN MarkLocation AS ML ON M.id = ML.markId
+  //         INNER JOIN ScheduleArea AS SA ON SA.id = ML.scheduleAreaId
+  //       WHERE M.userId = ?
+  //             AND M.deletedAt IS NULL
+  //             AND ML.deletedAt IS NULL
+  //             AND SA.deletedAt IS NULL
+  //     ) AS T
+  //     WHERE (T.location_name LIKE ? OR T.location_streetAddress LIKE ?)
+  //     ORDER BY (6371 * acos(cos(radians(?)) * cos(radians(T.location_latitude)) * cos(radians(?)
+  //       - radians(T.location_longtitude)) + sin(radians(?)) * sin(radians(T.location_latitude))))
+  //     LIMIT ?, ?
+  //     `,
+  //     [
+  //       userId,
+  //       `%${query.keyword}%`,
+  //       `%${query.keyword}%`,
+  //       query.lat,
+  //       query.lon,
+  //       query.lat,
+  //       pageOptionsDto.getOffset(),
+  //       pageOptionsDto.getLimit(),
+  //     ],
+  //   );
+
+  //   return ResultWithPageDto.from(
+  //     result,
+  //     new PageMetaDto({ pageOptionsDto, itemCount: result.length }),
+  //   );
+  // }
+
+  /**
+   * @summary 기록 검색 -> 장소로 기록 검색하기
+   * @author  Jason
+   * @param   { number } userId
+   * @param   { GetMarkSearchByOptionRequestDto } query
+   * @param   { PageOptionsDto } pageOptionsDto
+   * @returns { Promise<PageDto<IMarkSearchByArea>> }
+   */
   async selectMarkSearchByArea(
     userId: number,
     query: GetMarkSearchByOptionRequestDto,
     pageOptionsDto: PageOptionsDto,
-  ): Promise<ResultWithPageDto<IMarkSearchByArea[]>> {
-    const result = await this.query(
-      `
-      SELECT *
-      FROM (
-        SELECT M.id AS markId,
-               ML.id AS markLocationId,
-               ML.scheduleAreaId AS scheduleAreaId,
-               IF(ML.scheduleAreaId IS NULL, ML.name, SA.name) AS location_name,
-               IF(ML.scheduleAreaId IS NULL, ML.streetAddress, SA.streetAddress) AS location_streetAddress,
-               IF(ML.scheduleAreaId IS NULL, ML.latitude, SA.latitude) AS location_latitude,
-               IF(ML.scheduleAreaId IS NULL, ML.longitude, SA.longitude) AS location_longtitude
-        FROM Mark AS M
-          INNER JOIN MarkLocation AS ML ON M.id = ML.markId
-          INNER JOIN ScheduleArea AS SA ON SA.id = ML.scheduleAreaId
-        WHERE M.userId = ?
-              AND M.deletedAt IS NULL
-              AND ML.deletedAt IS NULL
-              AND SA.deletedAt IS NULL
-      ) AS T
-      WHERE (T.location_name LIKE ? OR T.location_streetAddress LIKE ?)
-      ORDER BY (6371 * acos(cos(radians(?)) * cos(radians(T.location_latitude)) * cos(radians(?)
-        - radians(T.location_longtitude)) + sin(radians(?)) * sin(radians(T.location_latitude))))
-      LIMIT ?, ?
-      `,
-      [
-        userId,
-        `%${query.keyword}%`,
-        `%${query.keyword}%`,
-        query.lat,
-        query.lon,
-        query.lat,
-        pageOptionsDto.getOffset(),
-        pageOptionsDto.getLimit(),
-      ],
-    );
+  ): Promise<PageDto<IMarkSearchByArea>> {
+    const queryBuilder = this.createQueryBuilder('M');
 
-    return ResultWithPageDto.from(
-      result,
-      new PageMetaDto({ pageOptionsDto, itemCount: result.length }),
-    );
+    const result = await queryBuilder
+      .select('M.id', 'markId')
+      .addSelect('ML.id', 'markLocationId')
+      .addSelect('IF(ML.scheduleAreaId IS NULL, ML.name, SA.name)', 'name')
+      .addSelect(
+        'IF(ML.scheduleAreaId IS NULL, ML.streetAddress, SA.streetAddress)',
+        'streetAddress',
+      )
+      .addSelect(
+        'IF(ML.scheduleAreaId IS NULL, ML.latitude, SA.latitude)',
+        'latitude',
+      )
+      .addSelect(
+        'IF(ML.scheduleAreaId IS NULL, ML.longitude, SA.longitude)',
+        'longitude',
+      )
+      .innerJoin(MarkLocationEntity, 'ML', 'ML.markId = M.id')
+      .innerJoin(ScheduleAreaEntity, 'SA', 'SA.id = ML.scheduleAreaId')
+      .where('M.userId = :userId', { userId })
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where(
+            'IF(ML.scheduleAreaId IS NULL, ML.name, SA.name) LIKE :keyword',
+            { keyword: `%${query.keyword}%` },
+          ).orWhere(
+            'IF(ML.scheduleAreaId IS NULL, ML.streetAddress, SA.streetAddress) LIKE :keyword',
+            { keyword: `%${query.keyword}%` },
+          );
+        }),
+      )
+      .orderBy(
+        `(6371 * acos(cos(radians(${query.lat})) * cos(radians(IF(ML.scheduleAreaId IS NULL, ML.latitude, SA.latitude))) * cos(radians(${query.lon}) - radians(IF(ML.scheduleAreaId IS NULL, ML.longitude, SA.longitude))) + sin(radians(${query.lat})) * sin(radians(IF(ML.scheduleAreaId IS NULL, ML.latitude, SA.latitude)))))`,
+        'ASC',
+      )
+      .offset(pageOptionsDto.getOffset())
+      .limit(pageOptionsDto.getLimit())
+      .getRawMany();
+
+    const itemCount = await queryBuilder.getCount();
+    return PageDto.from(result, new PageMetaDto({ pageOptionsDto, itemCount }));
   }
 
   /**
@@ -217,48 +274,50 @@ export class MarkRepository extends Repository<MarkEntity> {
    * @author  Jason
    * @param   { number } userId
    * @param   { GetMarkSearchByOptionRequestDto } query
+   * @param   { PageOptionsDto } pageOptionsDto
+   * @returns { Promise<PageDto<IMarkSearchByMark>> }
    */
   async selectMarkSearchByMark(
     userId: number,
     query: GetMarkSearchByOptionRequestDto,
     pageOptionsDto: PageOptionsDto,
-  ): Promise<ResultWithPageDto<IMarkSearchByMark[]>> {
-    const result = await this.query(
-      `
-      SELECT M.id AS markId,
-             M.title,
-             M.colorId,
-             C.code AS colorCode,
-             ML.id AS markLocationId,
-             ML.scheduleAreaId,
-             IF(ML.scheduleAreaId IS NULL, ML.name, SA.name) AS location_name,
-             IF(ML.scheduleAreaId IS NULL, ML.streetAddress, SA.streetAddress) AS location_streetAddress,
-             IF(ML.scheduleAreaId IS NULL, ML.latitude, SA.latitude) AS location_latitude,
-             IF(ML.scheduleAreaId IS NULL, ML.longitude, SA.longitude) AS location_longtitude
-      FROM Mark AS M
-        INNER JOIN Color AS C ON C.id = M.colorId
-        LEFT JOIN MarkLocation AS ML ON M.id = ML.markId
-        LEFT JOIN ScheduleArea AS SA ON SA.id = ML.scheduleAreaId
-      WHERE M.title LIKE ?
-            AND M.userId = ?
-            AND M.deletedAt IS NULL
-            AND ML.deletedAt IS NULL
-            AND SA.deletedAt IS NULL
-      ORDER BY IF(ML.scheduleAreaId IS NULL, M.createdAt, SA.date) DESC
-      LIMIT ?, ?;
-    `,
-      [
-        `%${query.keyword}%`,
-        userId,
-        pageOptionsDto.getOffset(),
-        pageOptionsDto.getLimit(),
-      ],
-    );
+  ): Promise<PageDto<IMarkSearchByMark>> {
+    const queryBuilder = this.createQueryBuilder('M');
 
-    return ResultWithPageDto.from(
-      result,
-      new PageMetaDto({ pageOptionsDto, itemCount: result.length }),
-    );
+    const result = await queryBuilder
+      .select('M.id', 'id')
+      .addSelect('M.scheduleId', 'scheduleId')
+      .addSelect('M.title', 'title')
+      .addSelect('M.colorId', 'colorId')
+      .addSelect('C.code', 'colorCode')
+      .addSelect('ML.id', 'markLocationId')
+      .addSelect('ML.scheduleAreaId', 'scheduleAreaId')
+      .addSelect('IF(ML.scheduleAreaId IS NULL, ML.name, SA.name)', 'name')
+      .addSelect(
+        'IF(ML.scheduleAreaId IS NULL, ML.streetAddress, SA.streetAddress)',
+        'streetAddress',
+      )
+      .addSelect(
+        'IF(ML.scheduleAreaId IS NULL, ML.latitude, SA.latitude)',
+        'latitude',
+      )
+      .addSelect(
+        'IF(ML.scheduleAreaId IS NULL, ML.longitude, SA.longitude)',
+        'longitude',
+      )
+      .addSelect('SA.date', 'date')
+      .innerJoin(ColorEntity, 'C', 'C.id = M.colorId')
+      .leftJoin(MarkLocationEntity, 'ML', 'ML.markId = M.id')
+      .leftJoin(ScheduleAreaEntity, 'SA', 'SA.id = ML.scheduleAreaId')
+      .where('M.title LIKE :title', { title: `%${query.keyword}%` })
+      .andWhere('M.userId = :userId', { userId })
+      .orderBy('IF(ML.scheduleAreaId IS NULL, M.createdAt, SA.date)', 'DESC')
+      .offset(pageOptionsDto.getOffset())
+      .limit(pageOptionsDto.getLimit())
+      .getRawMany();
+
+    const itemCount = await queryBuilder.getCount();
+    return PageDto.from(result, new PageMetaDto({ pageOptionsDto, itemCount }));
   }
 
   /**

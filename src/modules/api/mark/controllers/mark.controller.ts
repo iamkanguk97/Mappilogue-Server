@@ -38,6 +38,7 @@ import { PageOptionsDto } from 'src/common/dtos/pagination/page-options.dto';
 import { GetMarkListByCategoryResponseDto } from '../dtos/response/get-mark-list-by-category-response.dto';
 import { PutMarkRequestDto } from '../dtos/request/put-mark-request.dto';
 import { GetMarkSearchByOptionRequestDto } from '../dtos/request/get-mark-search-by-option-request.dto';
+import { GetMarkSearchByOptionResponseDto } from '../dtos/response/get-mark-search-by-option-response.dto';
 
 @Controller(EDomainName.MARK)
 @UseInterceptors(ClassSerializerInterceptor)
@@ -157,7 +158,8 @@ export class MarkController {
   /**
    * @summary 기록 검색하기 API
    * @author  Jason
-   * @url     [GET] /api/v1/marks/searches?keyword=&option=&pageNo=&pageSize=
+   * @url     [GET] /api/v1/marks/searches?keyword=&option=&lat=&lon=&pageNo=&pageSize=
+   * @returns { Promise<ResponseEntity<GetMarkSearchByOptionResponseDto>> }
    */
   @Get('/searches')
   @HttpCode(HttpStatus.OK)
@@ -166,7 +168,7 @@ export class MarkController {
     @Query(GetMarkSearchByOptionKeywordPipe)
     query: GetMarkSearchByOptionRequestDto,
     @GetPagination() pageOptionsDto: PageOptionsDto,
-  ): Promise<any> {
+  ): Promise<ResponseEntity<GetMarkSearchByOptionResponseDto>> {
     const result = await this.markService.findMarkSearchByOption(
       userId,
       query,

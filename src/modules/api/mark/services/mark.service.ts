@@ -28,8 +28,12 @@ import { PutMarkRequestDto } from '../dtos/request/put-mark-request.dto';
 import { MarkLocationEntity } from '../entities/mark-location.entity';
 import { GetMarkSearchByOptionRequestDto } from '../dtos/request/get-mark-search-by-option-request.dto';
 import { EGetMarkSearchOption } from '../variables/enums/mark.enum';
-import { deleteUploadedImageByKeyList } from 'src/common/multer/multer.helper';
 import { NotFoundExceptionCode } from 'src/common/exception-code/api-not-found.exception-code';
+import { PageDto } from 'src/common/dtos/pagination/page.dto';
+import { IMarkSearchByMark } from '../interfaces';
+import { deleteUploadedImageByKeyList } from 'src/common/multer/multer.helper';
+import { IMarkSearchByArea } from '../../schedule/types';
+import { GetMarkSearchByOptionResponseDto } from '../dtos/response/get-mark-search-by-option-response.dto';
 
 @Injectable()
 export class MarkService {
@@ -80,6 +84,70 @@ export class MarkService {
       throw err;
     } finally {
       await queryRunner.release();
+    }
+  }
+
+  /**
+   * @summary 기록 생성하기 API Service - 기록 Metadata Insert하는 함수
+   * @author  Jason
+   * @param   { QueryRunner } queryRunner
+   * @param   { number } markId
+   * @param   { Express.MulterS3.File[] } files
+   * @param   { PostMarkMetadataObject[] } metadata
+   */
+  async createMarkMetadata(
+    queryRunner: QueryRunner,
+    markId: number,
+    files: Express.MulterS3.File[],
+    metadata: PostMarkMetadataObject[],
+  ): Promise<void> {
+    await queryRunner.manager
+      .getRepository(MarkMetadataEntity)
+      .save(
+        this.markHelper.mappingMarkMetadataWithImages(markId, files, metadata),
+      );
+  }
+
+  /**
+   * @summary 기록 생성하기 API Service - 기록 대표위치 저장하는 함수
+   * @author  Jason
+   * @param   { QueryRunner } queryRunner
+   * @param   { number } markId
+   * @param   { PostMarkRequestDto } body
+   */
+  async createMarkMainLocation(
+    queryRunner: QueryRunner,
+    markId: number,
+    body: PostMarkRequestDto,
+  ): Promise<void> {
+    if (isDefined(body.mainScheduleAreaId) || isDefined(body.mainLocation)) {
+      const insertMarkLocationParam =
+        this.markHelper.setCreateMarkLocationParam(markId, body);
+
+      await queryRunner.manager
+        .getRepository(MarkLocationEntity)
+        .save(insertMarkLocationParam ?? {});
+    }
+  }
+
+  /**
+   * @summary 기록 생성 시 일정 색깔 연동 후 변경하는 함수
+   * @author  Jason
+   * @param   { QueryRunner } queryRunner
+   * @param   { PostMarkRequestDto } body
+   */
+  async modifyScheduleColorByCreateMark(
+    queryRunner: QueryRunner,
+    body: PostMarkRequestDto,
+  ): Promise<void> {
+    if (isDefined(body.scheduleId)) {
+      await this.scheduleService.modifyById(
+        body.scheduleId,
+        {
+          colorId: body.colorId,
+        },
+        queryRunner,
+      );
     }
   }
 
@@ -180,6 +248,28 @@ export class MarkService {
   }
 
   /**
+   * @summary 기록 수정하기 API Service -> 기록 대표 위치 수정
+   * @author  Jason
+   * @param   { QueryRunner } queryRunner
+   * @param   { MarkDto } mark
+   * @param   { PutMarkRequestDto } body
+   */
+  async modifyMarkMainLocationInfo(
+    queryRunner: QueryRunner,
+    mark: MarkDto,
+    body: PutMarkRequestDto,
+  ): Promise<void> {
+    if (isDefined(body.mainScheduleAreaId) || isDefined(body.mainLocation)) {
+      const updateMarkLocationParam =
+        this.markHelper.setCreateMarkLocationParam(mark.id, body);
+
+      await queryRunner.manager
+        .getRepository(MarkLocationEntity)
+        .update({ markId: mark.id }, updateMarkLocationParam ?? {});
+    }
+  }
+
+  /**
    * @summary 기록 수정하기 API Service -> 기록 기본정보 수정
    * @author  Jason
    * @param   { QueryRunner } queryRunner
@@ -258,7 +348,7 @@ export class MarkService {
       pageOptionsDto,
     );
 
-    if (result.meta.pageCount < result.meta.pageNo) {
+    if (result.meta.pageCount && result.meta.pageCount < result.meta.pageNo) {
       throw new NotFoundException(NotFoundExceptionCode.PageNotFoundError);
     }
 
@@ -274,95 +364,44 @@ export class MarkService {
    * @param   { number } userId
    * @param   { GetMarkSearchByOptionRequestDto } query
    * @param   { PageOptionsDto } pageOptionsDto
-   * @returns { Promise<ResultWithPageDto<IMarkSearchByArea[] | IMarkSearchByMark[]>> }
+   * @returns { Promise<ResultWithPageDto<GetMarkSearchByOptionResponseDto>> }
    */
   async findMarkSearchByOption(
     userId: number,
     query: GetMarkSearchByOptionRequestDto,
     pageOptionsDto: PageOptionsDto,
-  ): Promise<any> {
+  ): Promise<ResultWithPageDto<GetMarkSearchByOptionResponseDto>> {
+    let result: PageDto<IMarkSearchByMark | IMarkSearchByArea>;
+
     switch (query.option) {
       case EGetMarkSearchOption.AREA:
-        return await this.markRepository.selectMarkSearchByArea(
+        result = await this.markRepository.selectMarkSearchByArea(
           userId,
           query,
           pageOptionsDto,
         );
+        break;
       case EGetMarkSearchOption.MARK:
-        return await this.markRepository.selectMarkSearchByMark(
+        result = await this.markRepository.selectMarkSearchByMark(
           userId,
           query,
           pageOptionsDto,
         );
+        break;
       default:
         throw new BadRequestException(
           MarkExceptionCode.MarkSearchOptionErrorType,
         );
     }
-  }
 
-  /**
-   * @summary 기록 Metadata Insert하는 함수
-   * @author  Jason
-   * @param   { QueryRunner } queryRunner
-   * @param   { number } markId
-   * @param   { Express.MulterS3.File[] } files
-   * @param   { PostMarkMetadataObject[] } metadata
-   */
-  async createMarkMetadata(
-    queryRunner: QueryRunner,
-    markId: number,
-    files: Express.MulterS3.File[],
-    metadata: PostMarkMetadataObject[],
-  ): Promise<void> {
-    await queryRunner.manager
-      .getRepository(MarkMetadataEntity)
-      .save(
-        this.markHelper.mappingMarkMetadataWithImages(markId, files, metadata),
-      );
-  }
-
-  /**
-   * @summary 기록 대표위치 저장하는 함수
-   * @author  Jason
-   * @param   { QueryRunner } queryRunner
-   * @param   { number } markId
-   * @param   { PostMarkRequestDto } body
-   */
-  async createMarkMainLocation(
-    queryRunner: QueryRunner,
-    markId: number,
-    body: PostMarkRequestDto,
-  ): Promise<void> {
-    if (isDefined(body.mainScheduleAreaId) || isDefined(body.mainLocation)) {
-      const insertMarkLocationParam =
-        this.markHelper.setCreateMarkLocationParam(markId, body);
-
-      await queryRunner.manager
-        .getRepository(MarkLocationEntity)
-        .save(insertMarkLocationParam ?? {});
+    if (result.meta.pageCount && result.meta.pageCount < result.meta.pageNo) {
+      throw new NotFoundException(NotFoundExceptionCode.PageNotFoundError);
     }
-  }
 
-  /**
-   * @summary 기록 생성 시 일정 색깔 연동 후 변경하는 함수
-   * @author  Jason
-   * @param   { QueryRunner } queryRunner
-   * @param   { PostMarkRequestDto } body
-   */
-  async modifyScheduleColorByCreateMark(
-    queryRunner: QueryRunner,
-    body: PostMarkRequestDto,
-  ): Promise<void> {
-    if (isDefined(body.scheduleId)) {
-      await this.scheduleService.modifyById(
-        body.scheduleId,
-        {
-          colorId: body.colorId,
-        },
-        queryRunner,
-      );
-    }
+    return ResultWithPageDto.from(
+      GetMarkSearchByOptionResponseDto.of(result.data),
+      result.meta,
+    );
   }
 
   /**
@@ -420,28 +459,6 @@ export class MarkService {
     }
 
     return MarkDto.of(markStatus);
-  }
-
-  /**
-   * @summary 기록 수정하기 API Service -> 기록 대표 위치 수정
-   * @author  Jason
-   * @param   { QueryRunner } queryRunner
-   * @param   { MarkDto } mark
-   * @param   { PutMarkRequestDto } body
-   */
-  async modifyMarkMainLocationInfo(
-    queryRunner: QueryRunner,
-    mark: MarkDto,
-    body: PutMarkRequestDto,
-  ): Promise<void> {
-    if (isDefined(body.mainScheduleAreaId) || isDefined(body.mainLocation)) {
-      const updateMarkLocationParam =
-        this.markHelper.setCreateMarkLocationParam(mark.id, body);
-
-      await queryRunner.manager
-        .getRepository(MarkLocationEntity)
-        .update({ markId: mark.id }, updateMarkLocationParam ?? {});
-    }
   }
 
   /**

@@ -70,14 +70,8 @@ export interface IMarkSearchByArea {
   markId: number;
   markLocationId: number;
   scheduleAreaId: number;
-  location_name: string;
-  location_streetAddress: string;
-  location_latitude: string;
-  location_longitude: string;
-}
-
-export interface IMarkSearchByMark extends IMarkSearchByArea {
-  title: string;
-  colorId: number;
-  colorCode: string;
+  name: string;
+  streetAddress: string;
+  latitude: string;
+  longitude: string;
 }

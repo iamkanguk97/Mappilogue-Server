@@ -50,3 +50,15 @@ export interface ISelectMarkByIdExceptMetadata {
   longitude: string;
   markDate: string;
 }
+
+// 기록 검색 -> 기록 이름으로 검색 Interface
+export interface IMarkSearchByMark
+  extends Pick<MarkEntity, 'id' | 'scheduleId' | 'title' | 'colorId'>,
+    Pick<MarkLocationEntity, 'scheduleAreaId'>,
+    Pick<
+      MarkLocationEntity | ScheduleAreaEntity,
+      'name' | 'streetAddress' | 'latitude' | 'longitude'
+    >,
+    Pick<ScheduleAreaEntity, 'date'> {
+  colorCode: string;
+}

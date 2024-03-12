@@ -1,24 +1,22 @@
 import { Exclude, Expose } from 'class-transformer';
-import {
-  IMarkSearchByArea,
-  IMarkSearchByMark,
-} from 'src/modules/api/schedule/types';
+import { IMarkSearchByArea } from 'src/modules/api/schedule/types';
+import { IMarkSearchByMark } from '../../interfaces';
+
+type TMarkSearchResult = (IMarkSearchByMark | IMarkSearchByArea)[];
 
 export class GetMarkSearchByOptionResponseDto {
-  @Exclude() private readonly _searchResult:
-    | IMarkSearchByArea[]
-    | IMarkSearchByMark[];
+  @Exclude() private readonly _markSearchResult!: TMarkSearchResult;
 
-  private constructor(searchResult: IMarkSearchByArea[] | IMarkSearchByMark[]) {
-    this._searchResult = searchResult;
+  private constructor(markSearchResult: TMarkSearchResult) {
+    this._markSearchResult = markSearchResult;
   }
 
-  static of(searchResult: IMarkSearchByArea[] | IMarkSearchByMark[]) {
-    return new GetMarkSearchByOptionResponseDto(searchResult);
+  static of(result: TMarkSearchResult): GetMarkSearchByOptionResponseDto {
+    return new GetMarkSearchByOptionResponseDto(result);
   }
 
   @Expose()
-  get searchResult() {
-    return this._searchResult;
+  get markSearchResult(): TMarkSearchResult {
+    return this._markSearchResult;
   }
 }
