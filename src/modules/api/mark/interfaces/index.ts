@@ -10,7 +10,7 @@ export interface IMarkCategoryWithMarkCount
     MarkCategoryEntity,
     'id' | 'title' | 'isMarkedInMap' | 'sequence'
   > {
-  markCount: number;
+  markCount?: number;
 }
 
 // 특정 카테고리의 기록 리스트 Interface

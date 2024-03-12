@@ -25,6 +25,7 @@ import { DeleteMarkCategoryOptionRequestDto } from '../dtos/request/delete-mark-
 import { GetMarkCategoriesResponseDto } from '../dtos/response/get-mark-categories-response.dto';
 import { MarkCategoryValidationPipe } from '../pipes/mark-category-validation.pipe';
 import { EDomainName } from 'src/constants/enum';
+import { MarkCategoryDto } from '../dtos/common/mark-category.dto';
 
 @Controller(EDomainName.MARK_CATEGORY)
 @UseInterceptors(ClassSerializerInterceptor)
@@ -110,5 +111,22 @@ export class MarkCategoryController {
     @Body() body: PutMarkCategoryRequestDto,
   ): Promise<void> {
     await this.markCategoryService.modifyMarkCategory(userId, body.categories);
+  }
+
+  /**
+   * @summary 지도에 표시할 수 있는 기록 카테고리 조회 API
+   * @author  Jason
+   * @url     [GET] /api/v1/mark-categories/maps
+   * @returns { Promise<ResponseEntity<MarkCategoryDto[]>> }
+   */
+  @Get('maps')
+  @HttpCode(HttpStatus.OK)
+  async getMarkCategoryListOfMap(
+    @UserId() userId: number,
+  ): Promise<ResponseEntity<MarkCategoryDto[]>> {
+    const result = await this.markCategoryService.findMarkCategoryListOfMap(
+      userId,
+    );
+    return ResponseEntity.OK_WITH(HttpStatus.OK, result);
   }
 }

@@ -1,3 +1,4 @@
+import { isDefined } from 'src/helpers/common.helper';
 import { ECheckColumn } from 'src/constants/enum';
 import { Exclude, Expose } from 'class-transformer';
 import { IMarkCategoryWithMarkCount } from '../../interfaces';
@@ -29,7 +30,9 @@ export class MarkCategoryDto {
       markCategory.title,
       markCategory.sequence,
       markCategory.isMarkedInMap,
-      Number(markCategory.markCount),
+      isDefined(markCategory.markCount)
+        ? Number(markCategory.markCount)
+        : undefined,
     );
   }
 

@@ -14,6 +14,7 @@ import { isDefined } from 'src/helpers/common.helper';
 import { PutMarkCategoryObject } from '../dtos/request/put-mark-category-request.dto';
 import { PostMarkCategoryRequestDto } from '../dtos/request/post-mark-category-request.dto';
 import { EDeleteMarkCategoryOption } from '../variables/enums/mark-category.enum';
+import { ECheckColumn } from 'src/constants/enum';
 
 @Injectable()
 export class MarkCategoryService {
@@ -195,6 +196,26 @@ export class MarkCategoryService {
           ),
       ),
     );
+  }
+
+  /**
+   * @summary 지도에 표시할 수 있는 기록 카테고리 조회 API Service
+   * @author  Jason
+   * @param   { number } userId
+   * @returns { Promise<MarkCategoryDto[]> }
+   */
+  async findMarkCategoryListOfMap(userId: number): Promise<MarkCategoryDto[]> {
+    const result = await this.markCategoryRepository.find({
+      where: {
+        userId,
+        isMarkedInMap: ECheckColumn.ACTIVE,
+      },
+      order: {
+        sequence: 'ASC',
+      },
+    });
+
+    return result.map(MarkCategoryDto.of);
   }
 
   /**
