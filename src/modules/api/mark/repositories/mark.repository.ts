@@ -13,10 +13,10 @@ import { PageMetaDto } from 'src/common/dtos/pagination/page-meta.dto';
 import { PageOptionsDto } from 'src/common/dtos/pagination/page-options.dto';
 import { USER_HOME_MARK_MAX_COUNT } from '../../user/constants/user-home.constant';
 import { GetMarkSearchByOptionRequestDto } from '../dtos/request/get-mark-search-by-option-request.dto';
-import { IMarkSearchByArea } from '../../schedule/types';
 import {
   IMarkListByCategory,
   IMarkListInHome,
+  IMarkSearchByArea,
   IMarkSearchByMark,
   ISelectMarkByIdExceptMetadata,
 } from '../interfaces';
@@ -228,8 +228,9 @@ export class MarkRepository extends Repository<MarkEntity> {
     const queryBuilder = this.createQueryBuilder('M');
 
     const result = await queryBuilder
-      .select('M.id', 'markId')
+      .select('M.id', 'id')
       .addSelect('ML.id', 'markLocationId')
+      .addSelect('ML.scheduleAreaId', 'scheduleAreaId')
       .addSelect('IF(ML.scheduleAreaId IS NULL, ML.name, SA.name)', 'name')
       .addSelect(
         'IF(ML.scheduleAreaId IS NULL, ML.streetAddress, SA.streetAddress)',

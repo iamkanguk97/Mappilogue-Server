@@ -62,3 +62,17 @@ export interface IMarkSearchByMark
     Pick<ScheduleAreaEntity, 'date'> {
   colorCode: string;
 }
+
+// 기록 검색 -> 지역 이름으로 검색 Interface
+export interface IMarkSearchByArea
+  extends Pick<
+    IMarkSearchByMark,
+    | 'id'
+    | 'streetAddress'
+    | 'name'
+    | 'latitude'
+    | 'longitude'
+    | 'scheduleAreaId'
+  > {
+  markLocationId: number;
+}

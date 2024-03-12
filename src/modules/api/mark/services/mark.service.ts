@@ -30,9 +30,8 @@ import { GetMarkSearchByOptionRequestDto } from '../dtos/request/get-mark-search
 import { EGetMarkSearchOption } from '../variables/enums/mark.enum';
 import { NotFoundExceptionCode } from 'src/common/exception-code/api-not-found.exception-code';
 import { PageDto } from 'src/common/dtos/pagination/page.dto';
-import { IMarkSearchByMark } from '../interfaces';
+import { IMarkSearchByArea, IMarkSearchByMark } from '../interfaces';
 import { deleteUploadedImageByKeyList } from 'src/common/multer/multer.helper';
-import { IMarkSearchByArea } from '../../schedule/types';
 import { GetMarkSearchByOptionResponseDto } from '../dtos/response/get-mark-search-by-option-response.dto';
 
 @Injectable()

@@ -1,6 +1,5 @@
 import { Exclude, Expose } from 'class-transformer';
-import { IMarkSearchByArea } from 'src/modules/api/schedule/types';
-import { IMarkSearchByMark } from '../../interfaces';
+import { IMarkSearchByArea, IMarkSearchByMark } from '../../interfaces';
 
 type TMarkSearchResult = (IMarkSearchByMark | IMarkSearchByArea)[];
 

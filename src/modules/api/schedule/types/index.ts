@@ -65,13 +65,3 @@ export type TSchedulesByYearAndMonth = ISchedulesOnSpecificDate & {
 export interface ISchedulesInPostMark {
   [date: string]: TSchedulesByYearAndMonth;
 }
-
-export interface IMarkSearchByArea {
-  markId: number;
-  markLocationId: number;
-  scheduleAreaId: number;
-  name: string;
-  streetAddress: string;
-  latitude: string;
-  longitude: string;
-}
