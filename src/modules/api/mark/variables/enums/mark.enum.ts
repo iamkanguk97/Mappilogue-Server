@@ -27,3 +27,8 @@ export enum EGetMarkSearchOption {
   AREA = 'area',
   MARK = 'mark',
 }
+
+export enum EGetMarkInUserPositionOption {
+  NEWEST = 'newest',
+  OLDEST = 'oldest',
+}

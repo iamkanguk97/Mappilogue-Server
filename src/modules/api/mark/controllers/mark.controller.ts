@@ -39,6 +39,8 @@ import { GetMarkListByCategoryResponseDto } from '../dtos/response/get-mark-list
 import { PutMarkRequestDto } from '../dtos/request/put-mark-request.dto';
 import { GetMarkSearchByOptionRequestDto } from '../dtos/request/get-mark-search-by-option-request.dto';
 import { GetMarkSearchByOptionResponseDto } from '../dtos/response/get-mark-search-by-option-response.dto';
+import { GetMarkInUserPositionRequestDto } from '../dtos/request/get-mark-in-user-position-request.dto';
+import { MarkCategoryValidationPipe } from '../pipes/mark-category-validation.pipe';
 
 @Controller(EDomainName.MARK)
 @UseInterceptors(ClassSerializerInterceptor)
@@ -147,12 +149,23 @@ export class MarkController {
   /**
    * @summary 본인 위치에서 기록 리스트 조회하기 API
    * @author  Jason
-   * @url     [GET] /api/v1/marks/positions?lat=&lon=
+   * @url
    */
   @Get('/positions')
   @HttpCode(HttpStatus.OK)
-  async getMarksInUserPosition() {
-    return;
+  async getMarksInUserPosition(
+    @UserId() userId: number,
+    @Query(MarkCategoryValidationPipe) query: GetMarkInUserPositionRequestDto,
+    @GetPagination() pageOptionsDto: PageOptionsDto,
+  ): Promise<any> {
+    console.log(userId, query, pageOptionsDto);
+
+    const result = await this.markService.findMarkListInUserPosition(
+      userId,
+      query,
+      pageOptionsDto,
+    );
+    // return ResponseEntity.OK_WITH_PAGINATION(HttpStatus.OK, result);
   }
 
   /**

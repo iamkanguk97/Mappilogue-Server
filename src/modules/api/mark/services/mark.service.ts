@@ -33,6 +33,7 @@ import { PageDto } from 'src/common/dtos/pagination/page.dto';
 import { IMarkSearchByArea, IMarkSearchByMark } from '../interfaces';
 import { deleteUploadedImageByKeyList } from 'src/common/multer/multer.helper';
 import { GetMarkSearchByOptionResponseDto } from '../dtos/response/get-mark-search-by-option-response.dto';
+import { GetMarkInUserPositionRequestDto } from '../dtos/request/get-mark-in-user-position-request.dto';
 
 @Injectable()
 export class MarkService {
@@ -355,6 +356,22 @@ export class MarkService {
       GetMarkListByCategoryResponseDto.of(result.data),
       result.meta,
     );
+  }
+
+  /**
+   * @summary 본인 위치에서 기록 리스트 조회하기 API Service
+   * @author  Jason
+   * @param   { number } userId
+   * @param   { GetMarkInUserPositionRequestDto } query
+   * @param   { PageOptionsDto } pageOptionsDto
+   * @returns
+   */
+  async findMarkListInUserPosition(
+    userId: number,
+    query: GetMarkInUserPositionRequestDto,
+    pageOptionsDto: PageOptionsDto,
+  ) {
+    return;
   }
 
   /**

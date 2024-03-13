@@ -11,8 +11,8 @@ import { ValidationError } from 'class-validator';
 import { Request, Response } from 'express';
 import { isEmptyArray } from 'src/helpers/common.helper';
 import { ExceptionResponseHelper } from 'src/helpers/exception-response.helper';
-import { ExceptionResponseDto } from 'src/common/dtos/exception-response.dto';
-import { ExceptionCodeDto } from 'src/common/dtos/exception-code.dto';
+import { ExceptionResponseDto } from 'src/common/dtos/exception/exception-response.dto';
+import { ExceptionCodeDto } from 'src/common/dtos/exception/exception-code.dto';
 
 type TExceptionResponse = ExceptionCodeDto | ValidationError;
 type TBadRequestException = ExceptionCodeDto & { target?: string | undefined };

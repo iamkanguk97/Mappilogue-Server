@@ -6,7 +6,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { ExceptionCodeDto } from 'src/common/dtos/exception-code.dto';
+import { ExceptionCodeDto } from 'src/common/dtos/exception/exception-code.dto';
 import { ExceptionResponseHelper } from 'src/helpers/exception-response.helper';
 
 /**

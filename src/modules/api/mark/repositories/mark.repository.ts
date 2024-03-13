@@ -21,6 +21,7 @@ import {
   ISelectMarkByIdExceptMetadata,
 } from '../interfaces';
 import { PageDto } from 'src/common/dtos/pagination/page.dto';
+import { GetMarkInUserPositionRequestDto } from '../dtos/request/get-mark-in-user-position-request.dto';
 
 @CustomRepository(MarkEntity)
 export class MarkRepository extends Repository<MarkEntity> {
@@ -362,5 +363,13 @@ export class MarkRepository extends Repository<MarkEntity> {
       .leftJoin(ScheduleAreaEntity, 'SA', 'SA.id = ML.scheduleAreaId')
       .where('M.id = :markId', { markId })
       .getRawOne();
+  }
+
+  async selectMarkListInUserPosition(
+    userId: number,
+    query: GetMarkInUserPositionRequestDto,
+    pageOptionsDto: PageOptionsDto,
+  ) {
+    return;
   }
 }

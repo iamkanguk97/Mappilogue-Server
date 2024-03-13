@@ -1,5 +1,5 @@
 import { InternalServerExceptionCode } from './../common/exception-code/internal-server.exception-code';
-import { ExceptionResponseDto } from 'src/common/dtos/exception-response.dto';
+import { ExceptionResponseDto } from 'src/common/dtos/exception/exception-response.dto';
 
 export class ExceptionResponseHelper {
   /**

@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Request, Response } from 'express';
-import { ExceptionCodeDto } from 'src/common/dtos/exception-code.dto';
+import { ExceptionCodeDto } from 'src/common/dtos/exception/exception-code.dto';
 import { ExceptionResponseHelper } from 'src/helpers/exception-response.helper';
 import { CustomConfigService } from 'src/modules/core/custom-config/services';
 

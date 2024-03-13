@@ -7,7 +7,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { ExceptionCodeDto } from 'src/common/dtos/exception-code.dto';
+import { ExceptionCodeDto } from 'src/common/dtos/exception/exception-code.dto';
 import { NotFoundExceptionCode } from 'src/common/exception-code/api-not-found.exception-code';
 import { ExceptionResponseHelper } from 'src/helpers/exception-response.helper';
 

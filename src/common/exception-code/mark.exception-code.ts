@@ -81,4 +81,28 @@ export const MarkExceptionCode = {
     '5023',
     '기록 검색 키워드를 입력해주세요.',
   ),
+  MarkUserPositionLeftLatitudeEmpty: setExceptionCode(
+    '5024',
+    '사용자 위치의 왼쪽 위도를 입력해주세요.',
+  ),
+  MarkUserPositionLeftLongitudeEmpty: setExceptionCode(
+    '5025',
+    '사용자 위치의 왼쪽 경도를 입력해주세요.',
+  ),
+  MarkUserPositionRightLatitudeEmpty: setExceptionCode(
+    '5026',
+    '사용자 위치의 오른쪽 위도를 입력해주세요.',
+  ),
+  MarkUserPositionRightLongitudeEmpty: setExceptionCode(
+    '5027',
+    '사용자 위치의 오른쪽 경도를 입력해주세요.',
+  ),
+  MarkUserPositionOptionEmpty: setExceptionCode(
+    '5028',
+    '자신의 위치에서 기록 조회시의 옵션을 입력해주세요.',
+  ),
+  MarkUserPositionOptionWrongType: setExceptionCode(
+    '5029',
+    '자신의 위치에서 기록 조회시의 옵션은 newest 또는 oldest로 입력해주세요.',
+  ),
 };

@@ -35,7 +35,7 @@ import { ScheduleDto } from '../dtos/schedule.dto';
 import { UserProfileHelper } from '../../user/helpers/user-profile.helper';
 import { GetSchedulesInCalendarRequestDto } from '../dtos/request/get-schedules-in-calendar-request.dto';
 import { GetSchedulesInCalendarResponseDto } from '../dtos/response/get-schedules-in-calendar-response.dto';
-import { ExceptionCodeDto } from 'src/common/dtos/exception-code.dto';
+import { ExceptionCodeDto } from 'src/common/dtos/exception/exception-code.dto';
 import { InternalServerExceptionCode } from 'src/common/exception-code/internal-server.exception-code';
 import { ECheckColumn } from 'src/constants/enum';
 import { SchedulerRegistry } from '@nestjs/schedule';

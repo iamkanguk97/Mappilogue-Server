@@ -1,5 +1,5 @@
 import { AxiosRequestConfig } from 'axios';
-import { ExceptionCodeDto } from './dtos/exception-code.dto';
+import { ExceptionCodeDto } from './dtos/exception/exception-code.dto';
 import { Request } from 'express';
 
 /**
