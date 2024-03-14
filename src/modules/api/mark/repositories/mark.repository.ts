@@ -22,6 +22,9 @@ import {
 } from '../interfaces';
 import { PageDto } from 'src/common/dtos/pagination/page.dto';
 import { GetMarkInUserPositionRequestDto } from '../dtos/request/get-mark-in-user-position-request.dto';
+import { ParameterWithPageDto } from 'src/common/dtos/parameter/parameter-with-page.dto';
+import { isDefined } from 'src/helpers/common.helper';
+import { EGetMarkInUserPositionOption } from '../variables/enums/mark.enum';
 
 @CustomRepository(MarkEntity)
 export class MarkRepository extends Repository<MarkEntity> {
@@ -365,11 +368,101 @@ export class MarkRepository extends Repository<MarkEntity> {
       .getRawOne();
   }
 
+  /**
+   * @summary 본인 위치에서 기록 리스트 조회하기 API Service Query
+   * @author  Jason
+   * @param   { ParameterWithPageDto<GetMarkInUserPositionRequestDto> } parameterDto
+   * @returns { Promise<PageDto<IMarkListByCategory>> }
+   */
   async selectMarkListInUserPosition(
-    userId: number,
-    query: GetMarkInUserPositionRequestDto,
-    pageOptionsDto: PageOptionsDto,
-  ) {
-    return;
+    parameterDto: ParameterWithPageDto<GetMarkInUserPositionRequestDto>,
+  ): Promise<PageDto<IMarkListByCategory>> {
+    const queryBuilder = this.createQueryBuilder('M');
+
+    const result = await queryBuilder
+      .select('M.id', 'id')
+      .addSelect('M.title', 'title')
+      .addSelect('M.colorId', 'colorId')
+      .addSelect('C.code', 'colorCode')
+      .addSelect('M.markCategoryId', 'markCategoryId')
+      .addSelect(
+        `IF(M.markCategoryId IS NULL, "${MARK_CATEGORY_TOTAL_NAME}", MC.title)`,
+        'markCategoryTitle',
+      )
+      .addSelect(
+        `IF(MM.isMainImage IS NULL, "${USER_DEFAULT_PROFILE_IMAGE}", MM.markImageUrl)`,
+        'markImageUrl',
+      )
+      .addSelect('IF(ML.scheduleAreaId IS NULL, ML.name, SA.name)', 'name')
+      .addSelect(
+        'IF(ML.scheduleAreaId IS NULL, ML.streetAddress, SA.streetAddress)',
+        'streetAddress',
+      )
+      .addSelect(
+        'IF(ML.scheduleAreaId IS NULL, ML.latitude, SA.latitude)',
+        'latitude',
+      )
+      .addSelect(
+        'IF(ML.scheduleAreaId IS NULL, ML.longitude, SA.longitude)',
+        'longitude',
+      )
+      .addSelect(
+        'DATE_FORMAT(IF(ML.scheduleAreaId IS NULL, M.createdAt, SA.date), "%Y-%m-%d")',
+        'markDate',
+      )
+      .innerJoin(ColorEntity, 'C', 'C.id = M.colorId')
+      .leftJoin(MarkLocationEntity, 'ML', 'ML.markId = M.id')
+      .leftJoin(MarkCategoryEntity, 'MC', 'MC.id = M.markCategoryId')
+      .leftJoin(
+        MarkMetadataEntity,
+        'MM',
+        'MM.markId = M.id AND MM.isMainImage = :isMainImage',
+        { isMainImage: ECheckColumn.ACTIVE },
+      )
+      .leftJoin(ScheduleAreaEntity, 'SA', 'SA.id = ML.scheduleAreaId')
+      .where('M.userId = :userId', { userId: parameterDto.userId })
+      .andWhere(
+        new Brackets((qb) => {
+          // markCategoryId가 있는 경우에는 where 조건에 추가
+          if (isDefined(parameterDto.parameter?.markCategoryId)) {
+            qb.andWhere('M.markCategoryId = :categoryId', {
+              categoryId: parameterDto.parameter.markCategoryId,
+            });
+          }
+        }),
+      )
+      .andWhere(
+        'IF(ML.scheduleAreaId IS NULL, ML.latitude, SA.latitude) BETWEEN :left_latitude AND :right_latitude',
+        {
+          left_latitude: +parameterDto.parameter.l_lat,
+          right_latitude: +parameterDto.parameter.r_lat,
+        },
+      )
+      .andWhere(
+        'IF(ML.scheduleAreaId IS NULL, ML.longitude, SA.longitude) BETWEEN :left_longitude AND :right_longitude',
+        {
+          left_longitude: +parameterDto.parameter.l_lon,
+          right_longitude: +parameterDto.parameter.r_lon,
+        },
+      )
+      .orderBy(
+        'IF(ML.scheduleAreaId IS NULL, M.createdAt, SA.date)',
+        parameterDto.parameter.option === EGetMarkInUserPositionOption.NEWEST
+          ? 'DESC'
+          : 'ASC',
+      )
+      .offset(parameterDto.pageOptionsDto.getOffset())
+      .limit(parameterDto.pageOptionsDto.getLimit())
+      .getRawMany();
+
+    const itemCount = await queryBuilder.getCount();
+
+    return PageDto.from(
+      result,
+      new PageMetaDto({
+        pageOptionsDto: parameterDto.pageOptionsDto,
+        itemCount,
+      }),
+    );
   }
 }

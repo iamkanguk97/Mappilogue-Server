@@ -34,6 +34,8 @@ import { IMarkSearchByArea, IMarkSearchByMark } from '../interfaces';
 import { deleteUploadedImageByKeyList } from 'src/common/multer/multer.helper';
 import { GetMarkSearchByOptionResponseDto } from '../dtos/response/get-mark-search-by-option-response.dto';
 import { GetMarkInUserPositionRequestDto } from '../dtos/request/get-mark-in-user-position-request.dto';
+import { ParameterWithPageDto } from 'src/common/dtos/parameter/parameter-with-page.dto';
+import { GetMarkListInUserPositionResponseDto } from '../dtos/response/get-mark-list-in-user-position-response.dto';
 
 @Injectable()
 export class MarkService {
@@ -361,17 +363,20 @@ export class MarkService {
   /**
    * @summary 본인 위치에서 기록 리스트 조회하기 API Service
    * @author  Jason
-   * @param   { number } userId
-   * @param   { GetMarkInUserPositionRequestDto } query
-   * @param   { PageOptionsDto } pageOptionsDto
-   * @returns
+   * @param   { ParameterWithPageDto<GetMarkInUserPositionRequestDto> } parameterDto
+   * @returns { Promise<ResultWithPageDto<GetMarkListInUserPositionResponseDto>> }
    */
   async findMarkListInUserPosition(
-    userId: number,
-    query: GetMarkInUserPositionRequestDto,
-    pageOptionsDto: PageOptionsDto,
-  ) {
-    return;
+    parameterDto: ParameterWithPageDto<GetMarkInUserPositionRequestDto>,
+  ): Promise<ResultWithPageDto<GetMarkListInUserPositionResponseDto>> {
+    const result = await this.markRepository.selectMarkListInUserPosition(
+      parameterDto,
+    );
+
+    return ResultWithPageDto.from(
+      GetMarkListInUserPositionResponseDto.of(result.data),
+      result.meta,
+    );
   }
 
   /**

@@ -1,3 +1,4 @@
+import { GetMarkInUserPositionPipe } from './../pipes/get-mark-in-user-position.pipe';
 import { GetMarkSearchByOptionKeywordPipe } from './../pipes/get-mark-search-by-option-keyword.pipe';
 import {
   Body,
@@ -40,7 +41,8 @@ import { PutMarkRequestDto } from '../dtos/request/put-mark-request.dto';
 import { GetMarkSearchByOptionRequestDto } from '../dtos/request/get-mark-search-by-option-request.dto';
 import { GetMarkSearchByOptionResponseDto } from '../dtos/response/get-mark-search-by-option-response.dto';
 import { GetMarkInUserPositionRequestDto } from '../dtos/request/get-mark-in-user-position-request.dto';
-import { MarkCategoryValidationPipe } from '../pipes/mark-category-validation.pipe';
+import { ParameterWithPageDto } from 'src/common/dtos/parameter/parameter-with-page.dto';
+import { GetMarkListInUserPositionResponseDto } from '../dtos/response/get-mark-list-in-user-position-response.dto';
 
 @Controller(EDomainName.MARK)
 @UseInterceptors(ClassSerializerInterceptor)
@@ -149,23 +151,20 @@ export class MarkController {
   /**
    * @summary 본인 위치에서 기록 리스트 조회하기 API
    * @author  Jason
-   * @url
+   * @url     [GET] /api/v1/marks/positions?option=&l_lat=&l_lon=&r_lat=&r_lon=&markCategoryId=
+   * @returns { Promise<any> }
    */
   @Get('/positions')
   @HttpCode(HttpStatus.OK)
-  async getMarksInUserPosition(
+  async getMarkListInUserPosition(
     @UserId() userId: number,
-    @Query(MarkCategoryValidationPipe) query: GetMarkInUserPositionRequestDto,
+    @Query(GetMarkInUserPositionPipe) query: GetMarkInUserPositionRequestDto,
     @GetPagination() pageOptionsDto: PageOptionsDto,
-  ): Promise<any> {
-    console.log(userId, query, pageOptionsDto);
-
+  ): Promise<ResponseEntity<GetMarkListInUserPositionResponseDto>> {
     const result = await this.markService.findMarkListInUserPosition(
-      userId,
-      query,
-      pageOptionsDto,
+      ParameterWithPageDto.from(userId, query, pageOptionsDto),
     );
-    // return ResponseEntity.OK_WITH_PAGINATION(HttpStatus.OK, result);
+    return ResponseEntity.OK_WITH_PAGINATION(HttpStatus.OK, result);
   }
 
   /**
