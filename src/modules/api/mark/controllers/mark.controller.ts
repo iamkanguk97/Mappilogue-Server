@@ -152,7 +152,7 @@ export class MarkController {
    * @summary 본인 위치에서 기록 리스트 조회하기 API
    * @author  Jason
    * @url     [GET] /api/v1/marks/positions?option=&l_lat=&l_lon=&r_lat=&r_lon=&markCategoryId=
-   * @returns { Promise<any> }
+   * @returns { Promise<ResponseEntity<GetMarkListInUserPositionResponseDto>> }
    */
   @Get('/positions')
   @HttpCode(HttpStatus.OK)
