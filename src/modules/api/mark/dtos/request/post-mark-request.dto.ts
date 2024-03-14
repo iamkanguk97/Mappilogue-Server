@@ -12,7 +12,7 @@ import {
 import { setValidatorContext } from 'src/common/common';
 import { CommonExceptionCode } from 'src/common/exception-code/common.exception-code';
 import { IsNumberRange } from 'src/decorators/number-range.decorator';
-import { ColorIdRangeEnum } from '../../../color/constants/color.enum';
+import { EColorIdRange } from '../../../color/variables/enums/color.enum';
 import { ColorExceptionCode } from 'src/common/exception-code/color.exception-code';
 import { MarkExceptionCode } from 'src/common/exception-code/mark.exception-code';
 import {
@@ -113,8 +113,8 @@ export class PostMarkRequestDto extends PickType(MarkEntity, [
   scheduleId: number | null = null;
 
   @IsNumberRange(
-    ColorIdRangeEnum.MIN,
-    ColorIdRangeEnum.MAX,
+    EColorIdRange.MIN,
+    EColorIdRange.MAX,
     setValidatorContext(ColorExceptionCode.ColorIdRangeError),
   )
   @IsNumber({}, setValidatorContext(CommonExceptionCode.MustNumberType))

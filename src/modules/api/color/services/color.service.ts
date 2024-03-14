@@ -3,10 +3,10 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { ColorDto } from '../dtos/color.dto';
+import { ColorDto } from '../dtos/common/color.dto';
 import { ColorRepository } from '../repositories/color.repository';
 import { ColorExceptionCode } from 'src/common/exception-code/color.exception-code';
-import { ColorIdRangeEnum } from '../constants/color.enum';
+import { EColorIdRange } from '../variables/enums/color.enum';
 
 @Injectable()
 export class ColorService {
@@ -29,7 +29,7 @@ export class ColorService {
    * @returns { Promise<ColorDto> }
    */
   async findOneById(colorId: number): Promise<ColorDto> {
-    if (colorId < ColorIdRangeEnum.MIN || colorId > ColorIdRangeEnum.MAX) {
+    if (colorId < EColorIdRange.MIN || colorId > EColorIdRange.MAX) {
       throw new BadRequestException(ColorExceptionCode.ColorIdRangeError);
     }
 

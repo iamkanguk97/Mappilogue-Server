@@ -19,7 +19,7 @@ import { CommonExceptionCode } from 'src/common/exception-code/common.exception-
 import { ScheduleTitleLengthEnum } from '../../constants/schedule.enum';
 import { ScheduleExceptionCode } from 'src/common/exception-code/schedule.exception-code';
 import { IsNumberRange } from 'src/decorators/number-range.decorator';
-import { ColorIdRangeEnum } from '../../../color/constants/color.enum';
+import { EColorIdRange } from '../../../color/variables/enums/color.enum';
 import { ColorExceptionCode } from 'src/common/exception-code/color.exception-code';
 import { IsValidDateWithHyphen } from 'src/decorators/valid-date-with-hyphen.decorator';
 import { REGEX_ALARM_OPTION } from 'src/common/regex';
@@ -38,8 +38,8 @@ export class PostScheduleRequestDto {
   title: string = SCHEDULE_DEFAULT_TITLE;
 
   @IsNumberRange(
-    ColorIdRangeEnum.MIN,
-    ColorIdRangeEnum.MAX,
+    EColorIdRange.MIN,
+    EColorIdRange.MAX,
     setValidatorContext(ColorExceptionCode.ColorIdRangeError),
   )
   @IsNumber({}, setValidatorContext(CommonExceptionCode.MustNumberType))

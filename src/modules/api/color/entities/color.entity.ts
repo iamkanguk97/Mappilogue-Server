@@ -1,14 +1,17 @@
 import { Column, Entity, OneToMany } from 'typeorm';
-import { ColorCodeLength, ColorNameLength } from '../constants/color.enum';
+import {
+  EColorCodeLength,
+  EColorNameLength,
+} from '../variables/enums/color.enum';
 import { ScheduleEntity } from '../../schedule/entities/schedule.entity';
 import { CommonEntity } from 'src/common/entities/common.entity';
 
 @Entity('Color')
 export class ColorEntity extends CommonEntity {
-  @Column('varchar', { length: ColorNameLength.MAX })
+  @Column('varchar', { length: EColorNameLength.MAX })
   name!: string;
 
-  @Column('varchar', { length: ColorCodeLength.MAX })
+  @Column('varchar', { length: EColorCodeLength.MAX })
   code!: string;
 
   @OneToMany(() => ScheduleEntity, (schedule) => schedule.color)

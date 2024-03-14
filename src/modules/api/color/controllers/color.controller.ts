@@ -8,9 +8,9 @@ import {
 } from '@nestjs/common';
 import { ColorService } from '../services/color.service';
 import { ResponseEntity } from 'src/common/entities/response.entity';
-import { ColorDto } from '../dtos/color.dto';
+import { ColorDto } from '../dtos/common/color.dto';
 import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
-import { COLOR_LIST_CACHE_KEY } from '../constants/color.constant';
+import { COLOR_LIST_CACHE_KEY } from '../variables/constants/color.constant';
 import { Public } from 'src/modules/core/auth/decorators/auth.decorator';
 import { CACHE_PERSISTANT_TTL } from 'src/constants/constant';
 import { EDomainName } from 'src/constants/enum';

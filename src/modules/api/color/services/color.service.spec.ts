@@ -7,7 +7,7 @@ import { ColorEntity } from '../entities/color.entity';
 import { DatabaseModule } from 'src/modules/core/database/database.module';
 import { ColorExceptionCode } from 'src/common/exception-code/color.exception-code';
 import { BadRequestException } from '@nestjs/common';
-import { ColorDto } from '../dtos/color.dto';
+import { ColorDto } from '../dtos/common/color.dto';
 import { plainToInstance } from 'class-transformer';
 
 describe('ColorService', () => {

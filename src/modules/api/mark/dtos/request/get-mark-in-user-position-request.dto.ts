@@ -11,7 +11,7 @@ export class GetMarkInUserPositionRequestDto {
     setValidatorContext(MarkExceptionCode.MarkUserPositionOptionWrongType),
   )
   @IsNotEmpty(
-    setValidatorContext(MarkExceptionCode.MarkUserPositionOptionWrongType),
+    setValidatorContext(MarkExceptionCode.MarkUserPositionOptionEmpty),
   )
   option!: EGetMarkInUserPositionOption;
 

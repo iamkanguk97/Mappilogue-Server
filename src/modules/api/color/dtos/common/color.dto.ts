@@ -1,4 +1,4 @@
-import { ColorEntity } from '../entities/color.entity';
+import { ColorEntity } from '../../entities/color.entity';
 import { Exclude, Expose } from 'class-transformer';
 
 export class ColorDto {
