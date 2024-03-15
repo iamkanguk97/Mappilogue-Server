@@ -85,14 +85,21 @@ export class ScheduleRepository extends Repository<ScheduleEntity> {
       .where('S.startDate <= DATE_FORMAT(NOW(), "%Y-%m-%d")')
       .andWhere('S.endDate >= DATE_FORMAT(NOW(), "%Y-%m-%d")')
       .andWhere('S.userId = :userId', { userId })
-      .andWhere('S.deletedAt IS NULL')
-      .andWhere('C.deletedAt IS NULL')
       .orderBy('S.startDate')
       .getRawMany();
   }
 
+  /**
+   * @summary 홈화면 조회 -> 다가오는 일정 리스트 가져오기
+   * @author  Jason
+   * @param   { number } userId
+   * @returns
+   */
   async selectScheduleListInHomeOnAfter(userId: number) {
-    return;
+    return await this.createQueryBuilder('S')
+      .select('S.id', 'id')
+      .where('S.userId = :userId', { userId })
+      .getRawMany();
   }
 
   /**

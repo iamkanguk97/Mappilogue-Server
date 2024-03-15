@@ -153,10 +153,6 @@ export class MarkRepository extends Repository<MarkEntity> {
         { isMainImage: ECheckColumn.ACTIVE },
       )
       .where('M.userId = :userId', { userId })
-      .andWhere('M.deletedAt IS NULL')
-      .andWhere('C.deletedAt IS NULL')
-      .andWhere('MC.deletedAt IS NULL')
-      .andWhere('MM.deletedAt IS NULL')
       .orderBy('M.createdAt', 'DESC')
       .limit(USER_HOME_MARK_MAX_COUNT)
       .getRawMany();

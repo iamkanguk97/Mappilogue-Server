@@ -2,8 +2,8 @@ import { CustomRepository } from 'src/modules/core/custom-repository/decorators/
 import { AnnouncementEntity } from '../entities/announcement.entity';
 import { Repository } from 'typeorm';
 import { PageOptionsDto } from 'src/common/dtos/pagination/page-options.dto';
-import { ResultWithPageDto } from 'src/common/dtos/pagination/result-with-page.dto';
 import { PageMetaDto } from 'src/common/dtos/pagination/page-meta.dto';
+import { PageDto } from 'src/common/dtos/pagination/page.dto';
 
 @CustomRepository(AnnouncementEntity)
 export class AnnouncementRepository extends Repository<AnnouncementEntity> {
@@ -11,11 +11,11 @@ export class AnnouncementRepository extends Repository<AnnouncementEntity> {
    * @summary 공지사항 조회 함수
    * @author  Jason
    * @param   { PageOptionsDto } pageOptionsDto
-   * @returns { Promise<ResultWithPageDto<AnnouncementEntity[]>> }
+   * @returns { Promise<PageDto<AnnouncementEntity>> }
    */
   async selectAnnouncements(
     pageOptionsDto: PageOptionsDto,
-  ): Promise<ResultWithPageDto<AnnouncementEntity[]>> {
+  ): Promise<PageDto<AnnouncementEntity>> {
     const queryBuilder = this.createQueryBuilder('A');
 
     const result = await queryBuilder
@@ -30,10 +30,6 @@ export class AnnouncementRepository extends Repository<AnnouncementEntity> {
       .getRawMany();
 
     const itemCount = await queryBuilder.getCount();
-
-    return ResultWithPageDto.from(
-      result,
-      new PageMetaDto({ pageOptionsDto, itemCount }),
-    );
+    return PageDto.from(result, new PageMetaDto({ pageOptionsDto, itemCount }));
   }
 }

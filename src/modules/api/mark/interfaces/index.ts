@@ -4,6 +4,11 @@ import { MarkLocationEntity } from '../entities/mark-location.entity';
 import { MarkMetadataEntity } from '../entities/mark-metadata.entity';
 import { MarkEntity } from '../entities/mark.entity';
 
+interface ICategoryTitleAndColorCode {
+  markCategoryTitle: string;
+  colorCode: string;
+}
+
 // 기록 카테고리 조회 API Interface
 export interface IMarkCategoryWithMarkCount
   extends Pick<
@@ -20,22 +25,19 @@ export interface IMarkListByCategory
     Pick<
       MarkLocationEntity | ScheduleAreaEntity,
       'name' | 'latitude' | 'longitude' | 'streetAddress'
-    > {
-  markCategoryTitle: string;
-  colorCode: string;
+    >,
+    ICategoryTitleAndColorCode {
   markDate: string;
 }
 
 // 홈화면 조회 API -> 기록 리스트 부분 interface
 export interface IMarkListInHome
   extends Pick<
-    MarkEntity,
-    'id' | 'title' | 'markCategoryId' | 'colorId' | 'createdAt'
-  > {
-  markCategoryTitle: string;
-  colorCode: string;
-  markImageUrl: string;
-}
+      MarkEntity,
+      'id' | 'title' | 'markCategoryId' | 'colorId' | 'createdAt'
+    >,
+    Pick<MarkMetadataEntity, 'markImageUrl'>,
+    ICategoryTitleAndColorCode {}
 
 export interface ISelectMarkByIdExceptMetadata {
   id: number;
