@@ -2,7 +2,7 @@ import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import {
   USER_EMAIL_LENGTH,
   USER_WITHDRAW_REASON_LENGTH,
-} from '../constants/user.constant';
+} from '../variables/constants/user.constant';
 import { CommonEntity } from 'src/common/entities/common.entity';
 import { UserEntity } from './user.entity';
 

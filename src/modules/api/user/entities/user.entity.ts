@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, OneToOne, Unique } from 'typeorm';
-import { UserGenderEnum, UserSnsTypeEnum } from '../constants/enums/user.enum';
+import { EUserGender, EUserSnsType } from '../variables/enums/user.enum';
 import { UserAlarmSettingEntity } from './user-alarm-setting.entity';
 import {
   USER_AGE_LENGTH,
@@ -12,7 +12,7 @@ import {
   USER_PROFILE_IMAGE_KEY_LENGTH,
   USER_SNS_ID_LENGTH,
   USER_SNS_TYPE_LENGTH,
-} from '../constants/user.constant';
+} from '../variables/constants/user.constant';
 import { ScheduleEntity } from '../../schedule/entities/schedule.entity';
 import { MarkCategoryEntity } from '../../mark/entities/mark-category.entity';
 import { MarkEntity } from '../../mark/entities/mark.entity';
@@ -38,7 +38,7 @@ export class UserEntity extends CommonEntity {
   profileImageKey!: string | null;
 
   @Column('varchar', { nullable: true, length: USER_GENDER_LENGTH })
-  gender!: UserGenderEnum | null;
+  gender!: EUserGender | null;
 
   @Column('varchar', { nullable: true, length: USER_AGE_LENGTH })
   age!: string | null;
@@ -57,7 +57,7 @@ export class UserEntity extends CommonEntity {
   @Column('varchar', {
     length: USER_SNS_TYPE_LENGTH,
   })
-  snsType!: UserSnsTypeEnum;
+  snsType!: EUserSnsType;
 
   @Column('varchar', { nullable: true, length: USER_FCM_TOKEN_LENGTH })
   fcmToken!: string | null;

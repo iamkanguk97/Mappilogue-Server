@@ -25,7 +25,7 @@ import { UserAlarmSettingDto } from '../dtos/user-alarm-setting.dto';
 import { PutUserAlarmSettingRequestDto } from '../dtos/request/put-user-alarm-setting-request.dto';
 import { Public } from 'src/modules/core/auth/decorators/auth.decorator';
 import { TERMS_OF_SERVICE_URL } from 'src/constants/constant';
-import { PATCH_USER_PROFILE_IMAGE_KEY } from '../constants/user-profile.constant';
+import { PATCH_USER_PROFILE_IMAGE_KEY } from '../variables/constants/user-profile.constant';
 import { EDomainName } from 'src/constants/enum';
 
 @Controller(EDomainName.USER_PROFILE)

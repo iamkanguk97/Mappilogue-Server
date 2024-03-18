@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { JwtHelper } from '../helpers/jwt.helper';
 import { TokenDto } from 'src/modules/core/auth/dtos/token.dto';
-import { UserSnsTypeEnum } from 'src/modules/api/user/constants/enums/user.enum';
+import { EUserSnsType } from 'src/modules/api/user/variables/enums/user.enum';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 import { generateBearerHeader } from 'src/common/common';
 import { catchError, lastValueFrom, map } from 'rxjs';
@@ -69,12 +69,12 @@ export class AuthService {
     body: PostLoginOrSignUpRequestDto,
   ): Promise<IValidateSocialAccessToken> {
     switch (body.socialVendor) {
-      case UserSnsTypeEnum.KAKAO:
+      case EUserSnsType.KAKAO:
         const kakaoResult = await this.validateKakaoSocialAccessToken(
           body.socialAccessToken,
         );
         return { socialId: kakaoResult.id.toString(), data: null };
-      case UserSnsTypeEnum.APPLE:
+      case EUserSnsType.APPLE:
         const appleResult = await this.validateAppleSocialAccessToken(
           body.socialAccessToken,
         );
@@ -240,7 +240,7 @@ export class AuthService {
    */
   async disconnectFromAppleInWithdraw(user: TDecodedUserToken): Promise<void> {
     if (
-      user.snsType === UserSnsTypeEnum.APPLE &&
+      user.snsType === EUserSnsType.APPLE &&
       isDefined(user.appleRefreshToken)
     ) {
       try {

@@ -17,7 +17,7 @@ import {
 import { JwtHelper } from 'src/modules/core/auth/helpers/jwt.helper';
 import { UserHelper } from '../helpers/user.helper';
 import { CustomCacheService } from 'src/modules/core/custom-cache/services/custom-cache.service';
-import { LoginOrSignUpEnum } from '../constants/enums/user.enum';
+import { ELoginOrSignUp } from '../variables/enums/user.enum';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 import { TDecodedUserToken } from '../types';
 import { PostUserWithdrawRequestDto } from '../dtos/request/post-user-withdraw-request.dto';
@@ -83,7 +83,7 @@ export class UserService {
 
       await queryRunner.commitTransaction();
       return PostLoginOrSignUpResponseDto.from(
-        LoginOrSignUpEnum.SIGNUP,
+        ELoginOrSignUp.SIGNUP,
         newUserId,
         newTokens,
       );
@@ -120,7 +120,7 @@ export class UserService {
     ]);
 
     return PostLoginOrSignUpResponseDto.from(
-      LoginOrSignUpEnum.LOGIN,
+      ELoginOrSignUp.LOGIN,
       user.id,
       tokens,
     );

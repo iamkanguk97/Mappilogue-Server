@@ -5,7 +5,7 @@ import {
   USER_ALARM_HISTORY_DATE_LENGTH,
   USER_ALARM_HISTORY_TITLE_LENGTH,
   USER_ALARM_HISTORY_TYPE_LENGTH,
-} from '../constants/user.constant';
+} from '../variables/constants/user.constant';
 import { NotificationTypeEnum } from 'src/modules/core/notification/constants/notification.enum';
 import { Notification } from 'firebase-admin/lib/messaging/messaging-api';
 import { CommonEntity } from 'src/common/entities/common.entity';

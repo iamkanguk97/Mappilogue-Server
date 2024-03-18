@@ -1,4 +1,4 @@
-import { UserGenderEnum } from 'src/modules/api/user/constants/enums/user.enum';
+import { EUserGender } from 'src/modules/api/user/variables/enums/user.enum';
 import { TokenTypeEnum } from '../constants/auth.enum';
 import { TDecodedUserToken } from 'src/modules/api/user/types';
 
@@ -48,7 +48,7 @@ export interface ISocialKakaoDataInfo {
     birthday_type?: 'SOLAR' | 'LUNAR';
     has_gender?: boolean;
     gender_needs_agreement?: boolean;
-    gender?: UserGenderEnum;
+    gender?: EUserGender;
   };
 }
 

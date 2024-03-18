@@ -7,11 +7,11 @@ import { MarkLocationEntity } from '../entities/mark-location.entity';
 import { MarkCategoryEntity } from '../entities/mark-category.entity';
 import { MarkMetadataEntity } from '../entities/mark-metadata.entity';
 import { ECheckColumn } from 'src/constants/enum';
-import { USER_DEFAULT_PROFILE_IMAGE } from '../../user/constants/user.constant';
+import { USER_DEFAULT_PROFILE_IMAGE } from '../../user/variables/constants/user.constant';
 import { ScheduleAreaEntity } from '../../schedule/entities/schedule-area.entity';
 import { PageMetaDto } from 'src/common/dtos/pagination/page-meta.dto';
 import { PageOptionsDto } from 'src/common/dtos/pagination/page-options.dto';
-import { USER_HOME_MARK_MAX_COUNT } from '../../user/constants/user-home.constant';
+import { USER_HOME_MARK_MAX_COUNT } from '../../user/variables/constants/user-home.constant';
 import { GetMarkSearchByOptionRequestDto } from '../dtos/request/get-mark-search-by-option-request.dto';
 import {
   IMarkListByCategory,

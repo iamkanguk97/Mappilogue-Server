@@ -11,12 +11,12 @@ import {
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 import { isDefined } from 'src/helpers/common.helper';
 import { PostLoginOrSignUpRequestDto } from '../dtos/request/post-login-or-sign-up-request.dto';
-import { UserSnsTypeEnum } from '../constants/enums/user.enum';
+import { EUserSnsType } from '../variables/enums/user.enum';
 import { AuthService } from 'src/modules/core/auth/services/auth.service';
 import {
   USER_DEFAULT_NICKNAME_PREFIX,
   USER_DEFAULT_PROFILE_IMAGE,
-} from '../constants/user.constant';
+} from '../variables/constants/user.constant';
 import { v4 as uuidv4 } from 'uuid';
 
 import * as firebase from 'firebase-admin';
@@ -121,9 +121,9 @@ export class UserHelper {
     validateResult: IVerifyAppleAuthCode | null,
   ): Promise<UserEntity> {
     switch (body.socialVendor) {
-      case UserSnsTypeEnum.KAKAO:
+      case EUserSnsType.KAKAO:
         return this.generateKakaoInsertUserParam(body);
-      case UserSnsTypeEnum.APPLE:
+      case EUserSnsType.APPLE:
         return this.generateAppleInsertUserParam(
           body,
           validateResult as IVerifyAppleAuthCode,
@@ -152,7 +152,7 @@ export class UserHelper {
     const user = new UserEntity();
 
     user.snsId = kakaoUserInfo.id.toString();
-    user.snsType = UserSnsTypeEnum.KAKAO;
+    user.snsType = EUserSnsType.KAKAO;
     user.nickname = kakaoProfile?.nickname ?? this.generateUserRandomNickname();
     user.email = kakaoAccount?.email ?? null;
     user.age = kakaoAccount?.age_range ?? null;
@@ -186,7 +186,7 @@ export class UserHelper {
     const user = new UserEntity();
 
     user.snsId = decodedResult.sub;
-    user.snsType = UserSnsTypeEnum.APPLE;
+    user.snsType = EUserSnsType.APPLE;
     user.nickname = this.generateUserRandomNickname();
     user.email = decodedResult.email ?? null;
     user.age = null;

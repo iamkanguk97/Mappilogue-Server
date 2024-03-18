@@ -1,14 +1,14 @@
-export enum UserGenderEnum {
+export enum EUserGender {
   MALE = 'male',
   FEMALE = 'female',
 }
 
-export enum UserSnsTypeEnum {
+export enum EUserSnsType {
   KAKAO = 'KAKAO',
   APPLE = 'APPLE',
 }
 
-export enum LoginOrSignUpEnum {
+export enum ELoginOrSignUp {
   LOGIN = 'LOGIN',
   SIGNUP = 'SIGNUP',
 }

@@ -1,6 +1,6 @@
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { setValidatorContext } from 'src/common/common';
-import { UserSnsTypeEnum } from '../../constants/enums/user.enum';
+import { EUserSnsType } from '../../variables/enums/user.enum';
 import { ECheckColumn } from 'src/constants/enum';
 import { CommonExceptionCode } from 'src/common/exception-code/common.exception-code';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
@@ -12,11 +12,11 @@ export class PostLoginOrSignUpRequestDto {
   socialAccessToken!: string;
 
   @IsEnum(
-    UserSnsTypeEnum,
+    EUserSnsType,
     setValidatorContext(UserExceptionCode.SocialVendorErrorType),
   )
   @IsNotEmpty(setValidatorContext(UserExceptionCode.SocialVendorEmpty))
-  socialVendor!: UserSnsTypeEnum;
+  socialVendor!: EUserSnsType;
 
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsOptional()

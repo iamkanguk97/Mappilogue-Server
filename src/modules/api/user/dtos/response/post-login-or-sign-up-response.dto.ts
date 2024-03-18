@@ -1,15 +1,15 @@
 import { Exclude, Expose } from 'class-transformer';
-import { LoginOrSignUpEnum } from '../../constants/enums/user.enum';
+import { ELoginOrSignUp } from '../../variables/enums/user.enum';
 import { TokenDto } from '../../../../core/auth/dtos/token.dto';
 
 export class PostLoginOrSignUpResponseDto {
-  @Exclude() private readonly _type: LoginOrSignUpEnum;
+  @Exclude() private readonly _type: ELoginOrSignUp;
   @Exclude() private readonly _loginUserId: number;
   @Exclude() private readonly _accessToken: string;
   @Exclude() private readonly _refreshToken: string;
 
   private constructor(
-    type: LoginOrSignUpEnum,
+    type: ELoginOrSignUp,
     loginUserId: number,
     tokenDto: TokenDto,
   ) {
@@ -20,7 +20,7 @@ export class PostLoginOrSignUpResponseDto {
   }
 
   static from(
-    type: LoginOrSignUpEnum,
+    type: ELoginOrSignUp,
     loginUserId: number,
     tokenDto: TokenDto,
   ): PostLoginOrSignUpResponseDto {
@@ -28,7 +28,7 @@ export class PostLoginOrSignUpResponseDto {
   }
 
   @Expose()
-  get type(): LoginOrSignUpEnum {
+  get type(): ELoginOrSignUp {
     return this._type;
   }
 
