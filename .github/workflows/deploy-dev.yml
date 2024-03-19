@@ -2,8 +2,7 @@ name: Run deploy.sh on dev branch
 
 on:
   push:
-    branches:
-      - dev # 특정 스크립트를 실행하고 싶은 브랜치 이름
+    branches: ['dev']
 
 jobs:
   build:
