@@ -18,6 +18,8 @@ import {
   USER_DEFAULT_PROFILE_IMAGE,
 } from '../variables/constants/user.constant';
 import { v4 as uuidv4 } from 'uuid';
+import { TDecodedUserToken } from '../types';
+import { deleteUploadedImageByKeyList } from 'src/common/multer/multer.helper';
 
 import * as firebase from 'firebase-admin';
 import * as jwt from 'jsonwebtoken';
@@ -227,5 +229,20 @@ export class UserHelper {
       return USER_DEFAULT_PROFILE_IMAGE;
     }
     return profileImageUrl;
+  }
+
+  /**
+   * @summary 사용자 프로필 이미지 삭제하기
+   * @author  Jason
+   * @param   { TDecodedUserToken } user
+   */
+  async removeUserProfileImage(user: TDecodedUserToken): Promise<void> {
+    const userProfileKey = user.profileImageKey;
+
+    if (isDefined(userProfileKey) && userProfileKey.length !== 0) {
+      await deleteUploadedImageByKeyList([userProfileKey]);
+    }
+
+    return;
   }
 }

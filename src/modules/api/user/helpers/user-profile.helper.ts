@@ -1,6 +1,6 @@
 import { USER_DEFAULT_PROFILE_IMAGE } from '../variables/constants/user.constant';
 import { Injectable } from '@nestjs/common';
-import { UserAlarmSettingDto } from '../dtos/user-alarm-setting.dto';
+import { UserAlarmSettingDto } from '../dtos/common/user-alarm-setting.dto';
 import { ECheckColumn } from 'src/constants/enum';
 import { isDefined } from 'src/helpers/common.helper';
 import { UserEntity } from '../entities/user.entity';

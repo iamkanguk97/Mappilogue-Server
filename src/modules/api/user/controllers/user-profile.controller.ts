@@ -21,7 +21,7 @@ import { UserProfileService } from '../services/user-profile.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateProfileImageMulterOption } from 'src/common/multer/multer.option';
 import { PatchUserProfileImageResponseDto } from '../dtos/response/patch-user-profile-image-response.dto';
-import { UserAlarmSettingDto } from '../dtos/user-alarm-setting.dto';
+import { UserAlarmSettingDto } from '../dtos/common/user-alarm-setting.dto';
 import { PutUserAlarmSettingRequestDto } from '../dtos/request/put-user-alarm-setting-request.dto';
 import { Public } from 'src/modules/core/auth/decorators/auth.decorator';
 import { TERMS_OF_SERVICE_URL } from 'src/constants/constant';

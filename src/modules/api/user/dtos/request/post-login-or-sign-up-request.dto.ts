@@ -5,8 +5,12 @@ import { ECheckColumn } from 'src/constants/enum';
 import { CommonExceptionCode } from 'src/common/exception-code/common.exception-code';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 import { UserAlarmSettingEntity } from '../../entities/user-alarm-setting.entity';
+import { PickType } from '@nestjs/mapped-types';
+import { UserEntity } from '../../entities/user.entity';
 
-export class PostLoginOrSignUpRequestDto {
+export class PostLoginOrSignUpRequestDto extends PickType(UserEntity, [
+  'fcmToken',
+] as const) {
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsNotEmpty(setValidatorContext(UserExceptionCode.SocialAccessTokenEmpty))
   socialAccessToken!: string;

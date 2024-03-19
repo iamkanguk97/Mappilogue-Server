@@ -14,13 +14,11 @@ import { UserAlarmSettingEntity } from '../entities/user-alarm-setting.entity';
 import { UserWithdrawReasonEntity } from '../entities/user-withdraw-reason.entity';
 import { UserProfileModule } from './user-profile.module';
 import { UserHomeModule } from './user-home.module';
-import { AuthModule } from 'src/modules/core/auth/auth.module';
 
 @Module({
   imports: [
     forwardRef(() => UserProfileModule),
     UserHomeModule,
-    AuthModule,
     TypeOrmModule.forFeature([
       UserEntity,
       UserAlarmHistoryEntity,

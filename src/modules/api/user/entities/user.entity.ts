@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, OneToOne, Unique } from 'typeorm';
+import { Column, Entity, Index, OneToMany, OneToOne, Unique } from 'typeorm';
 import { EUserGender, EUserSnsType } from '../variables/enums/user.enum';
 import { UserAlarmSettingEntity } from './user-alarm-setting.entity';
 import {
@@ -20,6 +20,7 @@ import { CommonEntity } from 'src/common/entities/common.entity';
 import { UserWithdrawReasonEntity } from './user-withdraw-reason.entity';
 
 @Entity('User')
+@Index(['email', 'snsId'])
 @Unique(['profileImageKey', 'snsId'])
 export class UserEntity extends CommonEntity {
   @Column('varchar', { length: USER_NICKNAME_LENGTH })

@@ -19,13 +19,8 @@ import { UserHelper } from '../helpers/user.helper';
 import { CustomCacheService } from 'src/modules/core/custom-cache/services/custom-cache.service';
 import { ELoginOrSignUp } from '../variables/enums/user.enum';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
-import { TDecodedUserToken } from '../types';
 import { PostUserWithdrawRequestDto } from '../dtos/request/post-user-withdraw-request.dto';
 import { decryptEmail } from 'src/helpers/crypt.helper';
-import {
-  EImageBuilderType,
-  MulterBuilder,
-} from 'src/common/multer/multer.builder';
 import { DataSource, QueryRunner } from 'typeorm';
 import { isDefined } from 'src/helpers/common.helper';
 import { UserWithdrawReasonEntity } from '../entities/user-withdraw-reason.entity';
@@ -49,7 +44,7 @@ export class UserService {
   ) {}
 
   /**
-   * @summary 소셜 로그인 API - 회원가입 처리
+   * @summary 소셜 로그인 API Service - 회원가입 처리
    * @author  Jason
    * @param   { PostLoginOrSignUpRequestDto } body
    * @param   { IValidateSocialAccessToken } validateResult
@@ -59,6 +54,8 @@ export class UserService {
     body: PostLoginOrSignUpRequestDto,
     validateResult: IValidateSocialAccessToken,
   ): Promise<PostLoginOrSignUpResponseDto> {
+    let newUserId: number;
+
     const insertUserParam = await this.userHelper.generateInsertUserParam(
       body,
       validateResult.data,
@@ -69,24 +66,15 @@ export class UserService {
     await queryRunner.startTransaction();
 
     try {
-      const { id: newUserId } = await queryRunner.manager.save(
-        UserEntity,
-        insertUserParam,
-      );
+      newUserId = (await queryRunner.manager.save(UserEntity, insertUserParam))
+        .id;
 
       await queryRunner.manager.save(
         UserAlarmSettingEntity,
         body.toUserAlarmSettingEntity(newUserId),
       ); // 알림 설정 생성
 
-      const newTokens = await this.authService.setUserToken(newUserId); // 토큰 생성
-
       await queryRunner.commitTransaction();
-      return PostLoginOrSignUpResponseDto.from(
-        ELoginOrSignUp.SIGNUP,
-        newUserId,
-        newTokens,
-      );
     } catch (err) {
       this.logger.error(`[createSignUp - transaction error] ${err}`);
       await queryRunner.rollbackTransaction();
@@ -94,10 +82,18 @@ export class UserService {
     } finally {
       await queryRunner.release();
     }
+
+    const newTokens = await this.authService.setUserToken(newUserId); // 토큰 생성
+
+    return PostLoginOrSignUpResponseDto.from(
+      ELoginOrSignUp.SIGNUP,
+      newUserId,
+      newTokens,
+    );
   }
 
   /**
-   * @summary 소셜 로그인 API - 로그인 처리
+   * @summary 소셜 로그인 API Service - 로그인 처리
    * @author  Jason
    * @param   { UserEntity } user
    * @param   { string | null } fcmToken
@@ -105,24 +101,22 @@ export class UserService {
    */
   async createLogin(
     user: UserEntity,
-    fcmToken?: string | null,
+    fcmToken: string | null,
   ): Promise<PostLoginOrSignUpResponseDto> {
     /**
      * @comment 로그인에서는 isAlarmAccept property를 무시한다 (알림 업데이트 X)
      */
 
-    const [tokens] = await Promise.all([
-      this.authService.setUserToken(user.id),
-      this.modifyById(user.id, {
-        fcmToken:
-          isDefined(fcmToken) && fcmToken.length !== 0 ? fcmToken : null,
-      }),
-    ]);
+    await this.modifyById(user.id, {
+      fcmToken: isDefined(fcmToken) && fcmToken.length !== 0 ? fcmToken : null,
+    });
+
+    const newTokens = await this.authService.setUserToken(user.id);
 
     return PostLoginOrSignUpResponseDto.from(
       ELoginOrSignUp.LOGIN,
       user.id,
-      tokens,
+      newTokens,
     );
   }
 
@@ -213,7 +207,7 @@ export class UserService {
 
       await this.customCacheService.delValue(refreshTokenRedisKey);
       await this.customCacheService.setBlackList(accessToken, remainExpireTime);
-      await this.removeUserProfileImage(user);
+      await this.userHelper.removeUserProfileImage(user);
       await this.authService.disconnectFromAppleInWithdraw(user);
 
       return;
@@ -223,20 +217,6 @@ export class UserService {
       throw err;
     } finally {
       await queryRunner.release();
-    }
-  }
-
-  /**
-   * @summary 사용자 프로필 이미지 삭제하기
-   * @author  Jason
-   * @param   { TDecodedUserToken } user
-   */
-  async removeUserProfileImage(user: TDecodedUserToken): Promise<void> {
-    const userProfileKey = user.profileImageKey;
-
-    if (isDefined(userProfileKey) && userProfileKey.length !== 0) {
-      const imageDeleteBuilder = new MulterBuilder(EImageBuilderType.DELETE);
-      await imageDeleteBuilder.delete(userProfileKey);
     }
   }
 

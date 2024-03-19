@@ -8,7 +8,7 @@ import {
 } from 'src/common/multer/multer.builder';
 import { PatchUserProfileImageResponseDto } from '../dtos/response/patch-user-profile-image-response.dto';
 import { UserAlarmSettingRepository } from '../repositories/user-alarm-setting.repository';
-import { UserAlarmSettingDto } from '../dtos/user-alarm-setting.dto';
+import { UserAlarmSettingDto } from '../dtos/common/user-alarm-setting.dto';
 import { PutUserAlarmSettingRequestDto } from '../dtos/request/put-user-alarm-setting-request.dto';
 import { isDefined } from 'src/helpers/common.helper';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';

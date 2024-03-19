@@ -1,9 +1,10 @@
 import { ECheckColumn, EStatusOrCheckColumnLength } from 'src/constants/enum';
-import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
+import { Column, Entity, Index, JoinColumn, OneToOne } from 'typeorm';
 import { UserEntity } from './user.entity';
 import { CommonEntity } from 'src/common/entities/common.entity';
 
 @Entity('UserAlarmSetting')
+@Index(['userId'])
 export class UserAlarmSettingEntity extends CommonEntity {
   @Column('int')
   userId!: number;

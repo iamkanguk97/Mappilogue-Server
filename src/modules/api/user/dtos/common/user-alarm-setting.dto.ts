@@ -1,5 +1,5 @@
 import { ECheckColumn } from 'src/constants/enum';
-import { UserAlarmSettingEntity } from '../entities/user-alarm-setting.entity';
+import { UserAlarmSettingEntity } from '../../entities/user-alarm-setting.entity';
 import { Exclude, Expose } from 'class-transformer';
 
 export class UserAlarmSettingDto {
