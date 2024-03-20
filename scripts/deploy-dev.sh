@@ -34,8 +34,6 @@ REMOTE_PATH=$SERVER:$DEPLOY_PATH
 ssh -i $PEM_PATH $SERVER "sudo rm -rf $DEPLOY_PATH/dist"
 ssh -i $PEM_PATH $SERVER "sudo mkdir -p -m 777 $DEPLOY_PATH/dist"
 
-echo ${"whoami"}
-
 # # 로컬 머신의 파일들을 원격 서버로 전송
 # rsync -avz --progress -e "ssh -i $PEM_PATH" dist/ $REMOTE_PATH/dist
 # rsync -avz --progress -e "ssh -i $PEM_PATH" package* $REMOTE_PATH
