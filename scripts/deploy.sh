@@ -1,13 +1,13 @@
 #!/bin/bash
 
-PEM_PATH=../scripts/mappilogue-ec2-key.pem
+PEM_PATH = scripts/mappilogue-ec2-key.pem
 if [ ! -f $PEM_PATH ]; then
     echo "DEPLOY_FAIL: not file exist \"$PEM_PATH\""
     exit 1;
 fi
 
 # 나중에 env 사용할때 주석해제
-ENV=../.env
+ENV=.env
 if [ ! -f $ENV ]; then
     echo "DEPLOY_FAIL: not file exist \"$ENV\""
     exit 1;
