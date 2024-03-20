@@ -6,17 +6,14 @@ if [ ! -f $PEM_PATH ]; then
     exit 1;
 fi
 
-echo $PEM_PATH
+ENV=.env
+if [ ! -f $ENV ]; then
+    echo "DEPLOY_FAIL: not file exist \"$ENV\""
+    exit 1;
+fi
 
-# # 나중에 env 사용할때 주석해제
-# ENV=.env
-# if [ ! -f $ENV ]; then
-#     echo "DEPLOY_FAIL: not file exist \"$ENV\""
-#     exit 1;
-# fi
-
-# # 프로젝트 빌드
-# npm run build
+# 프로젝트 빌드
+npm run build
 
 # BUILD=$?
 # if [ $BUILD -eq 1 ]; then
