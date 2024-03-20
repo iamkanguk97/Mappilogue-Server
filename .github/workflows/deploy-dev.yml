@@ -19,5 +19,29 @@ jobs:
       # - name: Install Dependencies
       #   run: npm install
 
+      - name: Add .env file
+        run: |
+          touch ../.env
+          echo "DATABASE_HOST=${{ secrets.DATABASE_HOST }}" >> ../.env
+          echo "DATABASE_PORT=${{ secrets.DATABASE_PORT }}" >> ../.env
+          echo "DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }}" >> ../.env
+          echo "DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}" >> ../.env
+          echo "DATABASE_NAME=${{ secrets.DATABASE_NAME }}" >> ../.env
+          echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> ../.env
+          echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> ../.env
+          echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> ../.env
+          echo "ACCESS_SECRET_KEY=${{ secrets.ACCESS_SECRET_KEY }}" >> ../.env
+          echo "REFRESH_SECRET_KEY=${{ secrets.REFRESH_SECRET_KEY }}" >> ../.env
+          echo "EMAIL_CRYPT_SECRET_KEY=${{ secrets.EMAIL_CRYPT_SECRET_KEY }}" >> ../.env
+          echo "EMAIL_CRYPT_ALGORITHM=${{ secrets.EMAIL_CRYPT_ALGORITHM }}" >> ../.env
+          echo "AWS_S3_ACCESS_KEY=${{ secrets.AWS_S3_ACCESS_KEY }}" >> ../.env
+          echo "AWS_S3_SECRET_KEY=${{ secrets.AWS_S3_SECRET_KEY }}" >> ../.env
+          echo "AWS_S3_BUCKET_REGION=${{ secrets.AWS_S3_BUCKET_REGION }}" >> ../.env
+          echo "AWS_S3_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }}" >> ../.env
+          echo "APPLE_KEY_ID=${{ secrets.APPLE_KEY_ID }}" >> ../.env
+          echo "APPLE_KEY_TEAM_ID=${{ secrets.APPLE_KEY_TEAM_ID }}" >> ../.env
+          echo "APPLE_KEY_CLIENT_ID=${{ secrets.APPLE_KEY_CLIENT_ID }}" >> ../.env
+          echo "APPLE_KEY_ALGORITHM=${{ secrets.APPLE_KEY_ALGORITHM }}" >> ../.env
+
       - name: Run deploy.sh
         run: npm run deploy
