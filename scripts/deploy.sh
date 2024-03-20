@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PEM_PATH = scripts/mappilogue-ec2-key.pem
+PEM_PATH=scripts/mappilogue-ec2-key.pem
 if [ ! -f $PEM_PATH ]; then
     echo "DEPLOY_FAIL: not file exist \"$PEM_PATH\""
     exit 1;

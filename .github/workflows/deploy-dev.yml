@@ -54,5 +54,5 @@ jobs:
           touch apple-social-login-key.p8
           echo "${{ secrets.APPLE_SOCIAL_LOGIN_KEY }}" >> apple-social-login-key.p8
 
-      - name: Run deploy.sh
-        run: npm run deploy
+      - name: Run deploy-dev.sh
+        run: npm run deploy:dev
