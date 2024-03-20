@@ -52,11 +52,13 @@ jobs:
         run: |
           touch scripts/mappilogue-ec2-key.pem
           echo "${{ secrets.MAPPILOGUE_EC2_KEY_PEM }}" >> scripts/mappilogue-ec2-key.pem
+          chmod 600 scripts/mappilogue-ec2-key.pem
 
       - name: Add Apple Social Login Key
         run: |
           touch apple-social-login-key.p8
           echo "${{ secrets.APPLE_SOCIAL_LOGIN_KEY }}" >> apple-social-login-key.p8
+          chmod 400 apple-social-login-key.p8
 
       - name: Add SSH key to known_hosts
         run: |
