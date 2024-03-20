@@ -21,7 +21,7 @@ jobs:
 
       - name: Add .env file
         run: |
-          touch ../.env
+          touch .env
           echo "DATABASE_HOST=${{ secrets.DATABASE_HOST }}" >> ../.env
           echo "DATABASE_PORT=${{ secrets.DATABASE_PORT }}" >> ../.env
           echo "DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }}" >> ../.env
