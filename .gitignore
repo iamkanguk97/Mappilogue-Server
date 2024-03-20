@@ -34,7 +34,7 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 
-/src/config/firebase-admin.json
+firebase-admin.json
 .env
 apple-social-login-key.p8
 /src/modules/core/database/migrations

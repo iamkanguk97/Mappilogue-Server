@@ -18,11 +18,6 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "typeRoots": ["./@types", "./node_modules/@types"]
-    // "paths": {
-    //   "@src/*": ["./src/*"],
-    //   "@common/*": ["./src/common/*"],
-    //   "@test/*": ["./test/*"]
-    // }
   },
-  "include": ["src/**/*", "./test/**/*", "src/config/firebase-admin.json"]
+  "include": ["src/**/*", "./test/**/*"]
 }

@@ -16,7 +16,7 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "start:prod:v2": "cross-env NODE_ENV=production pm2-runtime start dist/main.js",
-    "deploy": "bash ./scripts/deploy.sh",
+    "deploy:local": "bash ./scripts/deploy-local.sh",
     "deploy:dev": "bash ./scripts/deploy-dev.sh",
     "deploy:dev:start": "cross-env NODE_ENV=development TEMP=dev2 pm2 start ecosystem.config.js --watch",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",

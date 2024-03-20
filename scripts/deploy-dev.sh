@@ -40,6 +40,7 @@ rsync -avz --progress -e "ssh -i $PEM_PATH" package* $REMOTE_PATH
 rsync -avz --progress -e "ssh -i $PEM_PATH" ecosystem.config.js $REMOTE_PATH
 rsync -avz --progress -e "ssh -i $PEM_PATH" .env $REMOTE_PATH
 rsync -avz --progress -e "ssh -i $PEM_PATH" apple-social-login-key.p8 $REMOTE_PATH
+rsync -avz --progress -e "ssh -i $PEM_PATH" firebase-admin.json $REMOTE_PATH
 
 # 필요한 파일 업로드 완료 메시지 출력
 echo -e '\n======================================\n'
