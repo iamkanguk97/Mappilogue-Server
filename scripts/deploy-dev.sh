@@ -41,10 +41,10 @@ ssh -i $PEM_PATH $SERVER "sudo mkdir -p -m 777 $DEPLOY_PATH/dist"
 # rsync -avz --progress -e "ssh -i $PEM_PATH" .env $REMOTE_PATH
 # rsync -avz --progress -e "ssh -i $PEM_PATH" apple-social-login-key.p8 $REMOTE_PATH
 
-# # 필요한 파일 업로드 완료 메시지 출력
-# echo -e '\n======================================\n'
-# echo 'FILE UPLOAD DONE.'
-# echo -e '\n======================================\n'
+# 필요한 파일 업로드 완료 메시지 출력
+echo -e '\n======================================\n'
+echo 'FILE UPLOAD DONE.'
+echo -e '\n======================================\n'
 
 # # 원격 서버에서 프로젝트 의존성 설치
 # ssh -i $PEM_PATH $SERVER "npm --prefix $DEPLOY_PATH install"
