@@ -34,25 +34,27 @@ REMOTE_PATH=$SERVER:$DEPLOY_PATH
 ssh -i $PEM_PATH $SERVER "sudo rm -rf $DEPLOY_PATH/dist"
 ssh -i $PEM_PATH $SERVER "sudo mkdir -p -m 777 $DEPLOY_PATH/dist"
 
-# 로컬 머신의 파일들을 원격 서버로 전송
-rsync -avz --progress -e "ssh -i $PEM_PATH" dist/ $REMOTE_PATH/dist
-rsync -avz --progress -e "ssh -i $PEM_PATH" package* $REMOTE_PATH
-rsync -avz --progress -e "ssh -i $PEM_PATH" ecosystem.config.js $REMOTE_PATH
-rsync -avz --progress -e "ssh -i $PEM_PATH" .env $REMOTE_PATH
-rsync -avz --progress -e "ssh -i $PEM_PATH" apple-social-login-key.p8 $REMOTE_PATH
+echo ${"whoami"}
 
-# 필요한 파일 업로드 완료 메시지 출력
-echo -e '\n======================================\n'
-echo 'FILE UPLOAD DONE.'
-echo -e '\n======================================\n'
+# # 로컬 머신의 파일들을 원격 서버로 전송
+# rsync -avz --progress -e "ssh -i $PEM_PATH" dist/ $REMOTE_PATH/dist
+# rsync -avz --progress -e "ssh -i $PEM_PATH" package* $REMOTE_PATH
+# rsync -avz --progress -e "ssh -i $PEM_PATH" ecosystem.config.js $REMOTE_PATH
+# rsync -avz --progress -e "ssh -i $PEM_PATH" .env $REMOTE_PATH
+# rsync -avz --progress -e "ssh -i $PEM_PATH" apple-social-login-key.p8 $REMOTE_PATH
 
-# 원격 서버에서 프로젝트 의존성 설치
-ssh -i $PEM_PATH $SERVER "npm --prefix $DEPLOY_PATH install"
+# # 필요한 파일 업로드 완료 메시지 출력
+# echo -e '\n======================================\n'
+# echo 'FILE UPLOAD DONE.'
+# echo -e '\n======================================\n'
 
-# PM2를 사용하여 애플리케이션 실행 또는 재시작
-ssh -i $PEM_PATH $SERVER "pm2 startOrReload $DEPLOY_PATH/ecosystem.config.js"
+# # 원격 서버에서 프로젝트 의존성 설치
+# ssh -i $PEM_PATH $SERVER "npm --prefix $DEPLOY_PATH install"
 
-# 배포 완료 메시지 출력
-echo -e '\n======================================\n'
-echo 'DEPLOY SUCCESS AND DONE.'
-echo -e '\n======================================\n'
+# # PM2를 사용하여 애플리케이션 실행 또는 재시작
+# ssh -i $PEM_PATH $SERVER "pm2 startOrReload $DEPLOY_PATH/ecosystem.config.js"
+
+# # 배포 완료 메시지 출력
+# echo -e '\n======================================\n'
+# echo 'DEPLOY SUCCESS AND DONE.'
+# echo -e '\n======================================\n'
