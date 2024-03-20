@@ -1,7 +1,9 @@
-name: Run deploy.sh on dev branch
+name: Run deploy-dev.sh on dev branch
 
 on:
   push:
+    branches: ['dev']
+  pull_request:
     branches: ['dev']
 
 jobs:
@@ -60,10 +62,16 @@ jobs:
           echo "${{ secrets.APPLE_SOCIAL_LOGIN_KEY }}" >> apple-social-login-key.p8
           chmod 400 apple-social-login-key.p8
 
+      - name: Add firebase-admin.json
+        run: |
+          touch firebase-admin.json
+          echo "${{ secrets.FIREBASE_ADMIN_JSON }}" >> firebase-admin.json
+          chmod 400 firebase-admin.json
+
       - name: Add SSH key to known_hosts
         run: |
           mkdir -p ~/.ssh
-          ssh-keyscan -H ${{ secrets.REDIS_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.HOST }} >> ~/.ssh/known_hosts
 
       - name: Run deploy-dev.sh
         run: npm run deploy:dev
