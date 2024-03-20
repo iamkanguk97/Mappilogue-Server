@@ -30,8 +30,6 @@ DEPLOY_PATH=mappilogue-temp
 SERVER=$USER@$HOST
 REMOTE_PATH=$SERVER:$DEPLOY_PATH
 
-ssh-keygen -R $HOST
-
 # 원격 서버에서 기존의 배포 디렉토리 삭제 및 생성
 ssh -i $PEM_PATH $SERVER "sudo rm -rf $DEPLOY_PATH/dist"
 ssh -i $PEM_PATH $SERVER "sudo mkdir -p -m 777 $DEPLOY_PATH/dist"

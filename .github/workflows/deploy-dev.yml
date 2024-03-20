@@ -58,5 +58,8 @@ jobs:
           touch apple-social-login-key.p8
           echo "${{ secrets.APPLE_SOCIAL_LOGIN_KEY }}" >> apple-social-login-key.p8
 
+      - name: Add SSH key to known_hosts
+        run: ssh-keyscan -H ${{ secrets.REDIS_HOST }} >> ~/.ssh/known_hosts
+
       - name: Run deploy-dev.sh
         run: npm run deploy:dev
