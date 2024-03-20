@@ -1,4 +1,5 @@
-export const TERMS_OF_SERVICE_URL = 'This is terms-of-service url'; // 이용약관 경로
+export const TERMS_OF_SERVICE_URL =
+  'https://pouncing-alphabet-f48.notion.site/32e133a707aa49298c1c662680072f3d'; // 이용약관 경로
 
 export const IMAGE_MIME_TYPES = [
   'image/jpg',
