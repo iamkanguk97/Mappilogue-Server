@@ -60,7 +60,7 @@ jobs:
         run: |
           touch apple-social-login-key.p8
           echo "${{ secrets.APPLE_SOCIAL_LOGIN_KEY }}" >> apple-social-login-key.p8
-          chmod 400 apple-social-login-key.p8
+          chmod 444 apple-social-login-key.p8
 
       - name: create firebase-admin.json
         id: create-json

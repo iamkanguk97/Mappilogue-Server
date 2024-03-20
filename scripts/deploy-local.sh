@@ -36,12 +36,12 @@ ssh -i $PEM_PATH $SERVER "sudo rm -rf $DEPLOY_PATH/dist"
 ssh -i $PEM_PATH $SERVER "sudo mkdir -p -m 777 $DEPLOY_PATH/dist"
 
 # 로컬 머신의 파일들을 원격 서버로 전송
-rsync -avz --progress -e "ssh -i $PEM_PATH" dist/ $REMOTE_PATH/dist
-rsync -avz --progress -e "ssh -i $PEM_PATH" package* $REMOTE_PATH
-rsync -avz --progress -e "ssh -i $PEM_PATH" ecosystem.config.js $REMOTE_PATH
-rsync -avz --progress -e "ssh -i $PEM_PATH" .env $REMOTE_PATH
-rsync -avz --progress -e "ssh -i $PEM_PATH" apple-social-login-key.p8 $REMOTE_PATH
-rsync -avz --progress -e "ssh -i $PEM_PATH" firebase-admin.json $REMOTE_PATH
+rsync -rltvzO -e "ssh -i $PEM_PATH" -v dist/ $REMOTE_PATH/dist
+rsync -rltvzO -e "ssh -i $PEM_PATH" -v package* $REMOTE_PATH
+rsync -rltvzO -e "ssh -i $PEM_PATH" -v ecosystem.config.js $REMOTE_PATH
+rsync -rltvzO -e "ssh -i $PEM_PATH" -v .env $REMOTE_PATH
+rsync -rltvzO -e "ssh -i $PEM_PATH" -v apple-social-login-key.p8 $REMOTE_PATH
+rsync -rltvzO -e "ssh -i $PEM_PATH" -v firebase-admin.json $REMOTE_PATH
 
 # 필요한 파일 업로드 완료 메시지 출력
 echo -e '\n======================================\n'
