@@ -130,6 +130,7 @@ export class UserProfileController {
   @Get('terms-of-services')
   @HttpCode(HttpStatus.OK)
   termsOfServiceUrl(): ResponseEntity<{ link: string }> {
+    console.log('hello');
     return ResponseEntity.OK_WITH(HttpStatus.OK, {
       link: TERMS_OF_SERVICE_URL,
     });

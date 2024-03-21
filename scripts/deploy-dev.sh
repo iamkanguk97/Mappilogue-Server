@@ -17,7 +17,7 @@ fi
 npm run build
 
 BUILD=$?
-if [ $BUILD -eq 1 ]; then
+if [ ! $BUILD -eq 0 ]; then
     echo -e '\n======================================\n'
     echo 'BUILD FAILED : deploying is cancel'
     echo -e '\n======================================\n'
