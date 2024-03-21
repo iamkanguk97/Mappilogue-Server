@@ -25,7 +25,7 @@ if [ ! $BUILD -eq 0 ]; then
 fi
 
 USER=ubuntu
-HOST=52.78.203.84
+HOST=$(grep EC2_HOST $ENV | cut -d '=' -f2)
 DEPLOY_PATH=mappilogue-temp
 
 SERVER=$USER@$HOST
