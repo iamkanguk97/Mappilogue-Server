@@ -18,6 +18,7 @@ import { MarkCategoryEntity } from '../../mark/entities/mark-category.entity';
 import { MarkEntity } from '../../mark/entities/mark.entity';
 import { CommonEntity } from 'src/common/entities/common.entity';
 import { UserWithdrawReasonEntity } from './user-withdraw-reason.entity';
+import { ECheckColumn, EStatusOrCheckColumnLength } from 'src/constants/enum';
 
 @Entity('User')
 @Index(['email', 'snsId'])
@@ -68,6 +69,9 @@ export class UserEntity extends CommonEntity {
     length: USER_APPLE_REFRESH_TOKEN_LENGTH,
   })
   appleRefreshToken!: string | null;
+
+  @Column('varchar', { length: EStatusOrCheckColumnLength.CHECK })
+  isMarketingConsentGiven!: ECheckColumn;
 
   @OneToOne(
     () => UserAlarmSettingEntity,
