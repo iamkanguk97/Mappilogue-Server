@@ -25,7 +25,7 @@ import {
   IAppleJwtTokenPayload,
   ISocialKakaoDataInfo,
   IValidateKakaoTokenResponse,
-  IValidateSocialAccessToken,
+  IValidateSocialAccessTokenResult,
   IVerifyAppleAuthCode,
 } from '../types';
 import { isDefined } from 'src/helpers/common.helper';
@@ -63,11 +63,11 @@ export class AuthService {
    * @summary 소셜 별로 구분지어서 클라에서 보내준 토큰 검증하기
    * @author  Jason
    * @param   { PostLoginOrSignUpRequestDto } body
-   * @returns { Promise<IValidateSocialAccessToken> }
+   * @returns { Promise<IValidateSocialAccessTokenResult> }
    */
   async validateSocialAccessToken(
     body: PostLoginOrSignUpRequestDto,
-  ): Promise<IValidateSocialAccessToken> {
+  ): Promise<IValidateSocialAccessTokenResult> {
     switch (body.socialVendor) {
       case EUserSnsType.KAKAO:
         const kakaoResult = await this.validateKakaoSocialAccessToken(

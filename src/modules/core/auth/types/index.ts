@@ -83,7 +83,7 @@ export interface IValidateKakaoTokenResponse {
   appId: number;
 }
 
-export interface IValidateSocialAccessToken {
+export interface IValidateSocialAccessTokenResult {
   socialId: string;
   data: IVerifyAppleAuthCode | null;
 }

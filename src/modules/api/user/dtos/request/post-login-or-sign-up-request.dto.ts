@@ -41,7 +41,9 @@ export class PostLoginOrSignUpRequestDto extends PickType(UserEntity, [
   @IsOptional()
   isMarketingConsentGiven: ECheckColumn | null = null;
 
-  @IsValidDateWithHyphen(UserExceptionCode.SignUpBirthdayFormatError)
+  @IsValidDateWithHyphen(
+    setValidatorContext(UserExceptionCode.SignUpBirthdayFormatError),
+  )
   @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
   @IsOptional()
   birthday: string | null = null;

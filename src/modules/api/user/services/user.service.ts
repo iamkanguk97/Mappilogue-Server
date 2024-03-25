@@ -12,7 +12,7 @@ import { JwtService } from '@nestjs/jwt';
 import {
   ICustomJwtPayload,
   ITokenWithExpireTime,
-  IValidateSocialAccessToken,
+  IValidateSocialAccessTokenResult,
 } from 'src/modules/core/auth/types';
 import { JwtHelper } from 'src/modules/core/auth/helpers/jwt.helper';
 import { UserHelper } from '../helpers/user.helper';
@@ -47,12 +47,12 @@ export class UserService {
    * @summary 소셜 로그인 API Service - 회원가입 처리
    * @author  Jason
    * @param   { PostLoginOrSignUpRequestDto } body
-   * @param   { IValidateSocialAccessToken } validateResult
+   * @param   { IValidateSocialAccessTokenResult } validateResult
    * @returns { Promise<PostLoginOrSignUpResponseDto> }
    */
   async createSignUp(
     body: PostLoginOrSignUpRequestDto,
-    validateResult: IValidateSocialAccessToken,
+    validateResult: IValidateSocialAccessTokenResult,
   ): Promise<PostLoginOrSignUpResponseDto> {
     let newUserId: number;
 

@@ -6,6 +6,7 @@ import {
   IAppleJwtTokenPayload,
   ICustomJwtPayload,
   ISocialKakaoDataInfo,
+  IValidateSocialAccessTokenResult,
   IVerifyAppleAuthCode,
 } from 'src/modules/core/auth/types';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
@@ -116,38 +117,42 @@ export class UserHelper {
    * @author  Jason
    * @param   { PostLoginOrSignUpRequestDto } body
    */
-  checkOptionalParameterInSignUp(body: PostLoginOrSignUpRequestDto) {
+  checkOptionalParameterInSignUp(body: PostLoginOrSignUpRequestDto): boolean {
+    let isChecked = false;
+
     if (!isDefined(body.isMarketingConsentGiven)) {
       throw new BadRequestException(
         UserExceptionCode.IsMarketingConsentGivenEmpty,
       );
     }
 
-    if (!isDefined(body.birthday)) {
+    if (!isDefined(body.birthday) || body.birthday.length === 0) {
       throw new BadRequestException(UserExceptionCode.SignUpBirthdayEmpty);
     }
+
+    isChecked = true;
+
+    return isChecked;
   }
 
   /**
    * @summary 회원가입 시 새로운 유저 생성을 위한 Property 생성
    * @author  Jason
    * @param   { PostLoginOrSignUpRequestDto } body
-   * @param   { IVerifyAppleAuthCode | null } validateResult
+   * @param   { Pick<IValidateSocialAccessTokenResult, 'data'> } validateResultData
    * @returns { Promise<UserEntity> }
    */
   generateInsertUserParam(
     body: PostLoginOrSignUpRequestDto,
-    validateResult: IVerifyAppleAuthCode | null,
+    validateResultData: IValidateSocialAccessTokenResult['data'],
   ): Promise<UserEntity> {
-    this.checkOptionalParameterInSignUp(body);
-
     switch (body.socialVendor) {
       case EUserSnsType.KAKAO:
         return this.generateKakaoInsertUserParam(body);
       case EUserSnsType.APPLE:
         return this.generateAppleInsertUserParam(
           body,
-          validateResult as IVerifyAppleAuthCode,
+          validateResultData as IVerifyAppleAuthCode,
         );
       default:
         throw new BadRequestException(UserExceptionCode.SocialVendorErrorType);
@@ -170,6 +175,8 @@ export class UserHelper {
     const kakaoAccount = kakaoUserInfo?.kakao_account;
     const kakaoProfile = kakaoAccount?.profile;
 
+    this.checkOptionalParameterInSignUp(body);
+
     // 여기서 body의 birthday가 null이거나 만 14세 미만인지 확인
     // 카카오 로그인의 경우 생년월일 수집 동의를 한 경우에는 Input과 비교를 해서 다르면 에러
     // 수집 동의를 하지 않은 경우에는 따로 비교를 할 필요는 없음
@@ -183,7 +190,7 @@ export class UserHelper {
     user.age = kakaoAccount?.age_range ?? null;
     user.gender = kakaoAccount?.gender ?? null;
     // user.birthday = kakaoAccount?.birthday ?? null;
-    user.birthday = body.birthday!;
+    user.birthday = body.birthday;
     user.profileImageUrl = this.setKakaoUserProfileImage(kakaoAccount);
     user.profileImageKey = null;
     user.appleRefreshToken = null;

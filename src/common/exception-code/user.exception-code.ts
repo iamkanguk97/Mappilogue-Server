@@ -112,6 +112,7 @@ export const UserExceptionCode = {
   SignUpBirthdayEmpty: setExceptionCode(
     '1033',
     '회원가입 시에는 생년월일을 입력해주셔야합니다.',
+    'birthday',
   ),
   SignUpBirthdayFormatError: setExceptionCode(
     '1034',
