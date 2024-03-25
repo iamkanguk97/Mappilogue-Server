@@ -151,6 +151,48 @@ export class AuthService {
     }
   }
 
+  // /**
+  //  * @summary 애플 authorization_code를 가지고 Apple 서버에 검증을 요청하고 나온 결과 반환
+  //  * @author  Jason
+  //  * @param   { string } code
+  //  * @returns { Promise<IVerifyAppleAuthCode> }
+  //  */
+  // async _validateAppleSocialAccessToken(
+  //   code: string,
+  // ): Promise<IVerifyAppleAuthCode> {
+  //   return await lastValueFrom<IVerifyAppleAuthCode>(
+  //     this.httpService
+  //       .post(
+  //         'https://appleid.apple.com/auth/token',
+  //         querystring.stringify({
+  //           grant_type: 'authorization_code',
+  //           code: code,
+  //           client_secret: this.generateAppleClientSecret(),
+  //           client_id: this.customConfigService.get<string>(
+  //             ENVIRONMENT_KEY.APPLE_KEY_CLIENT_ID,
+  //           ),
+  //         }),
+  //         {
+  //           headers: {
+  //             'Content-Type': 'application/x-www-form-urlencoded',
+  //           },
+  //         },
+  //       )
+  //       .pipe(
+  //         map((res) => res.data),
+  //         catchError((err) => {
+  //           this.logger.error(err);
+  //           this.logger.error(
+  //             '[validateSocialAccessToken] 애플 로그인 처리 중 에러 발생.',
+  //           );
+  //           throw new UnauthorizedException(
+  //             UserExceptionCode.AppleSocialLoginTokenError,
+  //           );
+  //         }),
+  //       ),
+  //   );
+  // }
+
   /**
    * @summary 카카오 소셜로그인 중 에러 발생했을 때 에러코드 분류
    * @author  Jason

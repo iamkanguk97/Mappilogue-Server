@@ -151,6 +151,10 @@ export class UserHelper {
     const kakaoAccount = kakaoUserInfo?.kakao_account;
     const kakaoProfile = kakaoAccount?.profile;
 
+    // 여기서 body의 birthday가 null이거나 만 14세 미만인지 확인
+    // 카카오 로그인의 경우 생년월일 수집 동의를 한 경우에는 Input과 비교를 해서 다르면 에러
+    // 수집 동의를 하지 않은 경우에는 따로 비교를 할 필요는 없음
+
     const user = new UserEntity();
 
     user.snsId = kakaoUserInfo.id.toString();
@@ -159,7 +163,8 @@ export class UserHelper {
     user.email = kakaoAccount?.email ?? null;
     user.age = kakaoAccount?.age_range ?? null;
     user.gender = kakaoAccount?.gender ?? null;
-    user.birthday = kakaoAccount?.birthday ?? null;
+    // user.birthday = kakaoAccount?.birthday ?? null;
+    user.birthday = body.birthday!;
     user.profileImageUrl = this.setKakaoUserProfileImage(kakaoAccount);
     user.profileImageKey = null;
     user.appleRefreshToken = null;
@@ -167,6 +172,7 @@ export class UserHelper {
       isDefined(body.fcmToken) && body.fcmToken.length !== 0
         ? body.fcmToken
         : null;
+    user.isMarketingConsentGiven = body.isMarketingConsentGiven;
 
     return user;
   }
@@ -201,6 +207,7 @@ export class UserHelper {
       isDefined(body.fcmToken) && body.fcmToken.length !== 0
         ? body.fcmToken
         : null;
+    user.isMarketingConsentGiven = body.isMarketingConsentGiven;
 
     return user;
   }

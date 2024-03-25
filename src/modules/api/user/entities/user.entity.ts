@@ -46,10 +46,9 @@ export class UserEntity extends CommonEntity {
   age!: string | null;
 
   @Column('varchar', {
-    nullable: true,
     length: USER_BIRTHDAY_LENGTH,
   })
-  birthday!: string | null;
+  birthday!: string;
 
   @Column('varchar', {
     length: USER_SNS_ID_LENGTH,
