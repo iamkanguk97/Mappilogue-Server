@@ -104,10 +104,11 @@ export const UserExceptionCode = {
     '1031',
     '애플로그인으로 가입한 유저는 회원탈퇴 시 인증토큰이 필요합니다.',
   ),
-  // IsMarketingConsentGivenEmpty: setExceptionCode(
-  //   '1032',
-  //   '마케팅 수신 동의 여부를 입력해주세요.',
-  // ),
+  IsMarketingConsentGivenEmpty: setExceptionCode(
+    '1032',
+    '회원가입 시에는 마케팅 수신 동의 여부를 입력해주세요.',
+    'isMarketingConsentGiven',
+  ),
   SignUpBirthdayEmpty: setExceptionCode(
     '1033',
     '회원가입 시에는 생년월일을 입력해주셔야합니다.',

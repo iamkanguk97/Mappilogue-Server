@@ -112,6 +112,23 @@ export class UserHelper {
   }
 
   /**
+   * @summary RequestDTO에서는 Optional한 값들이 회원가입에서는 필요함. 이 때 사용하는 메서드
+   * @author  Jason
+   * @param   { PostLoginOrSignUpRequestDto } body
+   */
+  checkOptionalParameterInSignUp(body: PostLoginOrSignUpRequestDto) {
+    if (!isDefined(body.isMarketingConsentGiven)) {
+      throw new BadRequestException(
+        UserExceptionCode.IsMarketingConsentGivenEmpty,
+      );
+    }
+
+    if (!isDefined(body.birthday)) {
+      throw new BadRequestException(UserExceptionCode.SignUpBirthdayEmpty);
+    }
+  }
+
+  /**
    * @summary 회원가입 시 새로운 유저 생성을 위한 Property 생성
    * @author  Jason
    * @param   { PostLoginOrSignUpRequestDto } body
@@ -122,6 +139,8 @@ export class UserHelper {
     body: PostLoginOrSignUpRequestDto,
     validateResult: IVerifyAppleAuthCode | null,
   ): Promise<UserEntity> {
+    this.checkOptionalParameterInSignUp(body);
+
     switch (body.socialVendor) {
       case EUserSnsType.KAKAO:
         return this.generateKakaoInsertUserParam(body);
