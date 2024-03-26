@@ -1,4 +1,10 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { InternalServerExceptionCode } from './../../../../common/exception-code/internal-server.exception-code';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { UserEntity } from '../entities/user.entity';
 import { JwtHelper } from 'src/modules/core/auth/helpers/jwt.helper';
 import { CustomCacheService } from 'src/modules/core/custom-cache/services/custom-cache.service';
@@ -7,7 +13,6 @@ import {
   ICustomJwtPayload,
   ISocialKakaoDataInfo,
   IValidateSocialAccessTokenResult,
-  IVerifyAppleAuthCode,
 } from 'src/modules/core/auth/interfaces';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 import { isDefined } from 'src/helpers/common.helper';
@@ -113,29 +118,6 @@ export class UserHelper {
   }
 
   /**
-   * @summary RequestDTO에서는 Optional한 값들이 회원가입에서는 필요함. 이 때 사용하는 메서드
-   * @author  Jason
-   * @param   { PostLoginOrSignUpRequestDto } body
-   */
-  checkOptionalParameterInSignUp(body: PostLoginOrSignUpRequestDto): boolean {
-    let isChecked = false;
-
-    if (!isDefined(body.isMarketingConsentGiven)) {
-      throw new BadRequestException(
-        UserExceptionCode.IsMarketingConsentGivenEmpty,
-      );
-    }
-
-    if (!isDefined(body.birthday) || body.birthday.length === 0) {
-      throw new BadRequestException(UserExceptionCode.SignUpBirthdayEmpty);
-    }
-
-    isChecked = true;
-
-    return isChecked;
-  }
-
-  /**
    * @summary 회원가입 시 새로운 유저 생성을 위한 Property 생성
    * @author  Jason
    * @param   { PostLoginOrSignUpRequestDto } body
@@ -150,10 +132,7 @@ export class UserHelper {
       case EUserSnsType.KAKAO:
         return this.generateKakaoInsertUserParam(body);
       case EUserSnsType.APPLE:
-        return this.generateAppleInsertUserParam(
-          body,
-          validateResultData as IVerifyAppleAuthCode,
-        );
+        return this.generateAppleInsertUserParam(body, validateResultData);
       default:
         throw new BadRequestException(UserExceptionCode.SocialVendorErrorType);
     }
@@ -175,11 +154,22 @@ export class UserHelper {
     const kakaoAccount = kakaoUserInfo?.kakao_account;
     const kakaoProfile = kakaoAccount?.profile;
 
-    this.checkOptionalParameterInSignUp(body);
+    if (!isDefined(body.isMarketingConsentGiven)) {
+      throw new BadRequestException(
+        UserExceptionCode.IsMarketingConsentGivenEmpty,
+      );
+    }
 
-    // 여기서 body의 birthday가 null이거나 만 14세 미만인지 확인
-    // 카카오 로그인의 경우 생년월일 수집 동의를 한 경우에는 Input과 비교를 해서 다르면 에러
-    // 수집 동의를 하지 않은 경우에는 따로 비교를 할 필요는 없음
+    if (!isDefined(body.birthday) || body.birthday.length === 0) {
+      throw new BadRequestException(UserExceptionCode.SignUpBirthdayEmpty);
+    }
+
+    const userAge = this.getUserAgeByBirthday(body.birthday);
+
+    // 만 14세 미만인지 확인
+    if (userAge < 14) {
+      throw new BadRequestException(UserExceptionCode.SignUpMust14Over);
+    }
 
     const user = new UserEntity();
 
@@ -211,11 +201,34 @@ export class UserHelper {
    */
   async generateAppleInsertUserParam(
     body: PostLoginOrSignUpRequestDto,
-    validateResult: IVerifyAppleAuthCode,
+    validateResultData: IValidateSocialAccessTokenResult['data'],
   ): Promise<UserEntity> {
+    if (!isDefined(validateResultData)) {
+      throw new InternalServerErrorException(
+        InternalServerExceptionCode.AppleLoginUserSignUpError,
+      );
+    }
+
     const decodedResult = jwt.decode(
-      validateResult.id_token,
+      validateResultData.id_token,
     ) as IAppleJwtTokenPayload;
+
+    if (!isDefined(body.isMarketingConsentGiven)) {
+      throw new BadRequestException(
+        UserExceptionCode.IsMarketingConsentGivenEmpty,
+      );
+    }
+
+    if (!isDefined(body.birthday) || body.birthday.length === 0) {
+      throw new BadRequestException(UserExceptionCode.SignUpBirthdayEmpty);
+    }
+
+    const userAge = this.getUserAgeByBirthday(body.birthday);
+
+    // 만 14세 미만인지 확인
+    if (userAge < 14) {
+      throw new BadRequestException(UserExceptionCode.SignUpMust14Over);
+    }
 
     const user = new UserEntity();
 
@@ -225,10 +238,10 @@ export class UserHelper {
     user.email = decodedResult.email ?? null;
     user.age = null;
     user.gender = null;
-    user.birthday = null;
+    user.birthday = body.birthday;
     user.profileImageUrl = USER_DEFAULT_PROFILE_IMAGE;
     user.profileImageKey = null;
-    user.appleRefreshToken = validateResult.refresh_token;
+    user.appleRefreshToken = validateResultData.refresh_token;
     user.fcmToken =
       isDefined(body.fcmToken) && body.fcmToken.length !== 0
         ? body.fcmToken
@@ -277,5 +290,29 @@ export class UserHelper {
     }
 
     return;
+  }
+
+  /**
+   * @summary 사용자의 만나이 구하는 메서드
+   * @author  Jason
+   * @param   { string } birthday (YYYY-MM-DD 형태의 생일로 들어와야 함)
+   * @returns { number }
+   */
+  getUserAgeByBirthday(birthday: string): number {
+    const birth = new Date(birthday);
+    const today = new Date();
+
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthdiff = today.getMonth() - birth.getMonth();
+
+    // 생일이 아직 오지 않았다면 나이에서 1을 빼준다.
+    if (
+      monthdiff < 0 ||
+      (monthdiff === 0 && today.getDate() < birth.getDate())
+    ) {
+      age--;
+    }
+
+    return age;
   }
 }

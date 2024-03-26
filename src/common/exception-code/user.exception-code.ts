@@ -118,4 +118,8 @@ export const UserExceptionCode = {
     '1034',
     '회원가입 시 작성하는 생년월일은 YYYY-MM-DD 형태로 입력해주시고 유효한 생년월일을 입력해주세요.',
   ),
+  SignUpMust14Over: setExceptionCode(
+    '1035',
+    '만 14세 이상부터 맵필로그에 가입이 가능합니다.',
+  ),
 };
