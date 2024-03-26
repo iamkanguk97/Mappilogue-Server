@@ -13,7 +13,7 @@ import {
   ICustomJwtPayload,
   ITokenWithExpireTime,
   IValidateSocialAccessTokenResult,
-} from 'src/modules/core/auth/types';
+} from 'src/modules/core/auth/interfaces';
 import { JwtHelper } from 'src/modules/core/auth/helpers/jwt.helper';
 import { UserHelper } from '../helpers/user.helper';
 import { CustomCacheService } from 'src/modules/core/custom-cache/services/custom-cache.service';

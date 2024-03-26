@@ -16,7 +16,7 @@ import { ENVIRONMENT_KEY } from '../../custom-config/constants/custom-config.con
 import { UserService } from 'src/modules/api/user/services/user.service';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 import { isDefined } from 'src/helpers/common.helper';
-import { ICustomJwtPayload } from '../types';
+import { ICustomJwtPayload } from '../interfaces';
 import { TDecodedUserToken } from 'src/modules/api/user/types';
 import { extractTokenFromHeader } from 'src/common/common';
 import {

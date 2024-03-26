@@ -5,7 +5,7 @@ import { ENVIRONMENT_KEY } from '../../custom-config/constants/custom-config.con
 import { TokenTypeEnum } from '../constants/auth.enum';
 import { CustomCacheService } from '../../custom-cache/services/custom-cache.service';
 import { CustomCacheHelper } from '../../custom-cache/helpers';
-import { ICustomJwtPayload } from '../types';
+import { ICustomJwtPayload } from '../interfaces';
 import { isDefined } from 'src/helpers/common.helper';
 
 @Injectable()

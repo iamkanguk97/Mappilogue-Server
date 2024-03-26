@@ -27,7 +27,7 @@ import {
   IValidateKakaoTokenResponse,
   IValidateSocialAccessTokenResult,
   IVerifyAppleAuthCode,
-} from '../types';
+} from '../interfaces';
 import { isDefined } from 'src/helpers/common.helper';
 import { TDecodedUserToken } from 'src/modules/api/user/types';
 

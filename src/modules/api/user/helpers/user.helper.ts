@@ -8,7 +8,7 @@ import {
   ISocialKakaoDataInfo,
   IValidateSocialAccessTokenResult,
   IVerifyAppleAuthCode,
-} from 'src/modules/core/auth/types';
+} from 'src/modules/core/auth/interfaces';
 import { UserExceptionCode } from 'src/common/exception-code/user.exception-code';
 import { isDefined } from 'src/helpers/common.helper';
 import { PostLoginOrSignUpRequestDto } from '../dtos/request/post-login-or-sign-up-request.dto';

@@ -21,7 +21,7 @@ import { isDefined } from 'src/helpers/common.helper';
 import { PostTokenRefreshResponseDto } from '../dtos/response/post-token-refresh-response.dto';
 import { PostAutoLoginResponseDto } from '../dtos/response/post-auto-login-response.dto';
 import { AccessTokenWithExpire } from 'src/decorators/access-token.decorator';
-import { ITokenWithExpireTime } from 'src/modules/core/auth/types';
+import { ITokenWithExpireTime } from 'src/modules/core/auth/interfaces';
 
 @Controller(EDomainName.USER)
 @UseInterceptors(ClassSerializerInterceptor)
