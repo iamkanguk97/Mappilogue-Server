@@ -3,7 +3,7 @@ import { extractTokenFromHeader } from 'src/common/common';
 import {
   ICustomJwtPayload,
   ITokenWithExpireTime,
-} from 'src/modules/core/auth/types';
+} from 'src/modules/core/auth/interfaces';
 
 import * as jwt from 'jsonwebtoken';
 

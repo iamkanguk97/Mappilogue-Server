@@ -104,4 +104,22 @@ export const UserExceptionCode = {
     '1031',
     '애플로그인으로 가입한 유저는 회원탈퇴 시 인증토큰이 필요합니다.',
   ),
+  IsMarketingConsentGivenEmpty: setExceptionCode(
+    '1032',
+    '회원가입 시에는 마케팅 수신 동의 여부를 입력해주세요.',
+    'isMarketingConsentGiven',
+  ),
+  SignUpBirthdayEmpty: setExceptionCode(
+    '1033',
+    '회원가입 시에는 생년월일을 입력해주셔야합니다.',
+    'birthday',
+  ),
+  SignUpBirthdayFormatError: setExceptionCode(
+    '1034',
+    '회원가입 시 작성하는 생년월일은 YYYY-MM-DD 형태로 입력해주시고 유효한 생년월일을 입력해주세요.',
+  ),
+  SignUpMust14Over: setExceptionCode(
+    '1035',
+    '만 14세 이상부터 맵필로그에 가입이 가능합니다.',
+  ),
 };

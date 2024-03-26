@@ -17,4 +17,8 @@ export const InternalServerExceptionCode = {
     '9008',
     '애플 로그인 유저 탈퇴처리를 하는 도중 에러가 발생했습니다.',
   ),
+  AppleLoginUserSignUpError: setExceptionCode(
+    '9009',
+    '애플 로그인 사용자 회원가입 처리중 에러가 발생했습니다.',
+  ),
 };

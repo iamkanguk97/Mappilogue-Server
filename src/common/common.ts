@@ -32,13 +32,15 @@ export function extractTokenFromHeader(request: Request): string {
  * @author  Jason
  * @param   { string } code
  * @param   { string } message
+ * @param   { string | undefined } target
  * @returns { ExceptionCodeDto }
  */
 export function setExceptionCode(
   code: string,
   message: string,
+  target?: string,
 ): ExceptionCodeDto {
-  return ExceptionCodeDto.from(code, message);
+  return ExceptionCodeDto.from(code, message, target);
 }
 
 /**

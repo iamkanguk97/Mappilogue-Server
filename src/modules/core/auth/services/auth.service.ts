@@ -25,9 +25,9 @@ import {
   IAppleJwtTokenPayload,
   ISocialKakaoDataInfo,
   IValidateKakaoTokenResponse,
-  IValidateSocialAccessToken,
+  IValidateSocialAccessTokenResult,
   IVerifyAppleAuthCode,
-} from '../types';
+} from '../interfaces';
 import { isDefined } from 'src/helpers/common.helper';
 import { TDecodedUserToken } from 'src/modules/api/user/types';
 
@@ -63,11 +63,11 @@ export class AuthService {
    * @summary 소셜 별로 구분지어서 클라에서 보내준 토큰 검증하기
    * @author  Jason
    * @param   { PostLoginOrSignUpRequestDto } body
-   * @returns { Promise<IValidateSocialAccessToken> }
+   * @returns { Promise<IValidateSocialAccessTokenResult> }
    */
   async validateSocialAccessToken(
     body: PostLoginOrSignUpRequestDto,
-  ): Promise<IValidateSocialAccessToken> {
+  ): Promise<IValidateSocialAccessTokenResult> {
     switch (body.socialVendor) {
       case EUserSnsType.KAKAO:
         const kakaoResult = await this.validateKakaoSocialAccessToken(
@@ -119,12 +119,50 @@ export class AuthService {
    * @param   { string } code
    * @returns { Promise<IVerifyAppleAuthCode> }
    */
+  // async validateAppleSocialAccessToken(
+  //   code: string,
+  // ): Promise<IVerifyAppleAuthCode> {
+  //   try {
+  //     return (
+  //       await axios.post(
+  //         'https://appleid.apple.com/auth/token',
+  //         querystring.stringify({
+  //           grant_type: 'authorization_code',
+  //           code: code,
+  //           client_secret: this.generateAppleClientSecret(),
+  //           client_id: this.customConfigService.get<string>(
+  //             ENVIRONMENT_KEY.APPLE_KEY_CLIENT_ID,
+  //           ),
+  //         }),
+  //         {
+  //           headers: {
+  //             'Content-Type': 'application/x-www-form-urlencoded',
+  //           },
+  //         },
+  //       )
+  //     ).data as IVerifyAppleAuthCode;
+  //   } catch (err) {
+  //     this.logger.error(
+  //       '[validateSocialAccessToken] 애플 로그인 처리 중 에러 발생.',
+  //     );
+  //     throw new UnauthorizedException(
+  //       UserExceptionCode.AppleSocialLoginTokenError,
+  //     );
+  //   }
+  // }
+
+  /**
+   * @summary 애플 authorization_code를 가지고 Apple 서버에 검증을 요청하고 나온 결과 반환
+   * @author  Jason
+   * @param   { string } code
+   * @returns { Promise<IVerifyAppleAuthCode> }
+   */
   async validateAppleSocialAccessToken(
     code: string,
   ): Promise<IVerifyAppleAuthCode> {
-    try {
-      return (
-        await axios.post(
+    return await lastValueFrom<IVerifyAppleAuthCode>(
+      this.httpService
+        .post(
           'https://appleid.apple.com/auth/token',
           querystring.stringify({
             grant_type: 'authorization_code',
@@ -140,15 +178,19 @@ export class AuthService {
             },
           },
         )
-      ).data as IVerifyAppleAuthCode;
-    } catch (err) {
-      this.logger.error(
-        '[validateSocialAccessToken] 애플 로그인 처리 중 에러 발생.',
-      );
-      throw new UnauthorizedException(
-        UserExceptionCode.AppleSocialLoginTokenError,
-      );
-    }
+        .pipe(
+          map((res) => res.data),
+          catchError((err) => {
+            this.logger.error(err);
+            this.logger.error(
+              '[validateSocialAccessToken] 애플 로그인 처리 중 에러 발생.',
+            );
+            throw new UnauthorizedException(
+              UserExceptionCode.AppleSocialLoginTokenError,
+            );
+          }),
+        ),
+    );
   }
 
   /**

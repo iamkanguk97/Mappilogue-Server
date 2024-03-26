@@ -7,6 +7,7 @@ import { UserExceptionCode } from 'src/common/exception-code/user.exception-code
 import { UserAlarmSettingEntity } from '../../entities/user-alarm-setting.entity';
 import { PickType } from '@nestjs/mapped-types';
 import { UserEntity } from '../../entities/user.entity';
+import { IsValidDateWithHyphen } from 'src/decorators/valid-date-with-hyphen.decorator';
 
 export class PostLoginOrSignUpRequestDto extends PickType(UserEntity, [
   'fcmToken',
@@ -31,7 +32,21 @@ export class PostLoginOrSignUpRequestDto extends PickType(UserEntity, [
     setValidatorContext(CommonExceptionCode.MustCheckColumnType),
   )
   @IsOptional()
-  isAlarmAccept?: ECheckColumn = ECheckColumn.ACTIVE;
+  isAlarmAccept: ECheckColumn = ECheckColumn.ACTIVE;
+
+  @IsEnum(
+    ECheckColumn,
+    setValidatorContext(CommonExceptionCode.MustCheckColumnType),
+  )
+  @IsOptional()
+  isMarketingConsentGiven: ECheckColumn | null = null;
+
+  @IsValidDateWithHyphen(
+    setValidatorContext(UserExceptionCode.SignUpBirthdayFormatError),
+  )
+  @IsString(setValidatorContext(CommonExceptionCode.MustStringType))
+  @IsOptional()
+  birthday: string | null = null;
 
   /**
    * @summary UserAlarmSettingEntity 변환 함수
