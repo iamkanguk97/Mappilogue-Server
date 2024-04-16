@@ -44,6 +44,7 @@ export class ScheduleRepository extends Repository<ScheduleEntity> {
     calendarStartDay: string,
     calendarEndDay: string,
   ): Promise<ISchedulesInCalendar[]> {
+    console.log(userId);
     return await this.createQueryBuilder('S')
       .select([
         'S.id AS scheduleId',
@@ -56,9 +57,8 @@ export class ScheduleRepository extends Repository<ScheduleEntity> {
       ])
       .innerJoin(ColorEntity, 'C', 'S.colorId = C.id')
       .where('S.userId = :userId', { userId })
-      .andWhere(`S.startDate <= :endDay`, { endDay: calendarEndDay })
-      .andWhere(`S.endDate >= :startDay`, { startDay: calendarStartDay })
-      .andWhere('S.deletedAt IS NULL')
+      // .andWhere(`S.startDate <= :endDay`, { endDay: calendarEndDay })
+      // .andWhere(`S.endDate >= :startDay`, { startDay: calendarStartDay })
       .orderBy('S.startDate')
       .addOrderBy('S.createdAt')
       .getRawMany();
