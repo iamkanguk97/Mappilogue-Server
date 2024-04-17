@@ -1,5 +1,9 @@
 # 🗓️ 지도를 기반으로 현 위치 중심의 일정 및 추억을 관리할 수 있는 서비스, Mappilogue
 
+<p align="center">
+  <img src="https://github.com/iamkanguk97/Mappilogue-Server/assets/121025796/ca5da9e1-0dd7-4120-b3cd-b95dddd780af" />
+</p>
+
 ## 프로젝트 소개
 
 - 지도를 기반으로 현 위치 중심의 일정 및 추억을 관리할 수 있는 서비스입니다.
@@ -10,11 +14,16 @@
 
 ## 개발 환경
 
-- Backend: NestJS V9 (TypeScript), TypeORM 0.3
-- Database: MySQL, Redis
-- Infra: AWS (EC2, RDS, S3)
-- 버전관리: GitHub
+- NestJS (TypeScript)
+- MySQL, TypeORM
+- AWS (EC2, RDS, S3), Nginx
+- Redis Caching
 - 배포 자동화: GitHub Actions + Shell Script
+
+<br/>
+
+## 아키텍처
+!사진 넣기!
 
 <br/>
 
@@ -26,134 +35,114 @@
 
 <br/>
 
-## 프로젝트 구조
+## 디렉토리 설명
+- `.github`: GitHub Actions의 workflow 파일 저장
+- `@types`: 타입 정의 디렉토리 (맵필로그에서는 solarlunar 라이브러리를 통해 음력날짜를 제공합니다)
+- `scripts`: 배포 자동화 스크립트 디렉토리
 
-```
-📦
-├─ .eslintrc.js
-├─ .gitignore
-├─ .prettierrc
-├─ README.md
-├─ nest-cli.json
-├─ package-lock.json
-├─ package.json
-├─ src
-│  ├─ api
-│  │  ├─ chat
-│  │  │  ├─ chat.controller.spec.ts
-│  │  │  ├─ chat.controller.ts
-│  │  │  ├─ chat.module.ts
-│  │  │  ├─ chat.service.spec.ts
-│  │  │  ├─ chat.service.ts
-│  │  │  ├─ dto
-│  │  │  │  ├─ create-chat-room.dto.ts
-│  │  │  │  ├─ create-chat.dto.ts
-│  │  │  │  └─ post-chat-message.dto.ts
-│  │  │  └─ entities
-│  │  │     ├─ chat-room.entity.ts
-│  │  │     └─ chat.entity.ts
-│  │  ├─ chatgpt
-│  │  │  ├─ chatgpt.module.ts
-│  │  │  └─ chatgpt.service.ts
-│  │  ├─ model
-│  │  │  ├─ dto
-│  │  │  │  └─ create-model.dto.ts
-│  │  │  ├─ entities
-│  │  │  │  └─ model.entity.ts
-│  │  │  ├─ model.controller.spec.ts
-│  │  │  ├─ model.controller.ts
-│  │  │  ├─ model.module.ts
-│  │  │  ├─ model.service.spec.ts
-│  │  │  ├─ model.service.ts
-│  │  │  └─ types
-│  │  │     └─ index.ts
-│  │  └─ user
-│  │     ├─ dto
-│  │     │  ├─ create-user.dto.ts
-│  │     │  └─ update-user.dto.ts
-│  │     ├─ entities
-│  │     │  └─ user.entity.ts
-│  │     ├─ user.controller.spec.ts
-│  │     ├─ user.controller.ts
-│  │     ├─ user.module.ts
-│  │     ├─ user.service.spec.ts
-│  │     └─ user.service.ts
-│  ├─ app.controller.spec.ts
-│  ├─ app.controller.ts
-│  ├─ app.module.ts
-│  ├─ app.service.ts
-│  ├─ decorators
-│  │  └─ user-token.decorator.ts
-│  └─ main.ts
-├─ test
-│  ├─ app.e2e-spec.ts
-│  └─ jest-e2e.json
-├─ tsconfig.build.json
-├─ tsconfig.json
-└─ webpack-hmr.config.js
-```
+아래는 src 디렉토리의 하위 디렉토리에 대한 설명입니다.
+- `common`: 공통적으로 사용할 수 있는 함수, DTO 또는 예외 코드들이 저장되어 있습니다.
+- `decorators`: 전체적으로 사용할 수 있는 데코레이터를 저장하는 디렉토리입니다.
+- `filters`: 예외 필터 저장 디렉토리입니다.
+- `helpers`: 유틸 함수들이 저장되어 있습니다. helper 디렉토리에서는 메서드만 다룹니다.
+- `interceptors`: 요청 또는 응답을 가로채어 전처리 과정을 할 수 있는 인터셉터 디렉토리입니다.
+- `middlewares`: 미들웨어 디렉토리입니다. 맵필로그에서는 Logger를 위해 미들웨어를 적용했습니다.
+- `modules`: 프로젝트의 중심이 되는 디렉토리입니다. 크게 api 디렉토리와 core 디렉토리로 나누어집니다.
+  - `api`: 도메인을 기준으로 나누었으며 각 도메인 별로 Layer를 나누어서 프로젝트를 구축하였습니다.
+  - `core`: 프로젝트의 코어가 되는 부분을 저장했습니다. (Notification, Auth 등)
+- `types`: 특정 도메인에 속한 타입이 아닌 프로젝트 전체적으로 사용하는 타입을 저장하는 디렉토리입니다.
 
 <br/>
 
 ## DB 테이블 구조
+![mappilogue-erd-image](https://github.com/iamkanguk97/Mappilogue-Server/assets/121025796/ddde0963-5f55-4126-bfcf-83e673308f13)
+
+조금 더 좋은 UI로 저희 맵필로그 DB 테이블을 보고 싶으시다면 아래 링크를 통해 확인해주세요!
+> URL : https://aquerytool.com/aquerymain/index/?rurl=9193d966-1e03-4584-a87f-cb7dd75e0fdd& <br/>
+> Password : j47wy4
 
 <br/>
 
-## 역할 분담
+## Commit Convention
+커밋 컨벤션은 많이들 사용하시는 컨벤션 그대로 사용했습니다. 대신에 저는 Check 라는 브랜치를 추가로 사용했습니다.
 
-### 이강욱
-
-- 사용자가 설정한 옵션에 따른 커스텀 AI 모델 구축
-- 채팅 관련 기능 (채팅 전송, 채팅 목록)
-
-### 이한슬
-
-- 사용자 관련 기능 (로그인 등)
-- 홈화면 조회 기능 (사용자가 최근에 사용한 모델 리스트 등)
-
-<br/>
-
-## 기능 리스트
-
-### (1) 사용자 커스텀 모델 생성
-
-![image](https://github.com/node-cafe-iOS-presso/node/assets/121025796/1b624f4a-ce27-4f27-b8a0-ed7733b43ed0)
-
-사용자가 원하는 사진과 모델의 옵션들을 선택할 수 있다. 참고로 위의 옵션들은 [ChatGPT Prompt Generator](https://prompt-generator.cckn.vercel.app/) 에서 참고하였다. 이렇게 사용자가 Option들을 선택해서 모델을 생성하도록 서버에 요청을 한다면 서버에서는 Option들을 조합해서 Prompt를 생성한다. 그리고 그 Prompt와 사용자가 처음으로 질문한 내용을 가지고 ChatGPT에게 API를 통해 메세지를 보낸다. 원래는 사용자가 질문하는 것을 제외하고 모델을 생성할 수 있게 하려고 했지만 API 특성상 그러지 못하였다. 그래서 모델의 생성은 사용자의 첫 질문과 모델의 첫 답변과 함께 생성된다.
-
-![image](https://github.com/node-cafe-iOS-presso/node/assets/121025796/b27f2357-8f4c-42e1-9a83-83deb04fff1f)
-
-그래서 Model 테이블에 ROW를 만들어주고, 사용자의 첫 질문에 대해 ChatGPT에게 답변을 받고 질의응답에 대한 채팅방과 채팅 내역 Table에 ROW를 만들어준다. ChatGPT에게 메세지를 보내는 기능은 후에 설명하도록 하겠다. 사용자 전용 모델은 위에서 생성한 Prompt를 가지고 구축된다.
-
-![image](https://github.com/node-cafe-iOS-presso/node/assets/121025796/3ba5b709-1295-420f-9e7a-eaab81749474)
-
-클라이언트로 부터 받은 사용자가 선택한 옵션들을 가지고 위의 사진과 같이 Prompt Format으로 만들어주는 것이다. Format도 마찬가지로 위의 Prompt Generator를 참고했다. 위의 Prompt를 가지고 ChatGPT에게 메세지를 보내면 ChatGPT는 해당 Prompt를 학습하고 나름 정확한 답변을 준다.
-
-### (2) ChatGPT에게 채팅을 보내는 기능
-
-![image](https://github.com/node-cafe-iOS-presso/node/assets/121025796/80aeb4ff-7c1d-4a56-af05-f0ae715981f1)
-
-사실 이 기능은 크게 설명할 게 없긴 하다. 왜냐면 OpenAI 공식문서만 잘 본다면 충분히 작성할 수 있는 코드라고 생각하기 때문이다. 다만, 처음 모델을 구축하고 이후에 채팅을 보낼 때가 문제였다.
-
-![image](https://github.com/node-cafe-iOS-presso/node/assets/121025796/7db11af2-ac01-4d71-9ab3-c35702cec190)
-
-**ChatGPT를 사용해보면 알겠지만 웹에서는 이전 채팅의 내용을 기억하지만 OpenAI에서 제공하는 ChatGPT API는 이전 대화 내용을 기억하지 못한다. 그래서 DB에 저장되어 있는 채팅 내역을 가지고 메세지를 보낼 때 주입을 해주어야 한다. 하지만 공식문서에 따르면 Token (글자수) 제한이 있어서 모든 채팅 내용을 주입하지 못한다. 참고로 Token 제한이 넘으면 과금이 된다고 한다. 물론 해당 문제를 해결하기 위해 Lang-Chain 이라는 기술을 도입할 수 있는데 해커톤 행사상 구현할 시간이 부족하기 때문에 어쩔 수 없이 Token 제한을 넘기지 않는다고 가정하고 기능을 구현하였다. (Token 제한 = 약 4000자)**
-
-![image](https://github.com/node-cafe-iOS-presso/node/assets/121025796/20ab140e-6543-4d01-a4bc-dfe4d7161843)
-
-위의 코드는 ChatGPT에게 메세지를 보낼 때 Prompt를 생성하는 코드인데 이전의 채팅내용도 포함시켜주는 메서드이다. 우리의 프로젝트 특성상 모델이 먼저 메세지를 보내는 경우는 없기 때문에 index가 홀수인 것은 사용자의 채팅이고, 짝수인 것은 모델의 답장이라고 판단했다.
-
-ChatGPT에게 이전의 대화내용을 적용시켜 주려고 할 때 위와 같이 role을 user와 assistant로 구분을 지어주어야 하고, 실제 채팅내역의 순서를 지켜주어야 한다. 그리고 마지막에는 사용자가 보내려고 하는 메세지를 넣어준다. 그리고 아까 모델 생성할 때의 코드와 동일하게 ChatGPT에게 메세지를 보내고 답장을 받아온다.
+- `feat` : 새로운 기능 추가
+- `fix` : 버그 수정
+- `docs` : 문서 내용 변경
+- `style` : 포맷팅, 세미콜론 누락, 코드 변경이 없는 경우 등
+- `refactor` : 코드 리팩토링
+- `test` : 테스트 코드 작성
+- `chore` : 빌드 수정, 패키지 매니저 설정, 운영 코드 변경이 없는 경우 등
+- `check` : 일반 작업물 커밋 또는 전체적인 코드 점검하는 경우 등
 
 <br/>
 
-## 해커톤 후기
+## Code Convention
+개인 프로젝트라서 엄격하게 컨벤션을 지키지는 못했습니다. 하지만 최근 클린코드를 공부하기 시작했고 맵필로그 프로젝트를 개발하며 최대한 지켜보려고 노력했습니다. 그래서 다음과 같은 사항들은 기본적으로 지키면서 코드를 작성할 수 있도록 노력했습니다.
 
-아래에 올려놓은 블로그 링크를 참고해주세요!
+### (1) Controller, Service, Repository Method 이름 + Interface/Type/Enum 변수 이름 규칙
+**1️⃣ Controller**
+- 맵필로그에서는 HTTP의 GET/POST/DELETE/PUT/PATCH 메서드를 사용합니다.
+- 각 API에서 요구하는 HTTP Method를 Prefix로 해서 메서드 이름을 작성했습니다.
+- ex) 회원 조회 -> getUser / 회원 생성 -> postUser / 회원 삭제 -> deleteUser / ...
+
+**2️⃣ Service**
+- Service 메서드에서는 Controller와 연결된 메서드인지 아닌지로 나누었습니다.
+- Controller와 연결된 메서드인 경우에는 다음과 같은 규칙을 정하여 메서드 이름의 prefix를 설정했습니다.
+  - GET: find
+  - POST: create
+  - DELETE: remove
+  - PUT과 PATCH: modify
+- 이 외 연결되지 않은 메서드는 다음과 같은 규칙을 정했습니다. 하지만 이는 다른 추가 케이스들이 있으면 추가 또는 수정이 될 수도 있을 것 같습니다.
+  - 특정 도메인의 값(상태)를 확인하는 경우: check
+  - DTO 또는 특정 변수의 구조 또는 값을 변경하려는 경우: set
+
+**3️⃣ Repository**
+- Repository 쪽에서는 주로 Select할 때 복잡한 쿼리를 작성해야 하는 경우에만 메서드를 생성했습니다.
+- DB 명령어를 Prefix로 사용했습니다. (SELECT / UPDATE / INSERT / ...)
+
+**4️⃣ Interface, Type, Enum**
+해당 방법은 커뮤니티에도 의견을 많이 물어봤는데 개발자 분들마다 취향이 전부 다른 것 같은데 사내에서는 잘 사용되지 않는 규칙이라고 많이 들은 것 같아서 개인 프로젝트이기 때문에 크리티컬한 이슈는 아니어서 기회가 된다면 시간을 투자하여 수정해보려고 합니다.
+- Interface: I<Interface이름>
+- Type: T<Type이름>
+- Enum: E<Enum이름>
+
+### (2) 메서드 또는 변수의 명을 명확하게 지어서 불필요한 주석은 없애자
+- 개발자의 의도에 따라 메소드 또는 변수의 이름을 명확하게 지어서 주석 없이도 바로 알아볼 수 있게 작성하도록 노력했습니다.
+- 그로 인해서 각 Layer에 필요한 Method인 경우와 특별한 경우가 아닌 이상 불필요한 주석은 최대한 작성하지 않도록 했습니다.
+
+### (3) 함수는 최대한 1가지의 기능을 하도록, 그리고 인수(매개변수)는 최대 2개를 넘지 말자
+- 각각의 함수는 1가지의 기능에 충실하는 것이 좋다는 글을 봤습니다. 맵필로그에 최대한 적용하려고 노력은 했지만 아직 부족한 점이 많다고 생각되어 추후에도 지속적으로 검토해가며 수정을 할 예정입니다.
+- 클린코드에서는 "최선은 인수의 개수가 없는 것이다" 라는 문장이 있습니다. 하지만 부득이하게 함수에서 인수가 필요로 할 때가 많았습니다. 완벽하게 지키지는 못했지만 인수의 개수를 최대한 줄일 수 있으면 줄여보자 라는 마인드로 코드를 작성했습니다.
 
 <br/>
 
-## 기타 링크
+## 구현된 기능 및 2차 개발 예정 기능
+맵필로그 1차 개발에서는 크게 다음 기능들을 제공합니다.
 
-- [[회고] 제 2회 가천대학교 와글와글 해커톤 참여 후기](https://dev-iamkanguk.tistory.com/entry/%ED%9A%8C%EA%B3%A0-%EC%A0%9C-2%ED%9A%8C-%EA%B0%80%EC%B2%9C%EB%8C%80%ED%95%99%EA%B5%90-%EC%99%80%EA%B8%80%EC%99%80%EA%B8%80-%ED%95%B4%EC%BB%A4%ED%86%A4-%EC%B0%B8%EC%97%AC-%ED%9B%84%EA%B8%B0)
-- [발표자료 및 시연영상](https://drive.google.com/drive/folders/11OPHXpnf3bhppbVZPwdAUmnXfIMlbi3y)
+- 소셜 로그인 (카카오 및 애플 로그인)
+- JWT를 활용한 인증 (Refresh Token 도입 및 RTR, Access Token BlackList With Redis)
+- 회원탈퇴 시 회원 관련 데이터 트래픽을 고려하여 매일 새벽 5시에 탈퇴 유저 확인하여 삭제 처리 (CronJob)
+- 캘린더 조회 및 캘린더에 생성할 수 있는 일정 관련 CRUD
+- 각 일정에 할당할 수 있는 알림 서비스 (FCM)
+- 유저가 생성한 일정과 연결하여 추억(기록) CRUD
+- 본인 위치 주변의 기록 리스트 조회 with Pagination (Offset 기반 페이지네이션)
+  - Cursor 기반의 페이지네이션을 사용하지 않은 이유는 아래 블로그 링크로!
+- 기록에 지정할 수 있는 카테고리 CRUD
+
+추가로, 배포 이후 바로 개발 예정들인 기능들이 있습니다.
+- 다른 유저들의 일정과 기록을 조회할 수 있도록 함
+- 유저들 간의 모임을 기획할 수 있는 서비스
+- 개선된 캘린더 기능 (1차에서는 iOS와 Android의 캘린더 화면이 다름)
+
+🐥 자세한 기능들을 보고 싶으시면 [해당 API 문서](https://iamkanguk.notion.site/MAPPILOGUE-API-V2-SHEET-89190866930f41b787c76bd9d70e0caa?pvs=4)를 확인해주세요! 🐥
+
+<br/>
+
+## 프로젝트를 하면서 어려웠거나 고민을 많이 한 부분을 정리한 블로그!
+- [[맵필로그] GitHub Action + Shell Script를 활용한 자동 배포 + 트러블슈팅](https://dev-iamkanguk.tistory.com/entry/%EB%A7%B5%ED%95%84%EB%A1%9C%EA%B7%B8-Shell-Script%EB%A5%BC-%ED%99%9C%EC%9A%A9%ED%95%9C-%EC%9E%90%EB%8F%99-%EB%B0%B0%ED%8F%AC-PM2)
+- [[맵필로그] 로그아웃 + 회원탈퇴 기능 구현 기록](https://dev-iamkanguk.tistory.com/entry/%EB%A7%B5%ED%95%84%EB%A1%9C%EA%B7%B8-%EB%A1%9C%EA%B7%B8%EC%95%84%EC%9B%83-%ED%9A%8C%EC%9B%90%ED%83%88%ED%87%B4-%EA%B8%B0%EB%8A%A5-%EA%B5%AC%ED%98%84-%EA%B8%B0%EB%A1%9D)
+- [[맵필로그] 아주 많이 고생한 애플로그인 구현 기록..! (Passport X)](https://dev-iamkanguk.tistory.com/entry/%EB%A7%B5%ED%95%84%EB%A1%9C%EA%B7%B8-%EC%95%84%EC%A3%BC-%EB%A7%8E%EC%9D%B4-%EA%B3%A0%EC%83%9D%ED%95%9C-%EC%95%A0%ED%94%8C%EB%A1%9C%EA%B7%B8%EC%9D%B8-%EA%B5%AC%ED%98%84-%EA%B8%B0%EB%A1%9D-Passport-X)
+- [[맵필로그] Strict Mode 설정 + 발생한 이슈 + tsconfig.json 일부 분석](https://dev-iamkanguk.tistory.com/entry/%EB%A7%B5%ED%95%84%EB%A1%9C%EA%B7%B8-Strict-Mode-%EC%84%A4%EC%A0%95-%EB%B0%9C%EC%83%9D%ED%95%9C-%EC%9D%B4%EC%8A%88-tsconfigjson-%EC%9D%BC%EB%B6%80-%EB%B6%84%EC%84%9D)
+- [[맵필로그 + NestJS] Access-Token과 Refresh-Token 전략 정리와 수정해야 할 부분 in NestJS? (약간 장문주의)](https://dev-iamkanguk.tistory.com/entry/%EB%A7%B5%ED%95%84%EB%A1%9C%EA%B7%B8-Access-Token%EA%B3%BC-Refresh-Token-%EC%A0%84%EB%9E%B5-%EC%A0%95%EB%A6%AC%EC%99%80-%EC%88%98%EC%A0%95%ED%95%B4%EC%95%BC-%ED%95%A0-%EB%B6%80%EB%B6%84)
+- [[맵필로그] 캘린더 화면 로직 좌충우돌 기록!](https://dev-iamkanguk.tistory.com/entry/%EB%A7%B5%ED%95%84%EB%A1%9C%EA%B7%B8-%EC%BA%98%EB%A6%B0%EB%8D%94-%ED%99%94%EB%A9%B4-%EB%A1%9C%EC%A7%81-%EC%A2%8C%EC%B6%A9%EC%9A%B0%EB%8F%8C-%EA%B8%B0%EB%A1%9D)
