@@ -13,7 +13,7 @@ export class CustomCacheService {
   }
 
   async setValue(key: string, value: string): Promise<void> {
-    await this.cacheManager.set(key, value);
+    await this.cacheManager.set(key, value, { ttl: 0 });
   }
 
   async delValue(key: string): Promise<void> {

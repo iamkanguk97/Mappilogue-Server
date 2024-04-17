@@ -26,11 +26,19 @@ import { GetMarkCategoriesResponseDto } from '../dtos/response/get-mark-categori
 import { MarkCategoryValidationPipe } from '../pipes/mark-category-validation.pipe';
 import { EDomainName } from 'src/constants/enum';
 import { MarkCategoryDto } from '../dtos/common/mark-category.dto';
+import { CustomCacheService } from 'src/modules/core/custom-cache/services/custom-cache.service';
+import { isDefined } from 'src/helpers/common.helper';
+import { deserialized } from 'src/common/common';
+import { MarkCategoryHelper } from '../helpers/mark-category.helper';
 
 @Controller(EDomainName.MARK_CATEGORY)
 @UseInterceptors(ClassSerializerInterceptor)
 export class MarkCategoryController {
-  constructor(private readonly markCategoryService: MarkCategoryService) {}
+  constructor(
+    private readonly markCategoryService: MarkCategoryService,
+    private readonly markCategoryHelper: MarkCategoryHelper,
+    private readonly customCacheService: CustomCacheService,
+  ) {}
 
   /**
    * @summary 기록 카테고리 조회 API
@@ -43,8 +51,18 @@ export class MarkCategoryController {
   async getMarkCategories(
     @UserId() userId: number,
   ): Promise<ResponseEntity<GetMarkCategoriesResponseDto>> {
-    const result = await this.markCategoryService.findMarkCategories(userId);
-    return ResponseEntity.OK_WITH(HttpStatus.OK, result);
+    const cachedData = await this.customCacheService.getValue<string>(
+      this.markCategoryHelper.generateMarkCategoryCacheKey(userId),
+    );
+
+    if (!isDefined(cachedData)) {
+      const result = await this.markCategoryService.findMarkCategories(userId);
+      return ResponseEntity.OK_WITH(HttpStatus.OK, result);
+    }
+    return ResponseEntity.OK_WITH(
+      HttpStatus.OK,
+      deserialized<GetMarkCategoriesResponseDto>(cachedData),
+    );
   }
 
   /**

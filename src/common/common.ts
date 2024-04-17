@@ -54,3 +54,11 @@ export function setValidatorContext(errorMessage: ExceptionCodeDto): {
 } {
   return { context: errorMessage };
 }
+
+/**
+ * @summary Caching 할 때 사용하는 함수
+ * @author  Jason
+ * @param   { string } data
+ * @returns { T }
+ */
+export const deserialized = <T>(data: string): T => JSON.parse(data) as T;

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { MarkCategoryDto } from '../dtos/common/mark-category.dto';
 import { PutMarkCategoryObject } from '../dtos/request/put-mark-category-request.dto';
+import { MARK_CATEGORY_CACHE_KEY } from '../variables/constants/mark-category.constant';
 
 @Injectable()
 export class MarkCategoryHelper {
@@ -29,5 +30,15 @@ export class MarkCategoryHelper {
     }
 
     return true;
+  }
+
+  /**
+   * @summary 기록 카테고리 조회 API 캐싱 KEY 생성 함수
+   * @author  Jason
+   * @param   { number } userId
+   * @returns { string }
+   */
+  generateMarkCategoryCacheKey(userId: number): string {
+    return MARK_CATEGORY_CACHE_KEY + `${userId}`;
   }
 }

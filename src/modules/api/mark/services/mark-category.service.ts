@@ -15,6 +15,8 @@ import { PutMarkCategoryObject } from '../dtos/request/put-mark-category-request
 import { PostMarkCategoryRequestDto } from '../dtos/request/post-mark-category-request.dto';
 import { EDeleteMarkCategoryOption } from '../variables/enums/mark-category.enum';
 import { ECheckColumn } from 'src/constants/enum';
+import { CustomCacheService } from 'src/modules/core/custom-cache/services/custom-cache.service';
+import { instanceToPlain } from 'class-transformer';
 
 @Injectable()
 export class MarkCategoryService {
@@ -26,6 +28,7 @@ export class MarkCategoryService {
     private readonly markCategoryRepository: MarkCategoryRepository,
     private readonly markService: MarkService,
     private readonly markCategoryHelper: MarkCategoryHelper,
+    private readonly customCacheService: CustomCacheService,
   ) {}
 
   /**
@@ -48,10 +51,17 @@ export class MarkCategoryService {
       0,
     ); // 카테고리 있는 기록 개수: result에서 MarkCount를 더해주면 됨
 
-    return GetMarkCategoriesResponseDto.from(
+    const result = GetMarkCategoriesResponseDto.from(
       countOfMarkWithoutCategory + markWithCategoryCount,
       markWithCategoryResult.map((result) => MarkCategoryDto.of(result)),
     );
+
+    await this.customCacheService.setValue(
+      `mark-category-userId-${userId}`,
+      JSON.stringify(instanceToPlain(result)),
+    );
+
+    return result;
   }
 
   /**
@@ -75,6 +85,9 @@ export class MarkCategoryService {
       body.toEntity(userId, newMarkCategorySequenceNo),
     );
 
+    await this.customCacheService.delValue(
+      this.markCategoryHelper.generateMarkCategoryCacheKey(userId),
+    );
     return PostMarkCategoryResponseDto.of(result);
   }
 
@@ -91,6 +104,10 @@ export class MarkCategoryService {
     await this.markCategoryRepository.update(
       { id: body.id, userId },
       body.toEntity(),
+    );
+
+    await this.customCacheService.delValue(
+      this.markCategoryHelper.generateMarkCategoryCacheKey(userId),
     );
   }
 
@@ -120,7 +137,6 @@ export class MarkCategoryService {
       ]);
 
       await queryRunner.commitTransaction();
-      return;
     } catch (err) {
       this.logger.error(`[removeMarkCategory - transaction error] ${err}`);
       await queryRunner.rollbackTransaction();
@@ -128,6 +144,10 @@ export class MarkCategoryService {
     } finally {
       await queryRunner.release();
     }
+
+    await this.customCacheService.delValue(
+      this.markCategoryHelper.generateMarkCategoryCacheKey(userId),
+    );
   }
 
   /**
@@ -195,6 +215,10 @@ export class MarkCategoryService {
             category.toEntity(idx + 1),
           ),
       ),
+    );
+
+    await this.customCacheService.delValue(
+      this.markCategoryHelper.generateMarkCategoryCacheKey(userId),
     );
   }
 
